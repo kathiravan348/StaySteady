@@ -14,12 +14,12 @@
 
 ```
 PHASE:              UI Mock Phase
-OVERALL PROGRESS:   17% (11 of 65 active tasks done — Stage F Foundations 100% complete; 10 merged/dropped)
-LAST UPDATED:       2026-09-15T07:48:00Z  |  local: 2026-09-15 13:18 IST
-LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 12)
-BUILD STATE:        PASS (React 19 + Vite 6 app with modernized acrylic chrome, card/box navigation, floating HUD switcher)
+OVERALL PROGRESS:   18% (12 of 65 active tasks done — Stage F 100%, Stage M 1 of 15; 10 merged/dropped)
+LAST UPDATED:       2026-09-15T08:28:00Z  |  local: 2026-09-15 13:58 IST
+LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 13)
+BUILD STATE:        PASS (React 19 + Vite 6 app with MSW v2 network interception layer active)
 TYPE CHECK:         PASS (all section 6.1 flags active via tsconfig.base.json)
-LINT:               PASS — minimal ESLint recommended presets + Prettier (decision 13)
+LINT:               PASS — minimal ESLint recommended presets + Prettier (0 errors, 0 warnings)
 BLOCKERS:           none
 ```
 
@@ -32,55 +32,42 @@ BLOCKERS:           none
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main.
-  Stage F — Foundations is 100% COMPLETE.
-  - F-01 (Workspace setup): apps/web (React 19 + Vite 6) & packages/ui shell.
-  - F-02 (TypeScript 6.1): Strict flags, noUncheckedIndexedAccess, exactOptionalPropertyTypes.
-  - F-03 (Lint/Format): Minimal eslint.config.mjs + Prettier.
-  - F-04 & F-09 (Tokens & Themes): SCSS token layers emitted as custom properties, dark default,
-    light and high-contrast themes, density axis, gain-loss convention axis, 8 shared mixins.
-  - F-16 (Branded Domain Types): apps/web/src/shared/types/ with InstrumentId, MarketId, StrategyId,
-    OrderId, IsoUtcTimestamp, IsoDate, CurrencyCode, Quantity, Percentage, Ratio, BasisPoints.
-  - F-17 (Money Representation): apps/web/src/shared/money/ with Decimal.js, addMoney, subtractMoney,
-    multiplyMoney, divideMoney, sumMoney, allocateMoney, convertCurrency, compareMoney, calculateGainLoss.
-  - F-18 (Formatting): apps/web/src/shared/format/ with formatNumber (compact, instrument decimals),
-    formatMoney (Indian numbering for INR, Western grouping for others), formatGainLossCombined, formatDateTime.
-  - F-19 (Timezones): apps/web/src/shared/marketTime/ with schedules & session calculations (open,
-    pre-open, post-close, closed) for US, IN, UK, JP, SG.
-  - F-20 (Shell & Providers): apps/web/src/shell/ & providers/ with TopBar, Sidebar, PageShell,
-    AppShell, SystemStateProvider (mode, master stop kill-switch, base currency, scenario switcher)
-    and MarketScheduleProvider.
-  - F-21 (Navigation Map): apps/web/src/routes/ & features/ with complete routes per UI spec section 6.
-  - UI Polish & Modern Styling (Session 12): Modern acrylic glassmorphism header, card/box active
-    sidebar navigation effect with highlighted icon badge, floating HUD scenario switcher widget,
-    and responsive card layouts.
-  All typecheck, lint, and build checks pass with 0 errors. Verified in browser with full theme switching.
+  - Stage F — Foundations is 100% COMPLETE.
+  - Stage M — Mock Infrastructure is IN PROGRESS:
+    - M-01 (Request interception layer): 100% COMPLETE. MSW v2 active in apps/web, intercepting
+      network requests in browser service worker. Baseline system health/state endpoints and
+      scenario context established.
+  All typecheck, lint, and build checks pass with 0 errors. Verified in browser with live request interception.
 
 WHAT I COMPLETED THIS SESSION:
-  Completed visual UI polish and theme corrections requested by owner:
-  - Upgraded TopBar header to acrylic glassmorphism with live glowing session dots and streamlined badges.
-  - Fixed sidebar active selection clarity: converted flat highlight to elevated card/box with left accent bar and illuminated icon container.
-  - Replaced bottom-right dev scenario box with a sleek floating acrylic HUD pill widget.
-  - Upgraded OverviewPage with responsive metrics cards and PageShell card elevation.
-  - Documented UI standards in Docs/Frontend_Engineering_Standards.md section 7.5.
+  Completed task M-01 (Request interception layer):
+  - Added msw (^2.15.0) to apps/web devDependencies; verified packages/ui remains completely decoupled.
+  - Created mockServiceWorker.js in apps/web/public/.
+  - Created apps/web/src/data/mock/ with:
+    - scenarios/scenarioContext.ts (managing active scenario state across 8 spec scenarios)
+    - handlers/systemHandlers.ts (/api/v1/system/health, /api/v1/system/state, /api/v1/system/kill-switch)
+    - handlers/index.ts (modular handler aggregator)
+    - browser.ts (MSW setupWorker)
+    - initMock.ts (async worker bootstrap)
+  - Updated apps/web/src/main.tsx to await initMock() before createRoot() renders.
+  - Verified live in browser: intercepted requests for /api/v1/system/health return 200 OK with mock data,
+    and dynamically reflect degradation when developer scenario is changed.
 
 WHAT IS PARTIALLY DONE:
-  Nothing. UI polish and Stage F are complete.
+  Nothing in M-01.
 
 EXACT NEXT STEP:
-  Begin Stage M — Mock Infrastructure:
-  Claim task M-01 (Request interception layer).
+  Claim task M-02 (Schema definitions shared by mock and future real layer):
   Per requirements and standards:
-  - Intercept network requests (e.g. MSW or custom mock request interceptor)
-  - Serve deterministic mock data so UI can transition seamlessly to real backend later with no UI rewrites
-  - Banned from packages/ui (packages/ui must never import request interception).
+  - Define runtime validation schemas (e.g. Zod or Valibot) for domain entities
+  - Ensure mock generators and future real backend share identical schema contracts
+  - Maintain branded types for money, identifiers, and timestamps.
 
 FILES TOUCHED:
-  apps/web/src/shell/TopBar.tsx, TopBar.module.scss
-  apps/web/src/shell/Sidebar.tsx, Sidebar.module.scss
-  apps/web/src/shell/AppShell.tsx, AppShell.module.scss
-  apps/web/src/shell/PageShell.module.scss
-  apps/web/src/features/overview/OverviewPage.tsx, OverviewPage.module.scss
-  Docs/Frontend_Engineering_Standards.md
+  apps/web/package.json
+  apps/web/public/mockServiceWorker.js
+  apps/web/src/data/mock/** (scenarioContext.ts, systemHandlers.ts, handlers/index.ts, browser.ts, initMock.ts, index.ts)
+  apps/web/src/main.tsx
   Docs/PROGRESS_LOG.md
 
 WATCH OUT FOR:
@@ -130,7 +117,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
-| M-01 | Request interception layer | TODO | 0 | | |
+| M-01 | Request interception layer | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 13: MSW v2 worker, system handlers & scenario context |
 | M-02 | Schema definitions shared by mock and future real layer | TODO | 0 | | |
 | M-03 | Deterministic seeded data generators | TODO | 0 | | |
 | M-04 | Price history generator, multi-year, realistic volatility | TODO | 0 | | |
@@ -1109,6 +1096,65 @@ VERIFICATION RUN:
   lint:        PASS — eslint and prettier --check exit 0
   build:       PASS — pnpm build, exit 0 (113 modules, CSS 29.56 kB, JS 340.93 kB)
   browser:     PASS — visual verification of active sidebar box highlight, acrylic header, floating HUD switcher, and theme switching
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        13 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T08:08:00Z  |  local: 2026-09-15 13:38 IST (UTC+05:30)
+TASK CLAIMED:   M-01 Request interception layer
+
+PRE-WORK VERIFICATION:
+  git:         owner committed session 12 work as 4583b81; working tree clean
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; codebase matches session 12 end entry
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        13 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T08:08:00Z  |  local: 2026-09-15 13:38 IST (UTC+05:30)
+END:            2026-09-15T08:28:00Z  |  local: 2026-09-15 13:58 IST (UTC+05:30)
+TASK CLAIMED:   M-01 Request interception layer
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Installed msw (^2.15.0) in apps/web devDependencies; verified packages/ui remains completely decoupled
+  - Initialized mockServiceWorker.js in apps/web/public/
+  - Created developer scenario context (apps/web/src/data/mock/scenarios/scenarioContext.ts) supporting 8 core scenarios:
+    healthy, provider-down, broker-disconnected, stale-data, safety-breach, empty-portfolio, market-closed, loading-error
+  - Scaffolding baseline HTTP handlers for system domain (apps/web/src/data/mock/handlers/systemHandlers.ts):
+    - GET /api/v1/system/health (returns overallStatus, scenario, and 4 services; dynamically degrades on provider-down, broker-disconnected, or error)
+    - GET /api/v1/system/state (returns automation mode, killSwitchActive, baseCurrency)
+    - POST /api/v1/system/kill-switch (toggles master stop)
+  - Scaffolding handler registry (handlers/index.ts) and browser worker setup (browser.ts)
+  - Implemented async bootstrap lifecycle (initMock.ts) integrated into main.tsx before createRoot()
+  - Full browser subagent verification completed: verified MSW console initialization, successful 200 OK interception of /api/v1/system/health and /api/v1/system/state, and dynamic degradation when scenario changes to provider-down
+
+FILES CREATED:
+  - apps/web/public/mockServiceWorker.js
+  - apps/web/src/data/mock/scenarios/scenarioContext.ts
+  - apps/web/src/data/mock/handlers/systemHandlers.ts
+  - apps/web/src/data/mock/handlers/index.ts
+  - apps/web/src/data/mock/browser.ts
+  - apps/web/src/data/mock/initMock.ts
+  - apps/web/src/data/mock/index.ts
+FILES MODIFIED:
+  - apps/web/package.json
+  - apps/web/src/main.tsx
+  - Docs/PROGRESS_LOG.md
+
+DEPENDENCIES ADDED:
+  - msw@^2.15.0 in apps/web devDependencies (network request interception layer per UI spec 14 & decision 5)
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0 (0 warnings)
+  build:       PASS — pnpm build, exit 0 (351 modules, CSS 29.56 kB, JS 637.42 kB)
+  browser:     PASS — MSW intercepts /api/v1/system/health and /api/v1/system/state; reacts to provider-down scenario
 ────────────────────────────────────────────────────────────
 ```
 

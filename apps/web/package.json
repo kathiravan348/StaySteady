@@ -19,8 +19,14 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "msw": "^2.15.0",
     "sass": "~1.99.0",
     "typescript": "~5.9.2",
     "vite": "^6.3.5"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
