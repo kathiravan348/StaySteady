@@ -39,7 +39,7 @@ export function AppShell(): ReactElement {
       </div>
 
       <aside className={styles.scenarioFooter} aria-label="Developer scenario switcher">
-        <span>🎮 Scenario:</span>
+        <span className={styles.scenarioLabel}>🎮 Scenario:</span>
         <select
           value={mockScenario}
           onChange={handleScenarioChange}

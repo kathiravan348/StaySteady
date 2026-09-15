@@ -52,10 +52,10 @@ export function TopBar({ onOpenDisplaySettings, onOpenSearch }: TopBarProps): Re
       <div className={styles.leftSection}>
         <Link to="/overview" className={styles.brand}>
           <span className={styles.brandMark}>S</span>
-          <span>StaySteady</span>
+          <span className={styles.brandText}>StaySteady</span>
         </Link>
         <span className={styles.mockBadge} title="Running against mock data layer">
-          Mock Data Mode
+          🧪 Mock Mode
         </span>
       </div>
 
@@ -82,7 +82,7 @@ export function TopBar({ onOpenDisplaySettings, onOpenSearch }: TopBarProps): Re
           onClick={cycleMode}
           title="Click to cycle system automation mode"
         >
-          {mode.replace('-', ' ')}
+          ● {mode.replace('-', ' ')}
         </button>
 
         <button
@@ -91,7 +91,7 @@ export function TopBar({ onOpenDisplaySettings, onOpenSearch }: TopBarProps): Re
           onClick={toggleAutomationStop}
           title="Master automation stop / kill switch"
         >
-          {isAutomationStopped ? 'Resume Auto' : 'Stop Auto'}
+          {isAutomationStopped ? '▶ Resume Auto' : '⏹ Stop Auto'}
         </button>
 
         <select
@@ -108,11 +108,12 @@ export function TopBar({ onOpenDisplaySettings, onOpenSearch }: TopBarProps): Re
           ))}
         </select>
 
-        <span
-          className={`${styles.healthDot} ${styles[healthStatus]}`}
-          title={`System Health: ${healthStatus}`}
-          aria-label={`System health: ${healthStatus}`}
-        />
+        <span className={styles.healthIndicator} title={`System Health: ${healthStatus}`}>
+          <span
+            className={`${styles.healthDot} ${styles[healthStatus]}`}
+            aria-label={`System health: ${healthStatus}`}
+          />
+        </span>
 
         {onOpenSearch && (
           <button

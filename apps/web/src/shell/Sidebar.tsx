@@ -91,8 +91,10 @@ export function Sidebar(): ReactElement {
                   className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
                 >
                   <span className={styles.linkContent}>
-                    <span aria-hidden="true">{item.icon}</span>
-                    <span>{item.label}</span>
+                    <span aria-hidden="true" className={styles.iconWrapper}>
+                      {item.icon}
+                    </span>
+                    <span className={styles.navLabel}>{item.label}</span>
                   </span>
                   {item.badge !== undefined && (
                     <span className={styles.itemBadge}>{item.badge}</span>

@@ -17,10 +17,11 @@
 .mainContent {
   flex: 1;
   overflow-y: auto;
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - 60px);
   @include surface.scrollbar;
 }
 
+// Floating HUD Scenario Control Widget (UI spec 15).
 .scenarioFooter {
   position: fixed;
   bottom: var(--space-4);
@@ -29,28 +30,69 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background-color: var(--surface-overlay);
+  padding: 6px 14px;
+  background-color: rgba(22, 27, 34, 0.85);
   border: var(--border-width-thin) solid var(--border-strong);
   border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-md);
-  font-size: var(--font-size-xs);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(14px);
+  transition: all var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.35),
+      0 0 12px rgba(56, 139, 253, 0.2);
+    border-color: var(--interactive-primary);
+  }
+
+  .scenarioLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
   select {
     background-color: var(--surface-base);
     color: var(--text-primary);
     border: var(--border-width-thin) solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    padding: var(--space-1) var(--space-2);
-    font-size: var(--font-size-xs);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--easing-standard);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--interactive-primary);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(56, 139, 253, 0.25);
+    }
   }
+}
+
+:global([data-theme='light']) .scenarioFooter {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+:global([data-theme='high-contrast']) .scenarioFooter {
+  background-color: var(--surface-overlay);
+  border: var(--border-width-thick) solid var(--border-strong);
 }
 
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +104,9 @@
   background-color: var(--surface-overlay);
   border: var(--border-width-thin) solid var(--border-strong);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.2);
   max-width: 500px;
   width: 100%;
   padding: var(--space-5);
@@ -79,17 +123,27 @@
   h2 {
     margin: 0;
     font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
   }
 }
 
 .closeButton {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  color: var(--text-secondary);
   cursor: pointer;
-  font-size: var(--font-size-base);
+  font-size: 13px;
+  transition: all var(--duration-fast) var(--easing-standard);
 
   &:hover {
+    background-color: var(--surface-overlay);
     color: var(--text-primary);
+    border-color: var(--border-strong);
   }
 }

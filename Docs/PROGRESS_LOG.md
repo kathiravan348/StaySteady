@@ -15,9 +15,9 @@
 ```
 PHASE:              UI Mock Phase
 OVERALL PROGRESS:   17% (11 of 65 active tasks done — Stage F Foundations 100% complete; 10 merged/dropped)
-LAST UPDATED:       2026-09-15T07:26:00Z  |  local: 2026-09-15 12:56 IST
-LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 11)
-BUILD STATE:        PASS (React 19 + Vite 6 app with full router, shell & stubs, empty library package)
+LAST UPDATED:       2026-09-15T07:48:00Z  |  local: 2026-09-15 13:18 IST
+LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 12)
+BUILD STATE:        PASS (React 19 + Vite 6 app with modernized acrylic chrome, card/box navigation, floating HUD switcher)
 TYPE CHECK:         PASS (all section 6.1 flags active via tsconfig.base.json)
 LINT:               PASS — minimal ESLint recommended presets + Prettier (decision 13)
 BLOCKERS:           none
@@ -50,13 +50,21 @@ WHERE THINGS STAND:
     AppShell, SystemStateProvider (mode, master stop kill-switch, base currency, scenario switcher)
     and MarketScheduleProvider.
   - F-21 (Navigation Map): apps/web/src/routes/ & features/ with complete routes per UI spec section 6.
+  - UI Polish & Modern Styling (Session 12): Modern acrylic glassmorphism header, card/box active
+    sidebar navigation effect with highlighted icon badge, floating HUD scenario switcher widget,
+    and responsive card layouts.
   All typecheck, lint, and build checks pass with 0 errors. Verified in browser with full theme switching.
 
 WHAT I COMPLETED THIS SESSION:
-  Stage F — Foundations completed in full (reconciled F-09; completed F-16, F-17, F-18, F-19, F-20, F-21).
+  Completed visual UI polish and theme corrections requested by owner:
+  - Upgraded TopBar header to acrylic glassmorphism with live glowing session dots and streamlined badges.
+  - Fixed sidebar active selection clarity: converted flat highlight to elevated card/box with left accent bar and illuminated icon container.
+  - Replaced bottom-right dev scenario box with a sleek floating acrylic HUD pill widget.
+  - Upgraded OverviewPage with responsive metrics cards and PageShell card elevation.
+  - Documented UI standards in Docs/Frontend_Engineering_Standards.md section 7.5.
 
 WHAT IS PARTIALLY DONE:
-  Nothing. Stage F is complete.
+  Nothing. UI polish and Stage F are complete.
 
 EXACT NEXT STEP:
   Begin Stage M — Mock Infrastructure:
@@ -67,16 +75,12 @@ EXACT NEXT STEP:
   - Banned from packages/ui (packages/ui must never import request interception).
 
 FILES TOUCHED:
-  apps/web/package.json, pnpm-lock.yaml (added decimal.js, react-router-dom)
-  apps/web/src/shared/types/** (brand.ts, identifiers.ts, quantities.ts, currency.ts, dateTime.ts, index.ts)
-  apps/web/src/shared/money/** (money.ts, arithmetic.ts, conversion.ts, index.ts)
-  apps/web/src/shared/format/** (formatNumber.ts, formatMoney.ts, formatDateTime.ts, index.ts)
-  apps/web/src/shared/marketTime/** (marketSchedules.ts, marketSessions.ts, marketTimeFormat.ts, index.ts)
-  apps/web/src/providers/** (SystemStateProvider.tsx, MarketScheduleProvider.tsx, index.ts)
-  apps/web/src/shell/** (TopBar.tsx/.scss, Sidebar.tsx/.scss, PageShell.tsx/.scss, AppShell.tsx/.scss, index.ts)
-  apps/web/src/routes/** (routes.ts, AppRoutes.tsx, index.ts)
-  apps/web/src/features/** (overview, portfolio, markets, news, research, trading, risk, health, reports, planning, settings, alerts, audit, notFound)
-  apps/web/src/App.tsx
+  apps/web/src/shell/TopBar.tsx, TopBar.module.scss
+  apps/web/src/shell/Sidebar.tsx, Sidebar.module.scss
+  apps/web/src/shell/AppShell.tsx, AppShell.module.scss
+  apps/web/src/shell/PageShell.module.scss
+  apps/web/src/features/overview/OverviewPage.tsx, OverviewPage.module.scss
+  Docs/Frontend_Engineering_Standards.md
   Docs/PROGRESS_LOG.md
 
 WATCH OUT FOR:
@@ -1057,6 +1061,55 @@ VERIFICATION RUN:
   build:       PASS — pnpm build, exit 0 (112 modules, CSS 21.52 kB, JS 340.56 kB, 108.62 kB gzip)
   browser:     PASS — dynamic routing, topbar, sidebar, theme switching (dark/light/high-contrast)
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        12 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:35:00Z  |  local: 2026-09-15 13:05 IST (UTC+05:30)
+TASK CLAIMED:   UI Polish & Theme Corrections (Header modernization, sidebar active card highlight, HUD scenario switcher, page card styling)
+
+PRE-WORK VERIFICATION:
+  git:         working tree clean at 89e590b ("feat: scaffold web application frontend with shell, routes, and feature pages")
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; Stage F complete
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        12 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:35:00Z  |  local: 2026-09-15 13:05 IST (UTC+05:30)
+END:            2026-09-15T07:48:00Z  |  local: 2026-09-15 13:18 IST (UTC+05:30)
+TASK CLAIMED:   UI Polish & Theme Corrections (Header modernization, sidebar active card highlight, HUD scenario switcher, page card styling)
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - TopBar modernization: Acrylic glassmorphism header (backdrop-filter: blur(12px)), glowing live session status dots, sleek system mode badge, refined master stop button, and aligned quick controls
+  - Sidebar active highlight: Distinct card/box active effect (surface-overlay background, border-strong outline, interactive-primary left accent bar, and dedicated icon badge container) ensuring unmistakable visibility across Dark, Light, and High Contrast themes
+  - Developer Scenario Switcher: Redesigned into a floating acrylic HUD pill widget (AppShell.module.scss) in the bottom-right viewport
+  - Page & Card Styling: Elevated card surfaces, rounded pill breadcrumbs, responsive metrics grid, and feature badge containers (PageShell.module.scss, OverviewPage.module.scss)
+  - Standards & Rules updated: Added Section 7.5 ("Chrome, Card and HUD Styling Patterns") to Docs/Frontend_Engineering_Standards.md
+  - Full browser subagent visual verification completed across Dark, Light, and High-Contrast modes
+
+FILES CREATED:
+  - apps/web/src/features/overview/OverviewPage.module.scss
+FILES MODIFIED:
+  - apps/web/src/shell/TopBar.tsx, TopBar.module.scss
+  - apps/web/src/shell/Sidebar.tsx, Sidebar.module.scss
+  - apps/web/src/shell/AppShell.tsx, AppShell.module.scss
+  - apps/web/src/shell/PageShell.module.scss
+  - apps/web/src/features/overview/OverviewPage.tsx
+  - Docs/Frontend_Engineering_Standards.md
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0 (113 modules, CSS 29.56 kB, JS 340.93 kB)
+  browser:     PASS — visual verification of active sidebar box highlight, acrylic header, floating HUD switcher, and theme switching
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -1100,3 +1153,5 @@ VERIFICATION RUN:
 | 14 | 2026-09-15 | DECISION CHANGE: old F-09–F-15 (dark, light, high contrast, runtime switching, density, gain/loss convention, mixins) merged into one F-09 "Themes and display settings" | Personal project; these share one attribute-on-root mechanism and are simpler built together | Yes | Owner (session 4) |
 | 15 | 2026-09-15 | Decimal library: decimal.js for money arithmetic | Exact arbitrary-precision arithmetic, banker's rounding (ROUND_HALF_EVEN), and sqrt() support needed for volatility/Sharpe ratios in Pillar 2 | Yes | Antigravity (session 7) |
 | 16 | 2026-09-15 | Client routing library: react-router-dom in apps/web | Declarative single-page routing matching UI spec section 6 navigation map; packages/ui remains decoupled | Yes | Antigravity (session 10) |
+| 17 | 2026-09-15 | UI Polish & Theme Corrections: Acrylic TopBar header, card/box selected navigation effect, elevated metric cards, and floating HUD developer scenario widget | Improves visual hierarchy, modernizes chrome, and ensures active sidebar items remain unmistakable with icons | Yes | Owner & Antigravity (session 12) |
+

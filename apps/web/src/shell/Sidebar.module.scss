@@ -3,16 +3,17 @@
 @use '../styles/mixins/text' as text;
 
 .sidebar {
-  width: 240px;
-  min-width: 240px;
+  width: 250px;
+  min-width: 250px;
   background-color: var(--surface-raised);
   border-right: var(--border-width-thin) solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 60px);
   position: sticky;
-  top: 56px;
+  top: 60px;
   overflow-y: auto;
+  padding: var(--space-2) var(--space-2) var(--space-6);
   @include surface.scrollbar;
 
   @include bp.down('tablet') {
@@ -21,16 +22,21 @@
 }
 
 .navSection {
-  padding: var(--space-3) var(--space-3) var(--space-1);
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .sectionHeader {
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   font-weight: var(--font-weight-bold);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0 var(--space-2) var(--space-1);
+  letter-spacing: 0.08em;
+  padding: var(--space-1) var(--space-3) var(--space-2);
 }
 
 .navList {
@@ -39,47 +45,102 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .navLink {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-2) var(--space-2);
-  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
   color: var(--text-secondary);
   text-decoration: none;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+  border: var(--border-width-thin) solid transparent;
   transition:
     background-color var(--duration-fast) var(--easing-standard),
-    color var(--duration-fast) var(--easing-standard);
+    border-color var(--duration-fast) var(--easing-standard),
+    color var(--duration-fast) var(--easing-standard),
+    box-shadow var(--duration-fast) var(--easing-standard);
 
   &:hover {
     background-color: var(--surface-overlay);
+    border-color: var(--border-subtle);
     color: var(--text-primary);
+
+    .iconWrapper {
+      border-color: var(--border-strong);
+      transform: scale(1.05);
+    }
   }
 
+  // Selected state: modern card/box effect with left accent bar and elevated surface
   &.active {
-    background-color: var(--surface-base);
-    color: var(--interactive-primary);
-    font-weight: var(--font-weight-semibold);
-    border-left: 3px solid var(--interactive-primary);
+    background-color: var(--surface-overlay);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    font-weight: var(--font-weight-bold);
+    box-shadow:
+      var(--shadow-sm),
+      inset 3px 0 0 var(--interactive-primary);
+
+    .iconWrapper {
+      background-color: var(--interactive-primary);
+      border-color: var(--interactive-primary);
+      box-shadow: 0 0 10px rgba(56, 139, 253, 0.4);
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+    }
+
+    .navLabel {
+      color: var(--text-primary);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .itemBadge {
+      background-color: var(--interactive-primary);
+      border-color: var(--interactive-primary);
+      color: var(--text-on-primary);
+    }
   }
 }
 
 .linkContent {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+}
+
+.iconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  font-size: 13px;
+  flex-shrink: 0;
+  transition:
+    transform var(--duration-fast) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard);
+}
+
+.navLabel {
+  transition: color var(--duration-fast) var(--easing-standard);
 }
 
 .itemBadge {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   padding: 1px var(--space-2);
   border-radius: var(--radius-pill);
-  background-color: var(--surface-overlay);
-  color: var(--text-muted);
+  background-color: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  color: var(--text-secondary);
   font-weight: var(--font-weight-bold);
+  line-height: 1.2;
 }

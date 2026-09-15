@@ -256,6 +256,13 @@
 - Elevation and shadow levels
 - Reduced motion guard
 
+### 7.5 Chrome, Card and HUD Styling Patterns (Added 2026-09-15)
+
+- **Header / Chrome Glassmorphism**: Global headers (`TopBar`) utilize acrylic glassmorphism (`backdrop-filter: blur(12px)`) with a semi-transparent surface background (`color-mix` with `var(--surface-raised)`), clean horizontal alignment, and subtle bottom border (`var(--border-subtle)`).
+- **Navigation Active Highlighting**: Sidebar and navigation items with icons must ensure high visibility for the active item. Active states use card/box elevation (`var(--surface-overlay)` or raised background, distinct border `var(--border-strong)`, and an accent indicator) combined with dedicated icon badge containers so icon presence does not reduce active selection clarity across Dark, Light, and High Contrast themes.
+- **Card & Box Elevation**: Content sections, summary widgets, and metrics utilize card containers with standard surface tokens (`var(--surface-raised)` / `var(--surface-overlay)`), subtle border definitions (`var(--border-subtle)`), rounded corners (`var(--radius-card)`), and soft elevation shadows (`var(--shadow-sm)`).
+- **Floating HUD Widgets**: Developer and overlay tools (e.g., scenario switchers, floating inspectors) must be styled as floating acrylic HUD pills or cards anchored unobtrusively (e.g., bottom-right), utilizing rounded pill geometry, backdrop blur, and compact padding.
+
 ## 8. Folder Structure
 
 - Feature-based rather than type-based — group by what it does, not what kind of file it is
