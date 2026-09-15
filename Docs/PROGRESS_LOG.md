@@ -14,10 +14,10 @@
 
 ```
 PHASE:              UI Mock Phase
-OVERALL PROGRESS:   18% (12 of 65 active tasks done — Stage F 100%, Stage M 1 of 15; 10 merged/dropped)
-LAST UPDATED:       2026-09-15T08:28:00Z  |  local: 2026-09-15 13:58 IST
-LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 13)
-BUILD STATE:        PASS (React 19 + Vite 6 app with MSW v2 network interception layer active)
+OVERALL PROGRESS:   20% (13 of 65 active tasks done — Stage F 100%, Stage M 2 of 15; 10 merged/dropped)
+LAST UPDATED:       2026-09-15T09:52:00Z  |  local: 2026-09-15 15:22 IST
+LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 14)
+BUILD STATE:        PASS (React 19 + Vite 6 app with shared Zod schemas and MSW v2 interception)
 TYPE CHECK:         PASS (all section 6.1 flags active via tsconfig.base.json)
 LINT:               PASS — minimal ESLint recommended presets + Prettier (0 errors, 0 warnings)
 BLOCKERS:           none
@@ -34,40 +34,35 @@ WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main.
   - Stage F — Foundations is 100% COMPLETE.
   - Stage M — Mock Infrastructure is IN PROGRESS:
-    - M-01 (Request interception layer): 100% COMPLETE. MSW v2 active in apps/web, intercepting
-      network requests in browser service worker. Baseline system health/state endpoints and
-      scenario context established.
-  All typecheck, lint, and build checks pass with 0 errors. Verified in browser with live request interception.
+    - M-01 (Request interception layer): 100% COMPLETE. MSW v2 active in apps/web.
+    - M-02 (Shared schema definitions): 100% COMPLETE. Zod domain schemas and inferred
+      DTO types implemented for common primitives, instruments, portfolio, trading, research,
+      system, and news. Handlers aligned with schemas.
+  All typecheck, lint, build, and schema validation checks pass with 0 errors. Verified in browser.
 
 WHAT I COMPLETED THIS SESSION:
-  Completed task M-01 (Request interception layer):
-  - Added msw (^2.15.0) to apps/web devDependencies; verified packages/ui remains completely decoupled.
-  - Created mockServiceWorker.js in apps/web/public/.
-  - Created apps/web/src/data/mock/ with:
-    - scenarios/scenarioContext.ts (managing active scenario state across 8 spec scenarios)
-    - handlers/systemHandlers.ts (/api/v1/system/health, /api/v1/system/state, /api/v1/system/kill-switch)
-    - handlers/index.ts (modular handler aggregator)
-    - browser.ts (MSW setupWorker)
-    - initMock.ts (async worker bootstrap)
-  - Updated apps/web/src/main.tsx to await initMock() before createRoot() renders.
-  - Verified live in browser: intercepted requests for /api/v1/system/health return 200 OK with mock data,
-    and dynamically reflect degradation when developer scenario is changed.
+  Completed task M-02 (Schema definitions shared by mock and future real layer):
+  - Installed zod (^3.24.x) in apps/web; packages/ui remains completely decoupled.
+  - Created modular domain schemas under apps/web/src/data/schemas/ (common, instruments, portfolio, trading, research, system, news, index).
+  - Derived and exported all TypeScript DTO types using z.infer, enforcing exact runtime/type alignment.
+  - Integrated branded type transformations for InstrumentId, MarketId, StrategyId, OrderId, IsoUtcTimestamp, IsoDate, Quantity, Percentage, BasisPoints.
+  - Aligned MSW systemHandlers.ts to use data/schemas DTOs.
+  - Validated runtime parsing and error rejection with verify-schemas.ts and browser check.
 
 WHAT IS PARTIALLY DONE:
-  Nothing in M-01.
+  Nothing in M-02.
 
 EXACT NEXT STEP:
-  Claim task M-02 (Schema definitions shared by mock and future real layer):
+  Claim task M-03 (Deterministic seeded data generators):
   Per requirements and standards:
-  - Define runtime validation schemas (e.g. Zod or Valibot) for domain entities
-  - Ensure mock generators and future real backend share identical schema contracts
-  - Maintain branded types for money, identifiers, and timestamps.
+  - Implement pseudo-random number generator (PRNG) with deterministic seed (e.g. Mulberry32 or splitmix)
+  - Generate reproducible, realistic datasets for instruments, quotes, and portfolios
+  - All generated objects must validate against schemas from M-02.
 
 FILES TOUCHED:
   apps/web/package.json
-  apps/web/public/mockServiceWorker.js
-  apps/web/src/data/mock/** (scenarioContext.ts, systemHandlers.ts, handlers/index.ts, browser.ts, initMock.ts, index.ts)
-  apps/web/src/main.tsx
+  apps/web/src/data/schemas/** (common.ts, instruments.ts, portfolio.ts, trading.ts, research.ts, system.ts, news.ts, index.ts)
+  apps/web/src/data/mock/handlers/systemHandlers.ts
   Docs/PROGRESS_LOG.md
 
 WATCH OUT FOR:
@@ -118,7 +113,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
 | M-01 | Request interception layer | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 13: MSW v2 worker, system handlers & scenario context |
-| M-02 | Schema definitions shared by mock and future real layer | TODO | 0 | | |
+| M-02 | Schema definitions shared by mock and future real layer | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 14: Zod domain schemas & derived DTO types across all pillars |
 | M-03 | Deterministic seeded data generators | TODO | 0 | | |
 | M-04 | Price history generator, multi-year, realistic volatility | TODO | 0 | | |
 | M-05 | Intraday data generator | TODO | 0 | | |
@@ -1155,6 +1150,69 @@ VERIFICATION RUN:
   lint:        PASS — eslint and prettier --check exit 0 (0 warnings)
   build:       PASS — pnpm build, exit 0 (351 modules, CSS 29.56 kB, JS 637.42 kB)
   browser:     PASS — MSW intercepts /api/v1/system/health and /api/v1/system/state; reacts to provider-down scenario
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        14 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T09:12:00Z  |  local: 2026-09-15 14:42 IST (UTC+05:30)
+TASK CLAIMED:   M-02 Schema definitions shared by mock and future real layer
+
+PRE-WORK VERIFICATION:
+  git:         clean working tree; session 13 complete
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; codebase matches session 13 end entry
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        14 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T09:12:00Z  |  local: 2026-09-15 14:42 IST (UTC+05:30)
+END:            2026-09-15T09:52:00Z  |  local: 2026-09-15 15:22 IST (UTC+05:30)
+TASK CLAIMED:   M-02 Schema definitions shared by mock and future real layer
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Installed zod (^3.24.x) in apps/web dependencies; packages/ui remains completely isolated
+  - Built modular runtime schema validation layer under apps/web/src/data/schemas/:
+    - common.ts: CurrencyCodeSchema, MoneySchema, IsoUtcTimestampSchema, IsoDateSchema, QuantitySchema, PercentageSchema, BasisPointsSchema, InstrumentIdSchema, MarketIdSchema, StrategyIdSchema, OrderIdSchema, DirectionSchema with branded type transformations
+    - instruments.ts: InstrumentTypeSchema, InstrumentStatusSchema, InstrumentSchema, MarketQuoteSchema, PriceBarSchema, CorporateActionSchema
+    - portfolio.ts: LotSchema, HoldingSchema, TransactionTypeSchema, TransactionSchema, PortfolioSummarySchema
+    - trading.ts: SignalDirectionSchema, SignalSchema, OrderSideSchema, OrderTypeSchema, OrderStatusSchema, OrderSchema, ApprovalStatusSchema, ApprovalSchema
+    - research.ts: StrategyStatusSchema, StrategySchema, BacktestMetricsSchema, BacktestResultSchema
+    - system.ts: ServiceStatusSchema, ServiceHealthSchema, SystemHealthResponseSchema, AutomationModeSchema, SystemStateResponseSchema, AlertSeveritySchema, AlertCategorySchema, AlertSchema, AuditLogSchema
+    - news.ts: NewsSentimentSchema, NewsImportanceSchema, NewsItemSchema, CalendarEventTypeSchema, CalendarEventImpactSchema, CalendarEventSchema
+    - index.ts: unified barrel export of schemas and inferred DTO types
+  - Aligned MSW systemHandlers.ts to use types and validators from data/schemas
+  - Created and executed runtime verification test fixture: verified successful parsing of valid entities and strict rejection of invalid money amounts and currency codes
+  - All files strictly under 250 lines; zero any types; full TypeScript 6.1 strict compatibility; verified in browser
+
+FILES CREATED:
+  - apps/web/src/data/schemas/common.ts
+  - apps/web/src/data/schemas/instruments.ts
+  - apps/web/src/data/schemas/portfolio.ts
+  - apps/web/src/data/schemas/trading.ts
+  - apps/web/src/data/schemas/research.ts
+  - apps/web/src/data/schemas/system.ts
+  - apps/web/src/data/schemas/news.ts
+  - apps/web/src/data/schemas/index.ts
+FILES MODIFIED:
+  - apps/web/package.json
+  - apps/web/src/data/mock/handlers/systemHandlers.ts
+  - Docs/PROGRESS_LOG.md
+
+DEPENDENCIES ADDED:
+  - zod@^3.24.2 in apps/web dependencies (runtime schema validation & type inference per standards 6.3)
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0 (0 warnings)
+  build:       PASS — pnpm build, exit 0 (351 modules, CSS 29.56 kB, JS 637.36 kB)
+  runtime:     PASS — verify-schemas.ts executed; all runtime schema validation tests passed
+  browser:     PASS — MSW and schemas verified in browser
 ────────────────────────────────────────────────────────────
 ```
 

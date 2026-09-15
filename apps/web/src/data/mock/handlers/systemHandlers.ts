@@ -1,28 +1,11 @@
 import { http, HttpResponse, type HttpHandler } from 'msw';
+import type {
+  ServiceHealthDto,
+  SystemHealthResponseDto,
+  SystemStateResponseDto,
+} from '../../schemas';
+import { nowUtc } from '../../../shared/types/dateTime';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
-
-export interface ServiceHealthStatus {
-  readonly id: string;
-  readonly name: string;
-  readonly status: 'healthy' | 'degraded' | 'down';
-  readonly latencyMs: number;
-  readonly lastHeartbeat: string;
-}
-
-export interface SystemHealthResponse {
-  readonly overallStatus: 'healthy' | 'degraded' | 'down';
-  readonly activeScenario: string;
-  readonly services: readonly ServiceHealthStatus[];
-  readonly checkedAt: string;
-}
-
-export interface SystemStateResponse {
-  readonly mode: 'live-autonomous' | 'live-supervised' | 'paper' | 'backtest';
-  readonly killSwitchActive: boolean;
-  readonly baseCurrency: string;
-  readonly activeScenario: string;
-  readonly updatedAt: string;
-}
 
 let mockKillSwitchState = false;
 
@@ -41,12 +24,12 @@ export const systemHandlers: readonly HttpHandler[] = [
       );
     }
 
-    const now = new Date().toISOString();
+    const now = nowUtc();
     const isProviderDown = scenario === 'provider-down';
     const isBrokerDown = scenario === 'broker-disconnected';
     const isBreach = scenario === 'safety-breach';
 
-    const services: readonly ServiceHealthStatus[] = [
+    const services: readonly ServiceHealthDto[] = [
       {
         id: 'market-data',
         name: 'Market Data Ingestion',
@@ -80,10 +63,10 @@ export const systemHandlers: readonly HttpHandler[] = [
     const overallStatus: 'healthy' | 'degraded' | 'down' =
       isProviderDown || isBrokerDown ? 'down' : isBreach ? 'degraded' : 'healthy';
 
-    const response: SystemHealthResponse = {
+    const response: SystemHealthResponseDto = {
       overallStatus,
       activeScenario: scenario,
-      services,
+      services: [...services],
       checkedAt: now,
     };
 
@@ -92,12 +75,12 @@ export const systemHandlers: readonly HttpHandler[] = [
 
   http.get('/api/v1/system/state', () => {
     const scenario = getActiveDeveloperScenario();
-    const response: SystemStateResponse = {
+    const response: SystemStateResponseDto = {
       mode: 'paper',
       killSwitchActive: mockKillSwitchState || scenario === 'safety-breach',
       baseCurrency: 'USD',
       activeScenario: scenario,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowUtc(),
     };
 
     return HttpResponse.json(response, { status: 200 });
@@ -114,7 +97,7 @@ export const systemHandlers: readonly HttpHandler[] = [
     return HttpResponse.json(
       {
         killSwitchActive: mockKillSwitchState,
-        updatedAt: new Date().toISOString(),
+        updatedAt: nowUtc(),
       },
       { status: 200 },
     );

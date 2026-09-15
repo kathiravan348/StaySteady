@@ -13,7 +13,8 @@
     "decimal.js": "^10.6.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.18.3"
+    "react-router-dom": "^7.18.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",
