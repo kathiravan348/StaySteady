@@ -1,5 +1,7 @@
 import { z } from 'zod';
+
 import {
+  BacktestIdSchema,
   InstrumentIdSchema,
   IsoDateSchema,
   IsoUtcTimestampSchema,
@@ -8,15 +10,22 @@ import {
   StrategyIdSchema,
 } from './common';
 
-export const StrategyStatusSchema = z.enum(['draft', 'backtesting', 'paper', 'live', 'retired']);
-export type StrategyStatusDto = z.infer<typeof StrategyStatusSchema>;
+// Requirements 15 — lifecycle stages in strict order; a strategy advances only by deliberate action.
+export const StrategyStageSchema = z.enum([
+  'draft',
+  'backtested',
+  'observation',
+  'semi_automatic',
+  'fully_automatic',
+]);
+export type StrategyStageDto = z.infer<typeof StrategyStageSchema>;
 
 export const StrategySchema = z.object({
   id: StrategyIdSchema,
   name: z.string().min(1),
   description: z.string(),
   version: z.string(),
-  status: StrategyStatusSchema,
+  stage: StrategyStageSchema,
   universe: z.array(InstrumentIdSchema),
   timeframe: z.string(),
   parameters: z.record(z.string(), z.union([z.number(), z.string(), z.boolean()])),
@@ -38,7 +47,7 @@ export const BacktestMetricsSchema = z.object({
 export type BacktestMetricsDto = z.infer<typeof BacktestMetricsSchema>;
 
 export const BacktestResultSchema = z.object({
-  id: z.string().min(1),
+  id: BacktestIdSchema,
   strategyId: StrategyIdSchema,
   startDate: IsoDateSchema,
   endDate: IsoDateSchema,

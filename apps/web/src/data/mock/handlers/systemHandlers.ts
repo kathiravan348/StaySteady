@@ -76,7 +76,7 @@ export const systemHandlers: readonly HttpHandler[] = [
   http.get('/api/v1/system/state', () => {
     const scenario = getActiveDeveloperScenario();
     const response: SystemStateResponseDto = {
-      mode: 'paper',
+      mode: 'simulation',
       killSwitchActive: mockKillSwitchState || scenario === 'safety-breach',
       baseCurrency: 'USD',
       activeScenario: scenario,

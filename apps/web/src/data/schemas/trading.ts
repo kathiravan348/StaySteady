@@ -31,13 +31,14 @@ export type OrderSideDto = z.infer<typeof OrderSideSchema>;
 export const OrderTypeSchema = z.enum(['market', 'limit', 'stop', 'stop_limit']);
 export type OrderTypeDto = z.infer<typeof OrderTypeSchema>;
 
+// UI spec 7.13 — unconfirmed orders are the dangerous ones and must be representable.
 export const OrderStatusSchema = z.enum([
-  'pending_approval',
-  'submitted',
+  'pending',
   'partially_filled',
   'filled',
-  'cancelled',
   'rejected',
+  'cancelled',
+  'unconfirmed',
 ]);
 export type OrderStatusDto = z.infer<typeof OrderStatusSchema>;
 

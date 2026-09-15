@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { CurrencyCodeSchema, IsoUtcTimestampSchema } from './common';
+
+import {
+  AlertIdSchema,
+  CurrencyCodeSchema,
+  IncidentIdSchema,
+  IsoUtcTimestampSchema,
+  SeveritySchema,
+} from './common';
 
 export const ServiceStatusSchema = z.enum(['healthy', 'degraded', 'down']);
 export type ServiceStatusDto = z.infer<typeof ServiceStatusSchema>;
@@ -21,11 +28,12 @@ export const SystemHealthResponseSchema = z.object({
 });
 export type SystemHealthResponseDto = z.infer<typeof SystemHealthResponseSchema>;
 
+// Requirements 16 and UI spec 5 — operating modes. Values match the UI SystemMode type.
 export const AutomationModeSchema = z.enum([
-  'live-autonomous',
-  'live-supervised',
-  'paper',
-  'backtest',
+  'simulation',
+  'observation',
+  'manual-approval',
+  'full-automation',
 ]);
 export type AutomationModeDto = z.infer<typeof AutomationModeSchema>;
 
@@ -38,22 +46,40 @@ export const SystemStateResponseSchema = z.object({
 });
 export type SystemStateResponseDto = z.infer<typeof SystemStateResponseSchema>;
 
-export const AlertSeveritySchema = z.enum(['info', 'warning', 'critical']);
-export type AlertSeverityDto = z.infer<typeof AlertSeveritySchema>;
-
-export const AlertCategorySchema = z.enum(['system', 'risk', 'market', 'execution', 'compliance']);
+// Requirements 19 — alert categories. Severity uses the shared requirements 11 tiers.
+export const AlertCategorySchema = z.enum([
+  'critical',
+  'action_needed',
+  'informational',
+  'scheduled',
+]);
 export type AlertCategoryDto = z.infer<typeof AlertCategorySchema>;
 
 export const AlertSchema = z.object({
-  id: z.string().min(1),
-  severity: AlertSeveritySchema,
+  id: AlertIdSchema,
+  severity: SeveritySchema,
   category: AlertCategorySchema,
+  // UI spec 7.19 — the component, market, broker or strategy that raised it
+  source: z.string().min(1),
   title: z.string().min(1),
   message: z.string().min(1),
   timestamp: IsoUtcTimestampSchema,
   acknowledged: z.boolean(),
 });
 export type AlertDto = z.infer<typeof AlertSchema>;
+
+// Requirements 11 and UI spec 7.15 — incident record for every failure.
+export const IncidentSchema = z.object({
+  id: IncidentIdSchema,
+  severity: SeveritySchema,
+  title: z.string().min(1),
+  affectedComponents: z.array(z.string().min(1)).min(1),
+  startedAt: IsoUtcTimestampSchema,
+  resolvedAt: IsoUtcTimestampSchema.optional(),
+  automaticActions: z.array(z.string().min(1)),
+  resolution: z.string().optional(),
+});
+export type IncidentDto = z.infer<typeof IncidentSchema>;
 
 export const AuditLogSchema = z.object({
   id: z.string().min(1),
