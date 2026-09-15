@@ -1,0 +1,248 @@
+@use '../styles/mixins/breakpoints' as bp;
+@use '../styles/mixins/text' as text;
+@use '../styles/mixins/surface' as surface;
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 var(--space-4);
+  background-color: var(--surface-raised);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-index-sticky);
+  gap: var(--space-4);
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--interactive-primary), var(--interactive-accent));
+  color: var(--text-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.mockBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: rgba(224, 167, 38, 0.15);
+  border: var(--border-width-thin) solid var(--severity-high);
+  color: var(--severity-high);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.centerSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  overflow-x: auto;
+  @include surface.scrollbar;
+
+  @include bp.down('tablet') {
+    display: none;
+  }
+}
+
+.marketStrip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.marketPill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.marketDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+
+  &.open {
+    background-color: var(--market-open);
+  }
+
+  &.pre-open {
+    background-color: var(--market-pre-open);
+  }
+
+  &.post-close {
+    background-color: var(--market-post-close);
+  }
+
+  &.closed,
+  &.holiday {
+    background-color: var(--market-closed);
+  }
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.modeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border: var(--border-width-thin) solid transparent;
+
+  &.simulation {
+    background-color: rgba(77, 168, 218, 0.15);
+    color: var(--mode-simulation);
+    border-color: var(--mode-simulation);
+  }
+
+  &.observation {
+    background-color: rgba(43, 178, 170, 0.15);
+    color: var(--mode-observation);
+    border-color: var(--mode-observation);
+  }
+
+  &.manual-approval {
+    background-color: rgba(224, 167, 38, 0.15);
+    color: var(--mode-manual-approval);
+    border-color: var(--mode-manual-approval);
+  }
+
+  &.full-automation {
+    background-color: rgba(181, 142, 240, 0.15);
+    color: var(--mode-full-automation);
+    border-color: var(--mode-full-automation);
+  }
+}
+
+.killSwitch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--change-loss);
+  color: var(--text-on-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: opacity var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &.stopped {
+    background-color: var(--interactive-secondary);
+    color: var(--text-primary);
+    border: var(--border-width-thin) solid var(--border-strong);
+  }
+}
+
+.currencySelect {
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: transparent;
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    background-color: var(--surface-overlay);
+    color: var(--text-primary);
+  }
+}
+
+.badgeCount {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: var(--interactive-primary);
+  color: var(--text-on-primary);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 1px 4px;
+  line-height: 1;
+}
+
+.healthDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+
+  &.healthy {
+    background-color: var(--market-open);
+  }
+
+  &.degraded {
+    background-color: var(--severity-high);
+  }
+
+  &.critical {
+    background-color: var(--severity-critical);
+  }
+}

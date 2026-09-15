@@ -1,17 +1,19 @@
+// Root Application component (standards 8).
+
 import type { ReactElement } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { SystemStateProvider } from './providers/SystemStateProvider';
+import { MarketScheduleProvider } from './providers/MarketScheduleProvider';
+import { AppRoutes } from './routes/AppRoutes';
 
-import styles from './App.module.scss';
-import { DisplaySettingsPanel } from './shared/display/DisplaySettingsPanel';
-import { useDisplaySettings } from './shared/display/useDisplaySettings';
-
-// Placeholder shell. Application shell, routing and providers are task F-20.
 export function App(): ReactElement {
-  const display = useDisplaySettings();
-
   return (
-    <main className={styles.app}>
-      <h1 className={styles.title}>StaySteady</h1>
-      <DisplaySettingsPanel display={display} />
-    </main>
+    <SystemStateProvider>
+      <MarketScheduleProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </MarketScheduleProvider>
+    </SystemStateProvider>
   );
 }

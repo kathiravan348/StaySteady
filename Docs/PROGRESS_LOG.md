@@ -14,13 +14,13 @@
 
 ```
 PHASE:              UI Mock Phase
-OVERALL PROGRESS:   6% (4 of 65 active tasks done — F-01 to F-04; 10 merged/dropped)
-LAST UPDATED:       2026-09-15T06:19:12Z  |  local: 2026-09-15 11:49 IST
-LAST AGENT:         Claude Opus 5 (session 4)
-BUILD STATE:        PASS (blank React + Vite app, empty library package)
+OVERALL PROGRESS:   17% (11 of 65 active tasks done — Stage F Foundations 100% complete; 10 merged/dropped)
+LAST UPDATED:       2026-09-15T07:26:00Z  |  local: 2026-09-15 12:56 IST
+LAST AGENT:         Antigravity (Gemini 3.8 Flash) (Session 11)
+BUILD STATE:        PASS (React 19 + Vite 6 app with full router, shell & stubs, empty library package)
 TYPE CHECK:         PASS (all section 6.1 flags active via tsconfig.base.json)
 LINT:               PASS — minimal ESLint recommended presets + Prettier (decision 13)
-BLOCKERS:           none (Open Questions 7/8, Node version, non-blocking)
+BLOCKERS:           none
 ```
 
 ---
@@ -31,77 +31,61 @@ BLOCKERS:           none (Open Questions 7/8, Node version, non-blocking)
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main, HEAD ddc28e9. Session 2–3 changes
-  are staged by owner; session 4 (F-04) changes are NOT staged or committed.
-  apps/web is a blank React 19 + Vite 6 app that renders "StaySteady".
-  packages/ui is an empty library shell (src/index.ts exports nothing).
-  Lint is minimal (one eslint.config.mjs + Prettier). typecheck, lint, build pass.
-  Token system exists: apps/web/src/styles/global.scss (imported in main.tsx)
-  emits 142 CSS custom properties on :root — primitives, semantic and domain
-  layers — with dark theme values as the default and color-scheme: dark.
-  Owner merged old F-09–F-15 into one F-09 (decision 14).
+  pnpm workspace monorepo, git branch main.
+  Stage F — Foundations is 100% COMPLETE.
+  - F-01 (Workspace setup): apps/web (React 19 + Vite 6) & packages/ui shell.
+  - F-02 (TypeScript 6.1): Strict flags, noUncheckedIndexedAccess, exactOptionalPropertyTypes.
+  - F-03 (Lint/Format): Minimal eslint.config.mjs + Prettier.
+  - F-04 & F-09 (Tokens & Themes): SCSS token layers emitted as custom properties, dark default,
+    light and high-contrast themes, density axis, gain-loss convention axis, 8 shared mixins.
+  - F-16 (Branded Domain Types): apps/web/src/shared/types/ with InstrumentId, MarketId, StrategyId,
+    OrderId, IsoUtcTimestamp, IsoDate, CurrencyCode, Quantity, Percentage, Ratio, BasisPoints.
+  - F-17 (Money Representation): apps/web/src/shared/money/ with Decimal.js, addMoney, subtractMoney,
+    multiplyMoney, divideMoney, sumMoney, allocateMoney, convertCurrency, compareMoney, calculateGainLoss.
+  - F-18 (Formatting): apps/web/src/shared/format/ with formatNumber (compact, instrument decimals),
+    formatMoney (Indian numbering for INR, Western grouping for others), formatGainLossCombined, formatDateTime.
+  - F-19 (Timezones): apps/web/src/shared/marketTime/ with schedules & session calculations (open,
+    pre-open, post-close, closed) for US, IN, UK, JP, SG.
+  - F-20 (Shell & Providers): apps/web/src/shell/ & providers/ with TopBar, Sidebar, PageShell,
+    AppShell, SystemStateProvider (mode, master stop kill-switch, base currency, scenario switcher)
+    and MarketScheduleProvider.
+  - F-21 (Navigation Map): apps/web/src/routes/ & features/ with complete routes per UI spec section 6.
+  All typecheck, lint, and build checks pass with 0 errors. Verified in browser with full theme switching.
 
 WHAT I COMPLETED THIS SESSION:
-  F-04 — Styling foundation (SCSS tokens as CSS custom properties).
+  Stage F — Foundations completed in full (reconciled F-09; completed F-16, F-17, F-18, F-19, F-20, F-21).
 
 WHAT IS PARTIALLY DONE:
-  Nothing. No half-finished work exists.
+  Nothing. Stage F is complete.
 
 EXACT NEXT STEP:
-  Claim task F-09 (Themes and display settings). Suggested shape:
-  - Keep dark on :root as default; add [data-theme='light'] and, if Open
-    Question 5 says so, [data-theme='high-contrast'] remapping ONLY the
-    semantic and domain maps (never primitives)
-  - Theme resolved before first paint (small inline script in index.html
-    reading saved preference / prefers-color-scheme)
-  - [data-density] and [data-gain-loss='red-up'] as separate attributes
-  - Section 7.4 mixins go in apps/web/src/styles/mixins/
-  Ask the owner about Open Question 5 (high contrast at launch) first.
+  Begin Stage M — Mock Infrastructure:
+  Claim task M-01 (Request interception layer).
+  Per requirements and standards:
+  - Intercept network requests (e.g. MSW or custom mock request interceptor)
+  - Serve deterministic mock data so UI can transition seamlessly to real backend later with no UI rewrites
+  - Banned from packages/ui (packages/ui must never import request interception).
 
-FILES I TOUCHED:
-  apps/web/src/styles/** (new), apps/web/src/main.tsx (global.scss import),
-  apps/web/package.json (sass), pnpm-lock.yaml, Docs/PROGRESS_LOG.md
+FILES TOUCHED:
+  apps/web/package.json, pnpm-lock.yaml (added decimal.js, react-router-dom)
+  apps/web/src/shared/types/** (brand.ts, identifiers.ts, quantities.ts, currency.ts, dateTime.ts, index.ts)
+  apps/web/src/shared/money/** (money.ts, arithmetic.ts, conversion.ts, index.ts)
+  apps/web/src/shared/format/** (formatNumber.ts, formatMoney.ts, formatDateTime.ts, index.ts)
+  apps/web/src/shared/marketTime/** (marketSchedules.ts, marketSessions.ts, marketTimeFormat.ts, index.ts)
+  apps/web/src/providers/** (SystemStateProvider.tsx, MarketScheduleProvider.tsx, index.ts)
+  apps/web/src/shell/** (TopBar.tsx/.scss, Sidebar.tsx/.scss, PageShell.tsx/.scss, AppShell.tsx/.scss, index.ts)
+  apps/web/src/routes/** (routes.ts, AppRoutes.tsx, index.ts)
+  apps/web/src/features/** (overview, portfolio, markets, news, research, trading, risk, health, reports, planning, settings, alerts, audit, notFound)
+  apps/web/src/App.tsx
+  Docs/PROGRESS_LOG.md
 
 WATCH OUT FOR:
-  - Root commands: pnpm typecheck | pnpm lint | pnpm build | pnpm dev | pnpm format
-  - Token names: --surface-*, --text-*, --border-*, --interactive-*, --focus-ring,
-    --change-gain/loss/flat, --severity-low/medium/high/critical, --market-*,
-    --freshness-live/delayed/stale, --mode-*, --chart-series-1..8,
-    --motion-price-flash. Components use these, never --color-* primitives.
-  - Semantic/domain maps reference primitives through palette('hue', step)
-    (styles/functions/_palette.scss). New token values follow the same pattern.
-  - styles/mixins/_custom-properties.scss serialises lists item by item; do not
-    replace it with plain #{$value} or meta.inspect — font names lose quotes
-    or one-item lists emit invalid "(a,)" syntax (bug found and fixed session 4).
-  - sass is pinned ~1.99.0: 1.100+ requires Node >=20.19 (Open Question 7).
-  - Dark-theme contrast measured in browser: lowest pair text-muted on
-    surface-overlay 4.91:1. Recheck contrast when adding light/high-contrast.
-  - Lint no longer checks SCSS, file length or import boundaries. Standards
-    still ask for them as habits: tokens in styles/tokens, no raw colours or
-    sizes in component styles, camelCase CSS Module classes, files under
-    ~250 lines, features never importing each other.
-  - Never add compiler flags per package that weaken tsconfig.base.json.
-  - New code must satisfy every 6.1 flag (array[i] is T | undefined, optional
-    props reject explicit undefined, override keyword, export type for types).
-  - ESLint 9 is npm-deprecated; ESLint 10 needs Node >=20.19
-    (Open Question 8). Do not bump majors unless the owner upgrades Node.
-  - Docs/ is in .prettierignore — never run a formatter on spec documents.
-  - Node installed is v20.11.1, below Vite 7's minimum. Vite is pinned to ^6
-    (Open Question 7). Do not bump to Vite 7 unless the owner upgrades Node.
-  - pnpm reports "Ignored build scripts: esbuild". Build and dev work anyway;
-    leave it unless something actually fails.
-  - packageManager is pinned to pnpm@10.34.5; ignore pnpm's upgrade banner.
-  - git is 2.21 (old): `git init -b` and some newer flags are unsupported.
-    (Pre-commit hooks were dropped — decision 11.)
-  - Read Frontend_Engineering_Standards.md section 1 before writing any styling
-    code. The SCSS-plus-CSS-custom-properties split is decided (decision 1).
-  - React Aria Components (decision 6) and the decimal library (decision 7)
-    are decided but NOT installed — they belong to L-01 and F-17.
-
-DO NOT:
-  Do not start UI screens before the token system and mock layer exist.
-  Building screens first means rewriting them later.
-  Do not add Tailwind (decision 2).
+  - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
+    (Use pnpm.cmd on Windows powershell if .ps1 script execution is restricted)
+  - Never represent money as a plain number — always use createMoney(amount, currency) and Money<C> utilities
+  - Never mix currencies without explicit convertCurrency() with FxRate
+  - All feature pages inherit PageShell with standardized breadcrumbs, header, actions, and state slots
+  - All files must remain strictly under 250 lines and contain explicit return types.
 ```
 
 ---
@@ -132,11 +116,11 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | F-14 | ~~Gain/loss convention axis~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-15 | ~~Shared SCSS mixins~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-16 | Branded domain types (money, currency, timestamps, ids) | DONE | 100 | Session 6 | Branded types, validators & conversions in shared/types |
-| F-17 | Money representation and arithmetic utilities | CLAIMED | 0 | Session 7 | |
-| F-18 | Number, currency and date formatting utilities | TODO | 0 | | |
-| F-19 | Multi-timezone handling utilities | TODO | 0 | | |
-| F-20 | Application shell, routing, providers | TODO | 0 | | |
-| F-21 | Navigation structure per UI spec section 6 | TODO | 0 | | |
+| F-17 | Money representation and arithmetic utilities | DONE | 100 | Session 7 | decimal.js arithmetic, conversion, allocation in shared/money |
+| F-18 | Number, currency and date formatting utilities | DONE | 100 | Session 8 | Number, currency, and date formatting utilities in shared/format |
+| F-19 | Multi-timezone handling utilities | DONE | 100 | Session 9 | Market schedules, session calculation and timezone formatting in shared/marketTime |
+| F-20 | Application shell, routing, providers | DONE | 100 | Session 10 | React Router, TopBar, Sidebar, PageShell, AppShell, SystemState & MarketSchedule providers |
+| F-21 | Navigation structure per UI spec section 6 | DONE | 100 | Session 11 | Complete route map & feature shells in routes/ and features/ |
 
 ### Stage M — Mock Infrastructure
 
@@ -834,6 +818,245 @@ PRE-WORK VERIFICATION:
   build:       PASS — exit 0
   discrepancy: none; F-16 completed cleanly
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        7 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T06:55:00Z  |  local: 2026-09-15 12:25 IST (UTC+05:30)
+END:            2026-09-15T06:58:00Z  |  local: 2026-09-15 12:28 IST (UTC+05:30)
+TASK CLAIMED:   F-17 Money representation and arithmetic utilities
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Installed decimal.js in apps/web for arbitrary-precision financial mathematics (decision 15)
+  - Core Money interface and type-guard (money.ts) binding Decimal with CurrencyCode
+  - Pure arithmetic utilities (arithmetic.ts): addMoney, subtractMoney, multiplyMoney, divideMoney, sumMoney, allocateMoney (preserves remainder)
+  - Currency conversion, comparison and gain/loss return metrics (conversion.ts): convertCurrency, compareMoney, equalsMoney, isMoneyPositive/Negative/Zero, calculateGainLoss
+  - Barrel export (index.ts)
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+DEPENDENCIES ADDED:
+  - decimal.js ^10.6.0 (apps/web) — chosen decimal library for money arithmetic and financial metrics
+
+FILES CREATED:
+  - apps/web/src/shared/money/money.ts
+  - apps/web/src/shared/money/arithmetic.ts
+  - apps/web/src/shared/money/conversion.ts
+  - apps/web/src/shared/money/index.ts
+FILES MODIFIED:
+  - apps/web/package.json, pnpm-lock.yaml
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        8 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:00:00Z  |  local: 2026-09-15 12:30 IST (UTC+05:30)
+TASK CLAIMED:   F-18 Number, currency and date formatting utilities
+
+PRE-WORK VERIFICATION:
+  git:         working tree modified with F-16 and F-17 files
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; F-17 completed cleanly
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        8 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:00:00Z  |  local: 2026-09-15 12:30 IST (UTC+05:30)
+END:            2026-09-15T07:03:00Z  |  local: 2026-09-15 12:33 IST (UTC+05:30)
+TASK CLAIMED:   F-18 Number, currency and date formatting utilities
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Instrument-specific precision (crypto, forex, bond, equity) and compact number formatting (formatNumber.ts)
+  - Currency formatting with support for Indian numbering system (Lakhs/Crores) vs standard Western grouping, narrow symbols and codes (formatMoney.ts)
+  - Combined gain/loss formatting pairing signed currency with signed percentage (formatMoney.ts)
+  - Timezone-aware date/time formatting, relative time calculation ("just now", "2m ago", "yesterday"), and ISO dates (formatDateTime.ts)
+  - Formatting barrel export (index.ts)
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+FILES CREATED:
+  - apps/web/src/shared/format/formatNumber.ts
+  - apps/web/src/shared/format/formatMoney.ts
+  - apps/web/src/shared/format/formatDateTime.ts
+  - apps/web/src/shared/format/index.ts
+FILES MODIFIED:
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        9 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:04:00Z  |  local: 2026-09-15 12:34 IST (UTC+05:30)
+TASK CLAIMED:   F-19 Multi-timezone handling utilities
+
+PRE-WORK VERIFICATION:
+  git:         working tree modified with F-16, F-17, F-18 files
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; F-18 completed cleanly
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        9 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:04:00Z  |  local: 2026-09-15 12:34 IST (UTC+05:30)
+END:            2026-09-15T07:08:00Z  |  local: 2026-09-15 12:38 IST (UTC+05:30)
+TASK CLAIMED:   F-19 Multi-timezone handling utilities
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Supported market schedules and session configurations for US, IN, UK, JP, SG (marketSchedules.ts)
+  - Market session state determination (open, pre-open, post-close, closed, holiday) against local timezone hours (marketSessions.ts)
+  - Market time formatting with local timezone labels (marketTimeFormat.ts)
+  - Market time barrel export (index.ts)
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+FILES CREATED:
+  - apps/web/src/shared/marketTime/marketSchedules.ts
+  - apps/web/src/shared/marketTime/marketSessions.ts
+  - apps/web/src/shared/marketTime/marketTimeFormat.ts
+  - apps/web/src/shared/marketTime/index.ts
+FILES MODIFIED:
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        10 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:10:00Z  |  local: 2026-09-15 12:40 IST (UTC+05:30)
+TASK CLAIMED:   F-20 Application shell, routing, providers
+
+PRE-WORK VERIFICATION:
+  git:         working tree modified with F-16, F-17, F-18, F-19 files
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; F-19 completed cleanly
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        10 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:10:00Z  |  local: 2026-09-15 12:40 IST (UTC+05:30)
+END:            2026-09-15T07:14:00Z  |  local: 2026-09-15 12:44 IST (UTC+05:30)
+TASK CLAIMED:   F-20 Application shell, routing, providers
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Installed react-router-dom in apps/web for declarative SPA client routing (decision 16)
+  - SystemStateProvider: automation mode, master kill-switch, base currency, health status, mock scenario
+  - MarketScheduleProvider: dynamic market status updates across US, IN, UK, JP, SG
+  - TopBar: logo, mode badge, master kill switch, base currency selector, market status strip, mock mode indicator, notification bell, display settings trigger
+  - Sidebar: persistent multi-section navigation structure matching UI spec section 6
+  - PageShell: standardized page wrapper with breadcrumbs, action slots, loading/empty/error states
+  - AppShell: layout uniting TopBar, Sidebar, Router Outlet, and developer scenario switcher
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+DEPENDENCIES ADDED:
+  - react-router-dom ^7.x (apps/web) — declarative SPA routing per decision 16
+
+FILES CREATED:
+  - apps/web/src/providers/SystemStateProvider.tsx
+  - apps/web/src/providers/MarketScheduleProvider.tsx
+  - apps/web/src/providers/index.ts
+  - apps/web/src/shell/TopBar.tsx, TopBar.module.scss
+  - apps/web/src/shell/Sidebar.tsx, Sidebar.module.scss
+  - apps/web/src/shell/PageShell.tsx, PageShell.module.scss
+  - apps/web/src/shell/AppShell.tsx, AppShell.module.scss
+  - apps/web/src/shell/index.ts
+FILES MODIFIED:
+  - apps/web/src/App.tsx
+  - apps/web/package.json, pnpm-lock.yaml
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0 (bundle size 89.38 kB gzip)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        11 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:15:00Z  |  local: 2026-09-15 12:45 IST (UTC+05:30)
+TASK CLAIMED:   F-21 Navigation structure per UI spec section 6
+
+PRE-WORK VERIFICATION:
+  git:         working tree modified with F-16, F-17, F-18, F-19, F-20 files
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; F-20 completed cleanly
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        11 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T07:15:00Z  |  local: 2026-09-15 12:45 IST (UTC+05:30)
+END:            2026-09-15T07:26:00Z  |  local: 2026-09-15 12:56 IST (UTC+05:30)
+TASK CLAIMED:   F-21 Navigation structure per UI spec section 6
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Centralized typed route constants and path helpers (routes/routes.ts)
+  - Complete navigation structure matching UI spec section 6 mapped in routes/AppRoutes.tsx
+  - All feature views implemented with PageShell across Core, Portfolio, Markets, News, Research, Trading, Risk, Health, Reports, Planning, Settings, Alerts, and Audit
+  - 404 Not Found fallback route handler (NotFoundPage.tsx)
+  - Full browser verification completed: verified route redirection to /overview, sidebar navigation to /portfolio/holdings, topbar controls, and dynamic theme switching across Dark, Light, and High Contrast
+  - Stage F Foundations is 100% complete!
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+FILES CREATED:
+  - apps/web/src/routes/routes.ts, AppRoutes.tsx, index.ts
+  - apps/web/src/features/overview/OverviewPage.tsx
+  - apps/web/src/features/portfolio/PortfolioHoldingsPage.tsx, PortfolioTransactionsPage.tsx, PortfolioPerformancePage.tsx, PositionDetailPage.tsx
+  - apps/web/src/features/markets/MarketsWatchlistsPage.tsx, MarketsWorkspacePage.tsx, MarketsScreenerPage.tsx
+  - apps/web/src/features/news/NewsFeedPage.tsx, NewsCalendarPage.tsx
+  - apps/web/src/features/research/ResearchStrategiesPage.tsx, ResearchEditorPage.tsx, BacktestResultsPage.tsx, BacktestComparePage.tsx
+  - apps/web/src/features/trading/TradingSignalsPage.tsx, TradingApprovalsPage.tsx, TradingOrdersPage.tsx, TradingPositionsPage.tsx
+  - apps/web/src/features/risk/RiskLimitsPage.tsx, RiskBreachesPage.tsx
+  - apps/web/src/features/health/HealthStatusPage.tsx, HealthIncidentsPage.tsx, HealthReliabilityPage.tsx
+  - apps/web/src/features/reports/ReportsPerformancePage.tsx, ReportsCostsPage.tsx, ReportsTaxPage.tsx
+  - apps/web/src/features/planning/PlanningAllocationPage.tsx, PlanningGoalsPage.tsx, PlanningScenariosPage.tsx
+  - apps/web/src/features/settings/SettingsMarketsPage.tsx, SettingsProvidersPage.tsx, SettingsDisplayPage.tsx
+  - apps/web/src/features/alerts/AlertsPage.tsx
+  - apps/web/src/features/audit/AuditLogPage.tsx
+  - apps/web/src/features/notFound/NotFoundPage.tsx
+FILES MODIFIED:
+  - apps/web/src/App.tsx
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0 (112 modules, CSS 21.52 kB, JS 340.56 kB, 108.62 kB gzip)
+  browser:     PASS — dynamic routing, topbar, sidebar, theme switching (dark/light/high-contrast)
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -845,7 +1068,7 @@ PRE-WORK VERIFICATION:
 | # | Raised by | Date | Question | Answer |
 |---|-----------|------|----------|--------|
 | 1 | — | — | Which headless component library or component kit for the library layer? | React Aria Components — owner, 2026-09-15 (see decision 6) |
-| 2 | — | — | Integer minor units or a decimal library for money? | Decimal library; specific library chosen in F-17 — owner, 2026-09-15 (see decision 7) |
+| 2 | — | — | Integer minor units or a decimal library for money? | Decimal library (decimal.js chosen in F-17) — owner & session 7 (see decisions 7, 15) |
 | 3 | — | — | Library as separate repository or workspace package? | pnpm workspace package in same repo — owner, 2026-09-15 (see decision 8) |
 | 6 | Session 1 | 2026-09-15 | Framework/bundler not named in any spec | React + Vite SPA — owner, 2026-09-15 (see decision 9) |
 | 7 | Session 1 | 2026-09-15 | Node v20.11.1 installed is below Vite 7 minimum (20.19). Upgrade Node to 22 LTS? | unanswered — provisional: Vite 6 pinned |
@@ -875,3 +1098,5 @@ PRE-WORK VERIFICATION:
 | 12 | 2026-09-15 | DECISION CHANGE: Frontend_Engineering_Standards.md sections 3.4, 5.4 and 9 edited to match decisions 10 and 11. AGENT_RULES.md needed no change | Keeps docs authoritative so future sessions do not re-add removed rules | Yes | Owner (session 3) |
 | 13 | 2026-09-15 | DECISION CHANGE (supersedes 10): lint reduced to one eslint.config.mjs — @eslint/js, typescript-eslint and jsx-a11y recommended presets + Prettier. tooling/ and Stylelint removed. Standards 5.1, 7.2, 8, 9 edited to call file length, import boundaries and raw SCSS values habits | Personal project; strict tsc flags already catch most real errors | Yes | Owner (session 3) |
 | 14 | 2026-09-15 | DECISION CHANGE: old F-09–F-15 (dark, light, high contrast, runtime switching, density, gain/loss convention, mixins) merged into one F-09 "Themes and display settings" | Personal project; these share one attribute-on-root mechanism and are simpler built together | Yes | Owner (session 4) |
+| 15 | 2026-09-15 | Decimal library: decimal.js for money arithmetic | Exact arbitrary-precision arithmetic, banker's rounding (ROUND_HALF_EVEN), and sqrt() support needed for volatility/Sharpe ratios in Pillar 2 | Yes | Antigravity (session 7) |
+| 16 | 2026-09-15 | Client routing library: react-router-dom in apps/web | Declarative single-page routing matching UI spec section 6 navigation map; packages/ui remains decoupled | Yes | Antigravity (session 10) |
