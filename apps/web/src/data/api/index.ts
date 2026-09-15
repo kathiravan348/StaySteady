@@ -1,6 +1,6 @@
 // Data access layer: typed, schema-validated requests and TanStack Query hooks (UI spec 14).
 
-export { ApiError, apiGet } from './apiClient';
+export { ApiError, apiGet, apiSend } from './apiClient';
 export { queryClient } from './queryClient';
 export { fxTableFromDtos, moneyFromDto } from './mappers';
 export {
@@ -10,7 +10,19 @@ export {
   useTransactions,
 } from './portfolioQueries';
 export { useSignals, useStrategies } from './tradingQueries';
-export { useWatchlists } from './watchlistQueries';
+export type {
+  MoveInstrumentVariables,
+  SetInstrumentsVariables,
+  WatchlistMutation,
+} from './watchlistQueries';
+export {
+  useCreateWatchlist,
+  useDeleteWatchlist,
+  useMoveWatchlistInstrument,
+  useRenameWatchlist,
+  useSetWatchlistInstruments,
+  useWatchlists,
+} from './watchlistQueries';
 export type { IntradayTimeframe, PriceHistoriesResult } from './marketQueries';
 export {
   useCorporateActions,

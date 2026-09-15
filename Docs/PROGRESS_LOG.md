@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-04 done)
-OVERALL PROGRESS:   65% (42 of 65 active tasks done; Stage F, M, L 100%; Stage S 4 of 23)
-LAST UPDATED:       2026-09-15T20:56:55Z  |  local: 2026-09-16 02:26 IST
-LAST AGENT:         Claude Opus 5 (session 23)
+PHASE:              Stage S Screens — in progress (S-01 to S-05 done)
+OVERALL PROGRESS:   66% (43 of 65 active tasks done; Stage F, M, L 100%; Stage S 5 of 23)
+LAST UPDATED:       2026-09-15T21:16:10Z  |  local: 2026-09-16 02:46 IST
+LAST AGENT:         Claude Opus 5 (session 24)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -32,36 +32,33 @@ BLOCKERS:           none
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview,
-  S-02 Holdings, S-03 Position Detail and S-04 Instrument Workspace done. The owner asked the agent
-  to commit each finished screen (no push) and to take the recommended option whenever a choice
-  comes up (decision 26). typecheck, lint and build pass.
+  S-02 Holdings, S-03 Position Detail, S-04 Instrument Workspace and S-05 Watchlists done. The owner
+  asked the agent to commit each finished screen (no push) and to take the recommended option
+  whenever a choice comes up (decision 26). typecheck, lint and build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 23: S-04 Instrument Workspace — see session 23 end entry.
+  - Session 24: S-05 Watchlists — see session 24 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-05 Watchlists (UI spec 7.5). Route /markets/watchlists (placeholder page).
-  Data: GET /api/v1/watchlists and useWatchlists exist read-only (3 lists). Needed: create, rename,
-  delete lists; add, remove and reorder instruments; move between lists (mock write endpoints with an
-  in-memory store + TanStack mutations); compact live quote table with sparklines; quick-add search
-  with market and type filters; per-list summary (up, down, average move). Reuse the workspace
-  instrument panel filtering ideas (features/markets/workspace/sections/InstrumentPanel.tsx is in
-  the same feature folder, so it can be reused directly).
+  Claim S-06 System Health (UI spec 7.15). Routes /health/status, /health/incidents and
+  /health/reliability have placeholder pages. Data: GET /api/v1/system/health, /system/incidents,
+  /system/alerts, /system/state, /system/audit-logs; hooks useSystemHealth, useAlerts, useApprovals
+  exist in data/api/systemQueries.ts. Writes follow decision 33 (apiSend + in-memory mock store).
 
-FILES TOUCHED (session 23): see session 23 end entry.
+FILES TOUCHED (session 24): see session 24 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - Screens fetch only through data/api hooks (decision 22). Shared UI lives in apps/web/src/shared
-    (decision 25); features never import each other.
-  - Charts: TradingChart/PriceChart recreate on data identity changes — memoise inputs.
-  - Browser tests: synthetic mouse events do not reach lightweight-charts; use real clicks. The mock
-    scenario lives in localStorage — test states in ONE tab via
+  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutation hooks
+    that replace the cache with the server's response (decision 33).
+  - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
+  - Browser tests: synthetic mouse events do not reach lightweight-charts; React Aria keyboard drag
+    needs real key presses; mock scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
-  - CSS text-transform uppercases innerText — use case-insensitive checks.
+  - Mock in-memory stores reset on a full page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single
     large JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -148,7 +145,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-02 | Holdings | DONE | 100 | Session 21 | Library DataTable extended (grouping totals, selection, visibility, keyboard sort, details); broker/strategy/exit/tax-threshold mock data; saved layout; CSV export; all states verified |
 | S-03 | Position Detail | DONE | 100 | Session 22 | PriceChart markers + price levels; dividends from corporate actions and conversion charges in mock data; chart, lots, transactions, costs/income, news, events, strategy/notes; session-only actions; all states verified |
 | S-04 | Instrument Workspace (charts) | DONE | 100 | Session 23 | Library TradingChart (panes, styles, scales, drawings, keyboard, image export); indicators; fundamentals + watchlists mock data; intraday bars aligned to daily close; saved layouts; all states verified |
-| S-05 | Watchlists | TODO | 0 | | |
+| S-05 | Watchlists | DONE | 100 | Session 24 | Library ReorderableList + DropTarget (React Aria drag and drop); mock watchlist write API with validation; optimistic mutations; quick-add filters; live rows with sparklines; all states verified |
 | S-06 | System Health | TODO | 0 | | |
 | S-07 | Backtest Setup | TODO | 0 | | |
 | S-08 | Backtest Results | TODO | 0 | | |
@@ -2179,6 +2176,93 @@ FINDINGS (out of scope, not fixed):
   - TradingChart recreates when data or studies change, so zoom returns to the range preset
   - Copy data is untested outside the desktop browser pane
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        24 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T20:59:33Z  |  local: 2026-09-16 02:29 IST (UTC+05:30)
+TASK CLAIMED:   S-05 Watchlists
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-04 committed as 9899151; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (end of session 23, nothing changed since)
+
+SCOPE (UI spec 7.5):
+  - Mock write API with an in-memory store: create, rename, delete lists; set members and order;
+    move an instrument between lists; request bodies validated with zod
+  - packages/ui accessible drag and drop (React Aria): reorderable list rows and list drop targets,
+    with keyboard support and button alternatives (move up/down, move to list)
+  - Screen: multiple named lists mixing countries and types; compact live quote rows with
+    sparklines; quick-add search with market and type filters; per-list summary (up, down, average
+    move); states: loading, error, no lists, empty list, no search results, stale, market closed
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        24 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-15T21:16:10Z  |  local: 2026-09-16 02:46 IST (UTC+05:30)
+TASK CLAIMED:   S-05 Watchlists
+END STATUS:     DONE
+
+COMPLETED:
+  - packages/ui ReorderableList (React Aria GridList + useDragAndDrop: drag handle, drop indicators,
+    keyboard drag with screen reader announcements) and DropTarget (DropZone accepting a custom drag
+    type); workbench story "reorderable-list"
+  - Data: apiSend for POST/PATCH/DELETE that surfaces the server's error message; watchlist request
+    schemas; mock POST/PATCH/DELETE /api/v1/watchlists and POST /api/v1/watchlists/move backed by an
+    in-memory store with 400/404/409 responses; mutation hooks (create, rename, set instruments,
+    delete, move) with optimistic update and rollback for reorder, move and delete
+  - Screen: sidebar lists with per-list summary, each a drop target; header summary (up, down, flat,
+    average move) with rename and delete; quick-add search with market and type filters; live rows
+    with market state, price, change (arrow + sign), day range, volume, 30-day sparkline, move
+    up/down, move-to-list dialog and remove; selected list kept in the URL (?list=); name dialogs
+    validate with the shared schema and show server errors
+  - States: loading, error + retry, no watchlists, empty list, no search results, refresh failure
+    (last data kept with an alert), stale, market closed
+
+FILES CREATED:
+  - packages/ui/src/composites/ReorderableList/{ReorderableList.tsx,DropTarget.tsx,ReorderableList.module.scss}
+  - packages/ui/src/workbench/stories/reorderableListStories.tsx
+  - apps/web/src/features/markets/watchlists/** (model, sections, hook, styles)
+FILES MODIFIED:
+  - packages/ui/src/composites/index.ts; workbench/storyRegistry.ts
+  - apps/web/src/data/schemas/research-data.ts; mock/handlers/researchDataHandlers.ts;
+    api/{apiClient,watchlistQueries,index}.ts
+  - apps/web/src/features/markets/MarketsWatchlistsPage.tsx — rewritten as composition
+
+DECISIONS MADE:
+  - 32, 33 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0 (one Prettier formatting fix in the new stylesheet)
+  build:       PASS — exit 0
+  browser:     Core US 4 rows, summary 0 up / 4 down, average -1.01%; added AZN, moved it up and
+               removed it, each confirmed by GET /api/v1/watchlists; "zzz" -> no-results message;
+               create "Core US" -> 409 "A watchlist with this name already exists"; empty name ->
+               "Enter a name for the watchlist"; created "Dividend ideas" (selected, ?list= set,
+               empty-list message), renamed to "Income ideas", moved AAPL there via the dialog,
+               deleted it; a real pointer drag of the AAPL handle onto "Macro hedges" moved it (API);
+               keyboard: arrow keys reach the handle, Enter starts a drag with the React Aria
+               announcement, Tab reaches drop positions and the list drop zones
+  states:      loading-error on a fresh load -> "Watchlists unavailable" + 500 message; loading-error
+               after load -> "Could not refresh watchlists; showing the last data received", rows
+               kept, alert clears on recovery
+  themes:      light and dark screenshots readable
+  workbench:   reorderable-list story renders 4 rows with handles and the drop zone
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Keyboard reorder tests first focused handles by script (no keyboard modality) and dropped at the
+    row's current position, which read as a failure; driven from the keyboard it works.
+  - A refresh failure first left stale lists with no message; an alert now reports it.
+  - Sidebar said "1 instruments"; fixed with pluralize.
+
+FINDINGS (out of scope, not fixed):
+  - Mock watchlist edits reset on a full page reload (in-memory store)
+  - Quick-add shows the first 8 matches only; no virtualisation for a large instrument universe
+  - "Move…" dialog lists every other list without search
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -2237,6 +2321,8 @@ FINDINGS (out of scope, not fixed):
 | 29 | 2026-09-16 | Library TradingChart built on lightweight-charts panes; it takes plain ChartTime (date string or Unix seconds), tone roles and palette indexes, and renders drawings with a series primitive | One synchronised multi-pane chart that stays domain-free and theme-aware | Yes | Session 23 |
 | 30 | 2026-09-16 | Technical indicators live in apps/web/src/shared/indicators as pure number-series functions | Used by the workspace now and by strategies and backtests later | Yes | Session 23 |
 | 31 | 2026-09-16 | Mock intraday bars open at the previous daily close; fundamentals and watchlists are new mock endpoints (read-only until S-05) | One price source (decision 19); the workspace right panel needs this data | Yes | Session 23 |
+| 32 | 2026-09-16 | Library ReorderableList and DropTarget wrap React Aria drag and drop (GridList + DropZone) with a custom drag type; every drag action also has a button alternative | Accessible pointer and keyboard reordering, reusable for strategy and layout lists | Yes | Session 24 |
+| 33 | 2026-09-16 | Mock write endpoints keep an in-memory store per page load and validate request bodies with shared zod schemas; writes return the full resource set and the client applies optimistic updates with rollback | Realistic mutation flows without a backend; mock edits reset on reload | Yes | Session 24 |
 
 
 

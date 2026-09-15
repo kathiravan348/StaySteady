@@ -3,6 +3,7 @@ import { compositesStories } from './stories/compositesStories';
 import { dataDisplayStories } from './stories/dataDisplayStories';
 import { layoutStories } from './stories/layoutStories';
 import { primitivesStories } from './stories/primitivesStories';
+import { reorderableListStories } from './stories/reorderableListStories';
 import { stateStories } from './stories/stateStories';
 import { tableStories } from './stories/tableStories';
 import type { ComponentCategory, ComponentStory } from './types';
@@ -10,6 +11,7 @@ import type { ComponentCategory, ComponentStory } from './types';
 export const ALL_STORIES: readonly ComponentStory[] = [
   ...primitivesStories,
   ...compositesStories,
+  ...reorderableListStories,
   ...layoutStories,
   ...dataDisplayStories,
   ...stateStories,

@@ -32,3 +32,31 @@ export const WatchlistSchema = z.object({
   createdAt: IsoUtcTimestampSchema,
 });
 export type WatchlistDto = z.infer<typeof WatchlistSchema>;
+export const WatchlistListSchema = z.array(WatchlistSchema);
+
+// Watchlist write requests (UI spec 7.5). The mock API validates bodies with these schemas.
+export const WatchlistNameSchema = z
+  .string()
+  .trim()
+  .min(1, { error: 'Enter a name for the watchlist' })
+  .max(40, { error: 'Use 40 characters or fewer' });
+
+export const CreateWatchlistRequestSchema = z.object({ name: WatchlistNameSchema });
+export type CreateWatchlistRequest = z.input<typeof CreateWatchlistRequestSchema>;
+
+export const UpdateWatchlistRequestSchema = z
+  .object({
+    name: WatchlistNameSchema.optional(),
+    instrumentIds: z.array(InstrumentIdSchema).optional(),
+  })
+  .refine((value) => value.name !== undefined || value.instrumentIds !== undefined, {
+    error: 'Nothing to update',
+  });
+export type UpdateWatchlistRequest = z.input<typeof UpdateWatchlistRequestSchema>;
+
+export const MoveWatchlistItemRequestSchema = z.object({
+  instrumentId: InstrumentIdSchema,
+  fromWatchlistId: WatchlistIdSchema,
+  toWatchlistId: WatchlistIdSchema,
+});
+export type MoveWatchlistItemRequest = z.input<typeof MoveWatchlistItemRequestSchema>;
