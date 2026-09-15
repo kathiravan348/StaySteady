@@ -124,15 +124,15 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | F-06 | ~~SCSS semantic token layer~~ | DROPPED | — | | Merged into F-04 (decision 11) |
 | F-07 | ~~SCSS domain token layer~~ | DROPPED | — | | Merged into F-04 (decision 11) |
 | F-08 | ~~Token contract validation at build time~~ | DROPPED | — | | Removed entirely (decision 11) |
-| F-09 | Themes and display settings — dark, light and high-contrast themes; runtime switching with no flash on load; density axis (comfortable/compact); gain/loss convention axis (green-up/red-up); shared SCSS mixins (7.4) | CLAIMED | 0 | Session 5 | Replaces old F-09–F-15 (decision 14). High contrast included (Open Question 5) |
+| F-09 | Themes and display settings — dark, light and high-contrast themes; runtime switching with no flash on load; density axis (comfortable/compact); gain/loss convention axis (green-up/red-up); shared SCSS mixins (7.4) | DONE | 100 | Session 5 | Replaces old F-09–F-15 (decision 14). High contrast included (Open Question 5) |
 | F-10 | ~~Light theme~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-11 | ~~High contrast theme~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-12 | ~~Theme runtime switching, no flash on load~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-13 | ~~Density axis~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-14 | ~~Gain/loss convention axis~~ | DROPPED | — | | Merged into F-09 (decision 14) |
 | F-15 | ~~Shared SCSS mixins~~ | DROPPED | — | | Merged into F-09 (decision 14) |
-| F-16 | Branded domain types (money, currency, timestamps, ids) | TODO | 0 | | |
-| F-17 | Money representation and arithmetic utilities | TODO | 0 | | |
+| F-16 | Branded domain types (money, currency, timestamps, ids) | DONE | 100 | Session 6 | Branded types, validators & conversions in shared/types |
+| F-17 | Money representation and arithmetic utilities | CLAIMED | 0 | Session 7 | |
 | F-18 | Number, currency and date formatting utilities | TODO | 0 | | |
 | F-19 | Multi-timezone handling utilities | TODO | 0 | | |
 | F-20 | Application shell, routing, providers | TODO | 0 | | |
@@ -737,7 +737,102 @@ PRE-WORK VERIFICATION:
 
 OWNER INPUT:
   - Owner: "complete all until F15" — taken as the answer to Open Question 5:
-    high-contrast theme is built now, at launch.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        5 — END ENTRY (reconciled in session 6; work committed in 09b0a84)
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T06:25:53Z  |  local: 2026-09-15 11:55 IST (UTC+05:30)
+END:            2026-09-15T06:40:00Z  |  local: 2026-09-15 12:10 IST (UTC+05:30)
+TASK CLAIMED:   F-09 Themes and display settings (covers old F-09–F-15, decision 14)
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Dark, light, and high-contrast theme token sets in apps/web/src/styles/themes/
+  - Density axis (comfortable / compact) in apps/web/src/styles/tokens/_density.scss
+  - Gain/loss convention axis (green-up / red-up) in apps/web/src/styles/tokens/_gain-loss.scss
+  - All eight Section 7.4 mixins in apps/web/src/styles/mixins/ (accessibility, breakpoints, surface, text)
+  - Runtime display settings state, storage, and synchronization in apps/web/src/shared/display/
+  - No-flash inline theme resolution script in apps/web/index.html
+  - DisplaySettingsPanel and SettingSelect components hooked into App.tsx
+
+FILES CREATED:
+  - apps/web/src/styles/themes/_dark.scss, _light.scss, _high-contrast.scss
+  - apps/web/src/styles/tokens/_density.scss, _gain-loss.scss
+  - apps/web/src/styles/mixins/_accessibility.scss, _breakpoints.scss, _surface.scss, _text.scss, _index.scss
+  - apps/web/src/styles/_base.scss
+  - apps/web/src/shared/display/displaySettings.ts, displayEnvironment.ts, useDisplaySettings.ts, DisplaySettingsPanel.tsx, SettingSelect.tsx, *.module.scss
+FILES MODIFIED:
+  - apps/web/index.html
+  - apps/web/src/App.tsx, App.module.scss
+  - apps/web/src/styles/global.scss
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — exit 0
+  themes:      Dark, light, and high-contrast themes verified
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        6 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T06:50:00Z  |  local: 2026-09-15 12:20 IST (UTC+05:30)
+TASK CLAIMED:   F-16 Branded domain types (money, currency, timestamps, ids)
+
+PRE-WORK VERIFICATION:
+  git:         commit 09b0a84 "Claude changes"; tree clean
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        6 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T06:50:00Z  |  local: 2026-09-15 12:20 IST (UTC+05:30)
+END:            2026-09-15T06:54:00Z  |  local: 2026-09-15 12:24 IST (UTC+05:30)
+TASK CLAIMED:   F-16 Branded domain types (money, currency, timestamps, ids)
+END STATUS:     DONE
+REASON IF NOT DONE: n/a
+
+COMPLETED:
+  - Nominal Brand helper (brand.ts) enforcing type safety at compile time
+  - Branded domain identifiers (identifiers.ts): InstrumentId, MarketId, StrategyId, OrderId, ExecutionId, PositionId, WatchlistId, BrokerId, AccountId, AlertId, IncidentId, BacktestId with runtime string validators
+  - Quantities and rates (quantities.ts): Quantity, Percentage, Ratio, BasisPoints with explicit bi-directional conversion functions
+  - Currency and amounts (currency.ts): CurrencyCode, BaseCurrencyCode, BaseCurrencyAmount, LocalCurrencyAmount, FxRate with validation
+  - Timestamps and dates (dateTime.ts): IsoUtcTimestamp, IsoDate, IanaTimeZone, MarketLocalTimestamp with ISO regex checking and conversion
+  - Shared domain types barrel export (index.ts)
+  - All files strictly under 250 lines; zero any types; explicit return types on all exports
+
+FILES CREATED:
+  - apps/web/src/shared/types/brand.ts
+  - apps/web/src/shared/types/identifiers.ts
+  - apps/web/src/shared/types/quantities.ts
+  - apps/web/src/shared/types/currency.ts
+  - apps/web/src/shared/types/dateTime.ts
+  - apps/web/src/shared/types/index.ts
+FILES MODIFIED:
+  - Docs/PROGRESS_LOG.md
+
+VERIFICATION RUN:
+  type check:  PASS — pnpm typecheck, exit 0
+  lint:        PASS — eslint and prettier --check exit 0
+  build:       PASS — pnpm build, exit 0
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        7 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-15T06:55:00Z  |  local: 2026-09-15 12:25 IST (UTC+05:30)
+TASK CLAIMED:   F-17 Money representation and arithmetic utilities
+
+PRE-WORK VERIFICATION:
+  git:         working tree modified with F-16 files
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  discrepancy: none; F-16 completed cleanly
 ────────────────────────────────────────────────────────────
 ```
 
