@@ -6,18 +6,51 @@ import {
   ColorType,
   HistogramSeries,
   LineSeries,
+  LineStyle,
   createChart,
+  createSeriesMarkers,
   type BarData,
   type CandlestickData,
   type IChartApi,
+  type IPriceLine,
   type ISeriesApi,
+  type ISeriesMarkersPluginApi,
+  type SeriesMarker,
+  type Time,
 } from 'lightweight-charts';
 import { cx } from '../../utils/cx';
+import type { ChartThemeColors } from '../theme/chartThemeTokens';
 import { useChartTheme } from '../theme/useChartTheme';
-import type { PriceChartProps } from './types';
+import type { ChartTone, PriceChartLevel, PriceChartMarker, PriceChartProps } from './types';
 import styles from './PriceChart.module.scss';
 
 type MainSeriesApi = ISeriesApi<'Candlestick' | 'Bar' | 'Line' | 'Area'>;
+
+interface TonedPriceLine {
+  readonly line: IPriceLine;
+  readonly tone: ChartTone;
+}
+
+const NO_MARKERS: readonly PriceChartMarker[] = [];
+const NO_LEVELS: readonly PriceChartLevel[] = [];
+
+function toneColor(tone: ChartTone, colors: ChartThemeColors): string {
+  if (tone === 'up') return colors.upColor;
+  return tone === 'down' ? colors.downColor : colors.primaryColor;
+}
+
+function toSeriesMarkers(
+  markers: readonly PriceChartMarker[],
+  colors: ChartThemeColors,
+): SeriesMarker<Time>[] {
+  return markers.map((marker): SeriesMarker<Time> => ({
+    time: marker.time,
+    position: marker.position === 'above' ? 'aboveBar' : 'belowBar',
+    shape: marker.shape,
+    color: toneColor(marker.tone, colors),
+    ...(marker.text === undefined ? {} : { text: marker.text }),
+  }));
+}
 
 export function PriceChart({
   data,
@@ -25,12 +58,17 @@ export function PriceChart({
   seriesType = 'candlestick',
   height = 420,
   showVolume = true,
+  markers = NO_MARKERS,
+  priceLevels = NO_LEVELS,
+  ariaLabel,
   className,
 }: PriceChartProps): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const mainSeriesRef = useRef<MainSeriesApi | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  const markersRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null);
+  const priceLinesRef = useRef<readonly TonedPriceLine[]>([]);
   const themeColors = useChartTheme();
 
   useEffect(() => {
@@ -105,6 +143,23 @@ export function PriceChart({
     }
     mainSeriesRef.current = mainSeries;
 
+    markersRef.current =
+      markers.length > 0
+        ? createSeriesMarkers(mainSeries, toSeriesMarkers(markers, themeColors))
+        : null;
+    priceLinesRef.current = priceLevels.map((level) => ({
+      tone: level.tone,
+      line: mainSeries.createPriceLine({
+        id: level.id,
+        price: level.price,
+        color: toneColor(level.tone, themeColors),
+        lineWidth: 1,
+        lineStyle: level.isDashed === true ? LineStyle.Dashed : LineStyle.Solid,
+        axisLabelVisible: true,
+        title: level.title,
+      }),
+    }));
+
     if (showVolume && volumeData && volumeData.length > 0) {
       const volumeSeries = chart.addSeries(HistogramSeries, {
         color: themeColors.upVolumeColor,
@@ -139,8 +194,10 @@ export function PriceChart({
       chartRef.current = null;
       mainSeriesRef.current = null;
       volumeSeriesRef.current = null;
+      markersRef.current = null;
+      priceLinesRef.current = [];
     };
-  }, [data, volumeData, seriesType, height, showVolume]);
+  }, [data, volumeData, seriesType, height, showVolume, markers, priceLevels]);
 
   // Update theme dynamically without re-creating the chart
   useEffect(() => {
@@ -180,10 +237,18 @@ export function PriceChart({
         });
       }
     }
-  }, [themeColors, seriesType]);
+
+    markersRef.current?.setMarkers(toSeriesMarkers(markers, themeColors));
+    priceLinesRef.current.forEach(({ line, tone }) => {
+      line.applyOptions({ color: toneColor(tone, themeColors) });
+    });
+  }, [themeColors, seriesType, markers]);
 
   return (
-    <div className={cx(styles.chartContainer, className)}>
+    <div
+      className={cx(styles.chartContainer, className)}
+      {...(ariaLabel === undefined ? {} : { role: 'img', 'aria-label': ariaLabel })}
+    >
       <div ref={containerRef} className={styles.chartCanvas} style={{ height }} />
     </div>
   );

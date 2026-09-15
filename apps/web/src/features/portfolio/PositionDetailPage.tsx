@@ -1,34 +1,93 @@
-// Position Detail screen (UI spec 7.3).
+// Position Detail screen (UI spec 7.3): everything about one held instrument.
 
+import { EmptyState, ErrorState, LoadingState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+
+import { ROUTES, workspaceTickerPath } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import styles from './position/PositionPage.module.scss';
+import { PositionView } from './position/sections/PositionView';
+import type { PositionState } from './position/usePositionData';
+import { usePositionData } from './position/usePositionData';
+
+function renderPosition(state: PositionState): ReactElement {
+  switch (state.status) {
+    case 'loading':
+      return <LoadingState layout="table" count={6} />;
+    case 'error':
+      return (
+        <ErrorState title="Position unavailable" message={state.message} onRetry={state.retry} />
+      );
+    case 'unknown':
+      return (
+        <EmptyState
+          title="Instrument not found"
+          description={`No instrument has the id "${state.instrumentId}".`}
+          action={
+            <Link to={ROUTES.PORTFOLIO_HOLDINGS} className={styles.link}>
+              Back to holdings
+            </Link>
+          }
+        />
+      );
+    case 'not-held':
+      return (
+        <EmptyState
+          title={`You do not hold ${state.instrument.symbol}`}
+          description={`${state.instrument.name} is not in your portfolio. Research it in the instrument workspace.`}
+          action={
+            <Link to={workspaceTickerPath(state.instrument.symbol)} className={styles.link}>
+              Open {state.instrument.symbol} in the workspace
+            </Link>
+          }
+        />
+      );
+    case 'ready':
+      return (
+        <PositionView
+          row={state.row}
+          baseCurrency={state.baseCurrency}
+          heldMarketIds={state.heldMarketIds}
+          oldestQuoteTimestamp={state.oldestQuoteTimestamp}
+          warnings={state.warnings}
+        />
+      );
+  }
+}
+
+function titleFor(state: PositionState): { readonly title: string; readonly description: string } {
+  switch (state.status) {
+    case 'ready':
+      return {
+        title: `${state.row.instrument.symbol} position`,
+        description: `${state.row.instrument.name} · ${state.row.marketName}`,
+      };
+    case 'not-held':
+      return { title: state.instrument.symbol, description: state.instrument.name };
+    case 'loading':
+    case 'error':
+    case 'unknown':
+      return { title: 'Position', description: 'Everything about one held instrument.' };
+  }
+}
 
 export function PositionDetailPage(): ReactElement {
-  const { id } = useParams<{ id: string }>();
+  const { id = '' } = useParams<{ id: string }>();
+  const state = usePositionData(id);
+  const { title, description } = titleFor(state);
 
   return (
     <PageShell
-      title={`Position Detail: ${id ?? ''}`}
-      description="Lot-level tax lots, cost basis, realized gains, and orders"
+      title={title}
+      description={description}
       breadcrumbs={[
-        { label: 'Overview', to: '/overview' },
-        { label: 'Holdings', to: '/portfolio/holdings' },
-        { label: id ?? 'Position' },
+        { label: 'Overview', to: ROUTES.OVERVIEW },
+        { label: 'Holdings', to: ROUTES.PORTFOLIO_HOLDINGS },
+        { label: title },
       ]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Lot-level history and position analytics for {id}.
-        </p>
-      </div>
+      {renderPosition(state)}
     </PageShell>
   );
 }

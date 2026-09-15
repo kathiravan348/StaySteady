@@ -4,12 +4,21 @@ import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import type { BrokerDto, HoldingDto, PortfolioSummaryDto } from '../schemas';
-import { BrokerSchema, HoldingSchema, PortfolioSummarySchema } from '../schemas';
+import type { BrokerDto, HoldingDto, PortfolioSummaryDto, TransactionDto } from '../schemas';
+import { BrokerSchema, HoldingSchema, PortfolioSummarySchema, TransactionSchema } from '../schemas';
 import { apiGet } from './apiClient';
 
 const HoldingListSchema = z.array(HoldingSchema);
 const BrokerListSchema = z.array(BrokerSchema);
+const TransactionListSchema = z.array(TransactionSchema);
+
+export function useTransactions(): UseQueryResult<TransactionDto[]> {
+  return useQuery({
+    queryKey: ['portfolio', 'transactions'],
+    queryFn: ({ signal }) =>
+      apiGet('/api/v1/portfolio/transactions', TransactionListSchema, signal),
+  });
+}
 
 export function useBrokers(): UseQueryResult<BrokerDto[]> {
   return useQuery({

@@ -13,7 +13,6 @@ import type {
   InstrumentDto,
   MarketDto,
   MarketQuoteDto,
-  MoneyDto,
   NewsItemDto,
   StrategyDto,
 } from '../../../../data/schemas';
@@ -64,11 +63,11 @@ function percentOf(part: Decimal, whole: Decimal): number {
   return whole.isZero() ? 0 : part.dividedBy(whole).times(100).toDecimalPlaces(2).toNumber();
 }
 
-function exitInfo(exitLevel: MoneyDto | undefined, lastPrice: Money): ExitInfo | null {
-  if (exitLevel === undefined) {
+// Also used by Position Detail when the exit level is adjusted.
+export function describeExit(level: Money | undefined, lastPrice: Money): ExitInfo | null {
+  if (level === undefined) {
     return null;
   }
-  const level = moneyFromDto(exitLevel);
   const distancePercent = percentOf(lastPrice.amount.minus(level.amount), lastPrice.amount);
   const proximity =
     distancePercent <= NEAR_EXIT_PERCENT
@@ -139,6 +138,7 @@ function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext
       holding.openedByStrategyId === undefined
         ? 'Manual'
         : (strategy?.name ?? holding.openedByStrategyId),
+    strategyId: holding.openedByStrategyId ?? null,
     quantity: holding.quantity,
     averageCost: createMoney(quantity.isZero() ? 0 : localCost.dividedBy(quantity), currency),
     lastPrice,
@@ -152,7 +152,10 @@ function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext
     currencyEffectBase: base(currencyEffect),
     daysHeld: lots.reduce((oldest, lot) => Math.max(oldest, lot.daysHeld), 0),
     tax: holdingTaxStatus(lots.map((lot) => lot.tax)),
-    exit: exitInfo(holding.exitLevel, lastPrice),
+    exit: describeExit(
+      holding.exitLevel === undefined ? undefined : moneyFromDto(holding.exitLevel),
+      lastPrice,
+    ),
     newsStories: new Set(news.map((item) => item.duplicateGroupId ?? item.id)).size,
     hasHighImportanceNews: news.some((item) => item.importance === 'high'),
     lots,

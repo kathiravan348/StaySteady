@@ -44,6 +44,8 @@ export interface HoldingRow {
   readonly typeLabel: string;
   readonly brokerName: string;
   readonly strategyName: string;
+  // Strategy that opened the position; null when it was opened manually.
+  readonly strategyId: string | null;
   readonly quantity: number;
   readonly averageCost: Money;
   readonly lastPrice: Money;

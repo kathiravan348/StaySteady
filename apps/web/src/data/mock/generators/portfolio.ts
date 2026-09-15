@@ -18,6 +18,7 @@ import type {
 } from '../../schemas';
 import { HoldingSchema, PortfolioSummarySchema, TransactionSchema } from '../../schemas';
 import { generateCurrentFxRates } from './fxHistory';
+import { holdingCashFlows } from './holdingCashFlows';
 import type { HoldingProfile } from './holdingProfiles';
 import { HOLDING_PROFILES } from './holdingProfiles';
 import { CANONICAL_INSTRUMENTS, generateInitialQuotes } from './instruments';
@@ -41,16 +42,8 @@ type MoneyInput = HoldingInput['currentValue'];
 const BASE_CURRENCY: CurrencyCode = 'USD';
 const BUY_FEE = new Decimal('1.50');
 
+// Dividends and conversion charges per holding come from holdingCashFlows.
 const CASH_TRANSACTIONS: readonly TransactionInput[] = [
-  {
-    id: 'tx-div-01',
-    instrumentId: 'inst-us-aapl',
-    type: 'dividend',
-    timestamp: '2025-02-15T18:00:00Z',
-    fees: { amount: '0.00', currency: 'USD' },
-    netAmount: { amount: '24.50', currency: 'USD' },
-    notes: 'Quarterly dividend payment received',
-  },
   {
     id: 'tx-dep-01',
     type: 'deposit',
@@ -148,6 +141,10 @@ function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): Value
     quantity = quantity.plus(lotQuantity);
     cost = cost.plus(totalCost);
   });
+
+  transactions.push(
+    ...holdingCashFlows(instrument, holdingId, lots, ctx.referenceTime.slice(0, 10)),
+  );
 
   const lastClose = new Decimal(bars[bars.length - 1]?.close ?? 0);
   const quote = quotes.find((q) => q.instrumentId === instrument.id);

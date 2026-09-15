@@ -3,10 +3,9 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import { usePriceHistories } from '../../../../data/api';
-import { formatMoney, formatNumber, pluralize } from '../../../../shared/format';
 import styles from '../HoldingsPage.module.scss';
 import type { HoldingRow } from '../model/holdingTypes';
-import { TaxStatusBadge } from './TaxStatusBadge';
+import { LotsTable } from './LotsTable';
 
 export interface HoldingDetailsProps {
   readonly row: HoldingRow;
@@ -51,46 +50,7 @@ export function HoldingDetails({ row }: HoldingDetailsProps): ReactElement {
       </div>
       <div className={styles.detailsBlock}>
         <span className={styles.detailsLabel}>Purchase lots</span>
-        <table className={styles.lotsTable} aria-label={`Purchase lots for ${instrument.symbol}`}>
-          <thead>
-            <tr>
-              <th scope="col" className={styles.lotsHeader}>
-                Purchased
-              </th>
-              <th scope="col" className={`${styles.lotsHeader} ${styles.lotsNumeric}`}>
-                Quantity
-              </th>
-              <th scope="col" className={`${styles.lotsHeader} ${styles.lotsNumeric}`}>
-                Cost per unit
-              </th>
-              <th scope="col" className={`${styles.lotsHeader} ${styles.lotsNumeric}`}>
-                Held
-              </th>
-              <th scope="col" className={styles.lotsHeader}>
-                Tax status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {row.lots.map((lot) => (
-              <tr key={lot.id}>
-                <td className={styles.lotsCell}>{lot.purchaseDate}</td>
-                <td className={`${styles.lotsCell} ${styles.lotsNumeric}`}>
-                  {formatNumber(lot.quantity, { decimals: Number.isInteger(lot.quantity) ? 0 : 4 })}
-                </td>
-                <td className={`${styles.lotsCell} ${styles.lotsNumeric}`}>
-                  {formatMoney(lot.costPerUnit, { showCurrency: 'code' })}
-                </td>
-                <td className={`${styles.lotsCell} ${styles.lotsNumeric}`}>
-                  {pluralize(lot.daysHeld, 'day')}
-                </td>
-                <td className={styles.lotsCell}>
-                  <TaxStatusBadge status={lot.tax} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <LotsTable lots={row.lots} symbol={instrument.symbol} />
       </div>
     </div>
   );

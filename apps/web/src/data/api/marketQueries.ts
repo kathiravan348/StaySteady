@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { z } from 'zod';
 
 import type {
+  CorporateActionDto,
   FxRateDto,
   FxRateHistoryDto,
   InstrumentDto,
@@ -14,6 +15,7 @@ import type {
   PriceBarDto,
 } from '../schemas';
 import {
+  CorporateActionSchema,
   FxRateHistorySchema,
   FxRateSchema,
   InstrumentSchema,
@@ -33,6 +35,20 @@ const QuoteListSchema = z.array(MarketQuoteSchema);
 const FxRateListSchema = z.array(FxRateSchema);
 const FxHistoryListSchema = z.array(FxRateHistorySchema);
 const PriceBarListSchema = z.array(PriceBarSchema);
+const CorporateActionListSchema = z.array(CorporateActionSchema);
+
+export function useCorporateActions(instrumentId: string): UseQueryResult<CorporateActionDto[]> {
+  return useQuery({
+    queryKey: ['corporate-actions', instrumentId],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/corporate-actions?instrumentId=${encodeURIComponent(instrumentId)}`,
+        CorporateActionListSchema,
+        signal,
+      ),
+    staleTime: SLOW_STALE_MS,
+  });
+}
 
 export function useInstruments(): UseQueryResult<InstrumentDto[]> {
   return useQuery({

@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 Overview, S-02 Holdings done)
-OVERALL PROGRESS:   62% (40 of 65 active tasks done; Stage F, M, L 100%; Stage S 2 of 23)
-LAST UPDATED:       2026-09-15T20:07:02Z  |  local: 2026-09-16 01:37 IST
-LAST AGENT:         Claude Opus 5 (session 21)
+PHASE:              Stage S Screens — in progress (S-01 Overview, S-02 Holdings, S-03 Position Detail done)
+OVERALL PROGRESS:   63% (41 of 65 active tasks done; Stage F, M, L 100%; Stage S 3 of 23)
+LAST UPDATED:       2026-09-15T20:32:16Z  |  local: 2026-09-16 02:02 IST
+LAST AGENT:         Claude Opus 5 (session 22)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -31,24 +31,26 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview and
-  S-02 Holdings done. The owner asked the agent to commit each finished screen (no push) and to
-  take the recommended option whenever a choice comes up (decision 26).
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview,
+  S-02 Holdings and S-03 Position Detail done. The owner asked the agent to commit each finished
+  screen (no push) and to take the recommended option whenever a choice comes up (decision 26).
   typecheck, lint and build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 21: S-02 Holdings — see session 21 end entry. The library DataTable now supports
-    grouping with totals, row selection, column visibility, keyboard sorting and details rows.
+  - Session 22: S-03 Position Detail — see session 22 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-03 Position Detail (UI spec 7.3). Route /portfolio/positions/:id (id = instrument id;
-  Holdings links there via positionDetailPath). Reuse features/portfolio/holdings/model
-  (buildHoldingRows, tax status, exit info) — same feature folder, so no cross-feature import.
+  Claim S-04 Instrument Workspace (UI spec 7.4, 8.1, 8.3). Route /markets/workspace/:ticker
+  (features/markets/MarketsWorkspacePage.tsx is a placeholder). Data available: daily history
+  /api/v1/instruments/:id/prices (from 2022-01-03, weekends and holidays skipped), intraday
+  /api/v1/instruments/:id/intraday?timeframe=1m|5m|15m|1h (session-tagged bars), quotes,
+  corporate actions, news, calendar, signals endpoint (no hook yet). No watchlist or fundamentals
+  data exists yet.
 
-FILES TOUCHED (session 21): see session 21 end entry.
+FILES TOUCHED (session 22): see session 22 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
@@ -56,10 +58,10 @@ WATCH OUT FOR:
     lives in apps/web/src/shared (decision 25); features never import each other.
   - Pattern: page composes; a hook gathers queries into a discriminated-union state; pure model
     functions compute; side sections load their own data.
-  - DataTable columns: set meta.align 'end' for numbers, meta.label for pickers; group rows show
-    only aggregatedCell output (defaultColumn renders nothing otherwise).
-  - Browser tests: CSS text-transform uppercases innerText; switch mock scenarios with
+  - PriceChart markers must sit on a bar time; memoise markers/priceLevels (chart recreates).
+  - Mock scenario lives in localStorage: test states in ONE browser tab. Switch with
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
+  - CSS text-transform uppercases innerText — use case-insensitive checks in browser tests.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single
     2.5 MB JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -144,7 +146,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 |----|------|--------|---|-------|-------|
 | S-01 | Overview | DONE | 100 | Session 20 | Data layer (schema-validated fetch + TanStack Query); all UI spec 7.1 sections; loading/error/empty/stale/market-closed verified; sector, strategy and exit-level data gaps logged |
 | S-02 | Holdings | DONE | 100 | Session 21 | Library DataTable extended (grouping totals, selection, visibility, keyboard sort, details); broker/strategy/exit/tax-threshold mock data; saved layout; CSV export; all states verified |
-| S-03 | Position Detail | TODO | 0 | | |
+| S-03 | Position Detail | DONE | 100 | Session 22 | PriceChart markers + price levels; dividends from corporate actions and conversion charges in mock data; chart, lots, transactions, costs/income, news, events, strategy/notes; session-only actions; all states verified |
 | S-04 | Instrument Workspace (charts) | TODO | 0 | | |
 | S-05 | Watchlists | TODO | 0 | | |
 | S-06 | System Health | TODO | 0 | | |
@@ -1983,6 +1985,95 @@ FINDINGS (out of scope, not fixed):
 NOTES FOR NEXT AGENT:
   - Owner asked the agent to commit each finished screen; no push
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        22 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T20:10:28Z  |  local: 2026-09-16 01:40 IST (UTC+05:30)
+TASK CLAIMED:   S-03 Position Detail
+OWNER INPUT:    "complete the next screens one by one ... take the recommended one; git commit each
+                screen" (decision 26)
+
+PRE-WORK VERIFICATION:
+  git:         S-02 committed as 4587b7f; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (run at the end of session 21, nothing changed since)
+
+SCOPE (UI spec 7.3):
+  - Header: identity, market, currency, price, position summary
+  - Panels: price chart with entry markers and exit level line; lots with holding periods;
+    transactions for this instrument; costs (fees, conversion); income (dividends);
+    related news; upcoming events and corporate actions; opening strategy
+  - Actions (mock, local state only): adjust exit level, close position, add manual transaction,
+    add note
+  - States: loading, error, not held / unknown instrument, stale, market closed
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        22 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T20:10:28Z  |  local: 2026-09-16 01:40 IST (UTC+05:30)
+END:            2026-09-15T20:32:16Z  |  local: 2026-09-16 02:02 IST (UTC+05:30)
+TASK CLAIMED:   S-03 Position Detail
+END STATUS:     DONE
+
+COMPLETED:
+  - packages/ui PriceChart: markers (above/below, arrow/circle, tone) and horizontal price levels
+    (solid/dashed), re-coloured on theme change; ariaLabel gives the canvas a text alternative
+  - Mock data: dividend transactions derived from corporate actions x shares held before the
+    effective date (hardcoded AAPL dividend removed); 0.25% conversion charge on non-USD purchases;
+    useTransactions and useCorporateActions hooks
+  - Position Detail (features/portfolio/position): header metrics; candlestick chart with purchase
+    and sale markers, average-cost and exit lines, range toggle and text legend; tabs for lots,
+    transactions (DataTable), costs and income (each converted at its own date's FX, plus result
+    after costs and income), related news (deduplicated), corporate actions + upcoming market
+    events, strategy (stage, parameters, editor link) and notes
+  - Actions (mock phase, sessionStorage per instrument, zod-validated on load): adjust or remove
+    exit level (must be below price, previews distance), add manual buy/sell/dividend/fee
+    (validated, labelled manual, removable, plotted), add/remove note, request/withdraw close with
+    a holding-period tax warning
+  - States: loading, error + retry, instrument not found, not held (link to workspace), stale,
+    market closed, warnings when optional data fails
+  - Holdings: LotsTable extracted and shared; describeExit exported; HoldingRow.strategyId added
+
+FILES CREATED:
+  - apps/web/src/data/mock/generators/holdingCashFlows.ts
+  - apps/web/src/features/portfolio/holdings/sections/LotsTable.tsx
+  - apps/web/src/features/portfolio/position/** (model, sections, dialogs, hooks, styles)
+FILES MODIFIED:
+  - packages/ui/src/charts/price/{PriceChart.tsx,types.ts}
+  - apps/web/src/data/mock/generators/portfolio.ts; data/api/{portfolioQueries,marketQueries,index}.ts
+  - features/portfolio/holdings/{model/holdingRows,model/holdingTypes,sections/HoldingDetails}
+  - features/portfolio/PositionDetailPage.tsx — rewritten as composition
+
+DECISIONS MADE:
+  - 27, 28 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: InstrumentId[].includes(string))
+  lint:        PASS — exit 0 (autoFocus removed, flagged by jsx-a11y)
+  build:       PASS — exit 0
+  browser:     SPY chart shows purchase markers, average-cost and exit lines; AZN tabs: 1 lot;
+               dividend GBP 14.25 (= 15 x 0.95); buy fee GBP 1.50; conversion charge GBP 4.80
+               (= 0.25% of GBP 1,920.45); costs $7.89, income $18.05; exit 999 rejected (above
+               price), 260 accepted -> "Exit level (adjusted) GBP 260.00, 4.7% below"; empty manual
+               sell shows field errors, valid sell counted as a sale in the chart legend; note and
+               close request stored in sessionStorage and shown
+  states:      TSLA -> "You do not hold TSLA" + workspace link; unknown id -> "Instrument not
+               found"; loading-error -> "Position unavailable" + 500 message; empty-portfolio ->
+               not held; market-closed and stale-data banners shown
+  themes:      light and dark screenshots readable
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - A state test first ran in a second background tab and read as if loading-error never showed
+    (holdings requests alternated 500/200). Re-run in a single tab passed. Between later samples
+    the pane moved to Transactions; no app code navigates there, so likely manual use of the pane.
+
+FINDINGS (out of scope, not fixed):
+  - RELIANCE 1:1 bonus issue (2024-10-28) is not applied to lot quantities or price history
+  - humanizeToken renders "etf" as "Etf"; acronyms need a display map
+  - PriceChart markers/price levels have no workbench story yet
+  - Position edits are session-only until a write API exists (mock phase)
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -2035,6 +2126,6 @@ NOTES FOR NEXT AGENT:
 | 23 | 2026-09-15 | Library DataTable owns grouping, selection, column visibility and row details (all controllable); group rows render totals only for columns defining aggregatedCell | Every later table screen (watchlists, orders, backtest trades) needs the same behaviour; one accessible implementation | Yes | Owner (session 21) |
 | 24 | 2026-09-15 | Holdings carry brokerId, optional openedByStrategyId and exitLevel; markets carry holdingPeriodTaxThresholdDays; days held, tax status and currency effect are derived client-side from lots and FX history | UI spec 7.2 columns had no data; derived values stay consistent with lots and FX | Yes | Owner (session 21) |
 | 25 | 2026-09-15 | Pieces used by more than one feature move to apps/web/src/shared (format/display, ui/ToggleGroup, ui/PriceFreshnessBar) | Standards 8: features never import each other | Yes | Session 21 |
-| 26 | 2026-09-16 | Agent commits each finished screen to main (no push); a recommended option is taken automatically when a choice arises | Owner instruction for Stage S | Yes | Owner (session 22) |
+
 
 
