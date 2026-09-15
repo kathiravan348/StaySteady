@@ -1,4 +1,6 @@
 import { worker } from './browser';
+import { liveTicker } from './generators/ticker';
+import { createMockGeneratorContext } from './generators/mockContext';
 
 let mockInitialized = false;
 
@@ -33,8 +35,13 @@ export async function initMock(): Promise<void> {
       quiet: false,
     });
     mockInitialized = true;
+
+    // Start background live ticking engine (M-15)
+    const ctx = createMockGeneratorContext();
+    liveTicker.start(ctx.random.fork('live-ticker'), 2500);
+
     // Log clear confirmation for developer visibility
-    console.info('[StaySteady Mock] Network request interception active.');
+    console.info('[StaySteady Mock] Network request interception & live ticking active.');
   } catch (error: unknown) {
     console.error('[StaySteady Mock] Failed to initialize Mock Service Worker:', error);
   }

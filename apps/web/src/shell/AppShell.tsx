@@ -12,10 +12,14 @@ import type { MockScenario } from '../providers/SystemStateProvider';
 import styles from './AppShell.module.scss';
 
 const SCENARIOS: readonly { id: MockScenario; label: string }[] = [
-  { id: 'normal', label: 'Normal Markets' },
-  { id: 'market-crash', label: 'Market Crash (-12%)' },
-  { id: 'high-volatility', label: 'High Volatility' },
-  { id: 'connectivity-outage', label: 'Data Outage' },
+  { id: 'healthy', label: 'Healthy (All Systems Green)' },
+  { id: 'provider-down', label: 'Provider Down (Failover Active)' },
+  { id: 'broker-disconnected', label: 'Broker Gateway Disconnected' },
+  { id: 'stale-data', label: 'Stale Price Feed' },
+  { id: 'safety-breach', label: 'Safety Breach (Auto Halted)' },
+  { id: 'empty-portfolio', label: 'Empty Portfolio (First Use)' },
+  { id: 'market-closed', label: 'All Markets Closed' },
+  { id: 'loading-error', label: 'Loading Error (Simulated 503)' },
 ];
 
 export function AppShell(): ReactElement {

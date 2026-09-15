@@ -1,14 +1,21 @@
-// System state provider: mode, master automation stop, base currency, and mock scenario (UI spec 5).
+// System state provider: mode, master automation stop, base currency, and mock scenario (UI spec 5 & 15).
 
 import type { ReactElement, ReactNode } from 'react';
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import type { BaseCurrencyCode } from '../shared/types/currency';
+import type { AutomationModeDto } from '../data/schemas';
+import type { DeveloperScenarioId } from '../data/mock/scenarios/scenarioContext';
+import {
+  getActiveDeveloperScenario,
+  setActiveDeveloperScenario,
+  subscribeToScenarioChange,
+} from '../data/mock/scenarios/scenarioContext';
 
-export type SystemMode = 'simulation' | 'observation' | 'manual-approval' | 'full-automation';
+export type SystemMode = AutomationModeDto;
 
 export type SystemHealthStatus = 'healthy' | 'degraded' | 'critical';
 
-export type MockScenario = 'normal' | 'market-crash' | 'high-volatility' | 'connectivity-outage';
+export type MockScenario = DeveloperScenarioId;
 
 export interface SystemState {
   readonly mode: SystemMode;
@@ -41,8 +48,26 @@ export function SystemStateProvider({
   const [isAutomationStopped, setIsAutomationStopped] = useState<boolean>(false);
   const [baseCurrency, setBaseCurrency] = useState<BaseCurrencyCode>(initialBaseCurrency);
   const [healthStatus, setHealthStatus] = useState<SystemHealthStatus>('healthy');
-  const [mockScenario, setMockScenario] = useState<MockScenario>('normal');
+  const [mockScenario, setLocalMockScenario] = useState<MockScenario>(getActiveDeveloperScenario);
   const [unreadAlertsCount] = useState<number>(3);
+
+  useEffect(() => {
+    return subscribeToScenarioChange((scen) => {
+      setLocalMockScenario(scen);
+      if (scen === 'provider-down' || scen === 'broker-disconnected') {
+        setHealthStatus('critical');
+      } else if (scen === 'safety-breach' || scen === 'stale-data') {
+        setHealthStatus('degraded');
+      } else {
+        setHealthStatus('healthy');
+      }
+    });
+  }, []);
+
+  const setMockScenario = (scenario: MockScenario): void => {
+    setLocalMockScenario(scenario);
+    setActiveDeveloperScenario(scenario);
+  };
 
   const toggleAutomationStop = (): void => {
     setIsAutomationStopped((prev) => !prev);

@@ -6,7 +6,14 @@ import type {
 } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
+import {
+  createMockGeneratorContext,
+  generateAlerts,
+  generateAuditLogs,
+  generateIncidents,
+} from '../generators';
 
+const ctx = createMockGeneratorContext();
 let mockKillSwitchState = false;
 
 export const systemHandlers: readonly HttpHandler[] = [
@@ -101,5 +108,29 @@ export const systemHandlers: readonly HttpHandler[] = [
       },
       { status: 200 },
     );
+  }),
+
+  http.get('/api/v1/system/alerts', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load alerts' }, { status: 500 });
+    }
+    return HttpResponse.json(generateAlerts(ctx), { status: 200 });
+  }),
+
+  http.get('/api/v1/system/incidents', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load incidents' }, { status: 500 });
+    }
+    return HttpResponse.json(generateIncidents(), { status: 200 });
+  }),
+
+  http.get('/api/v1/system/audit-logs', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load audit logs' }, { status: 500 });
+    }
+    return HttpResponse.json(generateAuditLogs(ctx), { status: 200 });
   }),
 ];
