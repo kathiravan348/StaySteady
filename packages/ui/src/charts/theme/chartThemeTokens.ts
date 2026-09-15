@@ -10,8 +10,15 @@ export interface ChartThemeColors {
   readonly downVolumeColor: string;
   readonly primaryColor: string;
   readonly tooltipBackground: string;
+  // Distinct line colours for overlays and indicators, in a fixed order.
+  readonly palette: readonly string[];
+  // Muted colour for de-emphasised bars such as extended-hours sessions.
+  readonly mutedColor: string;
   readonly isDark: boolean;
 }
+
+const DARK_PALETTE = ['#60a5fa', '#f59e0b', '#a78bfa', '#34d399', '#f472b6', '#22d3ee'] as const;
+const LIGHT_PALETTE = ['#2563eb', '#b45309', '#7c3aed', '#047857', '#be185d', '#0e7490'] as const;
 
 export function resolveChartThemeColors(): ChartThemeColors {
   if (typeof window === 'undefined') {
@@ -27,6 +34,8 @@ export function resolveChartThemeColors(): ChartThemeColors {
       downVolumeColor: 'rgba(239, 68, 68, 0.4)',
       primaryColor: '#3b82f6',
       tooltipBackground: '#1e293b',
+      palette: DARK_PALETTE,
+      mutedColor: 'rgba(148, 163, 184, 0.45)',
       isDark: true,
     };
   }
@@ -60,6 +69,8 @@ export function resolveChartThemeColors(): ChartThemeColors {
     downVolumeColor: isRedUp ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)',
     primaryColor,
     tooltipBackground,
+    palette: isDark ? DARK_PALETTE : LIGHT_PALETTE,
+    mutedColor: isDark ? 'rgba(148, 163, 184, 0.45)' : 'rgba(100, 116, 139, 0.45)',
     isDark,
   };
 }

@@ -15,6 +15,7 @@ import type {
   MarketId,
   OrderId,
   StrategyId,
+  WatchlistId,
 } from '../../shared/types/identifiers';
 import {
   toAlertId,
@@ -25,6 +26,7 @@ import {
   toMarketId,
   toOrderId,
   toStrategyId,
+  toWatchlistId,
 } from '../../shared/types/identifiers';
 import type { BasisPoints, Percentage, Quantity, Ratio } from '../../shared/types/quantities';
 import { toBasisPoints, toPercentage, toQuantity, toRatio } from '../../shared/types/quantities';
@@ -98,6 +100,7 @@ export const BrokerIdSchema = idSchema<BrokerId>(toBrokerId);
 export const AlertIdSchema = idSchema<AlertId>(toAlertId);
 export const IncidentIdSchema = idSchema<IncidentId>(toIncidentId);
 export const BacktestIdSchema = idSchema<BacktestId>(toBacktestId);
+export const WatchlistIdSchema = idSchema<WatchlistId>(toWatchlistId);
 
 export const DirectionSchema = z.enum(['positive', 'negative', 'neutral']);
 export type DirectionDto = z.infer<typeof DirectionSchema>;

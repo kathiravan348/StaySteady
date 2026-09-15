@@ -15,11 +15,10 @@ import {
   type IPriceLine,
   type ISeriesApi,
   type ISeriesMarkersPluginApi,
-  type SeriesMarker,
   type Time,
 } from 'lightweight-charts';
 import { cx } from '../../utils/cx';
-import type { ChartThemeColors } from '../theme/chartThemeTokens';
+import { toneColor, toSeriesMarkers } from '../shared/chartColors';
 import { useChartTheme } from '../theme/useChartTheme';
 import type { ChartTone, PriceChartLevel, PriceChartMarker, PriceChartProps } from './types';
 import styles from './PriceChart.module.scss';
@@ -33,24 +32,6 @@ interface TonedPriceLine {
 
 const NO_MARKERS: readonly PriceChartMarker[] = [];
 const NO_LEVELS: readonly PriceChartLevel[] = [];
-
-function toneColor(tone: ChartTone, colors: ChartThemeColors): string {
-  if (tone === 'up') return colors.upColor;
-  return tone === 'down' ? colors.downColor : colors.primaryColor;
-}
-
-function toSeriesMarkers(
-  markers: readonly PriceChartMarker[],
-  colors: ChartThemeColors,
-): SeriesMarker<Time>[] {
-  return markers.map((marker): SeriesMarker<Time> => ({
-    time: marker.time,
-    position: marker.position === 'above' ? 'aboveBar' : 'belowBar',
-    shape: marker.shape,
-    color: toneColor(marker.tone, colors),
-    ...(marker.text === undefined ? {} : { text: marker.text }),
-  }));
-}
 
 export function PriceChart({
   data,

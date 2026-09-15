@@ -76,6 +76,9 @@ export {
   generateAuditLogs,
 } from './healthAlerts';
 
+// Session 23: fundamentals and watchlists for the instrument workspace
+export { generateInstrumentFundamentals, generateWatchlists } from './researchData';
+
 // M-15 Live Ticking
 export type { QuoteTickListener } from './ticker';
 export { tickQuotes, liveTicker } from './ticker';

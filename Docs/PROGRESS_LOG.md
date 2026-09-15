@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 Overview, S-02 Holdings, S-03 Position Detail done)
-OVERALL PROGRESS:   63% (41 of 65 active tasks done; Stage F, M, L 100%; Stage S 3 of 23)
-LAST UPDATED:       2026-09-15T20:32:16Z  |  local: 2026-09-16 02:02 IST
-LAST AGENT:         Claude Opus 5 (session 22)
+PHASE:              Stage S Screens — in progress (S-01 to S-04 done)
+OVERALL PROGRESS:   65% (42 of 65 active tasks done; Stage F, M, L 100%; Stage S 4 of 23)
+LAST UPDATED:       2026-09-15T20:56:55Z  |  local: 2026-09-16 02:26 IST
+LAST AGENT:         Claude Opus 5 (session 23)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -32,39 +32,39 @@ BLOCKERS:           none
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview,
-  S-02 Holdings and S-03 Position Detail done. The owner asked the agent to commit each finished
-  screen (no push) and to take the recommended option whenever a choice comes up (decision 26).
-  typecheck, lint and build pass.
+  S-02 Holdings, S-03 Position Detail and S-04 Instrument Workspace done. The owner asked the agent
+  to commit each finished screen (no push) and to take the recommended option whenever a choice
+  comes up (decision 26). typecheck, lint and build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 22: S-03 Position Detail — see session 22 end entry.
+  - Session 23: S-04 Instrument Workspace — see session 23 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-04 Instrument Workspace (UI spec 7.4, 8.1, 8.3). Route /markets/workspace/:ticker
-  (features/markets/MarketsWorkspacePage.tsx is a placeholder). Data available: daily history
-  /api/v1/instruments/:id/prices (from 2022-01-03, weekends and holidays skipped), intraday
-  /api/v1/instruments/:id/intraday?timeframe=1m|5m|15m|1h (session-tagged bars), quotes,
-  corporate actions, news, calendar, signals endpoint (no hook yet). No watchlist or fundamentals
-  data exists yet.
+  Claim S-05 Watchlists (UI spec 7.5). Route /markets/watchlists (placeholder page).
+  Data: GET /api/v1/watchlists and useWatchlists exist read-only (3 lists). Needed: create, rename,
+  delete lists; add, remove and reorder instruments; move between lists (mock write endpoints with an
+  in-memory store + TanStack mutations); compact live quote table with sparklines; quick-add search
+  with market and type filters; per-list summary (up, down, average move). Reuse the workspace
+  instrument panel filtering ideas (features/markets/workspace/sections/InstrumentPanel.tsx is in
+  the same feature folder, so it can be reused directly).
 
-FILES TOUCHED (session 22): see session 22 end entry.
+FILES TOUCHED (session 23): see session 23 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - Screens fetch only through data/api hooks (decision 22). Shared UI used by several features
-    lives in apps/web/src/shared (decision 25); features never import each other.
-  - Pattern: page composes; a hook gathers queries into a discriminated-union state; pure model
-    functions compute; side sections load their own data.
-  - PriceChart markers must sit on a bar time; memoise markers/priceLevels (chart recreates).
-  - Mock scenario lives in localStorage: test states in ONE browser tab. Switch with
+  - Screens fetch only through data/api hooks (decision 22). Shared UI lives in apps/web/src/shared
+    (decision 25); features never import each other.
+  - Charts: TradingChart/PriceChart recreate on data identity changes — memoise inputs.
+  - Browser tests: synthetic mouse events do not reach lightweight-charts; use real clicks. The mock
+    scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
-  - CSS text-transform uppercases innerText — use case-insensitive checks in browser tests.
+  - CSS text-transform uppercases innerText — use case-insensitive checks.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single
-    2.5 MB JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
+    large JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -147,7 +147,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-01 | Overview | DONE | 100 | Session 20 | Data layer (schema-validated fetch + TanStack Query); all UI spec 7.1 sections; loading/error/empty/stale/market-closed verified; sector, strategy and exit-level data gaps logged |
 | S-02 | Holdings | DONE | 100 | Session 21 | Library DataTable extended (grouping totals, selection, visibility, keyboard sort, details); broker/strategy/exit/tax-threshold mock data; saved layout; CSV export; all states verified |
 | S-03 | Position Detail | DONE | 100 | Session 22 | PriceChart markers + price levels; dividends from corporate actions and conversion charges in mock data; chart, lots, transactions, costs/income, news, events, strategy/notes; session-only actions; all states verified |
-| S-04 | Instrument Workspace (charts) | TODO | 0 | | |
+| S-04 | Instrument Workspace (charts) | DONE | 100 | Session 23 | Library TradingChart (panes, styles, scales, drawings, keyboard, image export); indicators; fundamentals + watchlists mock data; intraday bars aligned to daily close; saved layouts; all states verified |
 | S-05 | Watchlists | TODO | 0 | | |
 | S-06 | System Health | TODO | 0 | | |
 | S-07 | Backtest Setup | TODO | 0 | | |
@@ -2074,6 +2074,111 @@ FINDINGS (out of scope, not fixed):
   - PriceChart markers/price levels have no workbench story yet
   - Position edits are session-only until a write API exists (mock phase)
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        23 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T20:35:14Z  |  local: 2026-09-16 02:05 IST (UTC+05:30)
+TASK CLAIMED:   S-04 Instrument Workspace (charts)
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-03 committed as e2a208f, log fix 4e256c2; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (end of session 22, nothing changed since)
+
+SCOPE (UI spec 7.4, 8.1, 8.3):
+  - packages/ui TradingChart: stacked panes with synchronised crosshair and time axis; candlestick,
+    hollow candle, bar, line and area; linear/log/percent scale; overlays and indicator panes;
+    markers; extended-hours bars shown distinctly; holiday gaps; drawing tools (trend line,
+    horizontal level, rectangle, text note); zoom/pan/reset controls with keyboard; save image
+  - Indicators (pure): SMA, EMA, Bollinger bands, RSI, MACD, ATR, volume MA, stochastic
+  - Mock data: instrument fundamentals and watchlists (read-only; S-05 adds editing)
+  - Screen: timeframe (1m/5m/15m/1h, D/W/M), range presets, compare vs benchmark (normalised %),
+    event markers (dividends, splits, high-impact news), collapsible left instrument panel,
+    collapsible right panel (quote, fundamentals, position, watchlists, news, signals), bottom
+    event strip, copy data, layouts saved per instrument and default per instrument type
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        23 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T20:40:00Z  |  local: 2026-09-16 02:10 IST (UTC+05:30)
+END:            2026-09-15T20:56:55Z  |  local: 2026-09-16 02:26 IST (UTC+05:30)
+TASK CLAIMED:   S-04 Instrument Workspace (charts)
+END STATUS:     DONE
+
+COMPLETED:
+  - packages/ui TradingChart (charts/trading): lightweight-charts v5 panes sharing one time axis
+    and crosshair; candlestick, hollow candle, OHLC bar, line, area; linear/log/percent scale;
+    line overlays and line/histogram indicator panes with guides; markers; extended-hours bars
+    muted; whitespace gaps; drawings (trend line, rectangle, text note via a series primitive;
+    horizontal level via price lines) with a two-click flow and live hints; legend follows the
+    crosshair; zoom, pan, reset and save-image controls; keyboard arrows, + / - and 0; ChartTime is a
+    plain date string or Unix seconds; theme palette and muted colours; chart colour helpers
+    shared with PriceChart; workbench story "trading-chart"
+  - apps/web/src/shared/indicators: SMA, EMA, Bollinger bands, RSI (Wilder), MACD, ATR, stochastic
+  - Mock data: instrument fundamentals and watchlists (schemas, WatchlistIdSchema, generators,
+    GET /api/v1/watchlists and /api/v1/instruments/:id/fundamentals, loading-error aware);
+    intraday bars now open at the previous daily close (they started at a fixed 190/1800/2600);
+    hooks useIntradayBars, useInstrumentFundamentals, useWatchlists, useSignals
+  - Workspace (features/markets/workspace): 1m/5m/15m/1h intraday and daily/weekly/monthly
+    (aggregated) timeframes; range presets; style and scale; 10 indicators; compare against any
+    instrument (percent scale); event markers for dividends, splits, bonus issues, earnings and
+    high-impact news plus an event strip listing them as text; drawings kept per timeframe; copy
+    data as CSV; layouts saved per instrument, "save as default for type", reset; collapsible left
+    instrument panel (search, market and type filters, live prices); collapsible right panel
+    (quote with 52-week range, position, active signals, fundamentals, watchlists, recent news)
+  - States: loading, error + retry, unknown ticker, chart data error and empty, stale, market closed
+
+FILES CREATED:
+  - packages/ui/src/charts/trading/** ; packages/ui/src/charts/shared/chartColors.ts
+  - packages/ui/src/workbench/stories/TradingChartDemo.tsx
+  - apps/web/src/shared/indicators/indicators.ts
+  - apps/web/src/data/schemas/research-data.ts; data/mock/generators/researchData.ts;
+    data/mock/handlers/researchDataHandlers.ts; data/api/watchlistQueries.ts
+  - apps/web/src/features/markets/workspace/** (model, sections, hooks, styles)
+FILES MODIFIED:
+  - packages/ui/src/charts/{index.ts, price/PriceChart.tsx, theme/chartThemeTokens.ts};
+    workbench/stories/chartStories.tsx
+  - apps/web/src/data/schemas/{common,index}.ts; mock/generators/{index,intraday}.ts;
+    mock/handlers/index.ts; api/{marketQueries,tradingQueries,index}.ts
+  - apps/web/src/features/markets/MarketsWorkspacePage.tsx — rewritten as composition
+
+DECISIONS MADE:
+  - 29, 30, 31 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: non-exhaustive legend switch)
+  lint:        PASS — exit 0 (jsx-a11y flagged the chart container; scoped disable with reason)
+  build:       PASS — exit 0
+  browser:     AAPL daily 1211 bars, legend O/H/L/C + SMA 50 + volume; 5 min 192 bars with extended
+               hours muted, opening near the daily close (153.60 vs 155.38 after the fix; 185 before);
+               weekly aggregation; RSI + MACD panes added (canvas 696 px); compare SPY -> percent
+               scale; real clicks drew a horizontal level (186.64) and a trend line, both saved in
+               localStorage per timeframe and shown after reload; keyboard focus and + zoom; event
+               strip lists AAPL split 4:1 and two dividends; right panel quote, 52-week range,
+               position 107 units, fundamentals, watchlist "Core US"; holiday gaps inserted:
+               US 16 of 16 weekday holidays, IN 7 of 9 (2 fall on weekends), bars sorted
+  states:      NOPE -> "No instrument called NOPE" + watchlists link; loading-error -> "Workspace
+               unavailable" + markets 500 message, recovers when healthy; market-closed banner
+  themes:      dark and light screenshots readable; chart re-themes without recreating
+  workbench:   trading-chart story renders 11 canvases with legend and accessible label
+  copy data:   the desktop browser pane refuses clipboard access; the failure message is shown
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Synthetic mouse events did not reach the chart; drawing looked broken until tested with real
+    clicks, which worked.
+  - First responsive rule left a 322 px chart at a 1232 px viewport; the chart now spans the full
+    width below 90rem with side panels underneath.
+
+FINDINGS (out of scope, not fixed):
+  - Intraday mock bars use a US session template for every market
+  - Comparison legend shows the other instrument's raw close while the axis is in percent
+  - Earnings events are matched to instruments by calendar title text
+  - Indicator periods are fixed presets, not editable
+  - TradingChart recreates when data or studies change, so zoom returns to the range preset
+  - Copy data is untested outside the desktop browser pane
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -2129,6 +2234,9 @@ FINDINGS (out of scope, not fixed):
 | 26 | 2026-09-16 | Agent commits each finished screen to main (no push); a recommended option is taken automatically when a choice arises | Owner instruction for Stage S | Yes | Owner (session 22) |
 | 27 | 2026-09-16 | Library PriceChart takes markers and price levels with tone roles (up/down/neutral), never raw colours | Keeps packages/ui domain-free and theme-aware; entries, exits and levels share one API | Yes | Session 22 |
 | 28 | 2026-09-16 | Mock dividends derive from corporate actions and shares held; non-USD purchases carry a 0.25% conversion charge; position edits (exit, notes, manual transactions, close request) live in sessionStorage until a write API exists | Costs and income need coherent data; the mock phase has no persistence | Yes | Session 22 |
+| 29 | 2026-09-16 | Library TradingChart built on lightweight-charts panes; it takes plain ChartTime (date string or Unix seconds), tone roles and palette indexes, and renders drawings with a series primitive | One synchronised multi-pane chart that stays domain-free and theme-aware | Yes | Session 23 |
+| 30 | 2026-09-16 | Technical indicators live in apps/web/src/shared/indicators as pure number-series functions | Used by the workspace now and by strategies and backtests later | Yes | Session 23 |
+| 31 | 2026-09-16 | Mock intraday bars open at the previous daily close; fundamentals and watchlists are new mock endpoints (read-only until S-05) | One price source (decision 19); the workspace right panel needs this data | Yes | Session 23 |
 
 
 

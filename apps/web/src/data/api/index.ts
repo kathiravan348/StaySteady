@@ -9,13 +9,16 @@ export {
   usePortfolioSummary,
   useTransactions,
 } from './portfolioQueries';
-export { useStrategies } from './tradingQueries';
-export type { PriceHistoriesResult } from './marketQueries';
+export { useSignals, useStrategies } from './tradingQueries';
+export { useWatchlists } from './watchlistQueries';
+export type { IntradayTimeframe, PriceHistoriesResult } from './marketQueries';
 export {
   useCorporateActions,
   useFxHistories,
   useFxRates,
+  useInstrumentFundamentals,
   useInstruments,
+  useIntradayBars,
   useMarkets,
   usePriceHistories,
   useQuotes,

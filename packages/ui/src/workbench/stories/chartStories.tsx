@@ -2,6 +2,7 @@ import { AnalyticalChart } from '../../charts/analytical/AnalyticalChart';
 import { PriceChart } from '../../charts/price/PriceChart';
 import type { PriceBarData, VolumeBarData } from '../../charts/price/types';
 import type { ComponentStory } from '../types';
+import { TradingChartDemo } from './TradingChartDemo';
 
 const SAMPLE_PRICE_DATA: readonly PriceBarData[] = [
   { time: '2024-01-02', open: 180.2, high: 184.5, low: 179.8, close: 183.4 },
@@ -33,6 +34,14 @@ export const chartStories: readonly ComponentStory[] = [
         <PriceChart data={SAMPLE_PRICE_DATA} volumeData={SAMPLE_VOLUME_DATA} height={320} />
       </div>
     ),
+  },
+  {
+    id: 'trading-chart',
+    name: 'TradingChart (research workspace)',
+    category: 'Charts',
+    description:
+      'Stacked price and indicator panes with a shared crosshair, five series styles, holiday gaps, drawing tools, keyboard zoom and pan, and image export.',
+    render: () => <TradingChartDemo />,
   },
   {
     id: 'analytical-chart',

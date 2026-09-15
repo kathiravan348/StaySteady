@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { z } from 'zod';
 
 import type {
+  InstrumentFundamentalsDto,
   CorporateActionDto,
   FxRateDto,
   FxRateHistoryDto,
@@ -15,6 +16,7 @@ import type {
   PriceBarDto,
 } from '../schemas';
 import {
+  InstrumentFundamentalsSchema,
   CorporateActionSchema,
   FxRateHistorySchema,
   FxRateSchema,
@@ -36,6 +38,42 @@ const FxRateListSchema = z.array(FxRateSchema);
 const FxHistoryListSchema = z.array(FxRateHistorySchema);
 const PriceBarListSchema = z.array(PriceBarSchema);
 const CorporateActionListSchema = z.array(CorporateActionSchema);
+
+export type IntradayTimeframe = '1m' | '5m' | '15m' | '1h';
+
+// Pass null to skip loading, e.g. while a daily timeframe is selected.
+export function useIntradayBars(
+  instrumentId: string,
+  timeframe: IntradayTimeframe | null,
+): UseQueryResult<PriceBarDto[]> {
+  return useQuery({
+    queryKey: ['intraday', instrumentId, timeframe],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/instruments/${encodeURIComponent(instrumentId)}/intraday?timeframe=${timeframe ?? '5m'}`,
+        PriceBarListSchema,
+        signal,
+      ),
+    enabled: timeframe !== null && instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useInstrumentFundamentals(
+  instrumentId: string,
+): UseQueryResult<InstrumentFundamentalsDto> {
+  return useQuery({
+    queryKey: ['fundamentals', instrumentId],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/instruments/${encodeURIComponent(instrumentId)}/fundamentals`,
+        InstrumentFundamentalsSchema,
+        signal,
+      ),
+    enabled: instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
 
 export function useCorporateActions(instrumentId: string): UseQueryResult<CorporateActionDto[]> {
   return useQuery({

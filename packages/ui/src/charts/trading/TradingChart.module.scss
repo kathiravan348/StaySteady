@@ -1,0 +1,72 @@
+.root {
+  display: grid;
+  gap: var(--space-2, 0.5rem);
+  min-width: 0;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem);
+  align-items: center;
+}
+
+.frame {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: var(--border-width-thin, 1px) solid var(--border-subtle);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.legend {
+  position: absolute;
+  top: var(--space-2, 0.5rem);
+  left: var(--space-3, 0.75rem);
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  align-items: baseline;
+  max-width: calc(100% - 6rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  pointer-events: none;
+  background-color: color-mix(in srgb, var(--surface-raised) 85%, transparent);
+  border-radius: var(--radius-sm, 0.25rem);
+}
+
+.legendTime {
+  color: var(--text-secondary);
+}
+
+.legendItem {
+  white-space: nowrap;
+}
+
+.legendLabel {
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-secondary);
+}
+
+.canvas {
+  width: 100%;
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring, var(--interactive-primary));
+    outline-offset: -2px;
+  }
+}
+
+.drawing {
+  cursor: crosshair;
+}
+
+.hint {
+  min-height: 1.25rem;
+  margin: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--text-secondary);
+}

@@ -4,6 +4,7 @@
 import { Decimal } from 'decimal.js';
 import type { InstrumentDto, PriceBarDto, TradingSessionKindDto } from '../../schemas';
 import { PriceBarSchema } from '../../schemas';
+import { generatePriceHistoryForInstrument } from './priceHistory';
 import { parseGeneratedList } from './validated';
 import type { MockGeneratorContext } from './mockContext';
 import { currencyDecimals } from './values';
@@ -51,9 +52,10 @@ export function generateIntradayBars(
   const totalMinutes = (endHour - startHour) * 60 + (endMinute - startMinute);
   const stepCount = Math.max(1, Math.floor(totalMinutes / tfMins));
 
-  const basePriceNum =
-    instrument.currency === 'JPY' ? 2600 : instrument.currency === 'INR' ? 1800 : 190;
-  let currentClose = new Decimal(basePriceNum);
+  // One price source (decision 19): the session opens at the last daily close before the date.
+  const history = generatePriceHistoryForInstrument(ctx, instrument);
+  const previous = [...history].reverse().find((bar) => bar.timestamp.slice(0, 10) < targetDate);
+  let currentClose = new Decimal(previous?.close ?? history[history.length - 1]?.close ?? 100);
   const minuteVol = 0.0012 * Math.sqrt(tfMins);
 
   const bars: PriceBarDto[] = [];
