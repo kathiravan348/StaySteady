@@ -65,6 +65,9 @@ export const ROUTES = {
   SETTINGS_ALERTS: '/settings/alerts',
   SETTINGS_CREDENTIALS: '/settings/credentials',
   SETTINGS_DISPLAY: '/settings/display',
+
+  // Developer Component Workbench (UI Spec 4.4 / Stage L)
+  WORKBENCH: '/workbench',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

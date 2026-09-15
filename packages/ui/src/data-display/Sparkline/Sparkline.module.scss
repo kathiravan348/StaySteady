@@ -1,0 +1,16 @@
+.sparkline {
+  display: inline-block;
+  overflow: visible;
+}
+
+.positive {
+  color: var(--domain-gain, #22c55e);
+}
+
+.negative {
+  color: var(--domain-loss, #ef4444);
+}
+
+.neutral {
+  color: var(--text-secondary, #94a3b8);
+}

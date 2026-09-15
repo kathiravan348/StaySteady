@@ -1,0 +1,86 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: var(--space-4, 1rem);
+}
+
+.modal {
+  width: 100%;
+  max-width: 32rem;
+  background-color: var(--surface-overlay, #1e293b);
+  border: 1px solid var(--border-subtle, #334155);
+  border-radius: var(--radius-card, 0.75rem);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.4));
+  outline: none;
+  overflow: hidden;
+  animation: modalEnter 150ms ease-out;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  padding: var(--space-6, 1.5rem);
+  gap: var(--space-4, 1rem);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+  margin: 0;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm, 0.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--text-primary, #f8fafc);
+    background-color: var(--surface-raised, #334155);
+  }
+}
+
+.body {
+  color: var(--text-secondary, #cbd5e1);
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.5;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+  margin-top: var(--space-2, 0.5rem);
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

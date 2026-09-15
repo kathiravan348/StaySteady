@@ -1,0 +1,48 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-bottom: 1px solid var(--border-subtle, #334155);
+  transition: background-color 150ms ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.itemButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-raised, #1e293b);
+  }
+}
+
+.interactive {
+  padding: 0;
+}
+
+.dense {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+}

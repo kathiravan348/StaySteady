@@ -1,0 +1,44 @@
+.splitPanel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.horizontal {
+  flex-direction: row;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.pane {
+  overflow: auto;
+}
+
+.splitter {
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+  outline: none;
+  background-color: var(--border-subtle, #334155);
+  transition: background-color 150ms ease;
+  user-select: none;
+  z-index: 10;
+
+  &:hover,
+  &:active {
+    background-color: var(--interactive-primary, #3b82f6);
+  }
+}
+
+.horizontalSplitter {
+  width: 4px;
+  cursor: col-resize;
+}
+
+.verticalSplitter {
+  height: 4px;
+  cursor: row-resize;
+}

@@ -1,0 +1,12 @@
+.chartContainer {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius-card, 0.75rem);
+  overflow: hidden;
+  background-color: var(--surface-base, #0f172a);
+  border: 1px solid var(--border-subtle, #334155);
+}
+
+.chartCanvas {
+  width: 100%;
+}

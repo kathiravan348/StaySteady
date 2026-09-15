@@ -1,0 +1,144 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: overlayEnter 200ms ease-out;
+}
+
+.rightOverlay {
+  justify-content: flex-end;
+}
+
+.leftOverlay {
+  justify-content: flex-start;
+}
+
+.bottomOverlay {
+  align-items: flex-end;
+}
+
+.drawer {
+  background-color: var(--surface-overlay, #1e293b);
+  border-color: var(--border-subtle, #334155);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.4));
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.right {
+  width: 100%;
+  max-width: 28rem;
+  height: 100%;
+  border-left: 1px solid var(--border-subtle, #334155);
+  animation: slideInRight 200ms ease-out;
+}
+
+.left {
+  width: 100%;
+  max-width: 28rem;
+  height: 100%;
+  border-right: 1px solid var(--border-subtle, #334155);
+  animation: slideInLeft 200ms ease-out;
+}
+
+.bottom {
+  width: 100%;
+  max-height: 80vh;
+  border-top: 1px solid var(--border-subtle, #334155);
+  border-top-left-radius: var(--radius-card, 0.75rem);
+  border-top-right-radius: var(--radius-card, 0.75rem);
+  animation: slideInBottom 200ms ease-out;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-6, 1.5rem);
+  gap: var(--space-4, 1rem);
+  outline: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+  margin: 0;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm, 0.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: var(--text-primary, #f8fafc);
+    background-color: var(--surface-raised, #334155);
+  }
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  color: var(--text-secondary, #cbd5e1);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2, 0.5rem);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes overlayEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

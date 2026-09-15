@@ -50,10 +50,14 @@ import { PlanningScenariosPage } from '../features/planning/PlanningScenariosPag
 import { SettingsMarketsPage } from '../features/settings/SettingsMarketsPage';
 import { SettingsProvidersPage } from '../features/settings/SettingsProvidersPage';
 import { SettingsDisplayPage } from '../features/settings/SettingsDisplayPage';
+import { WorkbenchShell } from '@staysteady/ui';
 
 export function AppRoutes(): ReactElement {
   return (
     <Routes>
+      {/* Component Workbench */}
+      <Route path={ROUTES.WORKBENCH} element={<WorkbenchShell />} />
+
       <Route element={<AppShell />}>
         <Route index element={<Navigate to={ROUTES.OVERVIEW} replace />} />
 

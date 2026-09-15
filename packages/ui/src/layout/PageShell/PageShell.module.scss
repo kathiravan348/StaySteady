@@ -1,0 +1,33 @@
+.pageShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--surface-base, #0f172a);
+  color: var(--text-primary, #f8fafc);
+}
+
+.topRow {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.mainContainer {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6, 1.5rem);
+}
+
+.statusStrip {
+  flex-shrink: 0;
+}

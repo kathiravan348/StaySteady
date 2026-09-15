@@ -1,0 +1,33 @@
+.pair {
+  display: flex;
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.horizontal {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 1rem);
+}
+
+.stacked {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1, 0.25rem);
+}
+
+.label {
+  color: var(--text-secondary, #94a3b8);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.value {
+  color: var(--text-primary, #f8fafc);
+  font-weight: 500;
+  font-family: var(--font-sans, inherit);
+
+  &.mono {
+    font-family: var(--font-mono, monospace);
+    font-variant-numeric: tabular-nums;
+  }
+}

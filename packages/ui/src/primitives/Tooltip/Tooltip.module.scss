@@ -1,0 +1,21 @@
+.tooltip {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-family: var(--font-sans, inherit);
+  color: var(--text-inverse, #ffffff);
+  background-color: var(--surface-overlay, #0f172a);
+  border: 1px solid var(--border-subtle, #334155);
+  border-radius: var(--radius-sm, 0.25rem);
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.2));
+  z-index: 100;
+  max-width: 20rem;
+  line-height: 1.3;
+}
+
+.arrow {
+  fill: var(--surface-overlay, #0f172a);
+  stroke: var(--border-subtle, #334155);
+  stroke-width: 1px;
+}
