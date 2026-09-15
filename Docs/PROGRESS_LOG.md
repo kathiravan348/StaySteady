@@ -2126,6 +2126,9 @@ FINDINGS (out of scope, not fixed):
 | 23 | 2026-09-15 | Library DataTable owns grouping, selection, column visibility and row details (all controllable); group rows render totals only for columns defining aggregatedCell | Every later table screen (watchlists, orders, backtest trades) needs the same behaviour; one accessible implementation | Yes | Owner (session 21) |
 | 24 | 2026-09-15 | Holdings carry brokerId, optional openedByStrategyId and exitLevel; markets carry holdingPeriodTaxThresholdDays; days held, tax status and currency effect are derived client-side from lots and FX history | UI spec 7.2 columns had no data; derived values stay consistent with lots and FX | Yes | Owner (session 21) |
 | 25 | 2026-09-15 | Pieces used by more than one feature move to apps/web/src/shared (format/display, ui/ToggleGroup, ui/PriceFreshnessBar) | Standards 8: features never import each other | Yes | Session 21 |
+| 26 | 2026-09-16 | Agent commits each finished screen to main (no push); a recommended option is taken automatically when a choice arises | Owner instruction for Stage S | Yes | Owner (session 22) |
+| 27 | 2026-09-16 | Library PriceChart takes markers and price levels with tone roles (up/down/neutral), never raw colours | Keeps packages/ui domain-free and theme-aware; entries, exits and levels share one API | Yes | Session 22 |
+| 28 | 2026-09-16 | Mock dividends derive from corporate actions and shares held; non-USD purchases carry a 0.25% conversion charge; position edits (exit, notes, manual transactions, close request) live in sessionStorage until a write API exists | Costs and income need coherent data; the mock phase has no persistence | Yes | Session 22 |
 
 
 
