@@ -1,0 +1,5 @@
+// Shared mixins (standards 7.4). In component styles: @use '<relative path>/styles/mixins' as mx;
+@forward 'breakpoints';
+@forward 'accessibility';
+@forward 'text';
+@forward 'surface';

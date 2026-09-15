@@ -1,0 +1,46 @@
+@use 'sass:list';
+@use 'sass:meta';
+
+// Serialises a token value for a custom property. Lists are joined item by item so a one-item
+// list never leaks Sass bracket syntax like "(a,)", and quoted font names keep their quotes.
+@function -serialize($value) {
+  @if meta.type-of($value) != 'list' {
+    @return meta.inspect($value);
+  }
+
+  $glue: ' ';
+
+  @if list.separator($value) == 'comma' {
+    $glue: ', ';
+  }
+
+  $result: '';
+
+  @each $item in $value {
+    @if $result != '' {
+      $result: $result + $glue;
+    }
+
+    $result: $result + -serialize($item);
+  }
+
+  @return $result;
+}
+
+// Flattens a nested token map into CSS custom properties.
+// ('color': ('blue': (500: #3b7be0))) becomes --color-blue-500: #3b7be0.
+@mixin custom-properties($tokens, $prefix: null) {
+  @each $key, $value in $tokens {
+    $name: '#{$key}';
+
+    @if $prefix {
+      $name: '#{$prefix}-#{$key}';
+    }
+
+    @if meta.type-of($value) == 'map' {
+      @include custom-properties($value, $name);
+    } @else {
+      --#{$name}: #{-serialize($value)};
+    }
+  }
+}

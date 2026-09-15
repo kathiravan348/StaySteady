@@ -1,0 +1,202 @@
+// Layer 1 — primitive tokens (standards 3.1). Raw values with no meaning attached.
+// Components never reference these directly; they use semantic or domain tokens.
+
+$color: (
+  'neutral': (
+    0: #fff,
+    50: #f5f7fa,
+    100: #e9edf2,
+    200: #d3dae3,
+    300: #b4bfcc,
+    400: #8f9cad,
+    500: #6b7889,
+    600: #515c6b,
+    700: #3b4450,
+    800: #272e37,
+    900: #181d24,
+    950: #11151a,
+    1000: #0a0d11,
+  ),
+  'blue': (
+    300: #8fb8ff,
+    400: #5c97f5,
+    500: #3b7be0,
+    600: #2c62b8,
+    700: #234d8f,
+    800: #1b3a6b,
+  ),
+  'green': (
+    300: #7fd8a4,
+    400: #4cc182,
+    500: #2ea466,
+    600: #238451,
+    700: #1b663f,
+  ),
+  'red': (
+    300: #f59a9a,
+    400: #ee6b6b,
+    500: #d94848,
+    600: #b33636,
+    700: #8c2a2a,
+  ),
+  'amber': (
+    300: #f7cf7a,
+    400: #f2b544,
+    500: #d9951f,
+    600: #b07617,
+    700: #875a12,
+    800: #6b4610,
+  ),
+  'magenta': (
+    300: #f08fd0,
+    400: #e05bb8,
+    500: #c23c9c,
+    600: #9c2f7e,
+    700: #772461,
+  ),
+  'teal': (
+    300: #7ddcdc,
+    400: #3cc4c4,
+    500: #22a3a3,
+    600: #1a8080,
+    700: #146363,
+  ),
+  'purple': (
+    300: #c3aaf7,
+    400: #a07cf0,
+    500: #7f58d6,
+  ),
+);
+
+$space: (
+  0: 0,
+  1: 0.125rem,
+  2: 0.25rem,
+  3: 0.375rem,
+  4: 0.5rem,
+  5: 0.75rem,
+  6: 1rem,
+  7: 1.25rem,
+  8: 1.5rem,
+  9: 2rem,
+  10: 2.5rem,
+  11: 3rem,
+);
+
+$size: (
+  1: 1.5rem,
+  2: 1.625rem,
+  3: 1.75rem,
+  4: 2rem,
+  5: 2.25rem,
+  6: 2.5rem,
+);
+
+$radius: (
+  'none': 0,
+  'sm': 0.125rem,
+  'md': 0.25rem,
+  'lg': 0.5rem,
+  'full': 9999px,
+);
+
+$border-width: (
+  'thin': 1px,
+  'thick': 2px,
+);
+
+$font-family: (
+  'sans': (
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif,
+  ),
+  'mono': (
+    ui-monospace,
+    'Cascadia Mono',
+    'SF Mono',
+    Menlo,
+    Consolas,
+    monospace,
+  ),
+);
+
+$font-size: (
+  '2xs': 0.6875rem,
+  'xs': 0.75rem,
+  'sm': 0.8125rem,
+  'md': 0.875rem,
+  'lg': 1rem,
+  'xl': 1.25rem,
+  '2xl': 1.5rem,
+  '3xl': 2rem,
+);
+
+$font-weight: (
+  'regular': 400,
+  'medium': 500,
+  'semibold': 600,
+  'bold': 700,
+);
+
+$line-height: (
+  'tight': 1.2,
+  'normal': 1.45,
+  'relaxed': 1.6,
+);
+
+// UI spec 4 — tabular figures so number columns align and digits do not shift on update.
+$font-variant: (
+  'numeric': tabular-nums,
+);
+
+$shadow: (
+  'sm': 0 1px 2px rgb(0 0 0 / 30%),
+  'md': 0 4px 12px rgb(0 0 0 / 35%),
+  'lg': 0 12px 32px rgb(0 0 0 / 45%),
+);
+
+$z: (
+  'base': 0,
+  'raised': 10,
+  'dropdown': 100,
+  'sticky': 200,
+  'overlay': 300,
+  'modal': 400,
+  'toast': 500,
+  'tooltip': 600,
+);
+
+$duration: (
+  'instant': 0ms,
+  'fast': 120ms,
+  'normal': 200ms,
+  'slow': 320ms,
+  'slower': 600ms,
+);
+
+$easing: (
+  'standard': cubic-bezier(0.2, 0, 0, 1),
+  'exit': cubic-bezier(0.4, 0, 1, 1),
+);
+
+$primitives: (
+  'color': $color,
+  'space': $space,
+  'size': $size,
+  'radius': $radius,
+  'border-width': $border-width,
+  'font-family': $font-family,
+  'font-size': $font-size,
+  'font-weight': $font-weight,
+  'line-height': $line-height,
+  'font-variant': $font-variant,
+  'shadow': $shadow,
+  'z': $z,
+  'duration': $duration,
+  'easing': $easing,
+);

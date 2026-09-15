@@ -1,0 +1,77 @@
+@use '../functions/palette' as *;
+
+// Light theme. Remaps only semantic and domain tokens; same keys as the dark theme (standards 3.4).
+// Domain colours use darker steps so text-sized indicators keep 4.5:1 on white.
+
+$semantic: (
+  'surface': (
+    'sunken': palette('neutral', 100),
+    'base': palette('neutral', 0),
+    'raised': palette('neutral', 50),
+    'overlay': palette('neutral', 0),
+  ),
+  'text': (
+    'primary': palette('neutral', 950),
+    'secondary': palette('neutral', 700),
+    'muted': palette('neutral', 600),
+    'disabled': palette('neutral', 400),
+    'inverse': palette('neutral', 0),
+  ),
+  'border': (
+    'subtle': palette('neutral', 100),
+    'default': palette('neutral', 200),
+    'strong': palette('neutral', 400),
+  ),
+  'interactive': (
+    'primary': palette('blue', 600),
+    'primary-hover': palette('blue', 700),
+    'primary-active': palette('blue', 800),
+    'on-primary': palette('neutral', 0),
+  ),
+  'focus-ring': palette('blue', 600),
+);
+
+$domain: (
+  'change': (
+    'green': palette('green', 600),
+    'red': palette('red', 600),
+    'flat': palette('neutral', 600),
+  ),
+  'severity': (
+    'low': palette('neutral', 600),
+    'medium': palette('blue', 600),
+    'high': palette('amber', 700),
+    'critical': palette('magenta', 600),
+  ),
+  'market': (
+    'open': palette('green', 600),
+    'pre-open': palette('blue', 600),
+    'post-close': palette('blue', 600),
+    'closed': palette('neutral', 600),
+    'holiday': palette('purple', 500),
+  ),
+  'freshness': (
+    'live': palette('green', 600),
+    'delayed': palette('amber', 700),
+    'stale': palette('amber', 800),
+  ),
+  'mode': (
+    'simulation': palette('blue', 600),
+    'observation': palette('teal', 700),
+    'manual-approval': palette('amber', 700),
+    'full-automation': palette('purple', 500),
+  ),
+  'chart-series': (
+    1: palette('blue', 600),
+    2: palette('amber', 600),
+    3: palette('teal', 600),
+    4: palette('purple', 500),
+    5: palette('magenta', 500),
+    6: palette('blue', 800),
+    7: palette('teal', 700),
+    8: palette('neutral', 500),
+  ),
+  'motion': (
+    'price-flash': var(--duration-slower),
+  ),
+);

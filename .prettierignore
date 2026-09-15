@@ -1,0 +1,8 @@
+# Specification and log documents are owner-controlled; never reformat them.
+Docs/
+
+pnpm-lock.yaml
+dist/
+coverage/
+storybook-static/
+node_modules/

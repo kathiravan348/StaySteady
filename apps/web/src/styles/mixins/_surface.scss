@@ -1,0 +1,43 @@
+@use 'sass:map';
+
+$-elevations: (
+  'flat': (
+    'surface': 'base',
+    'shadow': null,
+  ),
+  'raised': (
+    'surface': 'raised',
+    'shadow': 'sm',
+  ),
+  'overlay': (
+    'surface': 'overlay',
+    'shadow': 'md',
+  ),
+  'modal': (
+    'surface': 'overlay',
+    'shadow': 'lg',
+  ),
+);
+
+// Surface colour plus shadow for a stacking level. High contrast separates layers with borders.
+@mixin elevation($level) {
+  @if not map.has-key($-elevations, $level) {
+    @error 'Unknown elevation "#{$level}". Expected one of: #{map.keys($-elevations)}.';
+  }
+
+  $shadow: map.get($-elevations, $level, 'shadow');
+
+  background-color: var(--surface-#{map.get($-elevations, $level, 'surface')});
+
+  @if $shadow {
+    box-shadow: var(--shadow-#{$shadow});
+  } @else {
+    box-shadow: none;
+  }
+}
+
+// Thin scrollbar that follows the active theme.
+@mixin scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}

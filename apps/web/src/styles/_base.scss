@@ -1,0 +1,29 @@
+@use 'mixins/accessibility';
+@use 'mixins/surface';
+
+// Base element defaults only (standards 7.1). Components style themselves with CSS Modules.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  text-size-adjust: 100%;
+  background-color: var(--surface-base);
+
+  @include surface.scrollbar;
+}
+
+body {
+  margin: 0;
+  font-size: var(--font-size-md);
+}
+
+:focus-visible {
+  @include accessibility.focus-ring;
+}

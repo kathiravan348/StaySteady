@@ -1,15 +1,5 @@
 {
-  "//": "Baseline only. Full compiler flags are task F-02; library build output is task L-01.",
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "jsx": "react-jsx",
-    "strict": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "noEmit": true
-  },
+  "//": "Library build output is task L-01.",
+  "extends": "../../tsconfig.base.json",
   "include": ["src"]
 }

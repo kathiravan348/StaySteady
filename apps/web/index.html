@@ -4,6 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StaySteady</title>
+    <script>
+      // No-flash display bootstrap: sets data-theme, data-density and data-gain-loss before first
+      // paint (standards 3.5). Keep values, defaults and the storage key in sync with
+      // src/shared/display/displaySettings.ts.
+      (function () {
+        var root = document.documentElement;
+        var saved = {};
+        try {
+          saved = JSON.parse(localStorage.getItem('staysteady.display') || '{}') || {};
+        } catch (error) {
+          saved = {};
+        }
+        var preference = saved.theme;
+        var theme = 'dark';
+        if (preference === 'dark' || preference === 'light' || preference === 'high-contrast') {
+          theme = preference;
+        } else if (preference === 'system') {
+          if (matchMedia('(prefers-contrast: more)').matches) {
+            theme = 'high-contrast';
+          } else {
+            theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+        }
+        root.dataset.theme = theme;
+        root.dataset.density = saved.density === 'compact' ? 'compact' : 'comfortable';
+        root.dataset.gainLoss = saved.gainLoss === 'red-up' ? 'red-up' : 'green-up';
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,0 +1,21 @@
+// Single-line truncation with an ellipsis.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Multi-line truncation after the given number of lines.
+@mixin truncate-lines($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+}
+
+// Tabular figures so digits align in columns and do not shift as values update (UI spec 4 and 9).
+@mixin numeric($align: end) {
+  font-variant-numeric: var(--font-variant-numeric);
+  text-align: $align;
+}

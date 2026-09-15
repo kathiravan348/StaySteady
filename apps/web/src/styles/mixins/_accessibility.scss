@@ -1,0 +1,25 @@
+// Focus ring — focus is restyled, never removed (standards 7.2).
+@mixin focus-ring {
+  outline: var(--border-width-thick) solid var(--focus-ring);
+  outline-offset: var(--space-1);
+}
+
+// Hides content visually while keeping it available to screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+}
+
+// Styles that apply only when the user asks for reduced motion (standards 3.5).
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}

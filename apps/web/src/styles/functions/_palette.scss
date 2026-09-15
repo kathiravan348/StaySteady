@@ -1,0 +1,5 @@
+// Reference a primitive colour custom property. Semantic and domain layers use this instead of
+// raw values, so a theme can remap meaning without touching primitives.
+@function palette($hue, $step) {
+  @return var(--color-#{$hue}-#{$step});
+}

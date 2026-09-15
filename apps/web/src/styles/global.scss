@@ -1,0 +1,69 @@
+// Global stylesheet entry (standards 7.1). Emits every token layer as CSS custom properties and
+// applies three independent display axes as attributes on <html> (standards 3.3 and 3.5):
+// data-theme, data-density and data-gain-loss. The no-flash script in index.html sets them.
+@use 'sass:map';
+@use 'mixins/custom-properties' as *;
+@use 'mixins/accessibility';
+@use 'tokens/primitives';
+@use 'tokens/density';
+@use 'tokens/gain-loss';
+@use 'themes/dark';
+@use 'themes/light';
+@use 'themes/high-contrast';
+@use 'base';
+
+:root {
+  @include custom-properties(primitives.$primitives);
+}
+
+// Theme axis — dark applies when no attribute is set (UI spec 2).
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  @include custom-properties(dark.$semantic);
+  @include custom-properties(dark.$domain);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  @include custom-properties(light.$semantic);
+  @include custom-properties(light.$domain);
+}
+
+[data-theme='high-contrast'] {
+  color-scheme: dark;
+
+  @include custom-properties(high-contrast.$semantic);
+  @include custom-properties(high-contrast.$domain);
+}
+
+// Density axis — comfortable by default.
+:root,
+[data-density='comfortable'] {
+  @include custom-properties(density.$comfortable, 'density');
+}
+
+[data-density='compact'] {
+  @include custom-properties(density.$compact, 'density');
+}
+
+// Gain/loss convention axis — green-up by default.
+:root,
+[data-gain-loss='green-up'] {
+  @include custom-properties(gain-loss.$green-up, 'change');
+}
+
+[data-gain-loss='red-up'] {
+  @include custom-properties(gain-loss.$red-up, 'change');
+}
+
+// Reduced motion is honoured independently of theme (standards 3.5).
+@include accessibility.reduced-motion {
+  :root {
+    @each $name, $value in map.get(primitives.$primitives, 'duration') {
+      --duration-#{$name}: 0ms;
+    }
+  }
+}

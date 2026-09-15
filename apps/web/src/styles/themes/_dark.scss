@@ -1,0 +1,79 @@
+@use '../functions/palette' as *;
+
+// Dark theme — the default (UI spec 2). Remaps only semantic (layer 2) and domain (layer 3) tokens.
+// Every theme must define the same keys (standards 3.4).
+
+$semantic: (
+  'surface': (
+    'sunken': palette('neutral', 1000),
+    'base': palette('neutral', 950),
+    'raised': palette('neutral', 900),
+    'overlay': palette('neutral', 800),
+  ),
+  'text': (
+    'primary': palette('neutral', 50),
+    'secondary': palette('neutral', 300),
+    'muted': palette('neutral', 400),
+    'disabled': palette('neutral', 600),
+    'inverse': palette('neutral', 950),
+  ),
+  'border': (
+    'subtle': palette('neutral', 800),
+    'default': palette('neutral', 700),
+    'strong': palette('neutral', 500),
+  ),
+  'interactive': (
+    'primary': palette('blue', 600),
+    'primary-hover': palette('blue', 500),
+    'primary-active': palette('blue', 700),
+    'on-primary': palette('neutral', 0),
+  ),
+  'focus-ring': palette('blue', 300),
+);
+
+$domain: (
+  // Raw direction colours; the gain/loss convention axis maps them to --change-gain/--change-loss
+  'change': (
+      'green': palette('green', 400),
+      'red': palette('red', 400),
+      'flat': palette('neutral', 400),
+    ),
+  'severity': (
+    'low': palette('neutral', 400),
+    'medium': palette('blue', 400),
+    'high': palette('amber', 400),
+    'critical': palette('magenta', 400),
+  ),
+  'market': (
+    'open': palette('green', 400),
+    'pre-open': palette('blue', 300),
+    'post-close': palette('blue', 300),
+    'closed': palette('neutral', 400),
+    'holiday': palette('purple', 400),
+  ),
+  'freshness': (
+    'live': palette('green', 400),
+    'delayed': palette('amber', 300),
+    'stale': palette('amber', 500),
+  ),
+  'mode': (
+    'simulation': palette('blue', 400),
+    'observation': palette('teal', 400),
+    'manual-approval': palette('amber', 400),
+    'full-automation': palette('purple', 400),
+  ),
+  // Avoids pure gain/loss hues so series never read as up/down
+  'chart-series': (
+      1: palette('blue', 400),
+      2: palette('amber', 400),
+      3: palette('teal', 400),
+      4: palette('purple', 400),
+      5: palette('magenta', 300),
+      6: palette('blue', 300),
+      7: palette('teal', 300),
+      8: palette('neutral', 300),
+    ),
+  'motion': (
+    'price-flash': var(--duration-slower),
+  )
+);

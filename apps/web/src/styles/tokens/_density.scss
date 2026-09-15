@@ -1,0 +1,20 @@
+// Density axis (UI spec 4): comfortable and compact. Independent of theme (standards 3.3).
+// Emitted with the "density" prefix, e.g. --density-control-height.
+
+$comfortable: (
+  'control-height': var(--size-4),
+  'row-height': var(--size-5),
+  'cell-padding-x': var(--space-5),
+  'cell-padding-y': var(--space-3),
+  'gap': var(--space-4),
+  'panel-padding': var(--space-6),
+);
+
+$compact: (
+  'control-height': var(--size-2),
+  'row-height': var(--size-3),
+  'cell-padding-x': var(--space-4),
+  'cell-padding-y': var(--space-2),
+  'gap': var(--space-3),
+  'panel-padding': var(--space-5),
+);

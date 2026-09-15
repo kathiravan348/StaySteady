@@ -1,0 +1,30 @@
+@use 'sass:map';
+
+// UI spec 12 — responsive tiers. Media queries use these names, never raw widths (standards 7.2).
+$breakpoints: (
+  'tablet': 768px,
+  'laptop': 1024px,
+  'desktop': 1440px,
+);
+
+@function breakpoint($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error 'Unknown breakpoint "#{$name}". Expected one of: #{map.keys($breakpoints)}.';
+  }
+
+  @return map.get($breakpoints, $name);
+}
+
+// Applies from the named breakpoint upwards.
+@mixin up($name) {
+  @media (width >= #{breakpoint($name)}) {
+    @content;
+  }
+}
+
+// Applies below the named breakpoint.
+@mixin down($name) {
+  @media (width < #{breakpoint($name)}) {
+    @content;
+  }
+}

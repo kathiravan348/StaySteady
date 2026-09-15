@@ -1,0 +1,12 @@
+.app {
+  display: grid;
+  gap: var(--space-8);
+  max-width: 48rem;
+  padding: var(--space-9);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+}

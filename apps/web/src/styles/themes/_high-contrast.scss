@@ -1,0 +1,78 @@
+@use '../functions/palette' as *;
+
+// High contrast theme — accessibility, not a stylistic variant (standards 3.2).
+// Pure black surfaces, bright text and strong borders. Shadows do not show on black, so
+// separation comes from borders. Same keys as the dark theme (standards 3.4).
+
+$semantic: (
+  'surface': (
+    'sunken': palette('neutral', 1000),
+    'base': palette('neutral', 1000),
+    'raised': palette('neutral', 1000),
+    'overlay': palette('neutral', 950),
+  ),
+  'text': (
+    'primary': palette('neutral', 0),
+    'secondary': palette('neutral', 100),
+    'muted': palette('neutral', 200),
+    'disabled': palette('neutral', 400),
+    'inverse': palette('neutral', 1000),
+  ),
+  'border': (
+    'subtle': palette('neutral', 500),
+    'default': palette('neutral', 300),
+    'strong': palette('neutral', 0),
+  ),
+  'interactive': (
+    'primary': palette('blue', 300),
+    'primary-hover': palette('blue', 400),
+    'primary-active': palette('blue', 500),
+    'on-primary': palette('neutral', 1000),
+  ),
+  'focus-ring': palette('amber', 300),
+);
+
+$domain: (
+  'change': (
+    'green': palette('green', 300),
+    'red': palette('red', 300),
+    'flat': palette('neutral', 200),
+  ),
+  'severity': (
+    'low': palette('neutral', 200),
+    'medium': palette('blue', 300),
+    'high': palette('amber', 300),
+    'critical': palette('magenta', 300),
+  ),
+  'market': (
+    'open': palette('green', 300),
+    'pre-open': palette('blue', 300),
+    'post-close': palette('blue', 300),
+    'closed': palette('neutral', 300),
+    'holiday': palette('purple', 300),
+  ),
+  'freshness': (
+    'live': palette('green', 300),
+    'delayed': palette('amber', 300),
+    'stale': palette('amber', 400),
+  ),
+  'mode': (
+    'simulation': palette('blue', 300),
+    'observation': palette('teal', 300),
+    'manual-approval': palette('amber', 300),
+    'full-automation': palette('purple', 300),
+  ),
+  'chart-series': (
+    1: palette('blue', 300),
+    2: palette('amber', 300),
+    3: palette('teal', 300),
+    4: palette('purple', 300),
+    5: palette('magenta', 300),
+    6: palette('blue', 400),
+    7: palette('teal', 400),
+    8: palette('neutral', 200),
+  ),
+  'motion': (
+    'price-flash': var(--duration-slower),
+  ),
+);

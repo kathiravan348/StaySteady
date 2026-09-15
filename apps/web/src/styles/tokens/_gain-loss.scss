@@ -1,0 +1,14 @@
+// Gain/loss convention axis (UI spec 4, standards 3.3). Themes define --change-green and
+// --change-red; this axis only decides which one means gain and which means loss.
+// Green-up: most Western markets and India. Red-up: China, Japan, Korea, Taiwan.
+// Emitted with the "change" prefix: --change-gain and --change-loss.
+
+$green-up: (
+  'gain': var(--change-green),
+  'loss': var(--change-red),
+);
+
+$red-up: (
+  'gain': var(--change-red),
+  'loss': var(--change-green),
+);

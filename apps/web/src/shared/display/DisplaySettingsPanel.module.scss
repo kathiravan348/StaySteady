@@ -1,0 +1,46 @@
+@use '../../styles/mixins' as mx;
+
+.panel {
+  display: grid;
+  gap: var(--density-gap);
+  padding: var(--density-panel-padding);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-lg);
+
+  @include mx.elevation('raised');
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--density-gap);
+}
+
+.preview {
+  display: flex;
+  gap: var(--space-6);
+  margin: 0;
+  font-size: var(--font-size-lg);
+
+  @include mx.numeric(start);
+}
+
+.gain {
+  color: var(--change-gain);
+}
+
+.loss {
+  color: var(--change-loss);
+}
+
+.resolved {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}

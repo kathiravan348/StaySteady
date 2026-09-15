@@ -65,20 +65,11 @@
   - Both applied as separate attributes on the root element
 - Same principle for density — comfortable and compact are a separate axis, not separate themes
 
-### 3.4 Theme Versioning
+### 3.4 Theme Consistency
 
-- Each theme carries a version identifier
-- A theme version records:
-  - Which token contract version it satisfies
-  - What changed from the previous version
-- Token contract:
-  - The full list of semantic and domain tokens every theme must define
-  - Enforced at build time — a theme missing a required token fails the build rather than silently falling back
-- When a new token is added to the contract:
-  - Contract version increments
-  - Every theme must supply the new token before the build passes
-- Deprecated tokens are marked, warned on, and removed only on a contract version bump
-- Themes stored so that an older theme version can be restored without archaeology
+- Every theme defines the same set of semantic and domain tokens
+- When a token is added, add it to every theme in the same change
+- Checked by viewing each theme in the running app — there is no build-time token contract or theme versioning (simplified 2026-09-15 for a personal project)
 
 ### 3.5 Theme Runtime Requirements
 
@@ -140,7 +131,7 @@
 
 - Target: no file exceeds 250 lines
 - Applied to all source files, not only pages
-- Enforced as a lint warning at 200 lines and an error at 250
+- Kept as a habit and checked when reviewing changes — not lint-enforced (simplified 2026-09-15)
 - Documented exceptions allowed with an inline justification comment, reviewed rather than silently accumulated
 - Generated files, token definitions and type definition files are exempt
 
@@ -169,10 +160,9 @@
 ### 5.4 Complexity Limits Alongside Line Count
 
 - Maximum nesting depth of four
-- Maximum function length of fifty lines
 - Maximum parameters of four, beyond which use an options object
-- Maximum cyclomatic complexity threshold enforced by lint
-- One component per file, with the file named after it
+- One component per file
+- Keep functions short and simple and name component files after their component, as habits — function length, complexity and file naming are not lint-enforced (simplified 2026-09-15)
 
 ## 6. TypeScript Standards
 
@@ -239,7 +229,7 @@
 
 ### 7.2 Rules
 
-- No raw colour values outside the token files — enforced by lint
+- No raw colour values outside the token files
 - No raw spacing, radius, font size or duration values outside token files
 - Maximum nesting depth of three
 - No element selectors in component styles, only class selectors
@@ -278,7 +268,7 @@
   - Data layer, including the mock implementation
   - Styles, tokens and themes
   - The component library as a separate package
-- Import rules enforced by lint:
+- Import rules (habits, not lint-enforced — simplified 2026-09-15):
   - Features may not import from each other directly
   - Anything shared between features moves to the shared layer
   - The library never imports from the application
@@ -286,17 +276,15 @@
 ## 9. Enforcement
 
 - Standards that are not enforced automatically will drift
-- Lint configuration covering:
-  - TypeScript rules from the strict rule set
-  - Import ordering and restricted import paths
-  - File length and complexity limits
-  - Accessibility rules on markup
-  - SCSS rules including forbidden raw values and nesting depth
+- Lint kept minimal — one eslint.config.mjs with recommended presets (simplified 2026-09-15):
+  - Recommended JavaScript and TypeScript rules, including no `any`
+  - Recommended accessibility rules on markup
+- File length, import boundaries, nesting and raw SCSS values are habits checked in review, not lint-enforced
+- Strict TypeScript compiler flags (section 6.1) remain the main automated safety net
 - Formatting handled by a formatter, not by review comments, with no per-file overrides
-- Pre-commit hooks running lint and type checking on changed files only, to stay fast
-- Full type check, lint and test run in the build pipeline
-- Build fails on any violation; warnings that are never fixed become errors
-- No standard is added without a way to enforce it
+- Before committing, run `pnpm typecheck`, `pnpm lint` and `pnpm build` locally — no pre-commit hooks or CI pipeline for this personal project (simplified 2026-09-15)
+- Build fails on any type error; lint errors are fixed before committing
+- A standard is either enforced by tooling or written down as a habit — never silently assumed
 
 ## 10. Testing Standards
 

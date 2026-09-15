@@ -1,0 +1,28 @@
+// Shared compiler baseline for every workspace package.
+// Flags below implement Frontend_Engineering_Standards.md section 6.1 — do not weaken them.
+{
+  "compilerOptions": {
+    // Environment
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    // 6.1 — strict mode, no individual strict flag disabled
+    "strict": true,
+
+    // 6.1 — additional flags
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
+  }
+}
