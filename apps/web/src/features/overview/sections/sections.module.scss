@@ -13,39 +13,6 @@
   }
 }
 
-.toggleGroup {
-  display: inline-flex;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background-color: var(--surface-sunken);
-  border: var(--border-width-thin) solid var(--border-subtle);
-  border-radius: var(--radius-md);
-}
-
-.toggle {
-  padding: var(--space-1) var(--space-4);
-  font: inherit;
-  font-size: var(--font-size-xs);
-  color: var(--text-secondary);
-  cursor: pointer;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-sm);
-
-  &:hover {
-    color: var(--text-primary);
-  }
-
-  &:focus-visible {
-    @include mx.focus-ring;
-  }
-
-  &[aria-pressed='true'] {
-    color: var(--text-primary);
-    background-color: var(--surface-overlay);
-  }
-}
-
 .columns {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

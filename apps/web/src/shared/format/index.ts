@@ -12,5 +12,14 @@ export {
 export type { FormatMoneyOptions } from './formatMoney';
 export { formatMoney, formatGainLossCombined, getLocaleForCurrency } from './formatMoney';
 
+export type { NumberDirection } from './display';
+export {
+  directionOfNumber,
+  formatSignedMoney,
+  formatSignedPercent,
+  humanizeToken,
+  pluralize,
+} from './display';
+
 export type { FormatDateTimeOptions } from './formatDateTime';
 export { formatRelativeTime, formatDateTime, formatIsoDate } from './formatDateTime';

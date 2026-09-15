@@ -1,0 +1,210 @@
+@use '../../../styles/mixins' as mx;
+
+.layout {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.warnings,
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.searchInput {
+  min-width: 16rem;
+  height: var(--density-control-height);
+  padding-inline: var(--density-cell-padding-x);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  height: var(--density-control-height);
+  padding-inline: var(--space-4);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  list-style: none;
+  cursor: pointer;
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:hover {
+    border-color: var(--border-strong);
+  }
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.picker {
+  position: relative;
+}
+
+.pickerPanel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: var(--z-dropdown);
+  display: grid;
+  gap: var(--space-2);
+  min-width: 15rem;
+  padding: var(--space-4);
+  margin: 0;
+  background-color: var(--surface-overlay);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.pickerOption {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.visuallyHidden {
+  @include mx.visually-hidden;
+}
+
+.stackCell {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.instrumentLink {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.valueStack {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: end;
+}
+
+.exitDistance {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.positive {
+  color: var(--change-gain);
+}
+
+.negative {
+  color: var(--change-loss);
+}
+
+.neutral {
+  color: var(--change-flat);
+}
+
+.sizeTrack {
+  display: block;
+  width: 4rem;
+  height: var(--space-1);
+  overflow: hidden;
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-full);
+}
+
+.sizeFill {
+  display: block;
+  height: 100%;
+  background-color: var(--interactive-primary);
+}
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-9);
+  align-items: flex-start;
+  white-space: normal;
+}
+
+.detailsBlock {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.detailsLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lotsTable {
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.lotsHeader {
+  padding: var(--space-1) var(--space-6) var(--space-2) 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-align: start;
+}
+
+.lotsCell {
+  padding: var(--space-2) var(--space-6) var(--space-2) 0;
+  color: var(--text-primary);
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.lotsNumeric {
+  @include mx.numeric(end);
+}
+
+.emptyAction {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: underline;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}

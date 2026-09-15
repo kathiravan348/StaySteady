@@ -1,4 +1,4 @@
-// Holdings, purchase lots, transactions and portfolio summary (M-09, reworked session 19).
+// Holdings, purchase lots, transactions and portfolio summary (M-09, reworked sessions 19 and 21).
 // One price source: lot costs are historical closes on the purchase date, current value uses the
 // live quote, and every total converts to the base currency through FX rates.
 
@@ -13,14 +13,18 @@ import type {
   InstrumentDto,
   MarketQuoteDto,
   PortfolioSummaryDto,
+  PriceBarDto,
   TransactionDto,
 } from '../../schemas';
 import { HoldingSchema, PortfolioSummarySchema, TransactionSchema } from '../../schemas';
 import { generateCurrentFxRates } from './fxHistory';
+import type { HoldingProfile } from './holdingProfiles';
+import { HOLDING_PROFILES } from './holdingProfiles';
 import { CANONICAL_INSTRUMENTS, generateInitialQuotes } from './instruments';
 import type { MockGeneratorContext } from './mockContext';
 import { generatePriceHistoryForInstrument } from './priceHistory';
-import { parseGenerated, parseGeneratedList } from './validated';
+import type { SeededRandom } from './seededRandom';
+import { MockDataError, parseGenerated, parseGeneratedList } from './validated';
 import { currencyDecimals, directionOf, toUtcDate } from './values';
 
 export interface PortfolioDataBundle {
@@ -36,15 +40,6 @@ type MoneyInput = HoldingInput['currentValue'];
 
 const BASE_CURRENCY: CurrencyCode = 'USD';
 const BUY_FEE = new Decimal('1.50');
-const HELD_INSTRUMENT_IDS: readonly string[] = [
-  'inst-us-aapl',
-  'inst-us-spy',
-  'inst-us-btc',
-  'inst-us-gold',
-  'inst-in-reliance',
-  'inst-uk-azn',
-  'inst-manual-bond',
-];
 
 const CASH_TRANSACTIONS: readonly TransactionInput[] = [
   {
@@ -84,24 +79,40 @@ interface ValuedHolding {
   readonly cost: Decimal;
 }
 
-// Purchase days are seeded positions in the instrument's own history, oldest first.
+// Purchase bars: fixed ages from the profile, otherwise seeded positions in the history, oldest first.
+function purchaseBarIndexes(
+  profile: HoldingProfile,
+  bars: readonly PriceBarDto[],
+  stream: SeededRandom,
+  lotCount: number,
+): readonly number[] {
+  const lastIndex = bars.length - 1;
+  if (profile.lotTradingDaysAgo !== undefined) {
+    return profile.lotTradingDaysAgo.map((daysAgo) => Math.max(0, lastIndex - daysAgo));
+  }
+  return Array.from({ length: lotCount }, () => stream.int(0, Math.max(0, bars.length - 25))).sort(
+    (a, b) => a - b,
+  );
+}
+
 function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): ValuedHolding {
+  const profile = HOLDING_PROFILES[instrument.id];
+  if (profile === undefined) {
+    throw new MockDataError(`No holding profile for ${instrument.id}`);
+  }
   const stream = ctx.random.fork(`holding:${instrument.id}`);
   const holdingId = `hld-${index + 1}`;
   const { currency } = instrument;
   const decimals = currencyDecimals(currency);
   const bars = generatePriceHistoryForInstrument(ctx, instrument);
   const lotCount = instrument.symbol === 'AAPL' || instrument.symbol === 'SPY' ? 3 : 1;
-  const barIndexes = Array.from({ length: lotCount }, () =>
-    stream.int(0, Math.max(0, bars.length - 25)),
-  ).sort((a, b) => a - b);
 
   const lots: LotInput[] = [];
   const transactions: TransactionInput[] = [];
   let quantity = new Decimal(0);
   let cost = new Decimal(0);
 
-  barIndexes.forEach((barIndex, lotIndex) => {
+  purchaseBarIndexes(profile, bars, stream, lotCount).forEach((barIndex, lotIndex) => {
     const bar = bars[barIndex];
     if (bar === undefined) {
       return;
@@ -138,8 +149,9 @@ function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): Value
     cost = cost.plus(totalCost);
   });
 
+  const lastClose = new Decimal(bars[bars.length - 1]?.close ?? 0);
   const quote = quotes.find((q) => q.instrumentId === instrument.id);
-  const price = new Decimal(quote?.lastPrice.amount ?? bars[bars.length - 1]?.close ?? 0);
+  const price = new Decimal(quote?.lastPrice.amount ?? lastClose);
   const value = quantity.times(price).toDecimalPlaces(decimals);
   const gain = value.minus(cost);
 
@@ -147,6 +159,10 @@ function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): Value
     holding: {
       id: holdingId,
       instrumentId: instrument.id,
+      brokerId: profile.brokerId,
+      ...(profile.openedByStrategyId === undefined
+        ? {}
+        : { openedByStrategyId: profile.openedByStrategyId }),
       quantity: quantity.toNumber(),
       costBasis: money(cost, currency),
       currentPrice: money(price, currency),
@@ -157,6 +173,15 @@ function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): Value
         : gain.dividedBy(cost).times(100).toDecimalPlaces(2).toNumber(),
       direction: directionOf(gain),
       allocationPercent: 0,
+      // Exit levels are fixed from the daily close, so they do not move with live ticks.
+      ...(profile.exitBelowClose === undefined
+        ? {}
+        : {
+            exitLevel: money(
+              lastClose.times(1 - profile.exitBelowClose).toDecimalPlaces(decimals),
+              currency,
+            ),
+          }),
       lots,
     },
     transactions,
@@ -205,14 +230,14 @@ export function generatePortfolioData(
     rate: new Decimal(rate.rate),
   }));
   const valued = CANONICAL_INSTRUMENTS.filter((instrument) =>
-    HELD_INSTRUMENT_IDS.includes(instrument.id),
+    Object.hasOwn(HOLDING_PROFILES, instrument.id),
   ).map((instrument, index) => valueHolding({ ctx, instrument, index, quotes }));
 
   const baseValues = valued.map((item) =>
     toBase(item.value, item.holding.currentValue.currency, fxTable),
   );
   const totalValue = baseValues.reduce((sum, value) => sum.plus(value), new Decimal(0));
-  // Provisional: cost basis converts at today's rate, so currency effect is not yet separated.
+  // Provisional: cost basis converts at today's rate, so currency effect is not separated here.
   const totalCost = valued.reduce(
     (sum, item) => sum.plus(toBase(item.cost, item.holding.costBasis.currency, fxTable)),
     new Decimal(0),

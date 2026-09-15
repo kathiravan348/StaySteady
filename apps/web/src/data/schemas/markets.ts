@@ -50,6 +50,9 @@ export const MarketSchema = z.object({
   weekendDays: z.array(WeekdaySchema),
   holidays: z.array(MarketHolidaySchema),
   settlementDays: z.number().int().nonnegative(),
+  // Requirements 6 — days a holding must be held for long-term tax treatment; null when the market
+  // makes no holding-period distinction.
+  holdingPeriodTaxThresholdDays: z.number().int().positive().nullable(),
   permittedInstrumentTypes: z.array(InstrumentTypeSchema).min(1),
   // Requirements 5 — nothing trades automatically unless this is true
   automationPermitted: z.boolean(),

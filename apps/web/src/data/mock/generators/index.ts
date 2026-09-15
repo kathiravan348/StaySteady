@@ -53,7 +53,8 @@ export {
 // M-08 FX History
 export { generateFxHistories, generateCurrentFxRates } from './fxHistory';
 
-// M-09 Portfolio
+// M-09 Portfolio (brokers and holding profiles added session 21)
+export { CANONICAL_BROKERS, getCanonicalBrokers } from './brokers';
 export type { PortfolioDataBundle } from './portfolio';
 export { generatePortfolioData } from './portfolio';
 

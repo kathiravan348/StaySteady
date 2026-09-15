@@ -12,7 +12,7 @@ import { AllocationSection } from './sections/AllocationSection';
 import { AttentionSection } from './sections/AttentionSection';
 import { HeadlineCards } from './sections/HeadlineCards';
 import { HoldingsNewsSection } from './sections/HoldingsNewsSection';
-import { OverviewStatusBar } from './sections/OverviewStatusBar';
+import { PriceFreshnessBar } from '../../shared/ui/PriceFreshnessBar';
 import { PortfolioValueSection } from './sections/PortfolioValueSection';
 import { RecentAlertsSection } from './sections/RecentAlertsSection';
 import { TopMoversSection } from './sections/TopMoversSection';
@@ -58,7 +58,7 @@ function renderContent(core: OverviewCoreState, signals: OverviewSignals): React
     case 'ready':
       return (
         <div className={styles.layout}>
-          <OverviewStatusBar
+          <PriceFreshnessBar
             oldestQuoteTimestamp={core.overview.oldestQuoteTimestamp}
             heldMarketIds={core.heldMarketIds}
           />

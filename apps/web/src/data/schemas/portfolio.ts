@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import {
+  BrokerIdSchema,
   DirectionSchema,
   InstrumentIdSchema,
+  StrategyIdSchema,
   IsoDateSchema,
   IsoUtcTimestampSchema,
   MoneySchema,
@@ -24,6 +26,9 @@ export type LotDto = z.infer<typeof LotSchema>;
 export const HoldingSchema = z.object({
   id: z.string().min(1),
   instrumentId: InstrumentIdSchema,
+  brokerId: BrokerIdSchema,
+  // Strategy that opened the position; absent for manually opened positions (UI spec 7.2).
+  openedByStrategyId: StrategyIdSchema.optional(),
   quantity: QuantitySchema,
   costBasis: MoneySchema,
   currentPrice: MoneySchema,
@@ -32,6 +37,8 @@ export const HoldingSchema = z.object({
   unrealisedGainLossPercent: PercentageSchema,
   direction: DirectionSchema,
   allocationPercent: PercentageSchema,
+  // Protective exit price in the instrument's currency; absent when no exit is set.
+  exitLevel: MoneySchema.optional(),
   lots: z.array(LotSchema),
 });
 export type HoldingDto = z.infer<typeof HoldingSchema>;

@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '../../primitives/Badge/Badge';
 import { DataTable } from '../../table/DataTable';
 import type { ComponentStory } from '../types';
+import { GroupedTableDemo } from './GroupedTableDemo';
 
 interface SampleHolding {
   readonly symbol: string;
@@ -112,5 +113,13 @@ export const tableStories: readonly ComponentStory[] = [
         />
       </div>
     ),
+  },
+  {
+    id: 'data-table-grouped',
+    name: 'DataTable — grouping, selection and details',
+    category: 'Data Table',
+    description:
+      'Multi-level grouping with totals rows, column visibility, checkbox row selection, sticky first column and expandable row details.',
+    render: () => <GroupedTableDemo />,
   },
 ];

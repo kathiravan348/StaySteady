@@ -1,12 +1,12 @@
 import { Badge, StaleState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 
-import { useMarketSchedule } from '../../../providers/MarketScheduleProvider';
-import { formatDateTime, formatRelativeTime } from '../../../shared/format';
-import type { IsoUtcTimestamp } from '../../../shared/types/dateTime';
-import styles from '../OverviewPage.module.scss';
+import { useMarketSchedule } from '../../providers/MarketScheduleProvider';
+import type { IsoUtcTimestamp } from '../types/dateTime';
+import { formatDateTime, formatRelativeTime } from '../format';
+import styles from './PriceFreshnessBar.module.scss';
 
-export interface OverviewStatusBarProps {
+export interface PriceFreshnessBarProps {
   readonly oldestQuoteTimestamp: IsoUtcTimestamp | null;
   readonly heldMarketIds: ReadonlySet<string>;
 }
@@ -14,10 +14,10 @@ export interface OverviewStatusBarProps {
 // UI spec 10 — stale prices carry an explicit age; closed markets show prices as the last close.
 const STALE_AFTER_MS = 5 * 60_000;
 
-export function OverviewStatusBar({
+export function PriceFreshnessBar({
   oldestQuoteTimestamp,
   heldMarketIds,
-}: OverviewStatusBarProps): ReactElement | null {
+}: PriceFreshnessBarProps): ReactElement | null {
   const { marketStatuses } = useMarketSchedule();
   const heldStatuses = marketStatuses.filter((status) => heldMarketIds.has(status.marketId));
   const closed = heldStatuses.filter(
@@ -38,7 +38,7 @@ export function OverviewStatusBar({
       : `${closed.map((status) => status.name).join(', ')} closed. Prices there are the last close.`;
 
   return (
-    <div className={styles.statusBar}>
+    <div className={styles.bar}>
       {staleSince !== null && (
         <StaleState
           isBanner

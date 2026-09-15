@@ -101,3 +101,82 @@
   overflow-y: auto;
   position: relative;
 }
+
+.headerButton,
+.expandButton,
+.groupToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:hover {
+    color: var(--text-primary, #f8fafc);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring, #8fb8ff);
+    outline-offset: 2px;
+  }
+}
+
+.groupToggle {
+  font-weight: 600;
+}
+
+.controlCell {
+  width: 2rem;
+}
+
+.groupRow {
+  background-color: color-mix(in srgb, var(--surface-raised, #1e293b) 70%, transparent);
+}
+
+.groupCount {
+  font-weight: 400;
+  color: var(--text-muted, #8f9cad);
+}
+
+.selected {
+  background-color: color-mix(in srgb, var(--interactive-primary, #2c62b8) 14%, transparent);
+}
+
+.stickyCell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--surface-base, #0f172a);
+}
+
+.thead .stickyCell {
+  z-index: 21;
+  background-color: var(--surface-raised, #1e293b);
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--interactive-primary, #2c62b8);
+}
+
+.emptyCell {
+  padding: var(--space-8, 2rem);
+  text-align: center;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}

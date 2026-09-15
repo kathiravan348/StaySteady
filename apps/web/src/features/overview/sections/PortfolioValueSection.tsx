@@ -15,7 +15,7 @@ import { useSystemState } from '../../../providers/SystemStateProvider';
 import { buildValueChartOptions } from '../model/valueChartOptions';
 import type { ValuePeriod } from '../model/valueHistory';
 import { buildValueSeries, VALUE_PERIODS } from '../model/valueHistory';
-import { ToggleGroup } from './ToggleGroup';
+import { ToggleGroup } from '../../../shared/ui/ToggleGroup';
 
 export interface PortfolioValueSectionProps {
   readonly holdings: readonly HoldingDto[];

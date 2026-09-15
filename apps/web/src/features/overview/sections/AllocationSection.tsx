@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { formatMoney } from '../../../shared/format';
 import { ALLOCATION_DIMENSIONS, humanizeToken } from '../model/overviewLists';
 import type { AllocationBreakdown, AllocationDimension } from '../model/overviewTypes';
-import { ToggleGroup } from './ToggleGroup';
+import { ToggleGroup } from '../../../shared/ui/ToggleGroup';
 import styles from './sections.module.scss';
 
 export interface AllocationSectionProps {

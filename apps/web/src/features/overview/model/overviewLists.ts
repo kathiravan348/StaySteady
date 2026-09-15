@@ -3,6 +3,7 @@
 import { Decimal } from 'decimal.js';
 
 import type { CalendarEventDto, MarketDto, NewsItemDto } from '../../../data/schemas';
+import { humanizeToken } from '../../../shared/format';
 import { createMoney } from '../../../shared/money';
 import type { BaseCurrencyCode } from '../../../shared/types/currency';
 import type {
@@ -32,11 +33,7 @@ const IMPORTANCE_RANK: Readonly<Record<NewsItemDto['importance'], number>> = {
   low: 2,
 };
 
-// "long_term" -> "Long term", "manual-approval" -> "Manual approval".
-export function humanizeToken(token: string): string {
-  const words = token.replaceAll('_', ' ').replaceAll('-', ' ');
-  return words.charAt(0).toUpperCase() + words.slice(1);
-}
+export { humanizeToken };
 
 function dimensionLabel(
   position: ValuedPosition,

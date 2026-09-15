@@ -9,6 +9,7 @@ import { parseGeneratedList } from './validated';
 export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
   {
     marketId: 'US',
+    holdingPeriodTaxThresholdDays: 365,
     name: 'United States',
     country: 'USA',
     exchangeName: 'NYSE / NASDAQ',
@@ -53,6 +54,7 @@ export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
   },
   {
     marketId: 'IN',
+    holdingPeriodTaxThresholdDays: 365,
     name: 'India',
     country: 'India',
     exchangeName: 'NSE / BSE',
@@ -88,6 +90,7 @@ export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
   },
   {
     marketId: 'UK',
+    holdingPeriodTaxThresholdDays: null,
     name: 'United Kingdom',
     country: 'UK',
     exchangeName: 'LSE',
@@ -111,6 +114,7 @@ export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
   },
   {
     marketId: 'JP',
+    holdingPeriodTaxThresholdDays: null,
     name: 'Japan',
     country: 'Japan',
     exchangeName: 'TSE',
@@ -136,6 +140,7 @@ export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
   },
   {
     marketId: 'SG',
+    holdingPeriodTaxThresholdDays: null,
     name: 'Singapore',
     country: 'Singapore',
     exchangeName: 'SGX',

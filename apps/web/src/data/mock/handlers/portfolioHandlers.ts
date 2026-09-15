@@ -2,7 +2,12 @@
 
 import { http, HttpResponse, type HttpHandler } from 'msw';
 
-import { createMockGeneratorContext, generatePortfolioData, liveTicker } from '../generators';
+import {
+  createMockGeneratorContext,
+  generatePortfolioData,
+  getCanonicalBrokers,
+  liveTicker,
+} from '../generators';
 import type { PortfolioDataBundle } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 
@@ -33,6 +38,12 @@ export const portfolioHandlers: readonly HttpHandler[] = [
     return (
       failure('Failed to load holdings') ??
       HttpResponse.json(currentBundle().holdings, { status: 200 })
+    );
+  }),
+
+  http.get('/api/v1/brokers', () => {
+    return (
+      failure('Failed to load brokers') ?? HttpResponse.json(getCanonicalBrokers(), { status: 200 })
     );
   }),
 

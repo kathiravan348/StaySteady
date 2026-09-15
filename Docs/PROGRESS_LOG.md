@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 Overview done)
-OVERALL PROGRESS:   60% (39 of 65 active tasks done; Stage F, M, L 100%; Stage S 1 of 23)
-LAST UPDATED:       2026-09-15T17:35:00Z  |  local: 2026-09-15 23:05 IST
-LAST AGENT:         Claude Opus 5 (sessions 19–20)
+PHASE:              Stage S Screens — in progress (S-01 Overview, S-02 Holdings done)
+OVERALL PROGRESS:   62% (40 of 65 active tasks done; Stage F, M, L 100%; Stage S 2 of 23)
+LAST UPDATED:       2026-09-15T20:07:02Z  |  local: 2026-09-16 01:37 IST
+LAST AGENT:         Claude Opus 5 (session 21)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -31,60 +31,38 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main, HEAD 8240898. Sessions 19–20 are NOT committed.
-  - Stages F, M and L done. Stage S: S-01 Overview done (session 20).
-  - Session 19 reworked the mock data so it is coherent: price history is the single price source
-    (quotes, holdings, lot costs all agree), totals convert through FX, gain fields are signed.
-  - Data layer exists: apps/web/src/data/api — apiGet validates every response with its M-02
-    schema; TanStack Query hooks per domain (portfolio, markets/quotes/prices/FX, system, news).
-  - Dev fetch fallback (data/mock/fetchFallback.ts) serves the mock API when a browser blocks
-    service workers (the Claude desktop browser pane sometimes does).
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview and
+  S-02 Holdings done. The owner asked the agent to commit each finished screen (no push) and to
+  take the recommended option whenever a choice comes up (decision 26).
   typecheck, lint and build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 19: M-09 mock data coherence rework (see session 19 end entry).
-  - Session 20: S-01 Overview — headline cards (each links to its screen), portfolio value chart
-    with period selector, allocation by country/currency/type, top movers, needs-attention list,
-    holdings news, upcoming events, recent alerts; base currency toggle converts every figure;
-    loading, error+retry, empty, stale and market-closed states verified in the browser.
+  - Session 21: S-02 Holdings — see session 21 end entry. The library DataTable now supports
+    grouping with totals, row selection, column visibility, keyboard sorting and details rows.
 
 WHAT IS PARTIALLY DONE:
-  Nothing. No half-finished work exists.
+  Nothing.
 
 EXACT NEXT STEP:
-  Claim S-02 Holdings (UI spec 7.2). Suggested shape:
-  - Reuse data/api hooks: usePortfolioHoldings, useQuotes, useInstruments, useMarkets, useFxRates;
-    convert with convertMoneyWithTable + fxTableFromDtos (see features/overview/model).
-  - Use DataTable from @staysteady/ui for sorting, grouping and row expansion (lots + sparkline).
-  - UI spec 7.2 columns the data lacks: broker, strategy, exit level, holding-period tax status,
-    currency effect. Decide with the owner whether to extend the M-09 schema/generator first.
+  Claim S-03 Position Detail (UI spec 7.3). Route /portfolio/positions/:id (id = instrument id;
+  Holdings links there via positionDetailPath). Reuse features/portfolio/holdings/model
+  (buildHoldingRows, tax status, exit info) — same feature folder, so no cross-feature import.
 
-FILES TOUCHED (sessions 19–20):
-  apps/web/package.json, pnpm-lock.yaml, apps/web/src/App.tsx
-  apps/web/src/data/api/** (new), apps/web/src/data/mock/{fetchFallback,initMock,index}.ts
-  apps/web/src/data/mock/generators/{instruments,portfolio,priceHistory,fxHistory,ticker,values,index}.ts
-  apps/web/src/data/mock/handlers/{marketHandlers,portfolioHandlers}.ts
-  apps/web/src/data/schemas/{instruments,portfolio}.ts (comments)
-  apps/web/src/providers/{QueryProvider,MarketScheduleProvider}.tsx
-  apps/web/src/shared/money/{fxTable,index}.ts
-  apps/web/src/features/overview/** (rewritten)
-  Docs/PROGRESS_LOG.md
+FILES TOUCHED (session 21): see session 21 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - Screens fetch only through data/api hooks — never call fetch directly or import mock
-    generators into features (decision 22).
-  - Quote change/changePercent and holding gain percentages are signed (decision 20).
-  - Pattern to copy: features/overview — page composes; hooks gather queries into a discriminated
-    union state; pure model functions compute; sections load their own side data (partial states).
-  - @staysteady/ui AnalyticalChart recreates the chart whenever `options`/`data` identity changes:
-    memoise them (see AllocationSection, PortfolioValueSection).
-  - CSS text-transform uppercases innerText — use case-insensitive text checks in browser tests.
+  - Screens fetch only through data/api hooks (decision 22). Shared UI used by several features
+    lives in apps/web/src/shared (decision 25); features never import each other.
+  - Pattern: page composes; a hook gathers queries into a discriminated-union state; pure model
+    functions compute; side sections load their own data.
+  - DataTable columns: set meta.align 'end' for numbers, meta.label for pickers; group rows show
+    only aggregatedCell output (defaultColumn renders nothing otherwise).
+  - Browser tests: CSS text-transform uppercases innerText; switch mock scenarios with
+    (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Earlier logs cite verify_stage_m.ts / verify_stage_l.ts; neither exists. Verify, don't trust.
-  - Open findings: chart theme colours in packages/ui are hardcoded hex and ignore high contrast;
-    Card.module.scss uses missing tokens (--radius-card, --font-size-base) and its header has no gap;
-    JS bundle is one 2.53 MB chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
+  - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single
+    2.5 MB JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -165,7 +143,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
 | S-01 | Overview | DONE | 100 | Session 20 | Data layer (schema-validated fetch + TanStack Query); all UI spec 7.1 sections; loading/error/empty/stale/market-closed verified; sector, strategy and exit-level data gaps logged |
-| S-02 | Holdings | TODO | 0 | | |
+| S-02 | Holdings | DONE | 100 | Session 21 | Library DataTable extended (grouping totals, selection, visibility, keyboard sort, details); broker/strategy/exit/tax-threshold mock data; saved layout; CSV export; all states verified |
 | S-03 | Position Detail | TODO | 0 | | |
 | S-04 | Instrument Workspace (charts) | TODO | 0 | | |
 | S-05 | Watchlists | TODO | 0 | | |
@@ -1905,6 +1883,106 @@ FINDINGS (out of scope, not fixed):
 NOTES FOR NEXT AGENT:
   - Sessions 19–20 are uncommitted; owner commits
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        21 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T17:41:02Z  |  local: 2026-09-15 23:11 IST (UTC+05:30)
+TASK CLAIMED:   S-02 Holdings
+OWNER INPUT:    "Add them to the mock data first" — UI spec 7.2 columns missing from the data
+                (broker, opening strategy, exit level, tax holding-period status, currency effect,
+                news flag) are added to the mock layer before the table is built
+
+PRE-WORK VERIFICATION:
+  git:         owner committed sessions 19–20 as a2e6ae0; working tree clean
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0 (JS 2,534.44 kB)
+  discrepancy: none; state matches session 20 end entry
+
+SCOPE:
+  - Data: holding brokerId, openedByStrategyId (optional), exitLevel (optional); broker list +
+    GET /api/v1/brokers; market holding-period tax threshold; days held, tax status, currency effect
+    and news flag derived on the client from lots, FX history and news
+  - Screen per UI spec 7.2 and 9: sortable, filterable, groupable table with aggregate rows,
+    user-selectable columns saved as a layout, row expansion (sparkline + lots), size bar,
+    exit-distance cue, bulk selection and export, empty/no-results/loading/error/stale states
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        21 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T17:41:02Z  |  local: 2026-09-15 23:11 IST (UTC+05:30)
+END:            2026-09-15T20:07:02Z  |  local: 2026-09-16 01:37 IST (UTC+05:30)
+TASK CLAIMED:   S-02 Holdings
+END STATUS:     DONE
+OWNER INPUT:    "Extend the library DataTable" (row expansion was broken; no grouping, selection or
+                column visibility). Later: "complete the next screens one by one ... take the
+                recommended option; git commit each screen" — agent now commits per screen.
+
+COMPLETED:
+  - packages/ui DataTable: details rows actually render; sortable headers are buttons with
+    aria-sort (Shift+click multi-sort); controlled or uncontrolled column filters, visibility,
+    grouping (group rows with toggle, leaf count, aggregatedCell totals only where defined),
+    row selection column, sticky first column, getRowId, ariaLabel. New story data-table-grouped
+  - Mock data: Broker schema + 4 brokers + GET /api/v1/brokers; holding brokerId,
+    openedByStrategyId?, exitLevel?; market holdingPeriodTaxThresholdDays (US/IN 365, others null);
+    per-holding profiles place SPY 14 days from long term and AAPL 2.6% above its exit
+  - Shared promotions: shared/format/display.ts, shared/ui/ToggleGroup, shared/ui/PriceFreshnessBar
+    (moved out of features/overview so Holdings does not import another feature)
+  - Holdings (features/portfolio/holdings): base-currency value, gain split into price and
+    currency effect (cost at purchase-date FX, forward-filled), weight + size bar, days held,
+    tax status per lot and position (approaching within 30 days), exit distance (near <=3%,
+    watch <=10%), distinct news stories; group by country/currency/type/broker/strategy with
+    totals; column picker + grouping saved to localStorage (validated with zod); search;
+    selection; CSV export of selected rows or current search; row details = 90-day sparkline + lots
+
+FILES CREATED:
+  - packages/ui/src/table/{DataTableHeader,DataTableRow,selectionColumn,useControllableState}.tsx|ts
+  - packages/ui/src/workbench/stories/GroupedTableDemo.tsx
+  - apps/web/src/data/schemas/brokers.ts, data/api/tradingQueries.ts
+  - apps/web/src/data/mock/generators/{brokers,holdingProfiles}.ts
+  - apps/web/src/shared/format/display.ts, shared/ui/{ToggleGroup,PriceFreshnessBar}.tsx + .module.scss
+  - apps/web/src/features/portfolio/holdings/** (model, columns, sections, hooks, styles)
+FILES MODIFIED:
+  - packages/ui/src/table/{DataTable.tsx,DataTable.module.scss,types.ts,index.ts}, tableStories.tsx
+  - apps/web/src/data/schemas/{portfolio,markets,index}.ts; mock generators {portfolio,markets,index};
+    handlers/portfolioHandlers.ts; api/{portfolioQueries,index}.ts
+  - features/overview: OverviewPage, AllocationSection, PortfolioValueSection, overviewFormat,
+    model/overviewLists, styles — now import the shared pieces
+  - features/portfolio/PortfolioHoldingsPage.tsx — rewritten as composition
+FILES DELETED:
+  - features/overview/sections/{ToggleGroup,OverviewStatusBar}.tsx — moved to shared/ui
+
+DECISIONS MADE:
+  - 23, 24, 25 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: column meta helper returned an optional type)
+  lint:        PASS — exit 0 (unused generics in ColumnMeta augmentation disabled inline — they must
+               match TanStack's declaration)
+  build:       PASS — exit 0
+  browser:     7 holdings; SPY "Long term in 14 days", AAPL "2.6% away Near exit", BTC "Watch";
+               weights sum 99.9 (rounding); grouping by country/currency shows totals for value,
+               gain (percent from summed cost), currency effect and weight, blank elsewhere (first
+               run printed raw sums of percentages — fixed via DataTable defaultColumn);
+               sort toggles aria-sort; details show sparkline + 3 SPY lots; hiding Broker removes
+               the column and persists to localStorage; EUR toggle converts every value
+               (USD/EUR ratio 1.318 for every row)
+  states:      loading-error -> "Holdings unavailable" + 500 message + Try again; empty-portfolio ->
+               "No holdings yet" + link; stale-data -> delayed banner; market-closed -> all closed
+  themes:      light and dark screenshots readable
+  workbench:   data-table-grouped story renders; header sort sets aria-sort; select-all -> "6 selected"
+
+FINDINGS (out of scope, not fixed):
+  - Holding-period tax thresholds are per market, not per instrument type or account (real rules vary)
+  - UI spec 7.2 bulk "compare" action not built (needs S-04/S-09 comparison target)
+  - packages/ui TablePagination uses inline raw style values
+  - Group label for country shows the market's country code text ("USA", "UK")
+
+NOTES FOR NEXT AGENT:
+  - Owner asked the agent to commit each finished screen; no push
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -1954,5 +2032,9 @@ NOTES FOR NEXT AGENT:
 | 20 | 2026-09-15 | Quote change/changePercent and holding/summary gain percentages are signed; direction repeats the sign | Unsigned values forced every consumer to re-derive the sign and risked showing losses as gains | Yes | Session 19 |
 | 21 | 2026-09-15 | Dev-only fetch fallback answers /api/* with the same MSW handlers when the service worker cannot register | Claude desktop browser pane blocks service workers; production builds never install it | Yes | Owner (session 19) |
 | 22 | 2026-09-15 | Server state via TanStack Query (@tanstack/react-query 5) in apps/web/src/data/api; every response validated with its M-02 schema in apiGet; screens never call fetch or import mock generators directly | UI spec 14 recommendation; one swappable data layer for mock and real backend (decision 5) | Yes, with effort | Session 20 |
+| 23 | 2026-09-15 | Library DataTable owns grouping, selection, column visibility and row details (all controllable); group rows render totals only for columns defining aggregatedCell | Every later table screen (watchlists, orders, backtest trades) needs the same behaviour; one accessible implementation | Yes | Owner (session 21) |
+| 24 | 2026-09-15 | Holdings carry brokerId, optional openedByStrategyId and exitLevel; markets carry holdingPeriodTaxThresholdDays; days held, tax status and currency effect are derived client-side from lots and FX history | UI spec 7.2 columns had no data; derived values stay consistent with lots and FX | Yes | Owner (session 21) |
+| 25 | 2026-09-15 | Pieces used by more than one feature move to apps/web/src/shared (format/display, ui/ToggleGroup, ui/PriceFreshnessBar) | Standards 8: features never import each other | Yes | Session 21 |
+| 26 | 2026-09-16 | Agent commits each finished screen to main (no push); a recommended option is taken automatically when a choice arises | Owner instruction for Stage S | Yes | Owner (session 22) |
 
 

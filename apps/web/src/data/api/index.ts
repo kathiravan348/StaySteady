@@ -3,7 +3,8 @@
 export { ApiError, apiGet } from './apiClient';
 export { queryClient } from './queryClient';
 export { fxTableFromDtos, moneyFromDto } from './mappers';
-export { usePortfolioHoldings, usePortfolioSummary } from './portfolioQueries';
+export { useBrokers, usePortfolioHoldings, usePortfolioSummary } from './portfolioQueries';
+export { useStrategies } from './tradingQueries';
 export type { PriceHistoriesResult } from './marketQueries';
 export {
   useFxHistories,

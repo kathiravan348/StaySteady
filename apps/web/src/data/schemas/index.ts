@@ -8,6 +8,7 @@ export * from './common';
 export * from './instruments';
 export * from './markets';
 export * from './fx';
+export * from './brokers';
 export * from './portfolio';
 export * from './trading';
 export * from './research';

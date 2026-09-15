@@ -28,13 +28,6 @@
   min-width: 0;
 }
 
-.statusBar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  align-items: center;
-}
-
 .emptyAction {
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);

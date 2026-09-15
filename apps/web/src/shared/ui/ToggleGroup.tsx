@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import styles from './sections.module.scss';
+import styles from './ToggleGroup.module.scss';
 
 interface ToggleGroupProps<T extends string> {
   readonly label: string;
