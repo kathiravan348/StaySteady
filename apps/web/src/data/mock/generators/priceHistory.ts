@@ -46,10 +46,29 @@ function getVolatilityConfig(type: InstrumentTypeDto, currency: string): Volatil
   }
 }
 
+// Generating and validating ~1,200 bars is costly, and quotes, holdings and handlers all reuse the
+// same series. Streams are forked by key, so a cached series is identical to a regenerated one.
+const historyCache = new Map<string, readonly PriceBarDto[]>();
+
 export function generatePriceHistoryForInstrument(
   ctx: MockGeneratorContext,
   instrument: InstrumentDto,
   startDate: IsoDate = PRICE_HISTORY_ORIGIN_DATE,
+): readonly PriceBarDto[] {
+  const key = `${ctx.random.seedKey}|${instrument.id}|${startDate}|${ctx.referenceTime}`;
+  const cached = historyCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const bars = buildPriceHistory(ctx, instrument, startDate);
+  historyCache.set(key, bars);
+  return bars;
+}
+
+function buildPriceHistory(
+  ctx: MockGeneratorContext,
+  instrument: InstrumentDto,
+  startDate: IsoDate,
 ): readonly PriceBarDto[] {
   const stream = ctx.random.fork(`prices:${instrument.id}`);
   const market = getMarketById(instrument.marketId);

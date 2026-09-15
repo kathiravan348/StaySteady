@@ -5,7 +5,7 @@ import { Decimal } from 'decimal.js';
 import type { CurrencyCode } from '../../../shared/types/currency';
 import type { IsoDate, IsoUtcTimestamp } from '../../../shared/types/dateTime';
 import { toIsoDate, toIsoUtcTimestamp } from '../../../shared/types/dateTime';
-import type { MoneyDto } from '../../schemas';
+import type { DirectionDto, MoneyDto } from '../../schemas';
 import type { SeededRandom } from './seededRandom';
 
 const DAY_MS = 86_400_000;
@@ -76,4 +76,36 @@ export function randomTimestampBetween(
   const from = Date.parse(start);
   const seconds = random.int(0, Math.max(0, Math.floor((Date.parse(end) - from) / 1000)));
   return toIsoUtcTimestamp(new Date(from + seconds * 1000));
+}
+
+// Direction repeats the sign of a value for convenience; the value itself stays signed.
+export function directionOf(value: Decimal): DirectionDto {
+  if (value.isZero()) {
+    return 'neutral';
+  }
+  return value.isPositive() ? 'positive' : 'negative';
+}
+
+export interface SignedChange {
+  readonly change: MoneyDto;
+  readonly changePercent: number;
+  readonly direction: DirectionDto;
+}
+
+// Change from a reference price, signed: negative when the price fell.
+export function signedChange(
+  current: Decimal,
+  reference: Decimal,
+  currency: CurrencyCode,
+): SignedChange {
+  const decimals = currencyDecimals(currency);
+  const change = current.minus(reference).toDecimalPlaces(decimals);
+  const changePercent = reference.isZero()
+    ? 0
+    : change.dividedBy(reference).times(100).toDecimalPlaces(2).toNumber();
+  return {
+    change: { amount: change.toFixed(decimals), currency },
+    changePercent,
+    direction: directionOf(change),
+  };
 }

@@ -17,11 +17,23 @@ import {
   liveTicker,
 } from '../generators';
 import type { IntradayTimeframe } from '../generators';
+import type { DeveloperScenarioId } from '../scenarios/scenarioContext';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
+import type { MarketQuoteDto } from '../../schemas';
+import { toIsoUtcTimestamp } from '../../../shared/types/dateTime';
 
 const ctx = createMockGeneratorContext();
 const initialQuotes = generateInitialQuotes(ctx);
 liveTicker.setQuotes(initialQuotes);
+
+const STALE_QUOTE_AGE_MS = 20 * 60 * 1000;
+
+// Live quotes are stamped with the response time; the stale-data scenario ages them so screens
+// show their stale state (UI spec 10).
+function withFreshness(quote: MarketQuoteDto, scenario: DeveloperScenarioId): MarketQuoteDto {
+  const ageMs = scenario === 'stale-data' ? STALE_QUOTE_AGE_MS : 0;
+  return { ...quote, timestamp: toIsoUtcTimestamp(new Date(Date.now() - ageMs)) };
+}
 
 export const marketHandlers: readonly HttpHandler[] = [
   http.get('/api/v1/markets', () => {
@@ -29,15 +41,23 @@ export const marketHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to fetch markets' }, { status: 500 });
     }
-    const markets = getCanonicalMarkets();
-    if (scenario === 'market-closed') {
-      // Simulate all markets closed
-      return HttpResponse.json(
-        markets.map((m) => ({ ...m, regularHours: [] })),
-        { status: 200 },
-      );
+    // Market configuration is unchanged by the market-closed scenario; open/closed state is derived
+    // from time (and the scenario) by the market status provider.
+    return HttpResponse.json(getCanonicalMarkets(), { status: 200 });
+  }),
+
+  http.get('/api/v1/quotes', ({ request }) => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to fetch quotes' }, { status: 500 });
     }
-    return HttpResponse.json(markets, { status: 200 });
+    const ids = new URL(request.url).searchParams.get('instrumentIds')?.split(',') ?? [];
+    const quotes = liveTicker.getQuotes();
+    const selected = ids.length > 0 ? quotes.filter((q) => ids.includes(q.instrumentId)) : quotes;
+    return HttpResponse.json(
+      selected.map((quote) => withFreshness(quote, scenario)),
+      { status: 200 },
+    );
   }),
 
   http.get('/api/v1/markets/:id', ({ params }) => {
@@ -77,7 +97,7 @@ export const marketHandlers: readonly HttpHandler[] = [
     if (!quote) {
       return HttpResponse.json({ error: 'Quote not found' }, { status: 404 });
     }
-    return HttpResponse.json(quote, { status: 200 });
+    return HttpResponse.json(withFreshness(quote, getActiveDeveloperScenario()), { status: 200 });
   }),
 
   http.get('/api/v1/instruments/:id/prices', ({ params }) => {

@@ -1,17 +1,27 @@
-// Holdings, purchase lots, transactions, and portfolio summary generator (M-09).
-// Exercises multi-lot positions, fees, dividends, and empty-portfolio scenario support.
+// Holdings, purchase lots, transactions and portfolio summary (M-09, reworked session 19).
+// One price source: lot costs are historical closes on the purchase date, current value uses the
+// live quote, and every total converts to the base currency through FX rates.
 
-import type { z } from 'zod';
 import { Decimal } from 'decimal.js';
-import type { HoldingDto, LotDto, PortfolioSummaryDto, TransactionDto } from '../../schemas';
+import type { z } from 'zod';
+
+import type { FxQuote } from '../../../shared/money';
+import { convertMoneyWithTable, createMoney } from '../../../shared/money';
+import type { CurrencyCode } from '../../../shared/types/currency';
+import type {
+  HoldingDto,
+  InstrumentDto,
+  MarketQuoteDto,
+  PortfolioSummaryDto,
+  TransactionDto,
+} from '../../schemas';
 import { HoldingSchema, PortfolioSummarySchema, TransactionSchema } from '../../schemas';
-import { parseGenerated, parseGeneratedList } from './validated';
+import { generateCurrentFxRates } from './fxHistory';
+import { CANONICAL_INSTRUMENTS, generateInitialQuotes } from './instruments';
 import type { MockGeneratorContext } from './mockContext';
-import { CANONICAL_INSTRUMENTS } from './instruments';
-import { currencyDecimals } from './values';
-import { toIsoDate, toIsoUtcTimestamp } from '../../../shared/types/dateTime';
-import { toInstrumentId } from '../../../shared/types/identifiers';
-import { toQuantity } from '../../../shared/types/quantities';
+import { generatePriceHistoryForInstrument } from './priceHistory';
+import { parseGenerated, parseGeneratedList } from './validated';
+import { currencyDecimals, directionOf, toUtcDate } from './values';
 
 export interface PortfolioDataBundle {
   readonly holdings: readonly HoldingDto[];
@@ -19,172 +29,227 @@ export interface PortfolioDataBundle {
   readonly summary: PortfolioSummaryDto;
 }
 
+type HoldingInput = z.input<typeof HoldingSchema>;
+type LotInput = HoldingInput['lots'][number];
+type TransactionInput = z.input<typeof TransactionSchema>;
+type MoneyInput = HoldingInput['currentValue'];
+
+const BASE_CURRENCY: CurrencyCode = 'USD';
+const BUY_FEE = new Decimal('1.50');
+const HELD_INSTRUMENT_IDS: readonly string[] = [
+  'inst-us-aapl',
+  'inst-us-spy',
+  'inst-us-btc',
+  'inst-us-gold',
+  'inst-in-reliance',
+  'inst-uk-azn',
+  'inst-manual-bond',
+];
+
+const CASH_TRANSACTIONS: readonly TransactionInput[] = [
+  {
+    id: 'tx-div-01',
+    instrumentId: 'inst-us-aapl',
+    type: 'dividend',
+    timestamp: '2025-02-15T18:00:00Z',
+    fees: { amount: '0.00', currency: 'USD' },
+    netAmount: { amount: '24.50', currency: 'USD' },
+    notes: 'Quarterly dividend payment received',
+  },
+  {
+    id: 'tx-dep-01',
+    type: 'deposit',
+    timestamp: '2022-01-05T10:00:00Z',
+    fees: { amount: '0.00', currency: 'USD' },
+    netAmount: { amount: '50000.00', currency: 'USD' },
+    notes: 'Initial account funding from checking',
+  },
+];
+
+function money(amount: Decimal, currency: CurrencyCode): MoneyInput {
+  return { amount: amount.toFixed(currencyDecimals(currency)), currency };
+}
+
+interface HoldingRequest {
+  readonly ctx: MockGeneratorContext;
+  readonly instrument: InstrumentDto;
+  readonly index: number;
+  readonly quotes: readonly MarketQuoteDto[];
+}
+
+interface ValuedHolding {
+  readonly holding: HoldingInput;
+  readonly transactions: readonly TransactionInput[];
+  readonly value: Decimal;
+  readonly cost: Decimal;
+}
+
+// Purchase days are seeded positions in the instrument's own history, oldest first.
+function valueHolding({ ctx, instrument, index, quotes }: HoldingRequest): ValuedHolding {
+  const stream = ctx.random.fork(`holding:${instrument.id}`);
+  const holdingId = `hld-${index + 1}`;
+  const { currency } = instrument;
+  const decimals = currencyDecimals(currency);
+  const bars = generatePriceHistoryForInstrument(ctx, instrument);
+  const lotCount = instrument.symbol === 'AAPL' || instrument.symbol === 'SPY' ? 3 : 1;
+  const barIndexes = Array.from({ length: lotCount }, () =>
+    stream.int(0, Math.max(0, bars.length - 25)),
+  ).sort((a, b) => a - b);
+
+  const lots: LotInput[] = [];
+  const transactions: TransactionInput[] = [];
+  let quantity = new Decimal(0);
+  let cost = new Decimal(0);
+
+  barIndexes.forEach((barIndex, lotIndex) => {
+    const bar = bars[barIndex];
+    if (bar === undefined) {
+      return;
+    }
+    const lotQuantity =
+      instrument.type === 'digital_asset'
+        ? new Decimal(stream.float(0.05, 0.4)).toDecimalPlaces(4)
+        : new Decimal(stream.int(10, 50));
+    const unitCost = new Decimal(bar.close);
+    const totalCost = lotQuantity.times(unitCost).toDecimalPlaces(decimals);
+    const purchaseDate = toUtcDate(bar.timestamp);
+    const lotNumber = lotIndex + 1;
+
+    lots.push({
+      id: `lot-${holdingId}-${lotNumber}`,
+      holdingId,
+      purchaseDate,
+      quantity: lotQuantity.toNumber(),
+      costPerUnit: money(unitCost, currency),
+      totalCost: money(totalCost, currency),
+    });
+    transactions.push({
+      id: `tx-${holdingId}-buy-${lotNumber}`,
+      instrumentId: instrument.id,
+      type: 'buy',
+      timestamp: `${purchaseDate}T14:30:00Z`,
+      quantity: lotQuantity.toNumber(),
+      unitPrice: money(unitCost, currency),
+      fees: money(BUY_FEE, currency),
+      netAmount: money(totalCost.plus(BUY_FEE), currency),
+      notes: `Executed lot ${lotNumber} allocation`,
+    });
+    quantity = quantity.plus(lotQuantity);
+    cost = cost.plus(totalCost);
+  });
+
+  const quote = quotes.find((q) => q.instrumentId === instrument.id);
+  const price = new Decimal(quote?.lastPrice.amount ?? bars[bars.length - 1]?.close ?? 0);
+  const value = quantity.times(price).toDecimalPlaces(decimals);
+  const gain = value.minus(cost);
+
+  return {
+    holding: {
+      id: holdingId,
+      instrumentId: instrument.id,
+      quantity: quantity.toNumber(),
+      costBasis: money(cost, currency),
+      currentPrice: money(price, currency),
+      currentValue: money(value, currency),
+      unrealisedGainLoss: money(gain, currency),
+      unrealisedGainLossPercent: cost.isZero()
+        ? 0
+        : gain.dividedBy(cost).times(100).toDecimalPlaces(2).toNumber(),
+      direction: directionOf(gain),
+      allocationPercent: 0,
+      lots,
+    },
+    transactions,
+    value,
+    cost,
+  };
+}
+
+function toBase(amount: Decimal, currency: CurrencyCode, fxTable: readonly FxQuote[]): Decimal {
+  return convertMoneyWithTable(createMoney(amount, currency), BASE_CURRENCY, fxTable).amount;
+}
+
+function emptyPortfolio(ctx: MockGeneratorContext): PortfolioDataBundle {
+  const zero = money(new Decimal(0), BASE_CURRENCY);
+  const summary: z.input<typeof PortfolioSummarySchema> = {
+    totalValue: zero,
+    costBasis: zero,
+    unrealisedReturn: zero,
+    unrealisedReturnPercent: 0,
+    direction: 'neutral',
+    cashBalance: money(new Decimal('50000'), BASE_CURRENCY),
+    activeHoldingsCount: 0,
+    asOf: ctx.referenceTime,
+  };
+  return {
+    holdings: [],
+    transactions: [],
+    summary: parseGenerated(PortfolioSummarySchema, summary, 'emptyPortfolioSummary'),
+  };
+}
+
+// Pass the live ticker's quotes so holdings move with prices; defaults to the day's closing quotes.
 export function generatePortfolioData(
   ctx: MockGeneratorContext,
   isEmptyScenario = false,
+  liveQuotes?: readonly MarketQuoteDto[],
 ): PortfolioDataBundle {
-  const baseCurrency = 'USD';
-  const dec = currencyDecimals(baseCurrency);
-
   if (isEmptyScenario) {
-    const emptySummary: z.input<typeof PortfolioSummarySchema> = {
-      totalValue: { amount: '0.00', currency: baseCurrency },
-      costBasis: { amount: '0.00', currency: baseCurrency },
-      unrealisedReturn: { amount: '0.00', currency: baseCurrency },
-      unrealisedReturnPercent: 0,
-      direction: 'neutral',
-      cashBalance: { amount: '50000.00', currency: baseCurrency },
-      activeHoldingsCount: 0,
-      asOf: ctx.referenceTime,
-    };
-    return {
-      holdings: [],
-      transactions: [],
-      summary: parseGenerated(PortfolioSummarySchema, emptySummary, 'emptyPortfolioSummary'),
-    };
+    return emptyPortfolio(ctx);
   }
 
-  const selectedInstruments = CANONICAL_INSTRUMENTS.filter((inst) =>
-    [
-      'inst-us-aapl',
-      'inst-us-spy',
-      'inst-us-btc',
-      'inst-us-gold',
-      'inst-in-reliance',
-      'inst-uk-azn',
-      'inst-manual-bond',
-    ].includes(inst.id),
+  const quotes = liveQuotes ?? generateInitialQuotes(ctx);
+  const fxTable: readonly FxQuote[] = generateCurrentFxRates(ctx).map((rate) => ({
+    from: rate.from,
+    to: rate.to,
+    rate: new Decimal(rate.rate),
+  }));
+  const valued = CANONICAL_INSTRUMENTS.filter((instrument) =>
+    HELD_INSTRUMENT_IDS.includes(instrument.id),
+  ).map((instrument, index) => valueHolding({ ctx, instrument, index, quotes }));
+
+  const baseValues = valued.map((item) =>
+    toBase(item.value, item.holding.currentValue.currency, fxTable),
   );
+  const totalValue = baseValues.reduce((sum, value) => sum.plus(value), new Decimal(0));
+  // Provisional: cost basis converts at today's rate, so currency effect is not yet separated.
+  const totalCost = valued.reduce(
+    (sum, item) => sum.plus(toBase(item.cost, item.holding.costBasis.currency, fxTable)),
+    new Decimal(0),
+  );
+  const totalReturn = totalValue.minus(totalCost);
 
-  const holdings: z.input<typeof HoldingSchema>[] = [];
-  const transactions: z.input<typeof TransactionSchema>[] = [];
-  let portTotalVal = new Decimal(0);
-  let portCostBasis = new Decimal(0);
-
-  selectedInstruments.forEach((inst, idx) => {
-    const stream = ctx.random.fork(`holding:${inst.id}`);
-    const holdingId = `hld-${idx + 1}`;
-    const currDec = currencyDecimals(inst.currency);
-
-    const hasMultipleLots = inst.symbol === 'AAPL' || inst.symbol === 'SPY';
-    const lotCount = hasMultipleLots ? 3 : 1;
-    const lots: LotDto[] = [];
-    let hldQty = new Decimal(0);
-    let hldCost = new Decimal(0);
-
-    const priceSeed =
-      inst.type === 'digital_asset' ? 62000 : inst.type === 'commodity' ? 2450 : 180;
-    const currentPriceDec = new Decimal(priceSeed).times(stream.float(0.92, 1.15));
-
-    for (let l = 1; l <= lotCount; l++) {
-      const lotQty =
-        inst.type === 'digital_asset'
-          ? new Decimal(stream.float(0.05, 0.4)).toDecimalPlaces(4)
-          : new Decimal(stream.int(10, 50));
-      const costPerUnit = currentPriceDec.times(stream.float(0.8, 1.05)).toDecimalPlaces(currDec);
-      const totalCost = lotQty.times(costPerUnit).toDecimalPlaces(currDec);
-      const lotDate = toIsoDate(new Date(2023 + l - 1, (l * 3) % 12, 10 + l));
-
-      lots.push({
-        id: `lot-${holdingId}-${l}`,
-        holdingId,
-        purchaseDate: lotDate,
-        quantity: toQuantity(lotQty.toNumber()),
-        costPerUnit: { amount: costPerUnit.toFixed(currDec), currency: inst.currency },
-        totalCost: { amount: totalCost.toFixed(currDec), currency: inst.currency },
-      });
-
-      hldQty = hldQty.plus(lotQty);
-      hldCost = hldCost.plus(totalCost);
-
-      transactions.push({
-        id: `tx-${holdingId}-buy-${l}`,
-        instrumentId: inst.id,
-        type: 'buy',
-        timestamp: toIsoUtcTimestamp(`${lotDate}T14:30:00Z`),
-        quantity: lotQty.toNumber(),
-        unitPrice: { amount: costPerUnit.toFixed(currDec), currency: inst.currency },
-        fees: { amount: '1.50', currency: inst.currency },
-        netAmount: { amount: totalCost.plus(1.5).toFixed(currDec), currency: inst.currency },
-        notes: `Executed lot ${l} allocation`,
-      });
-    }
-
-    const currVal = hldQty.times(currentPriceDec).toDecimalPlaces(currDec);
-    const unGain = currVal.minus(hldCost);
-    const unGainPct = hldCost.isZero() ? 0 : unGain.dividedBy(hldCost).times(100).abs().toNumber();
-
-    holdings.push({
-      id: holdingId,
-      instrumentId: inst.id,
-      quantity: hldQty.toNumber(),
-      costBasis: { amount: hldCost.toFixed(currDec), currency: inst.currency },
-      currentPrice: { amount: currentPriceDec.toFixed(currDec), currency: inst.currency },
-      currentValue: { amount: currVal.toFixed(currDec), currency: inst.currency },
-      unrealisedGainLoss: { amount: unGain.toFixed(currDec), currency: inst.currency },
-      unrealisedGainLossPercent: Math.round(unGainPct * 100) / 100,
-      direction: unGain.isZero() ? 'neutral' : unGain.isPositive() ? 'positive' : 'negative',
-      allocationPercent: 0,
-      lots,
-    });
-
-    const normalizedVal = inst.currency === 'INR' ? currVal.dividedBy(84) : currVal;
-    const normalizedCost = inst.currency === 'INR' ? hldCost.dividedBy(84) : hldCost;
-    portTotalVal = portTotalVal.plus(normalizedVal);
-    portCostBasis = portCostBasis.plus(normalizedCost);
-  });
-
-  const validatedHoldings: z.input<typeof HoldingSchema>[] = holdings.map((h) => {
-    const val = new Decimal(h.currentValue.amount);
-    const alloc = portTotalVal.isZero()
+  const holdings = valued.map((item, index) => ({
+    ...item.holding,
+    allocationPercent: totalValue.isZero()
       ? 0
-      : Math.round(val.dividedBy(portTotalVal).times(100).toNumber() * 10) / 10;
-    return { ...h, allocationPercent: alloc };
-  });
-
-  transactions.push(
-    {
-      id: 'tx-div-01',
-      instrumentId: toInstrumentId('inst-us-aapl'),
-      type: 'dividend',
-      timestamp: toIsoUtcTimestamp('2025-02-15T18:00:00Z'),
-      fees: { amount: '0.00', currency: 'USD' },
-      netAmount: { amount: '24.50', currency: 'USD' },
-      notes: 'Quarterly dividend payment received',
-    },
-    {
-      id: 'tx-dep-01',
-      type: 'deposit',
-      timestamp: toIsoUtcTimestamp('2024-01-05T10:00:00Z'),
-      fees: { amount: '0.00', currency: 'USD' },
-      netAmount: { amount: '50000.00', currency: 'USD' },
-      notes: 'Initial account funding from checking',
-    },
-  );
-
-  const totalReturn = portTotalVal.minus(portCostBasis);
-  const totalReturnPct = portCostBasis.isZero()
-    ? 0
-    : Math.round(totalReturn.dividedBy(portCostBasis).times(100).abs().toNumber() * 100) / 100;
+      : (baseValues[index] ?? new Decimal(0))
+          .dividedBy(totalValue)
+          .times(100)
+          .toDecimalPlaces(1)
+          .toNumber(),
+  }));
 
   const summary: z.input<typeof PortfolioSummarySchema> = {
-    totalValue: { amount: portTotalVal.toFixed(dec), currency: baseCurrency },
-    costBasis: { amount: portCostBasis.toFixed(dec), currency: baseCurrency },
-    unrealisedReturn: { amount: totalReturn.toFixed(dec), currency: baseCurrency },
-    unrealisedReturnPercent: totalReturnPct,
-    direction: totalReturn.isZero()
-      ? 'neutral'
-      : totalReturn.isPositive()
-        ? 'positive'
-        : 'negative',
-    cashBalance: { amount: '12450.00', currency: baseCurrency },
-    activeHoldingsCount: validatedHoldings.length,
+    totalValue: money(totalValue, BASE_CURRENCY),
+    costBasis: money(totalCost, BASE_CURRENCY),
+    unrealisedReturn: money(totalReturn, BASE_CURRENCY),
+    unrealisedReturnPercent: totalCost.isZero()
+      ? 0
+      : totalReturn.dividedBy(totalCost).times(100).toDecimalPlaces(2).toNumber(),
+    direction: directionOf(totalReturn),
+    cashBalance: money(new Decimal('12450'), BASE_CURRENCY),
+    activeHoldingsCount: holdings.length,
     asOf: ctx.referenceTime,
   };
 
   return {
-    holdings: parseGeneratedList(HoldingSchema, validatedHoldings, 'holdings'),
-    transactions: parseGeneratedList(TransactionSchema, transactions, 'transactions'),
+    holdings: parseGeneratedList(HoldingSchema, holdings, 'holdings'),
+    transactions: parseGeneratedList(
+      TransactionSchema,
+      [...valued.flatMap((item) => item.transactions), ...CASH_TRANSACTIONS],
+      'transactions',
+    ),
     summary: parseGenerated(PortfolioSummarySchema, summary, 'portfolioSummary'),
   };
 }

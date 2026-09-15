@@ -22,3 +22,6 @@ export {
   isMoneyZero,
   calculateGainLoss,
 } from './conversion';
+
+export type { FxQuote } from './fxTable';
+export { convertMoneyWithTable, findFxRate } from './fxTable';

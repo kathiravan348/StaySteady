@@ -29,9 +29,27 @@ const CANONICAL_FX_PAIRS: readonly FxPairConfig[] = [
   { from: 'USD', to: 'SGD', baseRate: 1.35, dailyDrift: -0.00001, dailyVol: 0.0022, decimals: 4 },
 ];
 
+// Reused by spot rates, portfolio valuation and handlers; streams are forked by key, so cached
+// histories are identical to regenerated ones.
+const fxHistoryCache = new Map<string, readonly FxRateHistoryDto[]>();
+
 export function generateFxHistories(
   ctx: MockGeneratorContext,
   startDate: IsoDate = PRICE_HISTORY_ORIGIN_DATE,
+): readonly FxRateHistoryDto[] {
+  const key = `${ctx.random.seedKey}|${startDate}|${ctx.referenceTime}`;
+  const cached = fxHistoryCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  const histories = buildFxHistories(ctx, startDate);
+  fxHistoryCache.set(key, histories);
+  return histories;
+}
+
+function buildFxHistories(
+  ctx: MockGeneratorContext,
+  startDate: IsoDate,
 ): readonly FxRateHistoryDto[] {
   const totalDays = Math.max(1, daysBetween(startDate, toIsoDate(ctx.referenceTime.slice(0, 10))));
 

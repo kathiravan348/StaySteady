@@ -1,4 +1,4 @@
-export { initMock, isMockActive } from './initMock';
+export { initMock, isMockActive, getMockTransport, type MockTransport } from './initMock';
 export { worker } from './browser';
 export { handlers } from './handlers';
 export {

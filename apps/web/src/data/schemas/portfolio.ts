@@ -19,6 +19,8 @@ export const LotSchema = z.object({
 });
 export type LotDto = z.infer<typeof LotSchema>;
 
+// Amounts are in the instrument's currency. unrealisedGainLoss and its percent are signed
+// (negative for a loss); allocationPercent is the share of the portfolio in the base currency.
 export const HoldingSchema = z.object({
   id: z.string().min(1),
   instrumentId: InstrumentIdSchema,

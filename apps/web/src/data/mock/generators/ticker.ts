@@ -7,7 +7,7 @@ import type { MarketQuoteDto } from '../../schemas';
 import { MarketQuoteSchema } from '../../schemas';
 import { parseGeneratedList } from './validated';
 import type { SeededRandom } from './seededRandom';
-import { currencyDecimals } from './values';
+import { currencyDecimals, signedChange } from './values';
 import { nowUtc } from '../../../shared/types/dateTime';
 
 export type QuoteTickListener = (updatedQuotes: readonly MarketQuoteDto[]) => void;
@@ -25,19 +25,18 @@ export function tickQuotes(
       return q;
     }
 
-    const dec = currencyDecimals(q.lastPrice.currency);
+    const currency = q.lastPrice.currency;
+    const dec = currencyDecimals(currency);
     const lastDec = new Decimal(q.lastPrice.amount);
     const prevCloseDec = new Decimal(q.previousClose.amount);
 
-    // Micro-shock: -0.25% to +0.25%
+    // Micro-shock of -0.25% to +0.25%, kept within ±10% of the previous close so live prices stay
+    // close to the daily chart they started from.
     const shockPct = random.float(-0.0025, 0.0025);
-    const newLast = lastDec.times(1 + shockPct).toDecimalPlaces(dec);
-
-    const change = newLast.minus(prevCloseDec);
-    const isUp = change.isPositive() && !change.isZero();
-    const changePct = prevCloseDec.isZero()
-      ? 0
-      : Math.abs(change.dividedBy(prevCloseDec).times(100).toNumber());
+    const newLast = Decimal.min(
+      Decimal.max(lastDec.times(1 + shockPct), prevCloseDec.times(0.9)),
+      prevCloseDec.times(1.1),
+    ).toDecimalPlaces(dec);
 
     const spread = newLast.times(0.0006).toDecimalPlaces(dec);
     const bid = newLast.minus(spread);
@@ -46,18 +45,11 @@ export function tickQuotes(
     const highDec = Decimal.max(new Decimal(q.high.amount), newLast);
     const lowDec = Decimal.min(new Decimal(q.low.amount), newLast);
     const additionalVolume = random.int(10, 500);
-    const direction: 'positive' | 'negative' | 'neutral' = change.isZero()
-      ? 'neutral'
-      : isUp
-        ? 'positive'
-        : 'negative';
 
     return {
       ...q,
-      lastPrice: { amount: newLast.toFixed(dec), currency: q.lastPrice.currency },
-      change: { amount: change.abs().toFixed(dec), currency: q.lastPrice.currency },
-      changePercent: Math.round(changePct * 100) / 100,
-      direction,
+      lastPrice: { amount: newLast.toFixed(dec), currency },
+      ...signedChange(newLast, prevCloseDec, currency),
       bid: { amount: bid.toFixed(dec), currency: q.lastPrice.currency },
       ask: { amount: ask.toFixed(dec), currency: q.lastPrice.currency },
       high: { amount: highDec.toFixed(dec), currency: q.lastPrice.currency },

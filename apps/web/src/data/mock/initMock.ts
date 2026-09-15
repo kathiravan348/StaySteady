@@ -1,27 +1,25 @@
 import { worker } from './browser';
-import { liveTicker } from './generators/ticker';
+import { installFetchFallback } from './fetchFallback';
 import { createMockGeneratorContext } from './generators/mockContext';
+import { liveTicker } from './generators/ticker';
+
+export type MockTransport = 'none' | 'service-worker' | 'fetch-fallback';
 
 let mockInitialized = false;
+let mockTransport: MockTransport = 'none';
 
 /**
- * Initializes the Mock Service Worker network interception layer.
- * Must be awaited before mounting the React tree in development mode
- * to guarantee that initial data queries are properly intercepted.
+ * Starts the mock API before the React tree mounts, so initial data requests are intercepted.
+ * Uses the Mock Service Worker; in development, if the worker cannot register, the same handlers
+ * answer /api/* requests in the page instead.
  */
 export async function initMock(): Promise<void> {
-  if (mockInitialized) {
-    return;
-  }
-
-  // Only enable mock service worker in browser environments during development
-  if (typeof window === 'undefined') {
+  if (mockInitialized || typeof window === 'undefined') {
     return;
   }
 
   const isDev = import.meta.env.DEV;
   const isMockExplicitlyEnabled = import.meta.env.VITE_ENABLE_MOCK === 'true';
-
   if (!isDev && !isMockExplicitlyEnabled) {
     return;
   }
@@ -29,22 +27,28 @@ export async function initMock(): Promise<void> {
   try {
     await worker.start({
       onUnhandledRequest: 'bypass',
-      serviceWorker: {
-        url: '/mockServiceWorker.js',
-      },
+      serviceWorker: { url: '/mockServiceWorker.js' },
       quiet: false,
     });
-    mockInitialized = true;
-
-    // Start background live ticking engine (M-15)
-    const ctx = createMockGeneratorContext();
-    liveTicker.start(ctx.random.fork('live-ticker'), 2500);
-
-    // Log clear confirmation for developer visibility
-    console.info('[StaySteady Mock] Network request interception & live ticking active.');
+    mockTransport = 'service-worker';
   } catch (error: unknown) {
-    console.error('[StaySteady Mock] Failed to initialize Mock Service Worker:', error);
+    if (!isDev) {
+      console.error('[StaySteady Mock] Failed to initialize Mock Service Worker:', error);
+      return;
+    }
+    installFetchFallback();
+    mockTransport = 'fetch-fallback';
+    console.warn(
+      '[StaySteady Mock] Service worker unavailable; answering /api/* in the page instead.',
+      error,
+    );
   }
+
+  mockInitialized = true;
+
+  // Start background live ticking engine (M-15)
+  liveTicker.start(createMockGeneratorContext().random.fork('live-ticker'), 2500);
+  console.info(`[StaySteady Mock] Mock API active via ${mockTransport}; live ticking started.`);
 }
 
 /**
@@ -52,4 +56,11 @@ export async function initMock(): Promise<void> {
  */
 export function isMockActive(): boolean {
   return mockInitialized;
+}
+
+/**
+ * Which mechanism is answering mock requests (for diagnostics).
+ */
+export function getMockTransport(): MockTransport {
+  return mockTransport;
 }

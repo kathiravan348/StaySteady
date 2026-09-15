@@ -23,6 +23,8 @@ export {
   randomTimestampBetween,
   sequentialId,
   toUtcDate,
+  directionOf,
+  signedChange,
 } from './values';
 
 // M-07 Markets & Instruments

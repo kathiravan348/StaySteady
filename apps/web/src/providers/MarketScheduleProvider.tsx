@@ -2,6 +2,11 @@
 
 import type { ReactElement, ReactNode } from 'react';
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import type { DeveloperScenarioId } from '../data/mock/scenarios/scenarioContext';
+import {
+  getActiveDeveloperScenario,
+  subscribeToScenarioChange,
+} from '../data/mock/scenarios/scenarioContext';
 import type { IsoUtcTimestamp } from '../shared/types/dateTime';
 import { nowUtc } from '../shared/types/dateTime';
 import type { MarketStatusInfo } from '../shared/marketTime';
@@ -20,6 +25,7 @@ export function MarketScheduleProvider({
   readonly children: ReactNode;
 }): ReactElement {
   const [timestamp, setTimestamp] = useState<IsoUtcTimestamp>(nowUtc);
+  const [scenario, setScenario] = useState<DeveloperScenarioId>(getActiveDeveloperScenario);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -30,10 +36,16 @@ export function MarketScheduleProvider({
     };
   }, []);
 
-  const marketStatuses = useMemo<readonly MarketStatusInfo[]>(
-    () => getAllMarketStatuses(timestamp),
-    [timestamp],
-  );
+  useEffect(() => subscribeToScenarioChange(setScenario), []);
+
+  const marketStatuses = useMemo<readonly MarketStatusInfo[]>(() => {
+    const statuses = getAllMarketStatuses(timestamp);
+    // Mock-only: the market-closed developer scenario forces every market closed (UI spec 15).
+    // Remove when market status comes from the real backend.
+    return scenario === 'market-closed'
+      ? statuses.map((status): MarketStatusInfo => ({ ...status, state: 'closed' }))
+      : statuses;
+  }, [timestamp, scenario]);
 
   const value = useMemo<MarketScheduleState>(
     () => ({

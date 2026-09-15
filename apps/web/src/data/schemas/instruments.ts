@@ -47,6 +47,8 @@ export const InstrumentSchema = z.object({
 });
 export type InstrumentDto = z.infer<typeof InstrumentSchema>;
 
+// change and changePercent are signed against previousClose (negative when the price fell);
+// direction repeats that sign for convenience.
 export const MarketQuoteSchema = z.object({
   instrumentId: InstrumentIdSchema,
   lastPrice: MoneySchema,
