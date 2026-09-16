@@ -157,3 +157,14 @@ export {
   seedReportRuns,
   seedReportSchedules,
 } from './reports';
+
+// Session 43: planning (UI spec 7.17)
+export type { CostConfig } from './planningAllocation';
+export { buildAllocationView } from './planningAllocation';
+export {
+  buildGoalView,
+  buildProjection,
+  currentPortfolioValue,
+  seedGoals,
+} from './planningProjections';
+export { buildTradePreview } from './planningTradePreview';

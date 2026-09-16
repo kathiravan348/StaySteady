@@ -9,6 +9,7 @@ import { researchDataHandlers } from './researchDataHandlers';
 import { healthHandlers } from './healthHandlers';
 import { riskHandlers } from './riskHandlers';
 import { configHandlers } from './configHandlers';
+import { planningHandlers } from './planningHandlers';
 import { reportHandlers } from './reportHandlers';
 
 /**
@@ -27,11 +28,13 @@ export const handlers: readonly HttpHandler[] = [
   ...riskHandlers,
   ...configHandlers,
   ...reportHandlers,
+  ...planningHandlers,
 ];
 
 export {
   configHandlers,
   reportHandlers,
+  planningHandlers,
   healthHandlers,
   riskHandlers,
   researchDataHandlers,

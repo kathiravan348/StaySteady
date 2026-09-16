@@ -115,3 +115,12 @@ export {
 } from './settingsConfigQueries';
 export type { ReportRequestVariables, ScheduleAction } from './reportQueries';
 export { useReport, useReportRuns, useReportSchedules, useScheduleAction } from './reportQueries';
+export type { GoalAction } from './planningQueries';
+export {
+  useAllocationPlan,
+  useGoalAction,
+  useGoals,
+  useProjection,
+  useSaveAllocationPlan,
+  useTradePreview,
+} from './planningQueries';

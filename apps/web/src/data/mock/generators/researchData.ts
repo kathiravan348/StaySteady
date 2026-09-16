@@ -12,7 +12,8 @@ import { currencyDecimals } from './values';
 
 type FundamentalsInput = z.input<typeof InstrumentFundamentalsSchema>;
 
-const SECTORS: Readonly<Record<string, string>> = {
+// Exported for planning's sector allocation (session 43); only individual stocks have a sector.
+export const SECTORS: Readonly<Record<string, string>> = {
   AAPL: 'Information technology',
   NVDA: 'Information technology',
   TSLA: 'Consumer discretionary',

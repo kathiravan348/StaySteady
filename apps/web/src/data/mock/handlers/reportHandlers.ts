@@ -6,19 +6,13 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 import {
   PRICE_HISTORY_ORIGIN_DATE,
   buildReport,
-  createMockGeneratorContext,
-  createValuationContext,
-  generatePortfolioData,
-  generateStrategies,
   lastCompletePeriod,
-  liveTicker,
   nextRunDate,
   parseGenerated,
   parseGeneratedList,
 } from '../generators';
 import { ALERT_CHANNELS, TEST_OUTCOMES } from '../generators/healthHistoryData';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
-import { currentConfigs, getMarketVersions } from '../stores/configStore';
 import { addRun, getRuns, getSchedules, setSchedules } from '../stores/reportStore';
 import {
   CreateScheduledReportSchema,
@@ -30,8 +24,8 @@ import {
   ScheduledReportSchema,
 } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
+import { portfolioValuation } from './portfolioValuation';
 
-const ctx = createMockGeneratorContext();
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 const failure = (message: string, status: number): Response =>
@@ -41,23 +35,6 @@ const loadError = (what: string): Response | null =>
   getActiveDeveloperScenario() === 'loading-error' ? failure(`Failed to load ${what}`, 500) : null;
 
 const today = (): string => new Date().toISOString().slice(0, 10);
-
-function valuation(): ReturnType<typeof createValuationContext> {
-  const quotes = liveTicker.getQuotes();
-  const bundle = generatePortfolioData(
-    ctx,
-    getActiveDeveloperScenario() === 'empty-portfolio',
-    quotes.length > 0 ? quotes : undefined,
-  );
-  const strategies = new Map(generateStrategies(ctx).map((item) => [String(item.id), item.name]));
-  return createValuationContext(
-    ctx,
-    bundle.holdings,
-    bundle.transactions,
-    currentConfigs(getMarketVersions()),
-    strategies,
-  );
-}
 
 const schedulesResponse = (): Response =>
   HttpResponse.json(parseGeneratedList(ScheduledReportSchema, getSchedules(), 'reportSchedules'), {
@@ -88,7 +65,7 @@ export const reportHandlers: readonly HttpHandler[] = [
     }
     const report = buildReport(
       { type: type.data, from, to, currency: currency.data, comparison: comparison.data },
-      valuation(),
+      portfolioValuation(),
       nowUtc(),
     );
     return HttpResponse.json(parseGenerated(ReportSchema, report, 'report'), { status: 200 });

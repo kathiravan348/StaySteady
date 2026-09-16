@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-20 done)
-OVERALL PROGRESS:   65% (57 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 20 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T22:15:00Z  |  local: 2026-09-17 03:45 IST
-LAST AGENT:         session 42 (S-20 Reports)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,274 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-21 done)
+OVERALL PROGRESS:   66% (58 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 21 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T22:31:00Z  |  local: 2026-09-17 04:01 IST
+LAST AGENT:         session 43 (S-21 Planning)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,314 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,37 +36,34 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-20 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-21 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   screens, Strategy Library and Editor, Signals & Approvals, Orders, Risk & Safety, the 7.18
   Configuration areas except credentials (S-28) and the automation permission summary (S-29),
-  News & Events, Reports). The owner asked for the remaining S tasks one by one, each committed
-  (no push), taking the recommended option whenever a choice comes up (decision 26). typecheck and
-  ESLint pass; Prettier fails on Windows checkouts only (CRLF, see findings) — not a code defect.
+  News & Events, Reports, Planning). The owner asked for the remaining S tasks one by one, each
+  committed (no push), taking the recommended option whenever a choice comes up (decision 26).
+  typecheck and ESLint pass; Prettier fails on Windows checkouts only (CRLF, see findings).
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 42: S-20 Reports. See session 42 end entry.
-  - Session 41: S-19 News & Events.
+  - Session 43: S-21 Planning. See session 43 end entry.
+  - Session 42: S-20 Reports. Session 41: S-19 News & Events.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-21 Planning (UI spec 7.17: allocation targets by instrument type, country, currency and
-  sector with target-versus-actual drift and suggested corrective trades with estimated costs;
-  goals with target amount, date, linked holdings, progress and projected completion; scenario
-  modelling of assumptions and of a proposed trade). Routes: /planning/allocation, /goals,
-  /scenarios (features/planning/*Page.tsx placeholders). Reuse the report valuation on the mock
-  side (data/mock/generators/reportValuation.ts: createValuationContext) for current values in any
-  currency, the broker fee rules (brokerConfig seeds) and currency conversion costs (currencyConfig)
-  for trade cost estimates. Sector has no data today — check instruments/fundamentals before
-  deciding; if there is none, raise it rather than invent. Then continue in registry order;
-  S-26 Screener has no specification (open question 11): mark it BLOCKED, do not invent it.
+  Claim S-22 Alerts Centre (UI spec 7.19 — read it; it is short). Route ROUTES.ALERTS (/alerts)
+  renders features/alerts/AlertsPage.tsx; check whether it is a placeholder. Data: useAlerts
+  (systemQueries, /api/v1/system/alerts, AlertSchema with severity, category, source, timestamp,
+  acknowledged). Copy features/trading/orders for list + filters + row detail. Acknowledgement is a
+  write: follow decision 33 (the write returns the full list). The alert rules (S-18, /settings/alerts)
+  and channels (System Health) already exist; link to them rather than duplicating. Then S-23 Audit
+  Log. S-26 Screener has no specification (open question 11): mark it BLOCKED, do not invent it.
 
-FILES TOUCHED (session 42): see session 42 end entry.
+FILES TOUCHED (session 43): see session 43 end entry.
 
 WATCH OUT FOR:
  
@@ -202,7 +199,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-18 | Configuration — instruments, currencies, alerts | DONE | 100 | Session 40 | Instrument types (fixed list; markets, granularity, minimum sizes, settlement and tax overrides, manual-only, automation); currencies (versioned base currency, FX rate source and fallback, stale limit, conversion cost); alert rules (category, severity, channels, escalation, quiet hours with critical override, test alert); handler and hook factories (decision 41); all states verified |
 | S-19 | News & Events | DONE | 100 | Session 41 | Live feed with grouped duplicate stories, sentiment always with confidence and styled as an estimate, importance, holdings emphasis, seven filters, price reaction per story, stale banner from the news provider's configured freshness; month/week/day calendar with impact, restriction windows and held-only filter; all states verified |
 | S-20 | Reports | DONE | 100 | Session 42 | Six report types on one screen (performance with time-weighted return and currency effect, allocation, costs, income, tax summary, strategy attribution); period presets and custom range; one report currency; previous-period and benchmark comparison; CSV export; scheduled reports with run history; computed from the same lots, prices and FX as the portfolio; all states verified |
-| S-21 | Planning | TODO | 0 | | |
+| S-21 | Planning | DONE | 100 | Session 43 | Allocation targets by type, country, currency and sector with drift, in-place editing and suggested corrective trades with estimated costs; goals with progress, projected value and completion; scenario projections (cautious, expected, hopeful, real terms) and proposed-trade preview across all dimensions; no order path; all states verified |
 | S-22 | Alerts Centre | TODO | 0 | | |
 | S-23 | Audit Log | TODO | 0 | | |
 | S-24 | Portfolio — Transactions | TODO | 0 | | Raised session 36. In nav map (spec 6) and routed at `/portfolio/transactions`, but had no registry task. `PortfolioTransactionsPage.tsx` is a 29-line placeholder. Spec 15 requires transaction history with fees, charges and currency conversions |
@@ -302,168 +299,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 39 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 40 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        40 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T17:32:39Z  |  local: 2026-09-16 23:02 IST (UTC+05:30)
-TASK CLAIMED:   S-18 Configuration — instruments, currencies, alerts
-OWNER INPUT:    "start S-18"; decision 26 (take recommended options, commit each screen)
-
-PRE-WORK VERIFICATION:
-  git:         S-17 committed as 4b226c2; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-17 commit; nothing has
-               changed since)
-
-SCOPE (UI spec 7.18), built in this order so a partial hand-off is clean:
-  1. Instrument types: enabled, automation permitted, applicable markets, granularity, minimum
-     sizes, settlement, tax thresholds, manual-only flag. One entry per InstrumentTypeSchema value;
-     types are a fixed list, so there is no "add". Markets seed from each market configuration's
-     permitted instrument types. Settlement and tax threshold may be left to follow the market.
-     PROVISIONAL: no type is seeded manual-only, because no manual-only type exists in the mock
-     data (M-16). The flag is configurable; seeding one would invent data M-16 owns.
-  2. Currencies: base currency selection, exchange rate source, conversion cost assumptions. One
-     entry per supported currency (enabled, rate source, maximum rate age, conversion cost), plus a
-     separately versioned base currency. Conversion costs come from the 0.25% charge (decision 28)
-     and the per-market backtest FX costs; the rate source is the FX rates provider (S-16).
-  3. Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with
-     critical override. Channels are System Health's; "Send test alert" reuses ConnectionTest and
-     follows System Health's channel test outcomes (the webhook fails).
-  - Instrument types and currencies have no simulation or live mode, so the entry list's mode badge
-    becomes optional in shared/config
-  - New handlers and hooks for these three areas go through small factories, since each would
-    otherwise repeat the provider/broker files; existing areas are not moved (scope)
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        40 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T17:52:00Z  |  local: 2026-09-16 23:22 IST (UTC+05:30)
-TASK:           S-18 Configuration — instruments, currencies, alerts — DONE
-
-WHAT WAS BUILT (UI spec 7.18), all three areas on shared/config (decisions 38, 40, 41):
-  Instrument types (/settings/instruments):
-  - One entry per instrument type, no "add"; enabled, manual only, automation permitted (switched
-    off and locked while manual only), markets, price granularity, minimum quantity and order
-    value, settlement and long-term tax holding period that either follow each market or override
-  - Validation: an enabled type with no market, automation on a manual-only type, no granularity
-    unless manual only, intraday without an intraday granularity, a zero minimum quantity
-  - Health: disabled while held; a chosen market whose own configuration does not permit the type;
-    automation permitted but no enabled broker automates it
-  Currencies (/settings/currencies):
-  - Base currency (USD, INR, EUR, GBP) versioned on its own, with a note that the top bar switch
-    only changes the display; each currency: enabled (locked for the base), rate source and
-    fallback chosen from providers that supply FX rates, stale-after minutes, conversion cost with
-    the cost of converting 10,000 of the base currency
-  - Validation: fallback equal to the main source; server refuses disabling the base currency,
-    making a disabled currency the base, and unknown providers
-  - Health: base currency disabled; rate source not an enabled FX provider (critical without a
-    fallback); source down; rate older than the stale limit; disabled while held
-  Alert rules (/settings/alerts):
-  - Add and edit rules: category, minimum severity, channels (System Health's, labelled never tested
-    or last test failed), escalation after N minutes to further channels, quiet hours with time zone,
-    critical alerts break through quiet hours, enabled
-  - Validation: no channel, escalation with no channel or only channels already sent to, quiet
-    hours that start and end at the same time; server rejects unknown channels
-  - Send test alert (the shared test card, now titled per area): one check per channel including
-    escalation channels; nothing is sent
-  - Health: a channel that failed its last test, one never tested, every direct channel failing
-    (critical), and critical alerts held by quiet hours when the override is off
-  Shared changes:
-  - versionedConfigHandlers (mock list/save/revert/create factory) and settingsConfigQueries helper
-    hooks, used by these three areas only (decision 41); configStore exports appendVersion
-  - ConfigEntryList mode badge optional; ConnectionTest title and action label; TimeField moved
-    from markets into shared/config FormFields (markets re-verified); instrumentTypeLabel and
-    instrumentTypeInSentence in shared/format, used by brokers and instrument types
-
-MOCK DATA:
-  - GET /api/v1/config/{instruments,currencies,alerts}, PUT /:id, POST /:id/revert,
-    POST /config/alerts (create), POST /config/alerts/test,
-    GET/PUT /api/v1/config/base-currency, POST /config/base-currency/revert
-  - Instrument type markets seed from each market's permitted instrument types and automation from
-    the brokers' automation switches, read from the saved configuration stores
-  - Conversion costs: USD 0 (funding currency), INR/JPY/SGD 30 bps (backtest per-market FX costs),
-    others 25 bps (decision 28's 0.25%). Rate source prov-fx, stale after 60 minutes
-  - Alert channels and test outcomes are System Health's (webhook fails, SMS never tested)
-  - History seeds are invented mock history: mutual fund minimum 1 -> 0.001; INR conversion
-    25 -> 30 bps; critical rule escalation 30 -> 5 minutes
-
-FILES CREATED:
-  - data/schemas/config-{instruments,currencies,alerts}.ts
-  - data/mock/generators/{instrumentTypeConfig,currencyConfig,alertRuleConfig}.ts
-  - data/mock/handlers/{versionedConfigHandlers,settingsConfigHandlers}.ts;
-    data/api/settingsConfigQueries.ts
-  - features/settings/{instruments,currencies,alerts}/** ;
-    features/settings/Settings{Instruments,Currencies,Alerts}Page.tsx
-FILES MODIFIED:
-  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts;
-    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
-  - shared/config/{ConfigEntryList,ConnectionTest,FormFields}.tsx, shared/config/index.ts;
-    shared/format/{display,index}.ts
-  - features/settings/markets/{model/marketDraft.ts,sections/MarketFields.tsx,
-    sections/MarketIdentityHours.tsx}; features/settings/brokers/model/brokerDraft.ts
-  - routes/AppRoutes.tsx: /settings/instruments and /settings/currencies no longer render the
-    markets page; /settings/alerts no longer renders the Alerts Centre page
-  - Docs: session 37 moved verbatim to PROGRESS_ARCHIVE.md (rule 11); decision 41
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - 41: mock handler and query hook factories for configuration areas from S-18 on
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  endpoints:   all four GETs 200 and schema-valid before any UI was built
-  instruments: 11 types, no Add button; Long term set manual only -> automation switched off and
-               locked; minimum quantity 0 -> "Must be above zero"; settlement override field
-               appears; saved v2 "manual only"; v1 diff showed exactly Automation permitted,
-               Manual only and Settlement; revert made v3 with automation permitted again
-  currencies:  USD (base) healthy, INR "30 bps to convert into it; 1 held"; USD's Enabled switch
-               locked; INR shows "Converting 10,000 USD into INR is assumed to cost $30.00";
-               fallback = main source -> inline error; base changed to INR with a reason -> v2,
-               list relabelled INR (base) and USD's health refreshed; disabling INR from the list
-               -> "INR is the base currency; choose another base currency before disabling it"
-  alerts:      critical rule "Needs attention: Webhook failed its last test (+1 more)"; test
-               alert passed push, SMS and email, failed webhook with 502; escalation only to
-               channels already used -> inline error; start = end quiet hours -> inline error;
-               override off saved v3 with the held-critical warning added (+2 more); a new rule
-               "Weekly summary" was added
-  states:      loading-error on all three pages -> "... unavailable" with the failing path; reset
-               to healthy
-  markets:     re-verified the moved TimeField: session 1 opens 17:00 -> "A session must end
-               after it starts" and Unsaved changes
-  NOT verified in the browser: the blocking-error summary when adding an alert rule with no
-  channel (my script pressed the list's Add rule button instead of the save button); the same
-  summary is verified on markets and providers and is the shared ConfigSaveCard
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The first alert health rule for held critical alerts was a tangle of conditions that could
-    never be true as intended; replaced with one clear condition before any UI used it
-  - The list endpoint factory first passed unknown data to HttpResponse.json, which does not
-    typecheck; it now serialises the validated data
-
-FINDINGS (out of scope, not fixed):
-  - PROVISIONAL (see start entry): no instrument type is seeded manual-only because no manual-only
-    type exists in the mock data (M-16)
-  - None of these settings are read by the rest of the app yet: the top bar base currency switch,
-    backtest FX costs, conversion charges on holdings and alert delivery all use their own seeds
-  - An alert channel test run on System Health updates that screen only; alert rule health reads
-    the seeded last test
-  - Long-term can be made manual only while brokers still automate it; the layered view belongs to
-    S-29 (automation permission summary)
-  - /settings/alerts rendered the Alerts Centre page before this session; the Alerts Centre itself
-    is S-22 and still has its own route
-  - Providers, brokers and markets still use their own handler and hook files; moving them onto the
-    factories is a separate refactor
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        41 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -698,6 +538,129 @@ FINDINGS (out of scope, not fixed):
     for allocation over time); tables stand in for them
   - Scheduled runs only happen on "Run now"; nothing runs on the schedule in the mock phase
   - Holdings' lot purchase dates drive valuation, so a period before the first purchase reports zero
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        43 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:15:43Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
+TASK CLAIMED:   S-21 Planning
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-20 committed as 2c689d2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-20 commit)
+
+CORRECTION (rules section 7): the session 41 end entry gives END 2026-09-16T22:25:00Z. That time
+  was estimated, not read from the clock, and is later than session 42 actually ended (22:15Z).
+  Session 41 ended at about 21:58Z, before session 42 started. The entry is left as written.
+
+SCOPE (UI spec 7.17):
+  - Allocation targets by instrument type, country, currency and sector; target versus actual with
+    drift beyond a tolerance highlighted; suggested corrective trades with estimated costs
+  - Goals with target amount and date, linked holdings, progress and projected completion
+  - Scenario modelling: adjust return, inflation, contribution and horizon assumptions and see
+    projected outcomes; model a proposed trade's effect on allocation and costs before committing
+  - Current values come from the report valuation (S-20) in the configured base currency; trade
+    cost estimates use the broker fee rules (S-17) and currency conversion costs (S-18)
+  - Sector exists only for individual stocks (fundamentals seeds). ETFs, gold, crypto and the
+    private bond are shown as "Not classified" and cannot be targeted by sector; this is stated,
+    not invented
+  - Suggestions and trade previews never create an order or an approval; they say so
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        43 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:31:00Z  |  local: 2026-09-17 04:01 IST (UTC+05:30)
+TASK:           S-21 Planning — DONE
+
+WHAT WAS BUILT (UI spec 7.17):
+  Allocation targets (/planning/allocation):
+  - Instrument type, country, currency and sector: value, actual share, target, a bar with a target
+    tick, drift in points and a status badge (within tolerance, over, under, no target)
+  - Targets edited in place with a live check that they add up to 100% (or are all cleared), a
+    tolerance and a reason; currency selector (default: configured base currency)
+  - Suggested corrective trades per bucket outside tolerance: trims or adds to the largest holding,
+    whole units unless fractional, estimated cost, and a link that opens the trade preview prefilled
+  Goals (/planning/goals):
+  - Goal cards: current value of linked holdings, progress bar, projected value at the target date
+    with any shortfall, projected completion month, on track or behind plan, projection chart with the
+    target line; add, edit and delete (two-step) with inline checks
+  Scenarios (/planning/scenarios):
+  - Projected outcomes: contribution, years, expected return, spread and inflation -> cautious,
+    expected and hopeful cases from today's portfolio value, chart and table in nominal terms and in
+    today's money
+  - Proposed trade preview: instrument, direction, quantity -> value, estimated cost with breakdown,
+    warnings (whole units, selling more than held, manual-only type, disabled type, manual broker,
+    a bucket moving outside tolerance) and before/after for all four dimensions. No order button
+
+MOCK DATA:
+  - GET/PUT /api/v1/planning/allocation; GET/POST /planning/goals, PUT/DELETE /planning/goals/:id;
+    POST /planning/projection; POST /planning/trade-preview
+  - Values from the report valuation (shared as handlers/portfolioValuation.ts, now also used by the
+    report handlers): invested value $98,047.11 at 2026-09-16
+  - Costs: broker fee rules (S-17) and currency conversion bps (S-18), e.g. selling 7 XAUUSD at IBKR
+    $5.49; buying RELIANCE at Zerodha adds 30 bps conversion
+  - Seeds: targets by instrument type (long term 35, ETF 30, commodity 20, bond 10, digital asset 5)
+    and currency (USD 80, INR 10, GBP 10), 5 points tolerance; goals "House deposit" (behind plan)
+    and "Retirement top-up" (on track)
+  - Sector is only known for individual stocks (fundamentals seeds, now exported as SECTORS); funds,
+    gold, crypto and the bond are "Not classified"
+
+FILES CREATED:
+  - data/schemas/planning.ts; data/api/planningQueries.ts
+  - data/mock/generators/{planningAllocation,planningProjections,planningTradePreview}.ts;
+    data/mock/stores/planningStore.ts; data/mock/handlers/{planningHandlers,portfolioValuation}.ts
+  - features/planning/{Planning.module.scss, model/planningModel.ts, sections/AllocationView.tsx,
+    AllocationTargets.tsx, GoalCard.tsx, GoalForm.tsx, ProjectionPanel.tsx, TradePreviewPanel.tsx}
+FILES MODIFIED:
+  - features/planning/{PlanningAllocationPage,PlanningGoalsPage,PlanningScenariosPage}.tsx —
+    rewritten from placeholders
+  - data/mock/handlers/{reportHandlers,index}.ts; data/mock/generators/{index,researchData}.ts;
+    data/schemas/index.ts; data/api/index.ts
+  - Docs: session 40 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoints:   all planning endpoints 200 before the UI; selling unheld NVDA -> 400 "NVDA is not
+               held, so there is nothing to sell"
+  allocation:  commodity 41.6% against 20% "Over target +21.6 pts"; currency view USD 94.8% against
+               80%; setting commodity to 30 -> "Targets add up to 110.0%" and Save disabled; with
+               long term 25 and a reason, saved; commodity still over, long term now within
+  suggestion:  "Sell 13 XAUUSD ... estimated cost $10.20"; its preview link opened scenarios with
+               XAUUSD, sell, 7 prefilled (after the saved change)
+  preview:     selling 7 XAUUSD ~$10,979.99, cost $5.49 (IBKR commission), commodity 41.6% -> 34.2%
+               within tolerance; all four dimensions shown before and after
+  projection:  $1,000 a month for 10 years at 6% ± 3%, 4% inflation: expected $338,060.88,
+               $228,381.82 in today's money
+  goals:       2 goals, 1 on track; House deposit $46,692.86 of $90,000, short by $5,423.13, reached
+               around 2029-12-16; an empty form listed four things missing; added "Car" (behind
+               plan), then deleted it through the two-step delete
+  states:      loading-error -> "Goals unavailable" and "Allocation unavailable"; empty-portfolio ->
+               "Nothing to allocate yet"; reset to healthy. Stale: values are stated "at" the close
+               date shown on each screen; there is no live stream to go stale
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I used UsageMeter for goal progress; it escalates to warning colours as it fills, which suits a
+    limit but reads a nearly reached goal as a problem. Replaced with a plain progress bar
+  - A goal shortfall was first computed with plain numbers; it now uses Money
+  - The first goal projection loop was convoluted; simplified before verification
+
+FINDINGS (out of scope, not fixed):
+  - Trade previews are always in USD; the screen does not offer a currency
+  - Allocation excludes cash and assets outside the brokers (S-30 Net Worth)
+  - Suggested trades for different dimensions can overlap (stated on screen)
+  - Allocation targets are not versioned like configuration; only the latest reason is kept
+  - Sectors for ETFs and funds would need look-through holdings data
 ────────────────────────────────────────────────────────────
 ```
  

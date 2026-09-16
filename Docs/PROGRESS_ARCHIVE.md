@@ -3715,3 +3715,168 @@ FINDINGS (out of scope, not fixed):
     screen only
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 40 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        40 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T17:32:39Z  |  local: 2026-09-16 23:02 IST (UTC+05:30)
+TASK CLAIMED:   S-18 Configuration — instruments, currencies, alerts
+OWNER INPUT:    "start S-18"; decision 26 (take recommended options, commit each screen)
+
+PRE-WORK VERIFICATION:
+  git:         S-17 committed as 4b226c2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-17 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.18), built in this order so a partial hand-off is clean:
+  1. Instrument types: enabled, automation permitted, applicable markets, granularity, minimum
+     sizes, settlement, tax thresholds, manual-only flag. One entry per InstrumentTypeSchema value;
+     types are a fixed list, so there is no "add". Markets seed from each market configuration's
+     permitted instrument types. Settlement and tax threshold may be left to follow the market.
+     PROVISIONAL: no type is seeded manual-only, because no manual-only type exists in the mock
+     data (M-16). The flag is configurable; seeding one would invent data M-16 owns.
+  2. Currencies: base currency selection, exchange rate source, conversion cost assumptions. One
+     entry per supported currency (enabled, rate source, maximum rate age, conversion cost), plus a
+     separately versioned base currency. Conversion costs come from the 0.25% charge (decision 28)
+     and the per-market backtest FX costs; the rate source is the FX rates provider (S-16).
+  3. Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with
+     critical override. Channels are System Health's; "Send test alert" reuses ConnectionTest and
+     follows System Health's channel test outcomes (the webhook fails).
+  - Instrument types and currencies have no simulation or live mode, so the entry list's mode badge
+    becomes optional in shared/config
+  - New handlers and hooks for these three areas go through small factories, since each would
+    otherwise repeat the provider/broker files; existing areas are not moved (scope)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        40 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:52:00Z  |  local: 2026-09-16 23:22 IST (UTC+05:30)
+TASK:           S-18 Configuration — instruments, currencies, alerts — DONE
+
+WHAT WAS BUILT (UI spec 7.18), all three areas on shared/config (decisions 38, 40, 41):
+  Instrument types (/settings/instruments):
+  - One entry per instrument type, no "add"; enabled, manual only, automation permitted (switched
+    off and locked while manual only), markets, price granularity, minimum quantity and order
+    value, settlement and long-term tax holding period that either follow each market or override
+  - Validation: an enabled type with no market, automation on a manual-only type, no granularity
+    unless manual only, intraday without an intraday granularity, a zero minimum quantity
+  - Health: disabled while held; a chosen market whose own configuration does not permit the type;
+    automation permitted but no enabled broker automates it
+  Currencies (/settings/currencies):
+  - Base currency (USD, INR, EUR, GBP) versioned on its own, with a note that the top bar switch
+    only changes the display; each currency: enabled (locked for the base), rate source and
+    fallback chosen from providers that supply FX rates, stale-after minutes, conversion cost with
+    the cost of converting 10,000 of the base currency
+  - Validation: fallback equal to the main source; server refuses disabling the base currency,
+    making a disabled currency the base, and unknown providers
+  - Health: base currency disabled; rate source not an enabled FX provider (critical without a
+    fallback); source down; rate older than the stale limit; disabled while held
+  Alert rules (/settings/alerts):
+  - Add and edit rules: category, minimum severity, channels (System Health's, labelled never tested
+    or last test failed), escalation after N minutes to further channels, quiet hours with time zone,
+    critical alerts break through quiet hours, enabled
+  - Validation: no channel, escalation with no channel or only channels already sent to, quiet
+    hours that start and end at the same time; server rejects unknown channels
+  - Send test alert (the shared test card, now titled per area): one check per channel including
+    escalation channels; nothing is sent
+  - Health: a channel that failed its last test, one never tested, every direct channel failing
+    (critical), and critical alerts held by quiet hours when the override is off
+  Shared changes:
+  - versionedConfigHandlers (mock list/save/revert/create factory) and settingsConfigQueries helper
+    hooks, used by these three areas only (decision 41); configStore exports appendVersion
+  - ConfigEntryList mode badge optional; ConnectionTest title and action label; TimeField moved
+    from markets into shared/config FormFields (markets re-verified); instrumentTypeLabel and
+    instrumentTypeInSentence in shared/format, used by brokers and instrument types
+
+MOCK DATA:
+  - GET /api/v1/config/{instruments,currencies,alerts}, PUT /:id, POST /:id/revert,
+    POST /config/alerts (create), POST /config/alerts/test,
+    GET/PUT /api/v1/config/base-currency, POST /config/base-currency/revert
+  - Instrument type markets seed from each market's permitted instrument types and automation from
+    the brokers' automation switches, read from the saved configuration stores
+  - Conversion costs: USD 0 (funding currency), INR/JPY/SGD 30 bps (backtest per-market FX costs),
+    others 25 bps (decision 28's 0.25%). Rate source prov-fx, stale after 60 minutes
+  - Alert channels and test outcomes are System Health's (webhook fails, SMS never tested)
+  - History seeds are invented mock history: mutual fund minimum 1 -> 0.001; INR conversion
+    25 -> 30 bps; critical rule escalation 30 -> 5 minutes
+
+FILES CREATED:
+  - data/schemas/config-{instruments,currencies,alerts}.ts
+  - data/mock/generators/{instrumentTypeConfig,currencyConfig,alertRuleConfig}.ts
+  - data/mock/handlers/{versionedConfigHandlers,settingsConfigHandlers}.ts;
+    data/api/settingsConfigQueries.ts
+  - features/settings/{instruments,currencies,alerts}/** ;
+    features/settings/Settings{Instruments,Currencies,Alerts}Page.tsx
+FILES MODIFIED:
+  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts;
+    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/{ConfigEntryList,ConnectionTest,FormFields}.tsx, shared/config/index.ts;
+    shared/format/{display,index}.ts
+  - features/settings/markets/{model/marketDraft.ts,sections/MarketFields.tsx,
+    sections/MarketIdentityHours.tsx}; features/settings/brokers/model/brokerDraft.ts
+  - routes/AppRoutes.tsx: /settings/instruments and /settings/currencies no longer render the
+    markets page; /settings/alerts no longer renders the Alerts Centre page
+  - Docs: session 37 moved verbatim to PROGRESS_ARCHIVE.md (rule 11); decision 41
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - 41: mock handler and query hook factories for configuration areas from S-18 on
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoints:   all four GETs 200 and schema-valid before any UI was built
+  instruments: 11 types, no Add button; Long term set manual only -> automation switched off and
+               locked; minimum quantity 0 -> "Must be above zero"; settlement override field
+               appears; saved v2 "manual only"; v1 diff showed exactly Automation permitted,
+               Manual only and Settlement; revert made v3 with automation permitted again
+  currencies:  USD (base) healthy, INR "30 bps to convert into it; 1 held"; USD's Enabled switch
+               locked; INR shows "Converting 10,000 USD into INR is assumed to cost $30.00";
+               fallback = main source -> inline error; base changed to INR with a reason -> v2,
+               list relabelled INR (base) and USD's health refreshed; disabling INR from the list
+               -> "INR is the base currency; choose another base currency before disabling it"
+  alerts:      critical rule "Needs attention: Webhook failed its last test (+1 more)"; test
+               alert passed push, SMS and email, failed webhook with 502; escalation only to
+               channels already used -> inline error; start = end quiet hours -> inline error;
+               override off saved v3 with the held-critical warning added (+2 more); a new rule
+               "Weekly summary" was added
+  states:      loading-error on all three pages -> "... unavailable" with the failing path; reset
+               to healthy
+  markets:     re-verified the moved TimeField: session 1 opens 17:00 -> "A session must end
+               after it starts" and Unsaved changes
+  NOT verified in the browser: the blocking-error summary when adding an alert rule with no
+  channel (my script pressed the list's Add rule button instead of the save button); the same
+  summary is verified on markets and providers and is the shared ConfigSaveCard
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first alert health rule for held critical alerts was a tangle of conditions that could
+    never be true as intended; replaced with one clear condition before any UI used it
+  - The list endpoint factory first passed unknown data to HttpResponse.json, which does not
+    typecheck; it now serialises the validated data
+
+FINDINGS (out of scope, not fixed):
+  - PROVISIONAL (see start entry): no instrument type is seeded manual-only because no manual-only
+    type exists in the mock data (M-16)
+  - None of these settings are read by the rest of the app yet: the top bar base currency switch,
+    backtest FX costs, conversion charges on holdings and alert delivery all use their own seeds
+  - An alert channel test run on System Health updates that screen only; alert rule health reads
+    the seeded last test
+  - Long-term can be made manual only while brokers still automate it; the layered view belongs to
+    S-29 (automation permission summary)
+  - /settings/alerts rendered the Alerts Centre page before this session; the Alerts Centre itself
+    is S-22 and still has its own route
+  - Providers, brokers and markets still use their own handler and hook files; moving them onto the
+    factories is a separate refactor
+────────────────────────────────────────────────────────────
+```
