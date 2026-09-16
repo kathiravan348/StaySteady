@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-23 done)
-OVERALL PROGRESS:   68% (60 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 23 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T22:49:00Z  |  local: 2026-09-17 04:19 IST
-LAST AGENT:         session 45 (S-23 Audit Log)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,340 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-24 done)
+OVERALL PROGRESS:   69% (61 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 24 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T22:56:30Z  |  local: 2026-09-17 04:26 IST
+LAST AGENT:         session 46 (S-24 Portfolio — Transactions)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,349 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,8 +36,7 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-23 done
-  (every screen in UI spec section 7 except S-24..S-33, which were raised in sessions 36 and 37).
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-24 done.
   The owner asked for the remaining S tasks one by one, each committed (no push), taking the
   recommended option whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier
   fails on Windows checkouts only (CRLF, see findings) — not a code defect.
@@ -46,23 +45,23 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 45: S-23 Audit Log. See session 45 end entry.
-  - Session 44: S-22 Alerts Centre. Session 43: S-21 Planning.
+  - Session 46: S-24 Portfolio — Transactions. See session 46 end entry.
+  - Session 45: S-23 Audit Log. Session 44: S-22 Alerts Centre.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-24 Portfolio — Transactions (/portfolio/transactions, features/portfolio/
-  PortfolioTransactionsPage.tsx, a placeholder). UI spec 15 asks for transaction history with fees,
-  charges and currency conversions. Data exists: useTransactions (portfolio handlers) with buys,
-  dividends, conversion charges and the deposit. Copy features/trading/orders for list + filters +
-  detail; convert amounts with convertMoneyWithTable for a base-currency column.
-  After it: S-25 and S-27 have open questions (9 and 10) whose provisional answers keep them as
-  separate tasks; S-26 Screener has no specification (open question 11) — mark it BLOCKED, do not
-  invent it. Then S-28..S-33.
+  Claim S-25 Portfolio — Performance (/portfolio/performance). Open question 9 asks whether it is
+  the same as Reports -> Performance; the provisional answer keeps it separate. Recommended reading
+  (decision 26): a portfolio-focused performance view — value over time, returns for standard
+  periods, a monthly returns heatmap (the preset exists) and contribution by holding — computed on
+  the mock side with data/mock/generators/reportValuation.ts, with a link to the full performance
+  report rather than duplicating its comparisons, export or schedules.
+  Then S-26 Screener: no specification (open question 11) — mark it BLOCKED, do not invent it.
+  Then S-27 Trading — Positions (open question 10), then S-28..S-33.
 
-FILES TOUCHED (session 45): see session 45 end entry.
+FILES TOUCHED (session 46): see session 46 end entry.
 
 WATCH OUT FOR:
  
@@ -201,7 +200,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-21 | Planning | DONE | 100 | Session 43 | Allocation targets by type, country, currency and sector with drift, in-place editing and suggested corrective trades with estimated costs; goals with progress, projected value and completion; scenario projections (cautious, expected, hopeful, real terms) and proposed-trade preview across all dimensions; no order path; all states verified |
 | S-22 | Alerts Centre | DONE | 100 | Session 44 | Alert groups with occurrences, severity in word/symbol/colour, filters by severity/category/market/state, acknowledge and resolve with notes and history, escalation from the saved alert rules with failed deliveries named, links to the screen holding each fact; stale banner and empty state built but not browser-verified |
 | S-23 | Audit Log | DONE | 100 | Session 45 | Audit log rebuilt from real records (configuration versions with field-level before/after, risk changes, order lifecycles with decision reasons, strategy versions and stages); search, type/trigger/date filters; decision chain trace from signal to fill; stage promotion dates provisional |
-| S-24 | Portfolio — Transactions | TODO | 0 | | Raised session 36. In nav map (spec 6) and routed at `/portfolio/transactions`, but had no registry task. `PortfolioTransactionsPage.tsx` is a 29-line placeholder. Spec 15 requires transaction history with fees, charges and currency conversions |
+| S-24 | Portfolio — Transactions | DONE | 100 | Session 46 | Transaction history with fees, signed cash effect and base-currency amounts at each transaction date's rate; conversion charges linked to their purchases; totals by type; filters by type, instrument, broker, currency and date; CSV export; all states verified |
 | S-25 | Portfolio — Performance | TODO | 0 | | Raised session 36. In nav map and routed at `/portfolio/performance`; 29-line placeholder, no task. **See open question 9** — may be intended to fold into S-20 Reports |
 | S-26 | Markets — Screener | TODO | 0 | | Raised session 36. In nav map and routed at `/markets/screener`; 29-line placeholder, no task. Note: the nav map lists it but section 7 has no screen specification for it — **see open question 11** |
 | S-27 | Trading — Positions | TODO | 0 | | Raised session 36. In nav map and routed at `/trading/positions`; 29-line placeholder, no task. **See open question 10** — overlap with S-02 Holdings is undefined |
@@ -298,134 +297,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 42 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 43 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        43 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T22:15:43Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
-TASK CLAIMED:   S-21 Planning
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-20 committed as 2c689d2; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-20 commit)
-
-CORRECTION (rules section 7): the session 41 end entry gives END 2026-09-16T22:25:00Z. That time
-  was estimated, not read from the clock, and is later than session 42 actually ended (22:15Z).
-  Session 41 ended at about 21:58Z, before session 42 started. The entry is left as written.
-
-SCOPE (UI spec 7.17):
-  - Allocation targets by instrument type, country, currency and sector; target versus actual with
-    drift beyond a tolerance highlighted; suggested corrective trades with estimated costs
-  - Goals with target amount and date, linked holdings, progress and projected completion
-  - Scenario modelling: adjust return, inflation, contribution and horizon assumptions and see
-    projected outcomes; model a proposed trade's effect on allocation and costs before committing
-  - Current values come from the report valuation (S-20) in the configured base currency; trade
-    cost estimates use the broker fee rules (S-17) and currency conversion costs (S-18)
-  - Sector exists only for individual stocks (fundamentals seeds). ETFs, gold, crypto and the
-    private bond are shown as "Not classified" and cannot be targeted by sector; this is stated,
-    not invented
-  - Suggestions and trade previews never create an order or an approval; they say so
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        43 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T22:31:00Z  |  local: 2026-09-17 04:01 IST (UTC+05:30)
-TASK:           S-21 Planning — DONE
-
-WHAT WAS BUILT (UI spec 7.17):
-  Allocation targets (/planning/allocation):
-  - Instrument type, country, currency and sector: value, actual share, target, a bar with a target
-    tick, drift in points and a status badge (within tolerance, over, under, no target)
-  - Targets edited in place with a live check that they add up to 100% (or are all cleared), a
-    tolerance and a reason; currency selector (default: configured base currency)
-  - Suggested corrective trades per bucket outside tolerance: trims or adds to the largest holding,
-    whole units unless fractional, estimated cost, and a link that opens the trade preview prefilled
-  Goals (/planning/goals):
-  - Goal cards: current value of linked holdings, progress bar, projected value at the target date
-    with any shortfall, projected completion month, on track or behind plan, projection chart with the
-    target line; add, edit and delete (two-step) with inline checks
-  Scenarios (/planning/scenarios):
-  - Projected outcomes: contribution, years, expected return, spread and inflation -> cautious,
-    expected and hopeful cases from today's portfolio value, chart and table in nominal terms and in
-    today's money
-  - Proposed trade preview: instrument, direction, quantity -> value, estimated cost with breakdown,
-    warnings (whole units, selling more than held, manual-only type, disabled type, manual broker,
-    a bucket moving outside tolerance) and before/after for all four dimensions. No order button
-
-MOCK DATA:
-  - GET/PUT /api/v1/planning/allocation; GET/POST /planning/goals, PUT/DELETE /planning/goals/:id;
-    POST /planning/projection; POST /planning/trade-preview
-  - Values from the report valuation (shared as handlers/portfolioValuation.ts, now also used by the
-    report handlers): invested value $98,047.11 at 2026-09-16
-  - Costs: broker fee rules (S-17) and currency conversion bps (S-18), e.g. selling 7 XAUUSD at IBKR
-    $5.49; buying RELIANCE at Zerodha adds 30 bps conversion
-  - Seeds: targets by instrument type (long term 35, ETF 30, commodity 20, bond 10, digital asset 5)
-    and currency (USD 80, INR 10, GBP 10), 5 points tolerance; goals "House deposit" (behind plan)
-    and "Retirement top-up" (on track)
-  - Sector is only known for individual stocks (fundamentals seeds, now exported as SECTORS); funds,
-    gold, crypto and the bond are "Not classified"
-
-FILES CREATED:
-  - data/schemas/planning.ts; data/api/planningQueries.ts
-  - data/mock/generators/{planningAllocation,planningProjections,planningTradePreview}.ts;
-    data/mock/stores/planningStore.ts; data/mock/handlers/{planningHandlers,portfolioValuation}.ts
-  - features/planning/{Planning.module.scss, model/planningModel.ts, sections/AllocationView.tsx,
-    AllocationTargets.tsx, GoalCard.tsx, GoalForm.tsx, ProjectionPanel.tsx, TradePreviewPanel.tsx}
-FILES MODIFIED:
-  - features/planning/{PlanningAllocationPage,PlanningGoalsPage,PlanningScenariosPage}.tsx —
-    rewritten from placeholders
-  - data/mock/handlers/{reportHandlers,index}.ts; data/mock/generators/{index,researchData}.ts;
-    data/schemas/index.ts; data/api/index.ts
-  - Docs: session 40 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  endpoints:   all planning endpoints 200 before the UI; selling unheld NVDA -> 400 "NVDA is not
-               held, so there is nothing to sell"
-  allocation:  commodity 41.6% against 20% "Over target +21.6 pts"; currency view USD 94.8% against
-               80%; setting commodity to 30 -> "Targets add up to 110.0%" and Save disabled; with
-               long term 25 and a reason, saved; commodity still over, long term now within
-  suggestion:  "Sell 13 XAUUSD ... estimated cost $10.20"; its preview link opened scenarios with
-               XAUUSD, sell, 7 prefilled (after the saved change)
-  preview:     selling 7 XAUUSD ~$10,979.99, cost $5.49 (IBKR commission), commodity 41.6% -> 34.2%
-               within tolerance; all four dimensions shown before and after
-  projection:  $1,000 a month for 10 years at 6% ± 3%, 4% inflation: expected $338,060.88,
-               $228,381.82 in today's money
-  goals:       2 goals, 1 on track; House deposit $46,692.86 of $90,000, short by $5,423.13, reached
-               around 2029-12-16; an empty form listed four things missing; added "Car" (behind
-               plan), then deleted it through the two-step delete
-  states:      loading-error -> "Goals unavailable" and "Allocation unavailable"; empty-portfolio ->
-               "Nothing to allocate yet"; reset to healthy. Stale: values are stated "at" the close
-               date shown on each screen; there is no live stream to go stale
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - I used UsageMeter for goal progress; it escalates to warning colours as it fills, which suits a
-    limit but reads a nearly reached goal as a problem. Replaced with a plain progress bar
-  - A goal shortfall was first computed with plain numbers; it now uses Money
-  - The first goal projection loop was convoluted; simplified before verification
-
-FINDINGS (out of scope, not fixed):
-  - Trade previews are always in USD; the screen does not offer a currency
-  - Allocation excludes cash and assets outside the brokers (S-30 Net Worth)
-  - Suggested trades for different dimensions can overlap (stated on screen)
-  - Allocation targets are not versioned like configuration; only the latest reason is kept
-  - Sectors for ETFs and funds would need look-through holdings data
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        44 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -621,6 +497,92 @@ FINDINGS (out of scope, not fixed):
   - Watchlist edits, goal and allocation target changes, report schedules and alert
     acknowledgements are not in the audit log yet
   - Risk changes carry title and detail text rather than structured before/after values
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        46 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:49:44Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
+TASK CLAIMED:   S-24 Portfolio — Transactions
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-23 committed as 2783986; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-23 commit)
+
+SCOPE (UI spec 15, nav map 6): transaction history with fees, charges and currency conversions
+  - /portfolio/transactions: every transaction (deposit, buys, dividends, conversion charges) with
+    instrument, broker, quantity, price, fees and cash effect; each amount also in the base currency
+    at the exchange rate on the day it happened, not today's rate
+  - A purchase outside the USD funding currency shows its conversion: the rate used and the charge,
+    linked to the charge transaction
+  - Filters by type, instrument, broker, currency and date; totals by type in the base currency;
+    CSV export; row detail with notes and a link to the position
+  - Screen-only: the existing /api/v1/portfolio/transactions, holdings, brokers and FX history
+    carry everything; no new endpoint
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        46 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:56:30Z  |  local: 2026-09-17 04:26 IST (UTC+05:30)
+TASK:           S-24 Portfolio — Transactions — DONE
+
+WHAT WAS BUILT (UI spec 15, nav map 6):
+  - /portfolio/transactions: every transaction newest first with date, type, instrument, broker,
+    quantity, fees, signed cash effect in its own currency, and the same amount in the base currency
+    (top bar) at the exchange rate on the transaction's date
+  - Totals by type in the base currency for the transactions shown
+  - Filters by type, instrument, broker, currency and date range; no-results state; CSV export of
+    the rows shown, including the rate used
+  - Row detail: notes, fees and unit price, the day's rate, and for a purchase outside the USD funding
+    currency the conversion charge booked with it; link to the position
+  - Loading, error and empty (empty-portfolio) states. Transactions are a record, not a stream, so
+    there is no stale state beyond the loading of fresh data
+
+MOCK DATA:
+  - None added: /portfolio/transactions, holdings, brokers and FX history already carry everything
+
+FILES CREATED:
+  - features/portfolio/transactions/{Transactions.module.scss, model/transactionRows.ts,
+    sections/TransactionsView.tsx}
+FILES MODIFIED:
+  - features/portfolio/PortfolioTransactionsPage.tsx — rewritten from a placeholder
+  - Docs: session 43 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        19 transactions; totals Buy (11) -$111,617.33, Dividend (5) +$115.91, Fee or charge
+               (2) -$8.10, Deposit (1) +$50,000.00
+  currency:    INR filter -> RELIANCE dividend +₹470.00 = +$6.53, buy -₹64,255.20 = -$835.25, charge
+               -₹160.63 = -$2.09; the buy's detail: "1 INR = 0.0130 USD on 2022-05-13" and "Bought
+               in INR: money was converted from USD, with a conversion charge of ₹160.63 booked the
+               same day"
+  filters:     Dividend -> 5 transactions, total +$115.91
+  states:      loading-error -> "Transactions unavailable"; empty-portfolio -> "No transactions
+               yet"; reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The session-start script matched the registry row by passing its text through the shell, which
+    mangled the backticks in it; it failed safely (nothing written). A new script matches the row
+    by task id
+  - Colouring whole rows by inflow or outflow tinted every cell; only the amount is coloured now
+
+FINDINGS (out of scope, not fixed):
+  - Mock buys at every broker carry a 1.50 fee in the instrument's currency (₹1.50 at Zerodha),
+    while order history and broker configuration charge Zerodha ₹20 flat
+  - Purchases total about $111,600 against a single $50,000 deposit, so the mock cash record does
+    not balance
+  - The base currency here follows the top bar switch, not the configured base currency (S-18)
+  - No sells, withdrawals or splits exist in the mock data, so those filters are empty
 ────────────────────────────────────────────────────────────
 ```
  

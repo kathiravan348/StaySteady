@@ -4132,3 +4132,134 @@ FINDINGS (out of scope, not fixed):
   - Holdings' lot purchase dates drive valuation, so a period before the first purchase reports zero
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 43 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        43 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:15:43Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
+TASK CLAIMED:   S-21 Planning
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-20 committed as 2c689d2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-20 commit)
+
+CORRECTION (rules section 7): the session 41 end entry gives END 2026-09-16T22:25:00Z. That time
+  was estimated, not read from the clock, and is later than session 42 actually ended (22:15Z).
+  Session 41 ended at about 21:58Z, before session 42 started. The entry is left as written.
+
+SCOPE (UI spec 7.17):
+  - Allocation targets by instrument type, country, currency and sector; target versus actual with
+    drift beyond a tolerance highlighted; suggested corrective trades with estimated costs
+  - Goals with target amount and date, linked holdings, progress and projected completion
+  - Scenario modelling: adjust return, inflation, contribution and horizon assumptions and see
+    projected outcomes; model a proposed trade's effect on allocation and costs before committing
+  - Current values come from the report valuation (S-20) in the configured base currency; trade
+    cost estimates use the broker fee rules (S-17) and currency conversion costs (S-18)
+  - Sector exists only for individual stocks (fundamentals seeds). ETFs, gold, crypto and the
+    private bond are shown as "Not classified" and cannot be targeted by sector; this is stated,
+    not invented
+  - Suggestions and trade previews never create an order or an approval; they say so
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        43 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:31:00Z  |  local: 2026-09-17 04:01 IST (UTC+05:30)
+TASK:           S-21 Planning — DONE
+
+WHAT WAS BUILT (UI spec 7.17):
+  Allocation targets (/planning/allocation):
+  - Instrument type, country, currency and sector: value, actual share, target, a bar with a target
+    tick, drift in points and a status badge (within tolerance, over, under, no target)
+  - Targets edited in place with a live check that they add up to 100% (or are all cleared), a
+    tolerance and a reason; currency selector (default: configured base currency)
+  - Suggested corrective trades per bucket outside tolerance: trims or adds to the largest holding,
+    whole units unless fractional, estimated cost, and a link that opens the trade preview prefilled
+  Goals (/planning/goals):
+  - Goal cards: current value of linked holdings, progress bar, projected value at the target date
+    with any shortfall, projected completion month, on track or behind plan, projection chart with the
+    target line; add, edit and delete (two-step) with inline checks
+  Scenarios (/planning/scenarios):
+  - Projected outcomes: contribution, years, expected return, spread and inflation -> cautious,
+    expected and hopeful cases from today's portfolio value, chart and table in nominal terms and in
+    today's money
+  - Proposed trade preview: instrument, direction, quantity -> value, estimated cost with breakdown,
+    warnings (whole units, selling more than held, manual-only type, disabled type, manual broker,
+    a bucket moving outside tolerance) and before/after for all four dimensions. No order button
+
+MOCK DATA:
+  - GET/PUT /api/v1/planning/allocation; GET/POST /planning/goals, PUT/DELETE /planning/goals/:id;
+    POST /planning/projection; POST /planning/trade-preview
+  - Values from the report valuation (shared as handlers/portfolioValuation.ts, now also used by the
+    report handlers): invested value $98,047.11 at 2026-09-16
+  - Costs: broker fee rules (S-17) and currency conversion bps (S-18), e.g. selling 7 XAUUSD at IBKR
+    $5.49; buying RELIANCE at Zerodha adds 30 bps conversion
+  - Seeds: targets by instrument type (long term 35, ETF 30, commodity 20, bond 10, digital asset 5)
+    and currency (USD 80, INR 10, GBP 10), 5 points tolerance; goals "House deposit" (behind plan)
+    and "Retirement top-up" (on track)
+  - Sector is only known for individual stocks (fundamentals seeds, now exported as SECTORS); funds,
+    gold, crypto and the bond are "Not classified"
+
+FILES CREATED:
+  - data/schemas/planning.ts; data/api/planningQueries.ts
+  - data/mock/generators/{planningAllocation,planningProjections,planningTradePreview}.ts;
+    data/mock/stores/planningStore.ts; data/mock/handlers/{planningHandlers,portfolioValuation}.ts
+  - features/planning/{Planning.module.scss, model/planningModel.ts, sections/AllocationView.tsx,
+    AllocationTargets.tsx, GoalCard.tsx, GoalForm.tsx, ProjectionPanel.tsx, TradePreviewPanel.tsx}
+FILES MODIFIED:
+  - features/planning/{PlanningAllocationPage,PlanningGoalsPage,PlanningScenariosPage}.tsx —
+    rewritten from placeholders
+  - data/mock/handlers/{reportHandlers,index}.ts; data/mock/generators/{index,researchData}.ts;
+    data/schemas/index.ts; data/api/index.ts
+  - Docs: session 40 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoints:   all planning endpoints 200 before the UI; selling unheld NVDA -> 400 "NVDA is not
+               held, so there is nothing to sell"
+  allocation:  commodity 41.6% against 20% "Over target +21.6 pts"; currency view USD 94.8% against
+               80%; setting commodity to 30 -> "Targets add up to 110.0%" and Save disabled; with
+               long term 25 and a reason, saved; commodity still over, long term now within
+  suggestion:  "Sell 13 XAUUSD ... estimated cost $10.20"; its preview link opened scenarios with
+               XAUUSD, sell, 7 prefilled (after the saved change)
+  preview:     selling 7 XAUUSD ~$10,979.99, cost $5.49 (IBKR commission), commodity 41.6% -> 34.2%
+               within tolerance; all four dimensions shown before and after
+  projection:  $1,000 a month for 10 years at 6% ± 3%, 4% inflation: expected $338,060.88,
+               $228,381.82 in today's money
+  goals:       2 goals, 1 on track; House deposit $46,692.86 of $90,000, short by $5,423.13, reached
+               around 2029-12-16; an empty form listed four things missing; added "Car" (behind
+               plan), then deleted it through the two-step delete
+  states:      loading-error -> "Goals unavailable" and "Allocation unavailable"; empty-portfolio ->
+               "Nothing to allocate yet"; reset to healthy. Stale: values are stated "at" the close
+               date shown on each screen; there is no live stream to go stale
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I used UsageMeter for goal progress; it escalates to warning colours as it fills, which suits a
+    limit but reads a nearly reached goal as a problem. Replaced with a plain progress bar
+  - A goal shortfall was first computed with plain numbers; it now uses Money
+  - The first goal projection loop was convoluted; simplified before verification
+
+FINDINGS (out of scope, not fixed):
+  - Trade previews are always in USD; the screen does not offer a currency
+  - Allocation excludes cash and assets outside the brokers (S-30 Net Worth)
+  - Suggested trades for different dimensions can overlap (stated on screen)
+  - Allocation targets are not versioned like configuration; only the latest reason is kept
+  - Sectors for ETFs and funds would need look-through holdings data
+────────────────────────────────────────────────────────────
+```
