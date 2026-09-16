@@ -145,3 +145,15 @@ export {
   seedAlertRules,
   testAlertRule,
 } from './alertRuleConfig';
+
+// Session 42: reports (UI spec 7.16)
+export type { ValuationContext } from './reportValuation';
+export { createValuationContext } from './reportValuation';
+export type { ReportRequest } from './reports';
+export {
+  buildReport,
+  lastCompletePeriod,
+  nextRunDate,
+  seedReportRuns,
+  seedReportSchedules,
+} from './reports';

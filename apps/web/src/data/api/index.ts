@@ -113,3 +113,5 @@ export {
   useSaveInstrumentTypeConfig,
   useTestAlertRule,
 } from './settingsConfigQueries';
+export type { ReportRequestVariables, ScheduleAction } from './reportQueries';
+export { useReport, useReportRuns, useReportSchedules, useScheduleAction } from './reportQueries';

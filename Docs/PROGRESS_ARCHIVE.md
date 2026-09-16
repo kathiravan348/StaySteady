@@ -3578,3 +3578,140 @@ FINDINGS (out of scope, not fixed):
   - Spend is compared with the budget only for USD budgets; other currencies get a warning
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 39 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        39 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T17:16:27Z  |  local: 2026-09-16 22:46 IST (UTC+05:30)
+TASK CLAIMED:   S-17 Configuration — brokers
+OWNER INPUT:    "start s-17"; decision 26 (take recommended options, commit each screen)
+
+PRE-WORK VERIFICATION:
+  git:         S-16 committed as cd91b55; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-16 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.18):
+  - Brokers: markets, instrument types, capabilities, order types, simulation availability, fees,
+    credentials, automation toggles per instrument type
+  - Built on shared/config (decisions 38 and 40). Seeds come from CANONICAL_BROKERS (markets,
+    account currency, automation support), the order history fee rules (IBKR 5 bps with a 1.00
+    minimum, Zerodha 20 flat, HL 11.95 flat, private agent none) and the System Health broker
+    sources and faults, so the screens agree
+  - Brokers with no API (HL, private placement agent) are tracking-only: no orders, no credential,
+    no automation, and no connection test
+  - Test connection reads the session and account only. It never places, changes or cancels an
+    order, and says so on the screen
+  - /settings/credentials keeps the placeholder; /settings/brokers gets the real page
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        39 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:31:00Z  |  local: 2026-09-16 23:01 IST (UTC+05:30)
+TASK:           S-17 Configuration — brokers — DONE
+
+WHAT WAS BUILT (UI spec 7.18):
+  Brokers (/settings/brokers), on shared/config (decisions 38 and 40):
+  - Account: id, name, country, account currency, connection (API, or manual from imported
+    statements)
+  - What it trades: markets (from the market configuration), instrument types, order types
+  - Capabilities as switches: places orders, streams positions, fractional quantities, short
+    selling, paper account (simulation availability)
+  - Fees: percentage with a minimum, flat per order, or none, with the commission on a 10,000 trade
+  - Credential reference (API brokers only)
+  - Automation by instrument type: one switch per instrument type the broker trades, off unless the
+    broker places orders, with a note naming covered markets whose own configuration blocks
+    automation (currently SG)
+  - Read-only Test connection for API brokers (credential, session, account read, paper account);
+    manual brokers say there is nothing to test
+  - Inline validation from the schema: a manual broker that places orders, streams positions, has
+    a paper account or a credential; an API broker without a valid reference (a key-like value is
+    rejected); order types without order placement or vice versa; automation without order
+    placement or for a type the broker does not trade; a percentage fee with no rate; a flat fee
+    with no amount
+  - Switching to manual, turning order placement off, or removing an instrument type clears what
+    can no longer apply (order types, automation), so the form never shows errors it caused itself
+  - /settings/credentials now has its own placeholder (SettingsCredentialsPage)
+  - Shared ConnectionTest takes an optional description
+
+MOCK DATA:
+  - GET/POST /api/v1/config/brokers, PUT /:id, POST /:id/revert, POST /config/brokers/test
+  - Seeds: markets, account currency and country from CANONICAL_BROKERS; fees are the order history
+    rules (IBKR 5 bps min 1.00, Zerodha 20.00 flat, HL 11.95 flat, private agent none); API usage,
+    latency and faults from System Health. HL and the private placement agent are manual
+  - Health: scenario faults, API usage against the limit (Zerodha 84%, as on System Health), an API
+    broker never connected, holdings (from HOLDING_PROFILES) outside the configured markets or
+    instrument types, and a disabled broker that still holds positions
+  - The test contacts nothing and has no order step. Known references are the two seeded ones
+  - History seeds are invented mock history: IBKR v1 covered US and UK only; Zerodha v1 allowed no
+    automation
+  - Save rejects markets that are not configured
+
+FILES CREATED:
+  - apps/web/src/data/schemas/config-brokers.ts
+  - apps/web/src/data/mock/generators/{brokerConfig,brokerConnectionTest}.ts;
+    mock/handlers/brokerConfigHandlers.ts
+  - apps/web/src/features/settings/brokers/** ; features/settings/SettingsCredentialsPage.tsx
+FILES MODIFIED:
+  - data/schemas/index.ts; data/api/{configQueries,index}.ts; mock/generators/index.ts;
+    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/ConnectionTest.tsx (description prop)
+  - features/settings/SettingsBrokersPage.tsx — rewritten from the placeholder; routes/AppRoutes.tsx
+  - Docs: session 36 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (follows 38 and 40)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        IBKR healthy "Connected; 4 holdings, 35% of monthly API requests used"; Zerodha
+               "Needs attention: 84% of the monthly API request limit used"; HL and private agent
+               "Tracked from imported statements; 1 holding"
+  test:        IBKR passed credential, session (64 ms, System Health's figure), account read (USD,
+               4 positions) and paper account
+  validation:  "U1234567:hunter2" as the reference -> "This looks like a key, not a reference",
+               test blocked; switching to manual hid the credential, disabled order placement and
+               replaced the test with a note; a flat fee of 0 -> "A flat fee needs an amount"
+  save/revert: removing Digital asset saved v3 and health became "Holds BTCUSD outside the markets
+               or instrument types set here"; revert to v2 with a reason made v4, Healthy again;
+               IBKR v1 diff shows one row, Markets US, UK -> US, UK, JP, SG
+  new:         simulation notice; Groww saved as an API broker in simulation, "Needs attention: Not
+               connected yet"; its test failed on the unknown reference; turning on Places orders
+               showed order types and enabled automation switches; removing Long term removed its
+               automation
+  scenarios:   broker-disconnected -> IBKR Problem "Session expired; new orders to this broker are
+               paused" and a failed session check; loading-error -> "Broker configuration
+               unavailable"; reset to healthy
+  placeholder: /settings/credentials shows "Credentials configuration is not built yet"
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - A new API broker first reported "Connected; 0 holdings" though it had never connected. It now
+    warns "Not connected yet".
+  - Seeds listed instrument types in a different order from the checkboxes, so an edit showed as a
+    whole-list change in the diff. The version description now lists them in a fixed order.
+  - The Bash tool stopped working mid-session (temp-directory error); PowerShell was used instead.
+
+FINDINGS (out of scope, not fixed):
+  - Broker configuration is not read elsewhere: orders, approvals and holdings still use
+    CANONICAL_BROKERS and the fixed fee rules in orderHistory.ts
+  - The automation permission summary (S-29) should combine market, broker, instrument type and
+    strategy; this screen only notes markets that block automation
+  - Fee amounts are "in each trade's currency", matching order history, so a minimum of 1.00 means
+    1 USD on a US trade and 1 GBP on a UK trade; a real broker may state minimums per currency
+  - Instrument type labels elsewhere still read "Etf" and "Ipo" (humanizeToken); fixed on this
+    screen only
+────────────────────────────────────────────────────────────
+```

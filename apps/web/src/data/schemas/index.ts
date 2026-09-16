@@ -30,3 +30,4 @@ export * from './config-brokers';
 export * from './config-instruments';
 export * from './config-currencies';
 export * from './config-alerts';
+export * from './reports';

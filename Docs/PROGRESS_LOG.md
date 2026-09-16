@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-19 done)
-OVERALL PROGRESS:   64% (56 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 19 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T22:25:00Z  |  local: 2026-09-17 03:55 IST
-LAST AGENT:         session 41 (S-19 News & Events)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,238 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-20 done)
+OVERALL PROGRESS:   65% (57 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 20 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T22:15:00Z  |  local: 2026-09-17 03:45 IST
+LAST AGENT:         session 42 (S-20 Reports)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,274 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,37 +36,37 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-19 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-20 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  screens, Strategy Library and Editor, Signals & Approvals, Orders, Risk & Safety, all 7.18
-  Configuration areas except credentials (S-28) and the automation permission summary (S-29), and
-  News & Events). The owner asked for the remaining S tasks one by one, each committed (no push),
-  taking the recommended option whenever a choice comes up (decision 26). typecheck and ESLint
-  pass; Prettier fails on Windows checkouts only (CRLF, see findings) — not a code defect.
+  screens, Strategy Library and Editor, Signals & Approvals, Orders, Risk & Safety, the 7.18
+  Configuration areas except credentials (S-28) and the automation permission summary (S-29),
+  News & Events, Reports). The owner asked for the remaining S tasks one by one, each committed
+  (no push), taking the recommended option whenever a choice comes up (decision 26). typecheck and
+  ESLint pass; Prettier fails on Windows checkouts only (CRLF, see findings) — not a code defect.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 41: S-19 News & Events. See session 41 end entry.
-  - Session 40: S-18 Configuration — instruments, currencies, alerts.
+  - Session 42: S-20 Reports. See session 42 end entry.
+  - Session 41: S-19 News & Events.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-20 Reports (UI spec 7.16: report types performance, allocation, costs, income, tax
-  summaries, strategy attribution; period presets and custom ranges; currency selector for the
-  whole report; comparison with benchmarks and previous periods; export; scheduled reports and
-  history). Find the route in routes/routes.ts (REPORTS*) and its placeholder page. L-13 (missing
-  analytical chart presets) is TODO — use the existing presets (equity curve, comparison curves,
-  drawdown, donut, monthly heatmap) and DataTable, and log what a missing preset would add rather
-  than building L-13 inside S-20. Derive every number from existing holdings, transactions,
-  dividends (holdingCashFlows), orders and backtests; convert with convertMoneyWithTable. Then
-  continue in registry order. S-26 Screener has no specification (open question 11): mark it
-  BLOCKED, do not invent it.
+  Claim S-21 Planning (UI spec 7.17: allocation targets by instrument type, country, currency and
+  sector with target-versus-actual drift and suggested corrective trades with estimated costs;
+  goals with target amount, date, linked holdings, progress and projected completion; scenario
+  modelling of assumptions and of a proposed trade). Routes: /planning/allocation, /goals,
+  /scenarios (features/planning/*Page.tsx placeholders). Reuse the report valuation on the mock
+  side (data/mock/generators/reportValuation.ts: createValuationContext) for current values in any
+  currency, the broker fee rules (brokerConfig seeds) and currency conversion costs (currencyConfig)
+  for trade cost estimates. Sector has no data today — check instruments/fundamentals before
+  deciding; if there is none, raise it rather than invent. Then continue in registry order;
+  S-26 Screener has no specification (open question 11): mark it BLOCKED, do not invent it.
 
-FILES TOUCHED (session 41): see session 41 end entry.
+FILES TOUCHED (session 42): see session 42 end entry.
 
 WATCH OUT FOR:
  
@@ -201,7 +201,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-17 | Configuration — brokers | DONE | 100 | Session 39 | Markets, instrument types, order types, capabilities incl. paper account, fees, credential reference, automation switch per instrument type; API vs manual brokers; read-only connection test; health from System Health faults and usage plus holdings outside coverage; all states verified |
 | S-18 | Configuration — instruments, currencies, alerts | DONE | 100 | Session 40 | Instrument types (fixed list; markets, granularity, minimum sizes, settlement and tax overrides, manual-only, automation); currencies (versioned base currency, FX rate source and fallback, stale limit, conversion cost); alert rules (category, severity, channels, escalation, quiet hours with critical override, test alert); handler and hook factories (decision 41); all states verified |
 | S-19 | News & Events | DONE | 100 | Session 41 | Live feed with grouped duplicate stories, sentiment always with confidence and styled as an estimate, importance, holdings emphasis, seven filters, price reaction per story, stale banner from the news provider's configured freshness; month/week/day calendar with impact, restriction windows and held-only filter; all states verified |
-| S-20 | Reports | TODO | 0 | | |
+| S-20 | Reports | DONE | 100 | Session 42 | Six report types on one screen (performance with time-weighted return and currency effect, allocation, costs, income, tax summary, strategy attribution); period presets and custom range; one report currency; previous-period and benchmark comparison; CSV export; scheduled reports with run history; computed from the same lots, prices and FX as the portfolio; all states verified |
 | S-21 | Planning | TODO | 0 | | |
 | S-22 | Alerts Centre | TODO | 0 | | |
 | S-23 | Audit Log | TODO | 0 | | |
@@ -302,140 +302,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 38 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 39 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        39 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T17:16:27Z  |  local: 2026-09-16 22:46 IST (UTC+05:30)
-TASK CLAIMED:   S-17 Configuration — brokers
-OWNER INPUT:    "start s-17"; decision 26 (take recommended options, commit each screen)
-
-PRE-WORK VERIFICATION:
-  git:         S-16 committed as cd91b55; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-16 commit; nothing has
-               changed since)
-
-SCOPE (UI spec 7.18):
-  - Brokers: markets, instrument types, capabilities, order types, simulation availability, fees,
-    credentials, automation toggles per instrument type
-  - Built on shared/config (decisions 38 and 40). Seeds come from CANONICAL_BROKERS (markets,
-    account currency, automation support), the order history fee rules (IBKR 5 bps with a 1.00
-    minimum, Zerodha 20 flat, HL 11.95 flat, private agent none) and the System Health broker
-    sources and faults, so the screens agree
-  - Brokers with no API (HL, private placement agent) are tracking-only: no orders, no credential,
-    no automation, and no connection test
-  - Test connection reads the session and account only. It never places, changes or cancels an
-    order, and says so on the screen
-  - /settings/credentials keeps the placeholder; /settings/brokers gets the real page
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        39 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T17:31:00Z  |  local: 2026-09-16 23:01 IST (UTC+05:30)
-TASK:           S-17 Configuration — brokers — DONE
-
-WHAT WAS BUILT (UI spec 7.18):
-  Brokers (/settings/brokers), on shared/config (decisions 38 and 40):
-  - Account: id, name, country, account currency, connection (API, or manual from imported
-    statements)
-  - What it trades: markets (from the market configuration), instrument types, order types
-  - Capabilities as switches: places orders, streams positions, fractional quantities, short
-    selling, paper account (simulation availability)
-  - Fees: percentage with a minimum, flat per order, or none, with the commission on a 10,000 trade
-  - Credential reference (API brokers only)
-  - Automation by instrument type: one switch per instrument type the broker trades, off unless the
-    broker places orders, with a note naming covered markets whose own configuration blocks
-    automation (currently SG)
-  - Read-only Test connection for API brokers (credential, session, account read, paper account);
-    manual brokers say there is nothing to test
-  - Inline validation from the schema: a manual broker that places orders, streams positions, has
-    a paper account or a credential; an API broker without a valid reference (a key-like value is
-    rejected); order types without order placement or vice versa; automation without order
-    placement or for a type the broker does not trade; a percentage fee with no rate; a flat fee
-    with no amount
-  - Switching to manual, turning order placement off, or removing an instrument type clears what
-    can no longer apply (order types, automation), so the form never shows errors it caused itself
-  - /settings/credentials now has its own placeholder (SettingsCredentialsPage)
-  - Shared ConnectionTest takes an optional description
-
-MOCK DATA:
-  - GET/POST /api/v1/config/brokers, PUT /:id, POST /:id/revert, POST /config/brokers/test
-  - Seeds: markets, account currency and country from CANONICAL_BROKERS; fees are the order history
-    rules (IBKR 5 bps min 1.00, Zerodha 20.00 flat, HL 11.95 flat, private agent none); API usage,
-    latency and faults from System Health. HL and the private placement agent are manual
-  - Health: scenario faults, API usage against the limit (Zerodha 84%, as on System Health), an API
-    broker never connected, holdings (from HOLDING_PROFILES) outside the configured markets or
-    instrument types, and a disabled broker that still holds positions
-  - The test contacts nothing and has no order step. Known references are the two seeded ones
-  - History seeds are invented mock history: IBKR v1 covered US and UK only; Zerodha v1 allowed no
-    automation
-  - Save rejects markets that are not configured
-
-FILES CREATED:
-  - apps/web/src/data/schemas/config-brokers.ts
-  - apps/web/src/data/mock/generators/{brokerConfig,brokerConnectionTest}.ts;
-    mock/handlers/brokerConfigHandlers.ts
-  - apps/web/src/features/settings/brokers/** ; features/settings/SettingsCredentialsPage.tsx
-FILES MODIFIED:
-  - data/schemas/index.ts; data/api/{configQueries,index}.ts; mock/generators/index.ts;
-    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
-  - shared/config/ConnectionTest.tsx (description prop)
-  - features/settings/SettingsBrokersPage.tsx — rewritten from the placeholder; routes/AppRoutes.tsx
-  - Docs: session 36 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none (follows 38 and 40)
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  list:        IBKR healthy "Connected; 4 holdings, 35% of monthly API requests used"; Zerodha
-               "Needs attention: 84% of the monthly API request limit used"; HL and private agent
-               "Tracked from imported statements; 1 holding"
-  test:        IBKR passed credential, session (64 ms, System Health's figure), account read (USD,
-               4 positions) and paper account
-  validation:  "U1234567:hunter2" as the reference -> "This looks like a key, not a reference",
-               test blocked; switching to manual hid the credential, disabled order placement and
-               replaced the test with a note; a flat fee of 0 -> "A flat fee needs an amount"
-  save/revert: removing Digital asset saved v3 and health became "Holds BTCUSD outside the markets
-               or instrument types set here"; revert to v2 with a reason made v4, Healthy again;
-               IBKR v1 diff shows one row, Markets US, UK -> US, UK, JP, SG
-  new:         simulation notice; Groww saved as an API broker in simulation, "Needs attention: Not
-               connected yet"; its test failed on the unknown reference; turning on Places orders
-               showed order types and enabled automation switches; removing Long term removed its
-               automation
-  scenarios:   broker-disconnected -> IBKR Problem "Session expired; new orders to this broker are
-               paused" and a failed session check; loading-error -> "Broker configuration
-               unavailable"; reset to healthy
-  placeholder: /settings/credentials shows "Credentials configuration is not built yet"
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - A new API broker first reported "Connected; 0 holdings" though it had never connected. It now
-    warns "Not connected yet".
-  - Seeds listed instrument types in a different order from the checkboxes, so an edit showed as a
-    whole-list change in the diff. The version description now lists them in a fixed order.
-  - The Bash tool stopped working mid-session (temp-directory error); PowerShell was used instead.
-
-FINDINGS (out of scope, not fixed):
-  - Broker configuration is not read elsewhere: orders, approvals and holdings still use
-    CANONICAL_BROKERS and the fixed fee rules in orderHistory.ts
-  - The automation permission summary (S-29) should combine market, broker, instrument type and
-    strategy; this screen only notes markets that block automation
-  - Fee amounts are "in each trade's currency", matching order history, so a minimum of 1.00 means
-    1 USD on a US trade and 1 GBP on a UK trade; a real broker may state minimums per currency
-  - Instrument type labels elsewhere still read "Etf" and "Ipo" (humanizeToken); fixed on this
-    screen only
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        40 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -703,6 +574,130 @@ FINDINGS (out of scope, not fixed):
   - News only has daily prices around publication; an intraday reaction needs intraday history
   - The feed is not live-pushed; it refreshes when the query refetches
   - Calendar dates are UTC calendar dates, not each market's local date
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        42 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T21:58:10Z  |  local: 2026-09-17 03:28 IST (UTC+05:30)
+TASK CLAIMED:   S-20 Reports
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-19 committed as 6138a89; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-19 commit)
+
+SCOPE (UI spec 7.16):
+  - Report types: performance, allocation, costs, income, tax summary, strategy attribution
+  - Period presets and custom range; one currency for the whole report; comparison with the
+    previous period of equal length and with a benchmark; export; scheduled reports with history
+  - The three routes (/reports/performance, /costs, /tax) open the same screen on that report
+    type; the other three types are reached from the type selector (?type= in the URL), since the
+    nav map has no route for them
+  - Mock endpoint GET /api/v1/reports computes a report from the same holdings, lots, price
+    history, FX history and transactions the portfolio screens use, so totals agree. Returns are
+    time-weighted (daily chain-linked, excluding contributions); the currency effect is shown
+    apart from price return. Benchmark: SPY in the report currency
+  - Tax and income use the market configuration (S-15) for holding periods, rates and dividend
+    withholding, and are labelled as estimates for an India-resident owner, not advice
+  - Scheduled reports: create, enable or disable, run now, delete; run history with delivery
+    status through the configured alert channels (the webhook fails, as on System Health)
+  - PROVISIONAL: the mock data has no sales, so realised gains are zero in every period; this is
+    stated on the report rather than invented
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        42 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:15:00Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
+TASK:           S-20 Reports — DONE
+
+WHAT WAS BUILT (UI spec 7.16):
+  - One reports screen for six types: performance, allocation, costs, income, tax summary and
+    strategy attribution. /reports/performance, /costs and /tax open on their type; any type can be
+    picked and is kept in ?type= so a report can be linked to
+  - Period presets (this month, last month, this quarter, year to date, last 12 months) and a
+    custom range, checked before asking (end by yesterday, start after price history begins)
+  - One currency for the whole report (USD, INR, EUR, GBP), defaulting to the configured base
+    currency (S-18)
+  - Comparison with the previous period of equal length (every metric shows the earlier value and
+    the change) or with the S&P 500 (performance), shown in words beside each metric
+  - Headline metrics with notes, a chart (growth of 100 against the benchmark; allocation donut),
+    tables with totals, and the assumptions behind the numbers always shown
+  - Export CSV of metrics, comparisons, tables and notes
+  - Scheduled reports: add (type, frequency, currency, delivery channel), pause or resume, run now,
+    delete; report history with delivered or failed results. Delivery follows the alert channel's
+    test outcome, so the webhook schedule fails as it does on System Health
+  - While a changed report loads, the previous one stays visible with a clear notice (stale);
+    loading, error and empty-portfolio states built
+
+MOCK DATA:
+  - GET /api/v1/reports?type&from&to&currency&comparison; GET/POST /reports/schedules,
+    PATCH/DELETE /reports/schedules/:id, POST /reports/schedules/:id/run; GET /reports/runs
+  - Reports are computed from the same holdings, lots, transactions, price history and FX history
+    as the portfolio screens: year-to-date value at end $97,791.81 against a live portfolio total of
+    $98,142.18 (closing prices versus live quotes)
+  - Returns are time-weighted (chain-linked daily, weekly beyond six months, excluding money added);
+    the currency effect is separated on units held throughout
+  - Tax and income use the market configuration's holding periods, rates and dividend withholding
+  - Seeded schedules (monthly performance, quarterly tax, a paused weekly costs report on the
+    failing webhook) and six past runs
+
+FILES CREATED:
+  - data/schemas/reports.ts; data/api/reportQueries.ts
+  - data/mock/generators/{reportValuation,reportParts,reportPortfolioBuilders,reportAttribution,
+    reportCashBuilders,reportTaxBuilder,reports}.ts; data/mock/stores/reportStore.ts;
+    data/mock/handlers/reportHandlers.ts
+  - features/reports/{Reports.module.scss, model/reportModel.ts, model/reportLimits.ts,
+    sections/ReportScreen.tsx, sections/ReportControls.tsx, sections/ReportBody.tsx,
+    sections/ScheduledReports.tsx}
+FILES MODIFIED:
+  - features/reports/{ReportsPerformancePage,ReportsCostsPage,ReportsTaxPage}.tsx — rewritten
+  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts; mock/handlers/index.ts
+  - Docs: session 39 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoint:    all six types returned 200 before the UI was built; end date before start -> 400
+               "The start date must be on or before the end date"
+  performance: year to date against the previous period: start $86,005.15 (previous $93,345.56),
+               time-weighted return -2.80% (previous -22.73%, +19.93 pts), currency effect
+               -$639.37; with the benchmark: "S&P 500 (SPY) -6.45% (+3.65 pts against it)";
+               growth-of-100 chart and by-holding table rendered
+  tax:         switched to tax, INR, last month: URL ?type=tax, period 2026-08-01 to 2026-08-31,
+               "Estimated tax if everything were sold ₹96,612.57", one lot within 30 days of long-term
+  costs:       /reports/costs opened on costs: $4.50 commissions (AAPL $3.00, BTCUSD $1.50),
+               previous period $1.50
+  allocation:  value at end ₹72,07,862.73 in INR; largest position 40.96% (XAUUSD), unsigned
+  validation:  From after To -> "The start date must be on or before the end date."
+  schedules:   Run now on the weekly costs schedule added a failed run "Endpoint returned 502 Bad
+               Gateway"; added an income quarterly GBP schedule to mobile push; paused the tax
+               schedule
+  states:      loading-error -> "Report unavailable" and "Scheduled reports unavailable";
+               empty-portfolio -> "Nothing to report yet"; reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Every percentage was formatted with a sign, so shares read "+40.96%"; percentages now carry a
+    signed flag and only returns are signed
+  - Two builder files went over 300 lines; tax and attribution were split out
+
+FINDINGS (out of scope, not fixed):
+  - PROVISIONAL (see start entry): the mock data has no sales, so realised gains are always zero
+  - Cash balances are not included in any report
+  - Interest and fund income are not tracked; losses carried forward are not tracked (requirements 26)
+  - Inflation-adjusted returns (UI spec 19) need inflation history (M-17)
+  - L-13 chart presets are still missing (returns distribution, waterfall for costs, stacked area
+    for allocation over time); tables stand in for them
+  - Scheduled runs only happen on "Run now"; nothing runs on the schedule in the mock phase
+  - Holdings' lot purchase dates drive valuation, so a period before the first purchase reports zero
 ────────────────────────────────────────────────────────────
 ```
  

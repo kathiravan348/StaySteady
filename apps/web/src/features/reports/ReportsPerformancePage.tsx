@@ -1,27 +1,24 @@
-// Performance Reports screen (UI spec 14.1).
+// Reports (UI spec 7.16), opening on the performance report. Every report type is available from
+// the screen's report selector.
 
 import type { ReactElement } from 'react';
+
+import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { ReportScreen } from './sections/ReportScreen';
 
 export function ReportsPerformancePage(): ReactElement {
   return (
     <PageShell
-      title="Performance Reports"
-      description="Quarterly and annual return breakdowns, alpha generation, and benchmark tracking"
-      breadcrumbs={[{ label: 'Overview', to: '/overview' }, { label: 'Reports' }]}
+      title="Reports"
+      description="Performance, allocation, costs, income, tax and strategy attribution for any period, in one currency, with comparisons, export and schedules."
+      breadcrumbs={[
+        { label: 'Overview', to: ROUTES.OVERVIEW },
+        { label: 'Reports' },
+        { label: 'Performance' },
+      ]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Generated return reports and downloadable summaries.
-        </p>
-      </div>
+      <ReportScreen defaultType="performance" />
     </PageShell>
   );
 }
