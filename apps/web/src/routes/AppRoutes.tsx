@@ -49,7 +49,10 @@ import { PlanningGoalsPage } from '../features/planning/PlanningGoalsPage';
 import { PlanningScenariosPage } from '../features/planning/PlanningScenariosPage';
 
 import { SettingsMarketsPage } from '../features/settings/SettingsMarketsPage';
+import { SettingsAlertsPage } from '../features/settings/SettingsAlertsPage';
 import { SettingsBrokersPage } from '../features/settings/SettingsBrokersPage';
+import { SettingsCurrenciesPage } from '../features/settings/SettingsCurrenciesPage';
+import { SettingsInstrumentsPage } from '../features/settings/SettingsInstrumentsPage';
 import { SettingsCredentialsPage } from '../features/settings/SettingsCredentialsPage';
 import { SettingsProvidersPage } from '../features/settings/SettingsProvidersPage';
 import { SettingsDisplayPage } from '../features/settings/SettingsDisplayPage';
@@ -123,9 +126,9 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.SETTINGS_MARKETS} element={<SettingsMarketsPage />} />
         <Route path={ROUTES.SETTINGS_PROVIDERS} element={<SettingsProvidersPage />} />
         <Route path={ROUTES.SETTINGS_BROKERS} element={<SettingsBrokersPage />} />
-        <Route path={ROUTES.SETTINGS_INSTRUMENTS} element={<SettingsMarketsPage />} />
-        <Route path={ROUTES.SETTINGS_CURRENCIES} element={<SettingsMarketsPage />} />
-        <Route path={ROUTES.SETTINGS_ALERTS} element={<AlertsPage />} />
+        <Route path={ROUTES.SETTINGS_INSTRUMENTS} element={<SettingsInstrumentsPage />} />
+        <Route path={ROUTES.SETTINGS_CURRENCIES} element={<SettingsCurrenciesPage />} />
+        <Route path={ROUTES.SETTINGS_ALERTS} element={<SettingsAlertsPage />} />
         <Route path={ROUTES.SETTINGS_CREDENTIALS} element={<SettingsCredentialsPage />} />
         <Route path={ROUTES.SETTINGS_DISPLAY} element={<SettingsDisplayPage />} />
 

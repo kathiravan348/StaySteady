@@ -27,3 +27,6 @@ export * from './config';
 export * from './config-markets';
 export * from './config-providers';
 export * from './config-brokers';
+export * from './config-instruments';
+export * from './config-currencies';
+export * from './config-alerts';

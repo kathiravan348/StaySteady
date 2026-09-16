@@ -16,6 +16,9 @@ export interface ConnectionTestProps {
   readonly onTest: () => void;
   // What the test does, when the area needs to say more than the default.
   readonly description?: string;
+  // For areas where "connection" is the wrong word, such as sending a test alert.
+  readonly title?: string;
+  readonly actionLabel?: string;
 }
 
 // UI spec 7.18 — test connection where applicable. It tests the form as it stands, so a new or edited
@@ -28,10 +31,12 @@ export function ConnectionTest({
   isOutdated,
   onTest,
   description = 'Tests the settings in this form, saved or not.',
+  title = 'Test connection',
+  actionLabel = 'Test connection',
 }: ConnectionTestProps): ReactElement {
   return (
     <Card
-      title="Test connection"
+      title={title}
       extra={
         result === undefined ? undefined : (
           <Badge variant={result.passed ? 'positive' : 'critical'}>
@@ -48,7 +53,7 @@ export function ConnectionTest({
             isLoading={isTesting}
             onPress={onTest}
           >
-            {result === undefined ? 'Test connection' : 'Test again'}
+            {result === undefined ? actionLabel : 'Test again'}
           </Button>
           <span className={styles.meta}>{blockedReason ?? description}</span>
         </span>

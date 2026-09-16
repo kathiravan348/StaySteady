@@ -8,7 +8,7 @@ import type {
   OrderTypeDto,
 } from '../../../../data/schemas';
 import { InstrumentTypeSchema, OrderTypeSchema } from '../../../../data/schemas';
-import { formatMoney, humanizeToken } from '../../../../shared/format';
+import { formatMoney, instrumentTypeLabel } from '../../../../shared/format';
 import type { Money } from '../../../../shared/money';
 import { compareMoney, createMoney, multiplyMoney } from '../../../../shared/money';
 
@@ -30,15 +30,7 @@ export const ORDER_TYPE_OPTIONS = OrderTypeSchema.options.map((value) => ({
   label: ORDER_TYPE_LABELS[value],
 }));
 
-// Acronyms keep their capitals; humanizeToken alone would print Etf and Ipo.
-const ACRONYMS: Partial<Record<InstrumentTypeDto, string>> = { etf: 'ETF', ipo: 'IPO' };
-
-export const instrumentTypeLabel = (type: InstrumentTypeDto): string =>
-  ACRONYMS[type] ?? humanizeToken(type);
-
-// For use mid-sentence: acronyms stay in capitals, other labels go lower case.
-export const instrumentTypeInSentence = (type: InstrumentTypeDto): string =>
-  ACRONYMS[type] ?? humanizeToken(type).toLowerCase();
+export { instrumentTypeInSentence, instrumentTypeLabel } from '../../../../shared/format';
 
 export const INSTRUMENT_TYPE_OPTIONS = InstrumentTypeSchema.options.map((value) => ({
   value,

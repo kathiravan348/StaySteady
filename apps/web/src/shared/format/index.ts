@@ -18,6 +18,8 @@ export {
   formatSignedMoney,
   formatSignedPercent,
   humanizeToken,
+  instrumentTypeInSentence,
+  instrumentTypeLabel,
   pluralize,
 } from './display';
 

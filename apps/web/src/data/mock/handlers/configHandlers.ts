@@ -15,6 +15,7 @@ import {
 import { nowUtc } from '../../../shared/types/dateTime';
 import { brokerConfigHandlers } from './brokerConfigHandlers';
 import { providerConfigHandlers } from './providerConfigHandlers';
+import { settingsConfigHandlers } from './settingsConfigHandlers';
 
 const failure = (message: string, status: number): Response =>
   HttpResponse.json({ error: message }, { status });
@@ -115,4 +116,5 @@ export const configHandlers: readonly HttpHandler[] = [
 
   ...providerConfigHandlers,
   ...brokerConfigHandlers,
+  ...settingsConfigHandlers,
 ];

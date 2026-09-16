@@ -109,6 +109,40 @@ export function SelectField<T extends string>({
   );
 }
 
+export interface TimeOfDay {
+  readonly hour: number;
+  readonly minute: number;
+}
+
+const pad = (value: number): string => String(value).padStart(2, '0');
+
+// A time of day in 24-hour form. A partly typed value is ignored until it is a whole time.
+export function TimeField({
+  label,
+  value,
+  onChange,
+  error,
+  isDisabled = false,
+}: BaseFieldProps & { value: TimeOfDay; onChange: (value: TimeOfDay) => void }): ReactElement {
+  return (
+    <label className={styles.field}>
+      <span className={styles.fieldLabel}>{label}</span>
+      <input
+        type="time"
+        className={cx(styles.input, error === undefined ? undefined : styles.invalid)}
+        value={`${pad(value.hour)}:${pad(value.minute)}`}
+        disabled={isDisabled}
+        aria-invalid={error !== undefined}
+        onChange={(event) => {
+          const match = /^(\d{2}):(\d{2})$/.exec(event.target.value);
+          if (match !== null) onChange({ hour: Number(match[1]), minute: Number(match[2]) });
+        }}
+      />
+      <FieldError message={error} />
+    </label>
+  );
+}
+
 // A set of checkboxes for picking several values, such as covered markets.
 export function CheckboxGroup<T extends string>({
   label,

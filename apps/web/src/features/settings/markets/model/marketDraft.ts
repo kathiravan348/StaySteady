@@ -22,12 +22,6 @@ export function timeText(time: Time): string {
   return `${pad(time.hour)}:${pad(time.minute)}`;
 }
 
-export function parseTime(text: string): Time | null {
-  const match = /^(\d{2}):(\d{2})$/.exec(text);
-  if (match === null) return null;
-  return { hour: Number(match[1]), minute: Number(match[2]) };
-}
-
 // A new market is deliberately incomplete in the places that need a real decision (identity,
 // calendar), and conservative everywhere else: disabled from automation and in simulation.
 export function blankMarket(): MarketConfigInput {

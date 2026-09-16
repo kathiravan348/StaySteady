@@ -10,7 +10,8 @@ export interface ConfigListEntry {
   readonly title: string;
   readonly subtitle: string;
   readonly enabled: boolean;
-  readonly mode: ConfigModeDto;
+  // Areas with no simulation or live distinction (instrument types, currencies) leave it out.
+  readonly mode?: ConfigModeDto;
   readonly health: ConfigHealthDto;
 }
 
@@ -62,9 +63,11 @@ export function ConfigEntryList({
               <span className={styles.meta}>{entry.subtitle}</span>
               <span className={styles.inline}>
                 <Badge variant={health.variant}>{health.label}</Badge>
-                <Badge variant={entry.mode === 'live' ? 'info' : 'neutral'}>
-                  {entry.mode === 'live' ? 'Live' : 'Simulation'}
-                </Badge>
+                {entry.mode !== undefined && (
+                  <Badge variant={entry.mode === 'live' ? 'info' : 'neutral'}>
+                    {entry.mode === 'live' ? 'Live' : 'Simulation'}
+                  </Badge>
+                )}
                 {!entry.enabled && <Badge variant="neutral">Disabled</Badge>}
               </span>
             </button>

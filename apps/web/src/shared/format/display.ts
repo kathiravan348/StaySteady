@@ -7,6 +7,18 @@ import { formatPercentage } from './formatNumber';
 export type NumberDirection = 'positive' | 'negative' | 'neutral';
 
 // "long_term" -> "Long term", "manual-approval" -> "Manual approval".
+// Instrument type tokens that are acronyms; humanizeToken alone would print "Etf" and "Ipo".
+const INSTRUMENT_TYPE_ACRONYMS: Readonly<Record<string, string>> = { etf: 'ETF', ipo: 'IPO' };
+
+export function instrumentTypeLabel(type: string): string {
+  return INSTRUMENT_TYPE_ACRONYMS[type] ?? humanizeToken(type);
+}
+
+// For use mid-sentence: acronyms stay in capitals, other labels go lower case.
+export function instrumentTypeInSentence(type: string): string {
+  return INSTRUMENT_TYPE_ACRONYMS[type] ?? humanizeToken(type).toLowerCase();
+}
+
 export function humanizeToken(token: string): string {
   const words = token.replaceAll('_', ' ').replaceAll('-', ' ');
   return words.charAt(0).toUpperCase() + words.slice(1);

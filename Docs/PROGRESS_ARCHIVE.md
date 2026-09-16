@@ -3324,3 +3324,116 @@ NOTES FOR NEXT AGENT:
     unspecified. Do not guess.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 37 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4 in session 40, per rule 11. Nothing was
+reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        37
+AGENT:          AI assistant using Copilot SDK in VS Code
+START:          2026-09-16T15:25:00Z  |  local: 2026-09-16 20:55 IST (UTC+05:30)
+END:            2026-09-16T15:55:00Z  |  local: 2026-09-16 21:25 IST (UTC+05:30)
+TASK CLAIMED:   none — owner asked for a requirements re-validation. Docs only, no code.
+END STATUS:     DONE
+ 
+OWNER INPUT:
+  "the project is entirely for my personal use, and its for my complete future investment so
+  focus on that, no need to focus on codings." The review was therefore aimed at the investment
+  domain, not at engineering tooling. An earlier tooling review in this session was abandoned
+  on that instruction and none of it was written to the docs.
+  This authorises editing the specification documents, which rule 12 otherwise forbids.
+ 
+METHOD:
+  Re-read the requirements and UI specification against one question: if this system holds the
+  complete financial picture of one person for decades, what is missing that could cost them?
+  Each candidate gap was grepped across both specs before being called a gap, so nothing already
+  covered was duplicated.
+ 
+CONFIRMED ALREADY COVERED (not re-added):
+  - Broker reconciliation: sections 8 and 16 already require it, with account mismatch as a
+    critical alert. Only the independent depository/registrar cross-check was missing (now 32).
+  - Corporate actions, data quality, watchdog, alert escalation, audit trail, backups, currency
+    handling and cost transparency are all well covered and were left alone.
+ 
+GAPS FOUND AND ADDED AS REQUIREMENTS 25-34:
+  25 Complete net worth   - the specs model only broker-traded assets. Provident fund, deposits,
+                            gold, property, employer equity and liabilities were absent, so every
+                            allocation target, concentration limit and goal projection is computed
+                            on a minority of actual wealth. Largest structural gap.
+  26 Tax in depth         - lots and holding periods existed; loss carry-forward with expiry,
+                            advance instalments, withholding and treaty relief, foreign-asset
+                            disclosure, remittance limits and a non-calendar tax year did not.
+  27 Personal compliance  - absent entirely. Employer restricted lists, blackout windows,
+                            pre-clearance and minimum holding periods. Highest-consequence gap:
+                            a breach is legal and career exposure, not a financial loss. Must be
+                            enforced at signal stage and apply to manual actions identically.
+  28 Continuity           - the security model locks the system down but nothing lets a nominated
+                            person reach the record if the owner cannot. Viewing is specified as
+                            separable from trading. Automation pauses after configured inactivity.
+  29 Behavioural          - the existing safety layer guards machine decisions only. Cooling-off,
+                            manual caps, override recording, pattern detection and a decision
+                            journal now guard the owner against himself.
+  30 Liquidity/withdrawal - trading cash reserve existed; a life emergency reserve, liquidity
+                            classification, known commitments and any withdrawal phase did not.
+  31 Real returns         - every metric was nominal, which overstates progress over decades.
+                            Inflation-adjusted reporting, ranged projections with stated
+                            assumptions, and a simple-benchmark comparison added.
+  32 Counterparty risk    - the watchdog asks whether a broker is reachable, never what happens
+                            if one fails. Exposure per custodian, independent statement
+                            reconciliation, and provable holdings without the broker.
+  33 Strategy decay       - strategies had a promotion path and no way down. Retirement criteria
+                            defined before going live, automatic demotion, cross-correlation.
+  34 Export/dormant       - backups existed, portability did not. Open-format export, a dormant
+                            mode safe to leave unattended, and running-cost budget tracking.
+ 
+UI SPEC SECTION 19 ADDED:
+  19.1 four new screens (Net Worth, Decision Journal, Continuity, Compliance)
+  19.2 nine existing screens that must be extended
+  19.3 five new states: stale by design, unverified, restricted, cooling off, overdue review
+  19.4 the mock data these need
+ 
+REGISTRY:
+  - S-30..S-33 new screens; Stage E (E-01..E-09) extensions to built screens; M-17 mock data
+  - Active tasks 74 -> 88. Progress reads 59%, down from 70%, because the denominator grew.
+    No completed work was lost or reopened in this session.
+ 
+OPEN QUESTIONS RAISED (Q13-Q18) - these are the owner-only decisions:
+  Q13 employer trading policy (blocks real-broker automation), Q14 which assets sit outside the
+  brokers, Q15 is this system or the broker the record of truth, Q16 tax residence and tax year,
+  Q17 who needs access if the owner cannot, Q18 withdrawal phase and emergency reserve.
+  Per rule 3, every one was written as a question with a marked provisional choice rather than
+  an invented requirement.
+ 
+FILES CREATED:
+  - none
+FILES MODIFIED:
+  - Docs/Personal_Investment_Platform_Requirements.md — Part II sections 25-34, new
+    risks in 23, new open questions in 24
+  - Docs/UI_Specification_Mock_Phase.md — section 19
+  - Docs/PROGRESS_LOG.md — registry, Q13-Q18, status, handoff, this entry
+ 
+DEPENDENCIES ADDED:
+  - none
+ 
+VERIFICATION RUN:
+  type check:  not re-run — no code touched; last known PASS (session 36)
+  lint:        not re-run — Docs/** is ESLint-ignored
+  build:       not re-run — documentation-only change
+  gap basis:   every claimed gap grepped across both specs before being written up
+ 
+NOTES FOR NEXT AGENT:
+  - Requirements 25-34 are design intent, not yet scheduled work. The existing Stage S order is
+    unchanged and S-16 Configuration - providers is still the next task.
+  - Rates, thresholds, holding periods and tax-year boundaries in section 26 are deliberately
+    not stated. They are configuration, per Pillar 0. Do not hardcode a number from anywhere.
+  - Q13 is the one to escalate. Until it is answered, do not build anything that could place an
+    order at a real broker, and treat S-33 Compliance as required rather than optional.
+  - S-30 Net Worth is the highest-value new screen: it corrects the denominator that S-21
+    Planning and E-06/E-07 depend on. Consider it before the Reports and Planning extensions.
+────────────────────────────────────────────────────────────
+```

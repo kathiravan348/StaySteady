@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-17 done)
-OVERALL PROGRESS:   61% (54 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 17 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T17:31:00Z  |  local: 2026-09-16 23:01 IST
-LAST AGENT:         session 39 (S-17 Configuration — brokers)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,175 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-18 done)
+OVERALL PROGRESS:   62% (55 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 18 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T17:52:00Z  |  local: 2026-09-16 23:22 IST
+LAST AGENT:         session 40 (S-18 Configuration — instruments, currencies, alerts)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,217 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,45 +36,35 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-17 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-18 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders, Risk & Safety, Configuration — markets, providers and brokers). The owner
-  asked the agent to commit each finished screen (no push) and to take the recommended option
-  whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier fails on Windows
-  checkouts only (CRLF, see findings) — not a code defect.
+  Approval Queue, Orders, Risk & Safety, and every Configuration area in UI spec 7.18 except
+  credentials (S-28) and the automation permission summary (S-29)). The owner asked the agent to
+  commit each finished screen (no push) and to take the recommended option whenever a choice comes
+  up (decision 26). typecheck and ESLint pass; Prettier fails on Windows checkouts only (CRLF, see
+  findings) — not a code defect.
 
-  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-36)
+  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-37)
   and is NOT session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 39: S-17 Configuration — brokers. See session 39 end entry.
-  - Session 38: S-16 Configuration — providers, and the shared config pattern extended (decision
-    40). See session 38 end entry.
+  - Session 40: S-18 Configuration — instruments, currencies, alerts. See session 40 end entry.
+  - Session 39: S-17 Configuration — brokers. Session 38: S-16 Configuration — providers.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-18 Configuration — instruments, currencies, alerts (UI spec 7.18):
-  - Instrument types: enabled, automation permitted, applicable markets, granularity, minimum
-    sizes, settlement, tax thresholds, manual-only flag
-  - Currencies: base currency selection, exchange rate source, conversion cost assumptions
-  - Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with
-    critical override
-  Routes: /settings/instruments and /settings/currencies still render SettingsMarketsPage, and
-  /settings/alerts renders AlertsPage — give each its own page. This is three configuration areas;
-  if it is too large for one session, build them in that order and mark S-18 PARTIAL with exactly
-  what remains. Copy features/settings/brokers or providers (decisions 38 and 40: schema with
-  superRefine, generator seeds and health, versions in configStore, handlers beside
-  brokerConfigHandlers.ts, hooks in configQueries.ts, form on useConfigDraft, FormFields,
-  ConfigSaveCard). Seed from existing data: instrument types from InstrumentTypeSchema and the
-  market configs' permittedInstrumentTypes; the manual-only flag is M-16's gap (no manual-only type
-  exists yet — raise, do not invent silently); currencies from SUPPORTED_CURRENCIES, the FX rates
-  provider (prov-fx) and the 0.25% conversion charge (decision 28); alert channels from System
-  Health's ALERT_CHANNELS. Test connection applies only to alert channels, if at all.
+  Claim S-19 News & Events (UI spec 7.6 — read that section; it is short). Routes:
+  ROUTES.NEWS_FEED (/news/feed) renders features/news/NewsFeedPage.tsx and ROUTES.NEWS_CALENDAR
+  (/news/calendar) renders features/news/NewsCalendarPage.tsx; check both before deciding what is
+  placeholder. Data exists: useNewsItems and useCalendarEvents in data/api/newsQueries.ts (M-11
+  news and calendar generators). Copy features/trading/orders for list + filters + row detail.
+  One story across screens: link news and events to instruments and holdings that already exist
+  rather than seeding new numbers. Every state (loading, empty, error, stale) must be built.
 
-FILES TOUCHED (session 39): see session 39 end entry.
+FILES TOUCHED (session 40): see session 40 end entry.
 
 WATCH OUT FOR:
  
@@ -103,6 +93,8 @@ WATCH OUT FOR:
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Two files differing only in case (configFields.ts / ConfigFields.tsx) break the build on
     Windows. Pick a distinct name.
+  - The Bash tool may fail with a temp-directory error; PowerShell works. Write multi-line text
+    through a file, not a heredoc.
   - Open findings: configuration is not yet read by the rest of the app; the top bar kill switch has
     no confirmation or record; chart theme colours hardcoded hex; single large JS chunk (P-04);
     Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
@@ -205,7 +197,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-15 | Configuration — markets | DONE | 100 | Session 34 | Shared config pattern (entry list, capability switches, simulation notice, inline errors, version diff and revert; decision 38); markets form with schema-driven validation; calendar-coverage health; versioned saves with reasons; all states verified |
 | S-16 | Configuration — providers | DONE | 100 | Session 38 | Shared config pattern extended (form fields, draft hook, save card, test connection; decision 40); coverage, granularity, history, rate limits and cost, priority with failover order, credential reference, health check, freshness; health and faults shared with System Health; all states verified |
 | S-17 | Configuration — brokers | DONE | 100 | Session 39 | Markets, instrument types, order types, capabilities incl. paper account, fees, credential reference, automation switch per instrument type; API vs manual brokers; read-only connection test; health from System Health faults and usage plus holdings outside coverage; all states verified |
-| S-18 | Configuration — instruments, currencies, alerts | TODO | 0 | | |
+| S-18 | Configuration — instruments, currencies, alerts | DONE | 100 | Session 40 | Instrument types (fixed list; markets, granularity, minimum sizes, settlement and tax overrides, manual-only, automation); currencies (versioned base currency, FX rate source and fallback, stale limit, conversion cost); alert rules (category, severity, channels, escalation, quiet hours with critical override, test alert); handler and hook factories (decision 41); all states verified |
 | S-19 | News & Events | TODO | 0 | | |
 | S-20 | Reports | TODO | 0 | | |
 | S-21 | Planning | TODO | 0 | | |
@@ -308,115 +300,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 36 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 37 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        37
-AGENT:          AI assistant using Copilot SDK in VS Code
-START:          2026-09-16T15:25:00Z  |  local: 2026-09-16 20:55 IST (UTC+05:30)
-END:            2026-09-16T15:55:00Z  |  local: 2026-09-16 21:25 IST (UTC+05:30)
-TASK CLAIMED:   none — owner asked for a requirements re-validation. Docs only, no code.
-END STATUS:     DONE
- 
-OWNER INPUT:
-  "the project is entirely for my personal use, and its for my complete future investment so
-  focus on that, no need to focus on codings." The review was therefore aimed at the investment
-  domain, not at engineering tooling. An earlier tooling review in this session was abandoned
-  on that instruction and none of it was written to the docs.
-  This authorises editing the specification documents, which rule 12 otherwise forbids.
- 
-METHOD:
-  Re-read the requirements and UI specification against one question: if this system holds the
-  complete financial picture of one person for decades, what is missing that could cost them?
-  Each candidate gap was grepped across both specs before being called a gap, so nothing already
-  covered was duplicated.
- 
-CONFIRMED ALREADY COVERED (not re-added):
-  - Broker reconciliation: sections 8 and 16 already require it, with account mismatch as a
-    critical alert. Only the independent depository/registrar cross-check was missing (now 32).
-  - Corporate actions, data quality, watchdog, alert escalation, audit trail, backups, currency
-    handling and cost transparency are all well covered and were left alone.
- 
-GAPS FOUND AND ADDED AS REQUIREMENTS 25-34:
-  25 Complete net worth   - the specs model only broker-traded assets. Provident fund, deposits,
-                            gold, property, employer equity and liabilities were absent, so every
-                            allocation target, concentration limit and goal projection is computed
-                            on a minority of actual wealth. Largest structural gap.
-  26 Tax in depth         - lots and holding periods existed; loss carry-forward with expiry,
-                            advance instalments, withholding and treaty relief, foreign-asset
-                            disclosure, remittance limits and a non-calendar tax year did not.
-  27 Personal compliance  - absent entirely. Employer restricted lists, blackout windows,
-                            pre-clearance and minimum holding periods. Highest-consequence gap:
-                            a breach is legal and career exposure, not a financial loss. Must be
-                            enforced at signal stage and apply to manual actions identically.
-  28 Continuity           - the security model locks the system down but nothing lets a nominated
-                            person reach the record if the owner cannot. Viewing is specified as
-                            separable from trading. Automation pauses after configured inactivity.
-  29 Behavioural          - the existing safety layer guards machine decisions only. Cooling-off,
-                            manual caps, override recording, pattern detection and a decision
-                            journal now guard the owner against himself.
-  30 Liquidity/withdrawal - trading cash reserve existed; a life emergency reserve, liquidity
-                            classification, known commitments and any withdrawal phase did not.
-  31 Real returns         - every metric was nominal, which overstates progress over decades.
-                            Inflation-adjusted reporting, ranged projections with stated
-                            assumptions, and a simple-benchmark comparison added.
-  32 Counterparty risk    - the watchdog asks whether a broker is reachable, never what happens
-                            if one fails. Exposure per custodian, independent statement
-                            reconciliation, and provable holdings without the broker.
-  33 Strategy decay       - strategies had a promotion path and no way down. Retirement criteria
-                            defined before going live, automatic demotion, cross-correlation.
-  34 Export/dormant       - backups existed, portability did not. Open-format export, a dormant
-                            mode safe to leave unattended, and running-cost budget tracking.
- 
-UI SPEC SECTION 19 ADDED:
-  19.1 four new screens (Net Worth, Decision Journal, Continuity, Compliance)
-  19.2 nine existing screens that must be extended
-  19.3 five new states: stale by design, unverified, restricted, cooling off, overdue review
-  19.4 the mock data these need
- 
-REGISTRY:
-  - S-30..S-33 new screens; Stage E (E-01..E-09) extensions to built screens; M-17 mock data
-  - Active tasks 74 -> 88. Progress reads 59%, down from 70%, because the denominator grew.
-    No completed work was lost or reopened in this session.
- 
-OPEN QUESTIONS RAISED (Q13-Q18) - these are the owner-only decisions:
-  Q13 employer trading policy (blocks real-broker automation), Q14 which assets sit outside the
-  brokers, Q15 is this system or the broker the record of truth, Q16 tax residence and tax year,
-  Q17 who needs access if the owner cannot, Q18 withdrawal phase and emergency reserve.
-  Per rule 3, every one was written as a question with a marked provisional choice rather than
-  an invented requirement.
- 
-FILES CREATED:
-  - none
-FILES MODIFIED:
-  - Docs/Personal_Investment_Platform_Requirements.md — Part II sections 25-34, new
-    risks in 23, new open questions in 24
-  - Docs/UI_Specification_Mock_Phase.md — section 19
-  - Docs/PROGRESS_LOG.md — registry, Q13-Q18, status, handoff, this entry
- 
-DEPENDENCIES ADDED:
-  - none
- 
-VERIFICATION RUN:
-  type check:  not re-run — no code touched; last known PASS (session 36)
-  lint:        not re-run — Docs/** is ESLint-ignored
-  build:       not re-run — documentation-only change
-  gap basis:   every claimed gap grepped across both specs before being written up
- 
-NOTES FOR NEXT AGENT:
-  - Requirements 25-34 are design intent, not yet scheduled work. The existing Stage S order is
-    unchanged and S-16 Configuration - providers is still the next task.
-  - Rates, thresholds, holding periods and tax-year boundaries in section 26 are deliberately
-    not stated. They are configuration, per Pillar 0. Do not hardcode a number from anywhere.
-  - Q13 is the one to escalate. Until it is answered, do not build anything that could place an
-    order at a real broker, and treat S-33 Compliance as required rather than optional.
-  - S-30 Net Worth is the highest-value new screen: it corrects the denominator that S-21
-    Planning and E-06/E-07 depend on. Consider it before the Reports and Planning extensions.
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        38 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -677,6 +565,163 @@ FINDINGS (out of scope, not fixed):
     1 USD on a US trade and 1 GBP on a UK trade; a real broker may state minimums per currency
   - Instrument type labels elsewhere still read "Etf" and "Ipo" (humanizeToken); fixed on this
     screen only
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        40 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T17:32:39Z  |  local: 2026-09-16 23:02 IST (UTC+05:30)
+TASK CLAIMED:   S-18 Configuration — instruments, currencies, alerts
+OWNER INPUT:    "start S-18"; decision 26 (take recommended options, commit each screen)
+
+PRE-WORK VERIFICATION:
+  git:         S-17 committed as 4b226c2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-17 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.18), built in this order so a partial hand-off is clean:
+  1. Instrument types: enabled, automation permitted, applicable markets, granularity, minimum
+     sizes, settlement, tax thresholds, manual-only flag. One entry per InstrumentTypeSchema value;
+     types are a fixed list, so there is no "add". Markets seed from each market configuration's
+     permitted instrument types. Settlement and tax threshold may be left to follow the market.
+     PROVISIONAL: no type is seeded manual-only, because no manual-only type exists in the mock
+     data (M-16). The flag is configurable; seeding one would invent data M-16 owns.
+  2. Currencies: base currency selection, exchange rate source, conversion cost assumptions. One
+     entry per supported currency (enabled, rate source, maximum rate age, conversion cost), plus a
+     separately versioned base currency. Conversion costs come from the 0.25% charge (decision 28)
+     and the per-market backtest FX costs; the rate source is the FX rates provider (S-16).
+  3. Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with
+     critical override. Channels are System Health's; "Send test alert" reuses ConnectionTest and
+     follows System Health's channel test outcomes (the webhook fails).
+  - Instrument types and currencies have no simulation or live mode, so the entry list's mode badge
+    becomes optional in shared/config
+  - New handlers and hooks for these three areas go through small factories, since each would
+    otherwise repeat the provider/broker files; existing areas are not moved (scope)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        40 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:52:00Z  |  local: 2026-09-16 23:22 IST (UTC+05:30)
+TASK:           S-18 Configuration — instruments, currencies, alerts — DONE
+
+WHAT WAS BUILT (UI spec 7.18), all three areas on shared/config (decisions 38, 40, 41):
+  Instrument types (/settings/instruments):
+  - One entry per instrument type, no "add"; enabled, manual only, automation permitted (switched
+    off and locked while manual only), markets, price granularity, minimum quantity and order
+    value, settlement and long-term tax holding period that either follow each market or override
+  - Validation: an enabled type with no market, automation on a manual-only type, no granularity
+    unless manual only, intraday without an intraday granularity, a zero minimum quantity
+  - Health: disabled while held; a chosen market whose own configuration does not permit the type;
+    automation permitted but no enabled broker automates it
+  Currencies (/settings/currencies):
+  - Base currency (USD, INR, EUR, GBP) versioned on its own, with a note that the top bar switch
+    only changes the display; each currency: enabled (locked for the base), rate source and
+    fallback chosen from providers that supply FX rates, stale-after minutes, conversion cost with
+    the cost of converting 10,000 of the base currency
+  - Validation: fallback equal to the main source; server refuses disabling the base currency,
+    making a disabled currency the base, and unknown providers
+  - Health: base currency disabled; rate source not an enabled FX provider (critical without a
+    fallback); source down; rate older than the stale limit; disabled while held
+  Alert rules (/settings/alerts):
+  - Add and edit rules: category, minimum severity, channels (System Health's, labelled never tested
+    or last test failed), escalation after N minutes to further channels, quiet hours with time zone,
+    critical alerts break through quiet hours, enabled
+  - Validation: no channel, escalation with no channel or only channels already sent to, quiet
+    hours that start and end at the same time; server rejects unknown channels
+  - Send test alert (the shared test card, now titled per area): one check per channel including
+    escalation channels; nothing is sent
+  - Health: a channel that failed its last test, one never tested, every direct channel failing
+    (critical), and critical alerts held by quiet hours when the override is off
+  Shared changes:
+  - versionedConfigHandlers (mock list/save/revert/create factory) and settingsConfigQueries helper
+    hooks, used by these three areas only (decision 41); configStore exports appendVersion
+  - ConfigEntryList mode badge optional; ConnectionTest title and action label; TimeField moved
+    from markets into shared/config FormFields (markets re-verified); instrumentTypeLabel and
+    instrumentTypeInSentence in shared/format, used by brokers and instrument types
+
+MOCK DATA:
+  - GET /api/v1/config/{instruments,currencies,alerts}, PUT /:id, POST /:id/revert,
+    POST /config/alerts (create), POST /config/alerts/test,
+    GET/PUT /api/v1/config/base-currency, POST /config/base-currency/revert
+  - Instrument type markets seed from each market's permitted instrument types and automation from
+    the brokers' automation switches, read from the saved configuration stores
+  - Conversion costs: USD 0 (funding currency), INR/JPY/SGD 30 bps (backtest per-market FX costs),
+    others 25 bps (decision 28's 0.25%). Rate source prov-fx, stale after 60 minutes
+  - Alert channels and test outcomes are System Health's (webhook fails, SMS never tested)
+  - History seeds are invented mock history: mutual fund minimum 1 -> 0.001; INR conversion
+    25 -> 30 bps; critical rule escalation 30 -> 5 minutes
+
+FILES CREATED:
+  - data/schemas/config-{instruments,currencies,alerts}.ts
+  - data/mock/generators/{instrumentTypeConfig,currencyConfig,alertRuleConfig}.ts
+  - data/mock/handlers/{versionedConfigHandlers,settingsConfigHandlers}.ts;
+    data/api/settingsConfigQueries.ts
+  - features/settings/{instruments,currencies,alerts}/** ;
+    features/settings/Settings{Instruments,Currencies,Alerts}Page.tsx
+FILES MODIFIED:
+  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts;
+    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/{ConfigEntryList,ConnectionTest,FormFields}.tsx, shared/config/index.ts;
+    shared/format/{display,index}.ts
+  - features/settings/markets/{model/marketDraft.ts,sections/MarketFields.tsx,
+    sections/MarketIdentityHours.tsx}; features/settings/brokers/model/brokerDraft.ts
+  - routes/AppRoutes.tsx: /settings/instruments and /settings/currencies no longer render the
+    markets page; /settings/alerts no longer renders the Alerts Centre page
+  - Docs: session 37 moved verbatim to PROGRESS_ARCHIVE.md (rule 11); decision 41
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - 41: mock handler and query hook factories for configuration areas from S-18 on
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoints:   all four GETs 200 and schema-valid before any UI was built
+  instruments: 11 types, no Add button; Long term set manual only -> automation switched off and
+               locked; minimum quantity 0 -> "Must be above zero"; settlement override field
+               appears; saved v2 "manual only"; v1 diff showed exactly Automation permitted,
+               Manual only and Settlement; revert made v3 with automation permitted again
+  currencies:  USD (base) healthy, INR "30 bps to convert into it; 1 held"; USD's Enabled switch
+               locked; INR shows "Converting 10,000 USD into INR is assumed to cost $30.00";
+               fallback = main source -> inline error; base changed to INR with a reason -> v2,
+               list relabelled INR (base) and USD's health refreshed; disabling INR from the list
+               -> "INR is the base currency; choose another base currency before disabling it"
+  alerts:      critical rule "Needs attention: Webhook failed its last test (+1 more)"; test
+               alert passed push, SMS and email, failed webhook with 502; escalation only to
+               channels already used -> inline error; start = end quiet hours -> inline error;
+               override off saved v3 with the held-critical warning added (+2 more); a new rule
+               "Weekly summary" was added
+  states:      loading-error on all three pages -> "... unavailable" with the failing path; reset
+               to healthy
+  markets:     re-verified the moved TimeField: session 1 opens 17:00 -> "A session must end
+               after it starts" and Unsaved changes
+  NOT verified in the browser: the blocking-error summary when adding an alert rule with no
+  channel (my script pressed the list's Add rule button instead of the save button); the same
+  summary is verified on markets and providers and is the shared ConfigSaveCard
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first alert health rule for held critical alerts was a tangle of conditions that could
+    never be true as intended; replaced with one clear condition before any UI used it
+  - The list endpoint factory first passed unknown data to HttpResponse.json, which does not
+    typecheck; it now serialises the validated data
+
+FINDINGS (out of scope, not fixed):
+  - PROVISIONAL (see start entry): no instrument type is seeded manual-only because no manual-only
+    type exists in the mock data (M-16)
+  - None of these settings are read by the rest of the app yet: the top bar base currency switch,
+    backtest FX costs, conversion charges on holdings and alert delivery all use their own seeds
+  - An alert channel test run on System Health updates that screen only; alert rule health reads
+    the seeded last test
+  - Long-term can be made manual only while brokers still automate it; the layered view belongs to
+    S-29 (automation permission summary)
+  - /settings/alerts rendered the Alerts Centre page before this session; the Alerts Centre itself
+    is S-22 and still has its own route
+  - Providers, brokers and markets still use their own handler and hook files; moving them onto the
+    factories is a separate refactor
 ────────────────────────────────────────────────────────────
 ```
  

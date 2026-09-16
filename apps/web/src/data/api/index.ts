@@ -97,3 +97,19 @@ export {
   useTestBrokerConnection,
   useTestProviderConnection,
 } from './configQueries';
+export type { RevertConfigVariables, SaveConfigVariables } from './settingsConfigQueries';
+export {
+  useAlertRuleConfigs,
+  useBaseCurrencyConfig,
+  useCurrencyConfigs,
+  useInstrumentTypeConfigs,
+  useRevertAlertRuleConfig,
+  useRevertBaseCurrency,
+  useRevertCurrencyConfig,
+  useRevertInstrumentTypeConfig,
+  useSaveAlertRuleConfig,
+  useSaveBaseCurrency,
+  useSaveCurrencyConfig,
+  useSaveInstrumentTypeConfig,
+  useTestAlertRule,
+} from './settingsConfigQueries';

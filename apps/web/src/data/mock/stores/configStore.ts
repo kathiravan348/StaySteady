@@ -1,8 +1,23 @@
 // In-memory configuration for the page load (decisions 33 and 37). Each entry keeps every saved
 // version as a full snapshot, newest first, so diff and revert work from the same record.
 
-import type { BrokerConfigInput, MarketConfigInput, ProviderConfigInput } from '../../schemas';
+import type {
+  AlertRuleConfigInput,
+  BaseCurrencyConfigInput,
+  BrokerConfigInput,
+  CurrencyConfigInput,
+  InstrumentTypeConfigInput,
+  MarketConfigInput,
+  ProviderConfigInput,
+} from '../../schemas';
 import {
+  seedAlertRuleHistory,
+  seedAlertRules,
+  seedBaseCurrency,
+  seedCurrencyConfigs,
+  seedCurrencyHistory,
+  seedInstrumentTypeConfigs,
+  seedInstrumentTypeHistory,
   seedBrokerConfigs,
   seedBrokerHistory,
   seedMarketConfigs,
@@ -18,9 +33,9 @@ export interface StoredVersion<T> {
   readonly snapshot: T;
 }
 
-type VersionStore<T> = Map<string, StoredVersion<T>[]>;
+export type VersionStore<T> = Map<string, StoredVersion<T>[]>;
 
-function appendVersion<T>(
+export function appendVersion<T>(
   store: VersionStore<T>,
   id: string,
   snapshot: T,
@@ -82,4 +97,48 @@ export function appendBrokerVersion(
   savedAt: string,
 ): void {
   appendVersion(getBrokerVersions(), brokerId, snapshot, reason, savedAt);
+}
+
+let instrumentTypes: VersionStore<InstrumentTypeConfigInput> | null = null;
+let currencies: VersionStore<CurrencyConfigInput> | null = null;
+let baseCurrency: VersionStore<BaseCurrencyConfigInput> | null = null;
+let alertRules: VersionStore<AlertRuleConfigInput> | null = null;
+
+const current = <T>(store: VersionStore<T>): T[] =>
+  [...store.values()].flatMap((versions) =>
+    versions[0] === undefined ? [] : [versions[0].snapshot],
+  );
+
+// Seeded from the saved market and broker configurations, so the areas start out agreeing.
+export function getInstrumentTypeVersions(): VersionStore<InstrumentTypeConfigInput> {
+  instrumentTypes ??= new Map(
+    seedInstrumentTypeConfigs(current(getMarketVersions()), current(getBrokerVersions())).map(
+      (config) => [config.type, [...seedInstrumentTypeHistory(config)]],
+    ),
+  );
+  return instrumentTypes;
+}
+
+export function getCurrencyVersions(): VersionStore<CurrencyConfigInput> {
+  currencies ??= new Map(
+    seedCurrencyConfigs().map((config) => [config.currency, [...seedCurrencyHistory(config)]]),
+  );
+  return currencies;
+}
+
+// A single entry under the key "base".
+export function getBaseCurrencyVersions(): VersionStore<BaseCurrencyConfigInput> {
+  baseCurrency ??= new Map([['base', [...seedBaseCurrency()]]]);
+  return baseCurrency;
+}
+
+export function getAlertRuleVersions(): VersionStore<AlertRuleConfigInput> {
+  alertRules ??= new Map(
+    seedAlertRules().map((config) => [config.ruleId, [...seedAlertRuleHistory(config)]]),
+  );
+  return alertRules;
+}
+
+export function currentConfigs<T>(store: VersionStore<T>): T[] {
+  return current(store);
 }

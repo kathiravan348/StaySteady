@@ -124,3 +124,23 @@ export { testProviderConnection } from './providerConnectionTest';
 // Session 39: configuration, brokers (UI spec 7.18)
 export { brokerConfigHealth, seedBrokerConfigs, seedBrokerHistory } from './brokerConfig';
 export { testBrokerConnection } from './brokerConnectionTest';
+
+// Session 40: configuration, instrument types, currencies and alert rules (UI spec 7.18)
+export {
+  heldSymbols,
+  instrumentTypeConfigHealth,
+  seedInstrumentTypeConfigs,
+  seedInstrumentTypeHistory,
+} from './instrumentTypeConfig';
+export {
+  currencyConfigHealth,
+  seedBaseCurrency,
+  seedCurrencyConfigs,
+  seedCurrencyHistory,
+} from './currencyConfig';
+export {
+  alertRuleConfigHealth,
+  seedAlertRuleHistory,
+  seedAlertRules,
+  testAlertRule,
+} from './alertRuleConfig';
