@@ -13,6 +13,7 @@ export type { DecideApprovalVariables } from './tradingQueries';
 export {
   useApprovalQueue,
   useDecideApproval,
+  useOrderHistory,
   useSignalFeed,
   useSignals,
   useStrategies,

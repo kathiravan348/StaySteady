@@ -161,6 +161,8 @@ export function generateOrders(ctx: MockGeneratorContext): readonly OrderDto[] {
     },
     {
       id: toOrderId('ord-0005-cancelled'),
+      // Raised by the RSI strategy's sig-08 signal, as the signals feed and order timeline say.
+      strategyId: toStrategyId('strat-rsi-reversion'),
       instrumentId: toInstrumentId('inst-in-reliance'),
       side: 'buy',
       type: 'limit',

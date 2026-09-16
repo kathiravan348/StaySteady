@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type {
   ApprovalDecisionDto,
   ApprovalRequestDto,
+  OrderHistoryEntryDto,
   SignalDto,
   SignalFeedEntryDto,
   StrategyDraftDto,
@@ -16,6 +17,7 @@ import type {
 } from '../schemas';
 import {
   ApprovalQueueListSchema,
+  OrderHistoryListSchema,
   SignalFeedListSchema,
   SignalSchema,
   StrategyDraftSchema,
@@ -27,6 +29,14 @@ import { apiGet, apiSend } from './apiClient';
 
 const StrategyListSchema = z.array(StrategySchema);
 const SignalListSchema = z.array(SignalSchema);
+
+// UI spec 7.13 — every order with broker, fees, slippage and its lifecycle timeline.
+export function useOrderHistory(): UseQueryResult<OrderHistoryEntryDto[]> {
+  return useQuery({
+    queryKey: ['orders', 'history'],
+    queryFn: ({ signal }) => apiGet('/api/v1/orders/history', OrderHistoryListSchema, signal),
+  });
+}
 
 // UI spec 7.12 — every signal with what became of it, and the pending decisions with their impact.
 export function useSignalFeed(): UseQueryResult<SignalFeedEntryDto[]> {
@@ -68,6 +78,7 @@ export function useDecideApproval(): UseMutationResult<
       // The overview's pending count and the signals feed both read from these.
       void client.invalidateQueries({ queryKey: ['trading', 'approvals'] });
       void client.invalidateQueries({ queryKey: ['signals'] });
+      void client.invalidateQueries({ queryKey: ['orders'] });
     },
   });
 }

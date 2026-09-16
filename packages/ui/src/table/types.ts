@@ -61,6 +61,9 @@ export interface DataTableProps<TData> {
   // Expandable detail content per row. Not supported together with isVirtual.
   readonly renderRowDetails?: (row: TData) => ReactNode;
   readonly onRowClick?: (row: TData) => void;
+  // Extra class for a data row, so a screen can escalate rows that need attention (an order the
+  // broker never acknowledged) without the table knowing what the data means.
+  readonly getRowClassName?: (row: TData) => string | undefined;
   readonly emptyState?: ReactNode;
   readonly className?: string;
 }

@@ -105,3 +105,6 @@ export { generateStrategyDraft, generateStrategyVersions } from './strategyDraft
 // Session 31: signals feed and approval queue (UI spec 7.12)
 export { generateSignalFeed } from './signalFeed';
 export { generateApprovalQueue } from './approvalQueue';
+
+// Session 32: order history with broker, fees, slippage and lifecycle (UI spec 7.13)
+export { generateOrderHistory } from './orderHistory';

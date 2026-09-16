@@ -13,6 +13,7 @@ export interface DataTableRowProps<TData> {
   readonly onToggleDetails: (rowId: string) => void;
   readonly renderRowDetails: ((row: TData) => ReactNode) | undefined;
   readonly onRowClick: ((row: TData) => void) | undefined;
+  readonly getRowClassName: ((row: TData) => string | undefined) | undefined;
 }
 
 function groupLabel<TData>(row: Row<TData>, table: Table<TData>): string {
@@ -33,6 +34,7 @@ export function DataTableRow<TData>({
   onToggleDetails,
   renderRowDetails,
   onRowClick,
+  getRowClassName,
 }: DataTableRowProps<TData>): ReactElement {
   const cells = row.getVisibleCells();
   const hasDetails = renderRowDetails !== undefined;
@@ -78,6 +80,7 @@ export function DataTableRow<TData>({
           styles.tr,
           onRowClick !== undefined && styles.interactive,
           row.getIsSelected() && styles.selected,
+          getRowClassName?.(row.original),
         )}
         onClick={
           onRowClick === undefined

@@ -31,62 +31,58 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-12 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-13 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue). The owner asked the agent to commit each finished screen (no push) and to take
-  the recommended option whenever a choice comes up (decision 26). typecheck, lint, build all pass.
+  Approval Queue, Orders). The owner asked the agent to commit each finished screen (no push) and to
+  take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 28: S-09 Backtest Comparison. Session 29: S-10 Strategy Library.
-  - Session 30: S-11 Strategy Editor. Session 31: S-12 Signals & Approval Queue.
+  - Session 32: S-13 Orders — see session 32 end entry.
 
 WHAT IS PARTIALLY DONE:
-  Nothing. The S-11 states session 30 could not verify are now verified (see the correction in the
-  session 31 end entry).
+  Nothing.
 
 EXACT NEXT STEP:
-  Claim S-13 Orders (UI spec 7.13). Route ROUTES.TRADING_ORDERS (/trading/orders) renders
-  features/trading/TradingOrdersPage.tsx, still a placeholder. Needs: full order history and live
-  state; columns for instrument, market, broker, direction, quantity, order type, status, requested
-  price, filled price, slippage, fees, timestamps and originating strategy or manual; unconfirmed
-  orders visually escalated because those are the dangerous ones; filters by broker, market, status,
-  strategy and date; and a detail view showing one order's full lifecycle timeline. Data: useOrders
-  does not exist yet but GET /api/v1/orders is served from tradingHandlers.ts with 7 orders covering
-  filled, partially_filled, pending, unconfirmed and cancelled. OrderSchema has no broker, fees,
-  slippage, filled price or timeline, so an enriched endpoint is needed (decision 33), in the same
-  shape as the approval queue built in S-12.
+  Claim S-14 Risk & Safety Panel (UI spec 7.14). Read the spec section first (Docs/UI_Specification_
+  Mock_Phase.md, from the "### 7.14" heading). Route ROUTES.RISK_LIMITS (/risk/limits) — check
+  routes.ts and features/ for the placeholder page. The library UsageMeter (decision 35) was built
+  for this panel: usage against a limit with headroom, escalating at 80% and 95% in colour, symbol
+  and words. Limits already referenced elsewhere: the daily loss limit and maximum position size
+  that blocked signals in the S-12 feed (signalFeed.ts), each strategy's capital and concurrent
+  position limits (strategyDrafts.ts), and the automation mode and kill switch in the top bar.
+  Keep those numbers consistent across screens.
 
-FILES TOUCHED (session 31): see session 31 end entry.
+FILES TOUCHED (session 32): see session 32 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
   - READ a component's props before using it. Badge variants are neutral, positive, negative,
     warning, critical, info — no success, no danger (Button does have danger). LoadingState
-    layouts are table, cards, chart, detail — no form.
-  - Money in a DTO is a string amount; formatMoney needs moneyFromDto. formatRelativeTime needs a
-    branded IsoUtcTimestamp. Mixing currencies is the easiest way to print a nonsense number:
-    convert through the FX table (convertMoneyWithTable) before comparing with portfolio totals.
-  - A React state updater must be pure: never call another setState inside one.
-  - Do not generate mock data at module evaluation in a handler file; build it on first use.
-  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and return the full
-    resource set (decision 33). Several of one query at once: export a queryOptions factory and feed
-    it to useQueries (backtestDetailQueryOptions).
+    layouts are table, cards, chart, detail — no form. DataTable page sizes are 10, 20, 50, 100.
+  - When adding a prop to a library component, thread it through every layer; typecheck will not
+    catch an optional prop that is declared but never passed on.
+  - Money in a DTO is a string amount; formatMoney needs moneyFromDto. formatRelativeTime and
+    formatDateTime need a branded IsoUtcTimestamp. Convert through the FX table
+    (convertMoneyWithTable) before comparing amounts in different currencies.
+  - Cross-check seeded mock records against every screen that shows them: an order's strategy, its
+    signal and its approval must tell the same story in the feed, the queue and the order history.
+  - A React state updater must be pure. Do not generate mock data at module evaluation in a handler.
+  - Screens fetch only through data/api hooks (decision 22); writes return the full resource set
+    (decision 33). queryClient uses retry 0 and networkMode always (see session 31 correction).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
   - Keep files near 300 lines (decision 18). MSW: register specific paths before /:id catch-alls.
-  - Browser pane: element refs go stale after a re-render and read_page truncates on long pages —
-    use find, and read a dialog by its ref because modal content is portalled outside <main>.
-    Label clicks may not toggle a wrapped checkbox; click the input, or call .click() on it.
+  - Browser pane: refs go stale after re-render and read_page truncates long pages — use find, or
+    query the DOM with javascript_tool for tables. Modal content is portalled outside <main>.
     The mock scenario lives in localStorage — set it in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id)
-    and always set it back to 'healthy'.
-  - Stale modules are common here: after adding an import or editing several files, a page can run
-    half-updated JS and throw ReferenceErrors for symbols that plainly exist. Restart the preview,
-    and if that does not clear it delete apps/web/node_modules/.vite and restart.
+    and always set it back to 'healthy'. To test an error state, set the scenario, navigate away,
+    then navigate back so the query loads fresh.
+  - Stale modules: after editing several files a page can run half-updated JS. Restart the preview;
+    if that does not clear it, delete apps/web/node_modules/.vite and restart.
   - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
-    file-writing tool.
-  - Mock in-memory stores and sessionStorage edits (position, backtest result, strategy promotions,
-    strategy versions, approval decisions) reset on a page reload.
+    file-writing tool. Multi-line in-place edits are reliable through a small python script.
+  - Mock in-memory stores and sessionStorage edits reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
     JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -181,7 +177,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-10 | Strategy Library | DONE | 100 | Session 29 | Strategy library endpoint joining holdings and backtests; stage badges, allocation, backtest and live result with divergence, last run; filters by stage/market/type/performance; three-step promotion; all states verified |
 | S-11 | Strategy Editor | DONE | 100 | Session 30 | Recursive rule schema and draft endpoints; scope, nestable entry/exit rule builders, sizing, forced exits, news and risk; live validation; preview over real price history; version compare and revert. Error and not-found branches unverified in the pane (see session 30 end entry) |
 | S-12 | Signals & Approval Queue | DONE | 100 | Session 31 | Signals feed with outcomes and blocking limits; approval queue with impact preview, risk checks, countdown, approve/modify/reject-with-reason and restricted bulk approve; enriched feed and queue endpoints; all states verified |
-| S-13 | Orders | TODO | 0 | | |
+| S-13 | Orders | DONE | 100 | Session 32 | Order history endpoint with broker, fees, signed slippage and lifecycle; DataTable getRowClassName; unconfirmed orders escalated by banner, row and badge; filters by broker/market/status/strategy/date; lifecycle row detail; all states verified |
 | S-14 | Risk & Safety Panel | TODO | 0 | | |
 | S-15 | Configuration — markets | TODO | 0 | | |
 | S-16 | Configuration — providers | TODO | 0 | | |
@@ -3015,6 +3011,112 @@ FINDINGS (out of scope, not fixed):
   - The feed has no date range filter and no pagination
   - Estimated cost ignores commission, slippage and conversion charges, which the backtest costs
     model already knows how to express
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        32 — START ENTRY
+AGENT:          Claude Fable 5.1 (claude-fable-5-1)
+START:          2026-09-16T07:55:56Z  |  local: 2026-09-16 13:25 IST (UTC+05:30)
+TASK CLAIMED:   S-13 Orders
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-12 committed as 4d66572; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-12 commit, nothing changed since)
+
+SCOPE (UI spec 7.13):
+  - Full order history and live order state
+  - Columns: instrument, market, broker, direction, quantity, order type, status, requested price,
+    filled price, slippage, fees, timestamps, originating strategy or manual
+  - Status indicators for pending, partially filled, filled, rejected, cancelled and unconfirmed
+  - Unconfirmed orders visually escalated — these are the dangerous ones
+  - Filters by broker, market, status, strategy and date
+  - Detail view showing the full lifecycle timeline of a single order
+  - Mock addition: OrderSchema has no broker, fees, slippage, filled price or timeline, so an
+    enriched orders endpoint is needed, in the same shape as the approval queue (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        32 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T11:22:05Z  |  local: 2026-09-16 16:52 IST (UTC+05:30)
+TASK:           S-13 Orders — DONE
+NOTE:           The owner switched model mid-session. The start entry and the schema and generator
+                were written by Claude Fable 5.1; the screen, verification and this entry by
+                Claude Opus 5.
+
+WHAT WAS BUILT (UI spec 7.13):
+  - Order history in the library DataTable with every column the spec lists: instrument, market,
+    broker, direction, quantity, order type, status, requested price, filled price, slippage, fees,
+    last update and originating strategy or manual
+  - Status badges for pending, partly filled, filled, rejected, cancelled and unconfirmed
+  - Unconfirmed orders escalated three ways: a banner naming each one and what to do about it, a
+    tinted row with a red rule down its leading edge, and a critical status badge
+  - Filters by broker, market, status, strategy (including "placed by hand") and date range
+  - Row detail with the order's full lifecycle: signal, approval request, decision with the reason
+    the owner gave, submission, acknowledgement or lost confirmation, fills, cancellation
+  - Summary counts: total, still working, unconfirmed, simulated
+
+LIBRARY (packages/ui):
+  - DataTable gains getRowClassName, so a screen can escalate a row without the table knowing what
+    the data means. Optional, so existing tables are unaffected
+
+MOCK DATA:
+  - New GET /api/v1/orders/history, built from the live order and approval stores
+  - Broker comes from the holding profile, else the first broker serving the market; fees follow
+    each broker's charging model (0.05% with a 1.00 floor, 20 INR flat, 11.95 GBP flat)
+  - Slippage is signed so positive always means a worse fill than requested, on either side
+  - Rejecting in the approval queue now marks the raw order rejected too, and the order's timeline
+    ends at the rejection with the reason given
+
+FILES CREATED:
+  - apps/web/src/data/schemas/order-history.ts
+  - apps/web/src/data/mock/generators/orderHistory.ts
+  - apps/web/src/features/trading/orders/** (model, sections, styles)
+FILES MODIFIED:
+  - packages/ui/src/table/{types.ts,DataTable.tsx,DataTableRow.tsx}
+  - apps/web/src/data/schemas/index.ts; mock/generators/{trading,index}.ts;
+    mock/handlers/tradingHandlers.ts; data/api/{tradingQueries,index}.ts
+  - apps/web/src/features/trading/TradingOrdersPage.tsx — rewritten
+
+DECISIONS MADE:
+  - None beyond decisions 23, 26 and 33
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (first run)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     7 orders; banner "1 order was never confirmed by its broker ... Sell 15 NVDA at
+               Interactive Brokers"; SPY filled at $559.68 against a $560.00 limit is -5.7 bps with
+               $7.00 fees (25 x 559.68 x 0.05% = 6.996); TSLA partly filled 20 of 50 with $2.35 fees;
+               INR orders in rupees via Zerodha
+  escalation:  the NVDA row carries the unconfirmed class, a 2px red inset rule on its first cell and
+               a tinted background; its timeline reads Submitted 00:00:00, No acknowledgement 00:00:30
+  cross-screen: rejecting appr-003 through the decide endpoint turns TATAMOTORS into a rejected
+               order whose timeline ends "Rejected by owner. The order was never sent. Reason given:
+               Too much rupee exposure." with no submission event
+  filters:     broker = Zerodha shows 2 of 7 (RELIANCE, TATAMOTORS)
+  states:      loading-error -> "Order history unavailable" with the failing path and Try again
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - RELIANCE read "Manual" as its origin while its own timeline said a strategy's signal proposed it
+    and the signals feed attributed that signal to RSI Oversold Mean Reversion. The raw order had no
+    strategyId; it now carries the one every other screen already implies.
+  - The rejection reason the owner typed was dropped from the order timeline, because it lives in
+    the handler's decision record and not on the approval. The reasons are now passed through.
+  - The table was given a page size of 25, which is not one of its page-size options (10, 20, 50,
+    100). Changed to 20.
+  - The DataTable prop was added to its types and row component before it was threaded through
+    DataTable itself; typecheck would have passed with the prop silently ignored.
+
+FINDINGS (out of scope, not fixed):
+  - Approving an order does not submit it: an approved order stays pending with no submission event,
+    because nothing in the mock plays the part of the execution layer
+  - There is no action to resolve an unconfirmed order (mark as confirmed live, or as not placed);
+    the screen says to check with the broker but offers nothing afterwards
+  - Order timestamps are fixed per order, so relative times all read the same age for orders created
+    at the reference time
+  - Fees are in the order's currency and are not converted or totalled
 ────────────────────────────────────────────────────────────
 ```
 

@@ -47,6 +47,7 @@ export function DataTable<TData>({
   stickyFirstColumn = false,
   renderRowDetails,
   onRowClick,
+  getRowClassName,
   emptyState,
   className,
 }: DataTableProps<TData>): ReactElement {
@@ -177,6 +178,7 @@ export function DataTable<TData>({
           onToggleDetails={toggleDetails}
           renderRowDetails={details}
           onRowClick={onRowClick}
+          getRowClassName={getRowClassName}
         />
       ))
     );

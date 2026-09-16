@@ -5,6 +5,7 @@ import {
   createMockGeneratorContext,
   generateApprovalQueue,
   generateApprovals,
+  generateOrderHistory,
   generateOrders,
   generateSignalFeed,
   generateSignals,
@@ -125,6 +126,19 @@ export const tradingHandlers: readonly HttpHandler[] = [
     return HttpResponse.json(generateSignals(ctx), { status: 200 });
   }),
 
+  // Registered before /api/v1/orders, so the specific path wins. Built from the live stores, so a
+  // decision made in the approval queue shows up in the order's timeline.
+  http.get('/api/v1/orders/history', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load order history' }, { status: 500 });
+    }
+    const reasons = new Map([...decisions].map(([id, record]) => [id, record.decisionReason]));
+    return HttpResponse.json(generateOrderHistory(ctx, ordersStore(), approvalsStore(), reasons), {
+      status: 200,
+    });
+  }),
+
   http.get('/api/v1/orders', () => {
     const scenario = getActiveDeveloperScenario();
     if (scenario === 'loading-error') {
@@ -185,6 +199,15 @@ export const tradingHandlers: readonly HttpHandler[] = [
         ? { ...approval, status: parsed.data.decision, decidedAt, decidedBy: 'owner' }
         : approval,
     );
+    // A rejected order was never sent, so the raw order record must say so too.
+    if (parsed.data.decision === 'rejected') {
+      const orderId = currentApprovals.find((approval) => approval.id === id)?.orderId;
+      currentOrders = ordersStore().map((order) =>
+        String(order.id) === String(orderId ?? '')
+          ? { ...order, status: 'rejected', updatedAt: decidedAt }
+          : order,
+      );
+    }
     return HttpResponse.json(decidedQueue(), { status: 200 });
   }),
 ];
