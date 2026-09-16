@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-22 done)
-OVERALL PROGRESS:   67% (59 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 22 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T22:40:30Z  |  local: 2026-09-17 04:10 IST
-LAST AGENT:         session 44 (S-22 Alerts Centre)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,329 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-23 done)
+OVERALL PROGRESS:   68% (60 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 23 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T22:49:00Z  |  local: 2026-09-17 04:19 IST
+LAST AGENT:         session 45 (S-23 Audit Log)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,340 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,37 +36,33 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-22 done
-  (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  screens, Strategy Library and Editor, Signals & Approvals, Orders, Risk & Safety, the 7.18
-  Configuration areas except credentials (S-28) and the automation permission summary (S-29),
-  News & Events, Reports, Planning, Alerts Centre). The owner asked for the remaining S tasks one
-  by one, each committed (no push), taking the recommended option whenever a choice comes up
-  (decision 26). typecheck and ESLint pass; Prettier fails on Windows checkouts only (CRLF).
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-23 done
+  (every screen in UI spec section 7 except S-24..S-33, which were raised in sessions 36 and 37).
+  The owner asked for the remaining S tasks one by one, each committed (no push), taking the
+  recommended option whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier
+  fails on Windows checkouts only (CRLF, see findings) — not a code defect.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 44: S-22 Alerts Centre. See session 44 end entry.
-  - Session 43: S-21 Planning. Session 42: S-20 Reports.
+  - Session 45: S-23 Audit Log. See session 45 end entry.
+  - Session 44: S-22 Alerts Centre. Session 43: S-21 Planning.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-23 Audit Log (UI spec 7.20: complete record of configuration changes, approvals, orders,
-  limit changes and stage promotions; what changed with before and after, timestamp and trigger;
-  filterable and searchable; trace one decision chain from signal through approval to order to
-  fill). Route ROUTES.AUDIT (/audit) renders features/audit/AuditLogPage.tsx (placeholder). Build
-  the log from records that already exist rather than a separate seed: configuration versions
-  (configStore), risk limit change log (riskStore), approval decisions and orders (tradingStore),
-  strategy promotions (strategy library), and the order history lifecycle for the decision chain
-  (signal -> approval -> order -> fill). Copy features/trading/orders for list + filters + detail.
-  Then S-24 onward in registry order; S-26 Screener has no specification (open question 11): mark
-  it BLOCKED, do not invent it.
+  Claim S-24 Portfolio — Transactions (/portfolio/transactions, features/portfolio/
+  PortfolioTransactionsPage.tsx, a placeholder). UI spec 15 asks for transaction history with fees,
+  charges and currency conversions. Data exists: useTransactions (portfolio handlers) with buys,
+  dividends, conversion charges and the deposit. Copy features/trading/orders for list + filters +
+  detail; convert amounts with convertMoneyWithTable for a base-currency column.
+  After it: S-25 and S-27 have open questions (9 and 10) whose provisional answers keep them as
+  separate tasks; S-26 Screener has no specification (open question 11) — mark it BLOCKED, do not
+  invent it. Then S-28..S-33.
 
-FILES TOUCHED (session 44): see session 44 end entry.
+FILES TOUCHED (session 45): see session 45 end entry.
 
 WATCH OUT FOR:
  
@@ -204,7 +200,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-20 | Reports | DONE | 100 | Session 42 | Six report types on one screen (performance with time-weighted return and currency effect, allocation, costs, income, tax summary, strategy attribution); period presets and custom range; one report currency; previous-period and benchmark comparison; CSV export; scheduled reports with run history; computed from the same lots, prices and FX as the portfolio; all states verified |
 | S-21 | Planning | DONE | 100 | Session 43 | Allocation targets by type, country, currency and sector with drift, in-place editing and suggested corrective trades with estimated costs; goals with progress, projected value and completion; scenario projections (cautious, expected, hopeful, real terms) and proposed-trade preview across all dimensions; no order path; all states verified |
 | S-22 | Alerts Centre | DONE | 100 | Session 44 | Alert groups with occurrences, severity in word/symbol/colour, filters by severity/category/market/state, acknowledge and resolve with notes and history, escalation from the saved alert rules with failed deliveries named, links to the screen holding each fact; stale banner and empty state built but not browser-verified |
-| S-23 | Audit Log | TODO | 0 | | |
+| S-23 | Audit Log | DONE | 100 | Session 45 | Audit log rebuilt from real records (configuration versions with field-level before/after, risk changes, order lifecycles with decision reasons, strategy versions and stages); search, type/trigger/date filters; decision chain trace from signal to fill; stage promotion dates provisional |
 | S-24 | Portfolio — Transactions | TODO | 0 | | Raised session 36. In nav map (spec 6) and routed at `/portfolio/transactions`, but had no registry task. `PortfolioTransactionsPage.tsx` is a 29-line placeholder. Spec 15 requires transaction history with fees, charges and currency conversions |
 | S-25 | Portfolio — Performance | TODO | 0 | | Raised session 36. In nav map and routed at `/portfolio/performance`; 29-line placeholder, no task. **See open question 9** — may be intended to fold into S-20 Reports |
 | S-26 | Markets — Screener | TODO | 0 | | Raised session 36. In nav map and routed at `/markets/screener`; 29-line placeholder, no task. Note: the nav map lists it but section 7 has no screen specification for it — **see open question 11** |
@@ -302,135 +298,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 41 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 42 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        42 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T21:58:10Z  |  local: 2026-09-17 03:28 IST (UTC+05:30)
-TASK CLAIMED:   S-20 Reports
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-19 committed as 6138a89; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-19 commit)
-
-SCOPE (UI spec 7.16):
-  - Report types: performance, allocation, costs, income, tax summary, strategy attribution
-  - Period presets and custom range; one currency for the whole report; comparison with the
-    previous period of equal length and with a benchmark; export; scheduled reports with history
-  - The three routes (/reports/performance, /costs, /tax) open the same screen on that report
-    type; the other three types are reached from the type selector (?type= in the URL), since the
-    nav map has no route for them
-  - Mock endpoint GET /api/v1/reports computes a report from the same holdings, lots, price
-    history, FX history and transactions the portfolio screens use, so totals agree. Returns are
-    time-weighted (daily chain-linked, excluding contributions); the currency effect is shown
-    apart from price return. Benchmark: SPY in the report currency
-  - Tax and income use the market configuration (S-15) for holding periods, rates and dividend
-    withholding, and are labelled as estimates for an India-resident owner, not advice
-  - Scheduled reports: create, enable or disable, run now, delete; run history with delivery
-    status through the configured alert channels (the webhook fails, as on System Health)
-  - PROVISIONAL: the mock data has no sales, so realised gains are zero in every period; this is
-    stated on the report rather than invented
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        42 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T22:15:00Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
-TASK:           S-20 Reports — DONE
-
-WHAT WAS BUILT (UI spec 7.16):
-  - One reports screen for six types: performance, allocation, costs, income, tax summary and
-    strategy attribution. /reports/performance, /costs and /tax open on their type; any type can be
-    picked and is kept in ?type= so a report can be linked to
-  - Period presets (this month, last month, this quarter, year to date, last 12 months) and a
-    custom range, checked before asking (end by yesterday, start after price history begins)
-  - One currency for the whole report (USD, INR, EUR, GBP), defaulting to the configured base
-    currency (S-18)
-  - Comparison with the previous period of equal length (every metric shows the earlier value and
-    the change) or with the S&P 500 (performance), shown in words beside each metric
-  - Headline metrics with notes, a chart (growth of 100 against the benchmark; allocation donut),
-    tables with totals, and the assumptions behind the numbers always shown
-  - Export CSV of metrics, comparisons, tables and notes
-  - Scheduled reports: add (type, frequency, currency, delivery channel), pause or resume, run now,
-    delete; report history with delivered or failed results. Delivery follows the alert channel's
-    test outcome, so the webhook schedule fails as it does on System Health
-  - While a changed report loads, the previous one stays visible with a clear notice (stale);
-    loading, error and empty-portfolio states built
-
-MOCK DATA:
-  - GET /api/v1/reports?type&from&to&currency&comparison; GET/POST /reports/schedules,
-    PATCH/DELETE /reports/schedules/:id, POST /reports/schedules/:id/run; GET /reports/runs
-  - Reports are computed from the same holdings, lots, transactions, price history and FX history
-    as the portfolio screens: year-to-date value at end $97,791.81 against a live portfolio total of
-    $98,142.18 (closing prices versus live quotes)
-  - Returns are time-weighted (chain-linked daily, weekly beyond six months, excluding money added);
-    the currency effect is separated on units held throughout
-  - Tax and income use the market configuration's holding periods, rates and dividend withholding
-  - Seeded schedules (monthly performance, quarterly tax, a paused weekly costs report on the
-    failing webhook) and six past runs
-
-FILES CREATED:
-  - data/schemas/reports.ts; data/api/reportQueries.ts
-  - data/mock/generators/{reportValuation,reportParts,reportPortfolioBuilders,reportAttribution,
-    reportCashBuilders,reportTaxBuilder,reports}.ts; data/mock/stores/reportStore.ts;
-    data/mock/handlers/reportHandlers.ts
-  - features/reports/{Reports.module.scss, model/reportModel.ts, model/reportLimits.ts,
-    sections/ReportScreen.tsx, sections/ReportControls.tsx, sections/ReportBody.tsx,
-    sections/ScheduledReports.tsx}
-FILES MODIFIED:
-  - features/reports/{ReportsPerformancePage,ReportsCostsPage,ReportsTaxPage}.tsx — rewritten
-  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts; mock/handlers/index.ts
-  - Docs: session 39 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  endpoint:    all six types returned 200 before the UI was built; end date before start -> 400
-               "The start date must be on or before the end date"
-  performance: year to date against the previous period: start $86,005.15 (previous $93,345.56),
-               time-weighted return -2.80% (previous -22.73%, +19.93 pts), currency effect
-               -$639.37; with the benchmark: "S&P 500 (SPY) -6.45% (+3.65 pts against it)";
-               growth-of-100 chart and by-holding table rendered
-  tax:         switched to tax, INR, last month: URL ?type=tax, period 2026-08-01 to 2026-08-31,
-               "Estimated tax if everything were sold ₹96,612.57", one lot within 30 days of long-term
-  costs:       /reports/costs opened on costs: $4.50 commissions (AAPL $3.00, BTCUSD $1.50),
-               previous period $1.50
-  allocation:  value at end ₹72,07,862.73 in INR; largest position 40.96% (XAUUSD), unsigned
-  validation:  From after To -> "The start date must be on or before the end date."
-  schedules:   Run now on the weekly costs schedule added a failed run "Endpoint returned 502 Bad
-               Gateway"; added an income quarterly GBP schedule to mobile push; paused the tax
-               schedule
-  states:      loading-error -> "Report unavailable" and "Scheduled reports unavailable";
-               empty-portfolio -> "Nothing to report yet"; reset to healthy
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - Every percentage was formatted with a sign, so shares read "+40.96%"; percentages now carry a
-    signed flag and only returns are signed
-  - Two builder files went over 300 lines; tax and attribution were split out
-
-FINDINGS (out of scope, not fixed):
-  - PROVISIONAL (see start entry): the mock data has no sales, so realised gains are always zero
-  - Cash balances are not included in any report
-  - Interest and fund income are not tracked; losses carried forward are not tracked (requirements 26)
-  - Inflation-adjusted returns (UI spec 19) need inflation history (M-17)
-  - L-13 chart presets are still missing (returns distribution, waterfall for costs, stacked area
-    for allocation over time); tables stand in for them
-  - Scheduled runs only happen on "Run now"; nothing runs on the schedule in the mock phase
-  - Holdings' lot purchase dates drive valuation, so a period before the first purchase reports zero
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        43 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -653,6 +525,102 @@ FINDINGS (out of scope, not fixed):
     does not change it
   - Alert state resets on a full reload, like every mock store
   - Quiet hours from the alert rules are not applied to the escalation times shown
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        45 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:41:04Z  |  local: 2026-09-17 04:11 IST (UTC+05:30)
+TASK CLAIMED:   S-23 Audit Log
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-22 committed as eacc895; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-22 commit)
+
+SCOPE (UI spec 7.20):
+  - Complete record of configuration changes, approvals, orders, limit changes and stage
+    promotions; each with what changed (before and after), time and trigger; filterable and
+    searchable; trace one decision chain end to end (signal -> approval -> order -> fill)
+  - Built from records that already exist, not a separate seed, so an edit made on another screen
+    appears here: configuration versions (all seven areas), risk limit and emergency changes, the
+    order history timelines (which carry signal, approval and fill events and decision reasons),
+    strategy definition versions
+  - PROVISIONAL: stage promotions are held in the browser session on the Strategy Library screen,
+    not on the server, so the audit log records each strategy's promotions up to its current stage
+    at dates derived from the library, and says so. A server-side promotion record is a finding
+  - The decision chain is the order history timeline for that order, reached from any entry in it
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        45 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:49:00Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
+TASK:           S-23 Audit Log — DONE
+
+WHAT WAS BUILT (UI spec 7.20):
+  - /audit: every entry newest first in a table (when, type, what happened, what it is about,
+    triggered by, number of changes); opening a row shows the reason and a before/after table
+  - Types: configuration, approval, order, signal, risk limit, emergency control, stage promotion,
+    strategy definition; triggers: you, a strategy, the system, the broker
+  - Search across title, subject, reason and every before/after value; filters by type, trigger
+    and date range; no-results state
+  - "Trace the decision chain" on any entry belonging to an order shows the order's lifecycle as
+    numbered steps from signal to fill, with the entry's own step marked, and the signal, approval
+    and order ids
+
+MOCK DATA:
+  - GET /api/v1/audit, rebuilt on every request from: all seven configuration version stores
+    (field-level before/after from the snapshots), the risk change log, order history timelines
+    (with approval decision reasons), strategy definition versions and strategy library stages
+  - PROVISIONAL (see start entry): stage promotions are not recorded on the server, so each step up
+    to a strategy's current stage is dated 45 days apart and says so in its reason
+
+FILES CREATED:
+  - data/schemas/audit.ts; data/api/auditQueries.ts
+  - data/mock/generators/auditLog.ts; data/mock/handlers/auditHandlers.ts
+  - features/audit/{Audit.module.scss, model/auditFilters.ts, sections/AuditView.tsx,
+    sections/DecisionChain.tsx}
+FILES MODIFIED:
+  - features/audit/AuditLogPage.tsx — rewritten from a placeholder
+  - data/schemas/index.ts; data/api/index.ts; data/mock/generators/index.ts; data/mock/handlers/index.ts
+  - Docs: session 42 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoint:    80 entries (configuration 48, order 11, strategy stage 10, approval 5, signal 5,
+               strategy definition 1)
+  search:      "settlement" -> 1 entry, "Market US changed (version 2)", opened to "US equities
+               moved to T+1 settlement" and "Settlement days 2 -> 1"
+  chain:       "ord-0001" -> Filled entry -> Trace: six steps (signal raised, approval requested,
+               approved, submitted, acknowledged, filled "(this entry)") with signal
+               sig-01-spy-buy, approval appr-002-approved
+  live record: changed INR conversion cost to 35 bps through the API, moved to Overview and back
+               in the app: 81 entries, "Currency INR changed (version 3)", reason "Bank raised its
+               FX margin.", "Conversion cost bps 30 -> 35"
+  states:      loading-error -> "Audit log unavailable"; reset to healthy. Stale: the log is a
+               record rebuilt on each visit, with no live stream to go stale
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Diff field names first came through as raw paths ("settlementDays"); they are now labelled
+    ("Settlement days", "Fees › commission bps")
+
+FINDINGS (out of scope, not fixed):
+  - The order history timeline for ord-0001 has "Signal raised" at 14:28 after "Approval
+    requested" at 14:15, so the decision chain shows the signal after its approval request. The
+    times come from the S-13 order history generator
+  - Stage promotions should be recorded on the server (the library keeps them in session storage)
+  - Watchlist edits, goal and allocation target changes, report schedules and alert
+    acknowledgements are not in the audit log yet
+  - Risk changes carry title and detail text rather than structured before/after values
 ────────────────────────────────────────────────────────────
 ```
  

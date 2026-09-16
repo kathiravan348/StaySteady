@@ -4000,3 +4000,135 @@ FINDINGS (out of scope, not fixed):
   - Calendar dates are UTC calendar dates, not each market's local date
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 42 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        42 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T21:58:10Z  |  local: 2026-09-17 03:28 IST (UTC+05:30)
+TASK CLAIMED:   S-20 Reports
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-19 committed as 6138a89; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-19 commit)
+
+SCOPE (UI spec 7.16):
+  - Report types: performance, allocation, costs, income, tax summary, strategy attribution
+  - Period presets and custom range; one currency for the whole report; comparison with the
+    previous period of equal length and with a benchmark; export; scheduled reports with history
+  - The three routes (/reports/performance, /costs, /tax) open the same screen on that report
+    type; the other three types are reached from the type selector (?type= in the URL), since the
+    nav map has no route for them
+  - Mock endpoint GET /api/v1/reports computes a report from the same holdings, lots, price
+    history, FX history and transactions the portfolio screens use, so totals agree. Returns are
+    time-weighted (daily chain-linked, excluding contributions); the currency effect is shown
+    apart from price return. Benchmark: SPY in the report currency
+  - Tax and income use the market configuration (S-15) for holding periods, rates and dividend
+    withholding, and are labelled as estimates for an India-resident owner, not advice
+  - Scheduled reports: create, enable or disable, run now, delete; run history with delivery
+    status through the configured alert channels (the webhook fails, as on System Health)
+  - PROVISIONAL: the mock data has no sales, so realised gains are zero in every period; this is
+    stated on the report rather than invented
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        42 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:15:00Z  |  local: 2026-09-17 03:45 IST (UTC+05:30)
+TASK:           S-20 Reports — DONE
+
+WHAT WAS BUILT (UI spec 7.16):
+  - One reports screen for six types: performance, allocation, costs, income, tax summary and
+    strategy attribution. /reports/performance, /costs and /tax open on their type; any type can be
+    picked and is kept in ?type= so a report can be linked to
+  - Period presets (this month, last month, this quarter, year to date, last 12 months) and a
+    custom range, checked before asking (end by yesterday, start after price history begins)
+  - One currency for the whole report (USD, INR, EUR, GBP), defaulting to the configured base
+    currency (S-18)
+  - Comparison with the previous period of equal length (every metric shows the earlier value and
+    the change) or with the S&P 500 (performance), shown in words beside each metric
+  - Headline metrics with notes, a chart (growth of 100 against the benchmark; allocation donut),
+    tables with totals, and the assumptions behind the numbers always shown
+  - Export CSV of metrics, comparisons, tables and notes
+  - Scheduled reports: add (type, frequency, currency, delivery channel), pause or resume, run now,
+    delete; report history with delivered or failed results. Delivery follows the alert channel's
+    test outcome, so the webhook schedule fails as it does on System Health
+  - While a changed report loads, the previous one stays visible with a clear notice (stale);
+    loading, error and empty-portfolio states built
+
+MOCK DATA:
+  - GET /api/v1/reports?type&from&to&currency&comparison; GET/POST /reports/schedules,
+    PATCH/DELETE /reports/schedules/:id, POST /reports/schedules/:id/run; GET /reports/runs
+  - Reports are computed from the same holdings, lots, transactions, price history and FX history
+    as the portfolio screens: year-to-date value at end $97,791.81 against a live portfolio total of
+    $98,142.18 (closing prices versus live quotes)
+  - Returns are time-weighted (chain-linked daily, weekly beyond six months, excluding money added);
+    the currency effect is separated on units held throughout
+  - Tax and income use the market configuration's holding periods, rates and dividend withholding
+  - Seeded schedules (monthly performance, quarterly tax, a paused weekly costs report on the
+    failing webhook) and six past runs
+
+FILES CREATED:
+  - data/schemas/reports.ts; data/api/reportQueries.ts
+  - data/mock/generators/{reportValuation,reportParts,reportPortfolioBuilders,reportAttribution,
+    reportCashBuilders,reportTaxBuilder,reports}.ts; data/mock/stores/reportStore.ts;
+    data/mock/handlers/reportHandlers.ts
+  - features/reports/{Reports.module.scss, model/reportModel.ts, model/reportLimits.ts,
+    sections/ReportScreen.tsx, sections/ReportControls.tsx, sections/ReportBody.tsx,
+    sections/ScheduledReports.tsx}
+FILES MODIFIED:
+  - features/reports/{ReportsPerformancePage,ReportsCostsPage,ReportsTaxPage}.tsx — rewritten
+  - data/schemas/index.ts; data/api/index.ts; mock/generators/index.ts; mock/handlers/index.ts
+  - Docs: session 39 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoint:    all six types returned 200 before the UI was built; end date before start -> 400
+               "The start date must be on or before the end date"
+  performance: year to date against the previous period: start $86,005.15 (previous $93,345.56),
+               time-weighted return -2.80% (previous -22.73%, +19.93 pts), currency effect
+               -$639.37; with the benchmark: "S&P 500 (SPY) -6.45% (+3.65 pts against it)";
+               growth-of-100 chart and by-holding table rendered
+  tax:         switched to tax, INR, last month: URL ?type=tax, period 2026-08-01 to 2026-08-31,
+               "Estimated tax if everything were sold ₹96,612.57", one lot within 30 days of long-term
+  costs:       /reports/costs opened on costs: $4.50 commissions (AAPL $3.00, BTCUSD $1.50),
+               previous period $1.50
+  allocation:  value at end ₹72,07,862.73 in INR; largest position 40.96% (XAUUSD), unsigned
+  validation:  From after To -> "The start date must be on or before the end date."
+  schedules:   Run now on the weekly costs schedule added a failed run "Endpoint returned 502 Bad
+               Gateway"; added an income quarterly GBP schedule to mobile push; paused the tax
+               schedule
+  states:      loading-error -> "Report unavailable" and "Scheduled reports unavailable";
+               empty-portfolio -> "Nothing to report yet"; reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Every percentage was formatted with a sign, so shares read "+40.96%"; percentages now carry a
+    signed flag and only returns are signed
+  - Two builder files went over 300 lines; tax and attribution were split out
+
+FINDINGS (out of scope, not fixed):
+  - PROVISIONAL (see start entry): the mock data has no sales, so realised gains are always zero
+  - Cash balances are not included in any report
+  - Interest and fund income are not tracked; losses carried forward are not tracked (requirements 26)
+  - Inflation-adjusted returns (UI spec 19) need inflation history (M-17)
+  - L-13 chart presets are still missing (returns distribution, waterfall for costs, stacked area
+    for allocation over time); tables stand in for them
+  - Scheduled runs only happen on "Run now"; nothing runs on the schedule in the mock phase
+  - Holdings' lot purchase dates drive valuation, so a period before the first purchase reports zero
+────────────────────────────────────────────────────────────
+```

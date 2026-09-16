@@ -172,3 +172,7 @@ export { buildTradePreview } from './planningTradePreview';
 // Session 44: Alerts Centre (UI spec 7.19)
 export type { AlertGroupInput } from './alertCentre';
 export { seedAlertGroups, withEscalation } from './alertCentre';
+
+// Session 45: audit log (UI spec 7.20)
+export type { AuditSources, ConfigArea } from './auditLog';
+export { buildAuditLog } from './auditLog';
