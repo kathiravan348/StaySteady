@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-06 done)
-OVERALL PROGRESS:   68% (44 of 65 active tasks done; Stage F, M, L 100%; Stage S 6 of 23)
-LAST UPDATED:       2026-09-16T01:06:18Z  |  local: 2026-09-16 06:36 IST
-LAST AGENT:         Claude Opus 5 (session 25)
+PHASE:              Stage S Screens — in progress (S-01 to S-07 done)
+OVERALL PROGRESS:   69% (45 of 65 active tasks done; Stage F, M, L 100%; Stage S 7 of 23)
+LAST UPDATED:       2026-09-16T01:19:31Z  |  local: 2026-09-16 06:49 IST
+LAST AGENT:         Claude Opus 5 (session 26)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -31,28 +31,30 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview,
-  S-02 Holdings, S-03 Position Detail, S-04 Instrument Workspace, S-05 Watchlists and
-  S-06 System Health done. The owner asked the agent to commit each finished screen (no push) and to
-  take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build pass.
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-07 done
+  (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
+  Setup). The owner asked the agent to commit each finished screen (no push) and to take the
+  recommended option whenever a choice comes up (decision 26). typecheck, lint and build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 25: S-06 System Health — see session 25 end entry.
+  - Session 26: S-07 Backtest Setup — see session 26 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-07 Backtest Setup (UI spec 7.9). Route ROUTES.RESEARCH_BACKTEST_NEW (/research/backtest/new)
-  currently renders the ResearchEditorPage placeholder — give it its own page and repoint the route in
-  routes/AppRoutes.tsx. Data today: GET /api/v1/strategies (5 strategies with stage, universe,
-  timeframe, parameters), GET /api/v1/backtests (3 saved results, one outlier-dependent),
-  GET /api/v1/backtests/:id/trades; daily price history starts 2022-01-03 (PRICE_HISTORY_ORIGIN_DATE)
-  and bars carry isEstimated; the only cost constant is BUY_FEE 1.50 in the portfolio generator.
-  Missing and needed: cost assumption defaults per market or broker, and a mock run endpoint with
-  progress and cancel (decision 33: in-memory store, validated bodies, apiSend + mutation hooks).
+  Claim S-08 Backtest Results (UI spec 7.10 and section 8 — the heaviest metric and chart screen).
+  Route ROUTES.RESEARCH_BACKTEST_RESULTS(_ID) renders features/research/BacktestResultsPage.tsx,
+  still a placeholder. Data today: GET /api/v1/backtests (3 saved results, one flagged
+  hasOutlierDependency), GET /api/v1/backtests/:id, GET /api/v1/backtests/:id/trades (mock trades
+  with symbol, side, entry and exit dates, returnPercent, pnlAmount, isOutlier); hooks useBacktests
+  and the run hooks are in data/api/researchQueries.ts. Missing and likely needed: an equity curve
+  and drawdown series, per-period and per-market breakdowns, cost totals and validation data
+  (out-of-sample, parameter sensitivity) — add to the mock layer the same way (decision 33).
+  Charts available: AnalyticalChart presets (equity-curve, drawdown, monthly heatmap, donut) and the
+  library TradingChart; DataTable for the trade list.
 
-FILES TOUCHED (session 25): see session 25 end entry.
+FILES TOUCHED (session 26): see session 26 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
@@ -60,10 +62,11 @@ WATCH OUT FOR:
     replace the cache with the server response (decision 33).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
   - Keep files near 300 lines (decision 18): Prettier expands data tables, so split them early.
+  - MSW route order matters: register specific paths before /:id catch-alls.
   - Browser tests: synthetic mouse events do not reach lightweight-charts; React Aria keyboard drag
     needs real key presses; the mock scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
-  - Mock in-memory stores (watchlists, alert channel tests) reset on a full page reload.
+  - Mock in-memory stores (watchlists, alert channel tests, backtest runs) reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
     JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -152,7 +155,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-04 | Instrument Workspace (charts) | DONE | 100 | Session 23 | Library TradingChart (panes, styles, scales, drawings, keyboard, image export); indicators; fundamentals + watchlists mock data; intraday bars aligned to daily close; saved layouts; all states verified |
 | S-05 | Watchlists | DONE | 100 | Session 24 | Library ReorderableList + DropTarget (React Aria drag and drop); mock watchlist write API with validation; optimistic mutations; quick-add filters; live rows with sparklines; all states verified |
 | S-06 | System Health | DONE | 100 | Session 25 | Watchdog endpoints that survive an API outage; component board, data freshness, reliability with UsageMeter headroom, incident history with filters, alert channel tests; all scenarios verified |
-| S-07 | Backtest Setup | TODO | 0 | | |
+| S-07 | Backtest Setup | DONE | 100 | Session 26 | Cost defaults per market, data coverage and run endpoints with progress and cancel; strategy, range presets, universe, capital, costs, granularity, benchmarks; pre-run checks; all states verified |
 | S-08 | Backtest Results | TODO | 0 | | |
 | S-09 | Backtest Comparison | TODO | 0 | | |
 | S-10 | Strategy Library | TODO | 0 | | |
@@ -2363,6 +2366,98 @@ FINDINGS (out of scope, not fixed):
   - The legacy /api/v1/system/health endpoint still returns its own four-service list for the top bar
   - Incident history has no export; the component filter lists ids that have incidents only
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        26 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T01:07:25Z  |  local: 2026-09-16 06:37 IST (UTC+05:30)
+TASK CLAIMED:   S-07 Backtest Setup
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-06 committed as d0e11be; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (end of session 25, nothing changed since)
+
+SCOPE (UI spec 7.9):
+  - Inputs: strategy selection; date range with presets; markets and instruments; starting capital
+    and currency; cost assumptions (fees, charges, slippage, conversion) pre-filled from
+    configuration and overridable; data granularity; benchmark per market
+  - Validation warnings before running: insufficient data history, data gaps or estimated bars in
+    the range, range too short to be meaningful, settings that differ from live configuration
+  - Run control with progress indication and cancel
+  - Mock additions: cost defaults per market, data coverage per instrument, and run endpoints with
+    progress and cancellation (decision 33: in-memory store, validated bodies)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        26 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T01:19:31Z  |  local: 2026-09-16 06:49 IST (UTC+05:30)
+TASK CLAIMED:   S-07 Backtest Setup
+END STATUS:     DONE
+
+COMPLETED:
+  - Mock data: cost assumptions per market as live configuration has them (commission, minimum
+    commission in the market's currency, slippage, conversion) with the market's benchmark; data
+    coverage read from the real generated price history (first and last bar, bar count, estimated
+    bars, market holidays in range); backtest runs in an in-memory store that advance on elapsed
+    time through named stages and can be cancelled (decision 36)
+  - Endpoints: GET /backtests/cost-defaults, GET /backtests/data-coverage, POST /backtests/runs
+    (body validated, start before end), GET and DELETE /backtests/runs/:id; the specific paths are
+    registered before /backtests/:id so "runs" is not read as an id
+  - Hooks: useBacktestCostDefaults, useDataCoverage, useStartBacktestRun, useBacktestRun (polls
+    while queued or running, stops when finished), useCancelBacktestRun, useBacktests
+  - Screen (new BacktestSetupPage; /research/backtest/new now points at it instead of the strategy
+    editor placeholder): strategy picker with stage, version and timeframe; range presets 1Y/3Y/5Y/
+    All history/Custom with date inputs and a day count; market filter, instrument checkboxes with
+    each instrument's coverage and estimated-bar badges, select-all and clear; starting capital and
+    currency; commission, slippage, conversion and minimum commission with reset to live
+    configuration; data granularity; benchmark per market; pre-run checks panel; run control with
+    stage, percentage, progress bar and cancel, then a link to the result
+  - Checks (pure): blocking for no instruments, reversed dates and non-positive capital; warnings
+    for history starting after the start date, estimated bars, costs differing from live
+    configuration and a range under 180 days; notes for history ending early, market holidays,
+    missing benchmarks and ranges covering an unusual market period
+
+FILES CREATED:
+  - apps/web/src/data/schemas/backtest-setup.ts; mock/generators/backtestSetup.ts;
+    data/api/researchQueries.ts
+  - apps/web/src/features/research/backtestSetup/** (model, sections, hook, styles)
+  - apps/web/src/features/research/BacktestSetupPage.tsx
+FILES MODIFIED:
+  - apps/web/src/data/schemas/index.ts; mock/generators/index.ts; mock/handlers/researchHandlers.ts
+    (rewritten); data/api/index.ts; routes/AppRoutes.tsx
+
+DECISIONS MADE:
+  - 36 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: range presets returned plain dates where the config
+               expects branded IsoDate)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     opens with the strategy's own universe (2 instruments, 1 market), 3-year range and US
+               costs; switching to the RSI strategy loads TSLA and TATAMOTORS (2 markets) and adds
+               "No benchmark for India"; 1Y preset gives 365 calendar days; a custom 30-day range
+               raises "Range of 30 days is too short to be meaningful" and marks the preset Custom;
+               commission 0 raises "Cost assumptions differ from live configuration … commission
+               0 bps instead of 2 bps"; clearing the universe shows the blocking check and disables
+               the run; select-all reaches 17 instruments in 5 markets; a run moves through
+               "Loading price history" to "Finished" with "Open the results" linking to
+               /research/backtest/results/bt-02-mean-revert; a second run cancels with "Run
+               cancelled before it finished; no result was saved."
+  states:      loading, loading-error -> "Backtest setup unavailable" + the 500 message + Try again
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The short-range warning first read "A 30 days range is too short"; reworded.
+
+FINDINGS (out of scope, not fixed):
+  - Runs and their results are mock: a finished run links to an existing saved backtest rather than
+    producing a new one; runs reset on a full page reload
+  - Granularity is offered as daily, hourly and 15-minute, but only daily history exists for the
+    whole range; hourly and 15-minute would fall back to daily in a real run
+  - Cost assumptions apply one market's configuration to a multi-market universe
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -2425,6 +2520,7 @@ FINDINGS (out of scope, not fixed):
 | 33 | 2026-09-16 | Mock write endpoints keep an in-memory store per page load and validate request bodies with shared zod schemas; writes return the full resource set and the client applies optimistic updates with rollback | Realistic mutation flows without a backend; mock edits reset on reload | Yes | Session 24 |
 | 34 | 2026-09-16 | System Health data is split by source: component checks, freshness and alert-channel tests come from watchdog endpoints that stay up when the application API fails; reliability history and incidents fail with the API | UI spec 7.15 — the screen must stay informative when most of the system is down | Yes | Session 25 |
 | 35 | 2026-09-16 | Library UsageMeter shows usage against a limit with headroom and escalates at 80% and 95% in colour, symbol and words | Reused by System Health now and by the Risk and Safety panel (S-14) later | Yes | Session 25 |
+| 36 | 2026-09-16 | Backtest runs are mock-only: an in-memory run advances on elapsed time through named stages, can be cancelled, and completes to an existing saved result; cost assumptions come from per-market defaults that stand in for live configuration | UI spec 7.9 needs progress, cancellation and "differs from live configuration" warnings without a backtest engine | Yes | Session 26 |
 
 
 

@@ -37,6 +37,14 @@ export {
 } from './marketQueries';
 export { useAlerts, useApprovals, useSystemHealth } from './systemQueries';
 export {
+  useBacktestCostDefaults,
+  useBacktestRun,
+  useBacktests,
+  useCancelBacktestRun,
+  useDataCoverage,
+  useStartBacktestRun,
+} from './researchQueries';
+export {
   useAlertChannels,
   useComponentHealth,
   useDataFreshness,

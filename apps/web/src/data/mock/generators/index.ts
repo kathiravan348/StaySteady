@@ -62,6 +62,10 @@ export { generatePortfolioData } from './portfolio';
 export type { BacktestTradeItem } from './backtests';
 export { generateBacktestResults, generateBacktestTrades } from './backtests';
 
+// Session 26: backtest setup (UI spec 7.9)
+export type { BacktestRunState } from './backtestSetup';
+export { describeRun, generateDataCoverage, generateMarketCostDefaults } from './backtestSetup';
+
 // M-11 News & Events
 export { generateNewsItems, generateCalendarEvents } from './newsEvents';
 

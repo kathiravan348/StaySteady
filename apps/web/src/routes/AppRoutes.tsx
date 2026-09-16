@@ -24,6 +24,7 @@ import { NewsCalendarPage } from '../features/news/NewsCalendarPage';
 
 import { ResearchStrategiesPage } from '../features/research/ResearchStrategiesPage';
 import { ResearchEditorPage } from '../features/research/ResearchEditorPage';
+import { BacktestSetupPage } from '../features/research/BacktestSetupPage';
 import { BacktestResultsPage } from '../features/research/BacktestResultsPage';
 import { BacktestComparePage } from '../features/research/BacktestComparePage';
 
@@ -86,7 +87,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.RESEARCH_STRATEGIES} element={<ResearchStrategiesPage />} />
         <Route path={ROUTES.RESEARCH_EDITOR} element={<ResearchEditorPage />} />
         <Route path={ROUTES.RESEARCH_EDITOR_ID} element={<ResearchEditorPage />} />
-        <Route path={ROUTES.RESEARCH_BACKTEST_NEW} element={<ResearchEditorPage />} />
+        <Route path={ROUTES.RESEARCH_BACKTEST_NEW} element={<BacktestSetupPage />} />
         <Route path={ROUTES.RESEARCH_BACKTEST_RESULTS} element={<BacktestResultsPage />} />
         <Route path={ROUTES.RESEARCH_BACKTEST_RESULTS_ID} element={<BacktestResultsPage />} />
         <Route path={ROUTES.RESEARCH_BACKTEST_COMPARE} element={<BacktestComparePage />} />
