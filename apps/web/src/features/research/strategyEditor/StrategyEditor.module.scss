@@ -1,0 +1,248 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack,
+.section {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+/* The rule builder gets the width; validation and preview sit beside it until the pane is narrow. */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-4);
+  align-items: start;
+
+  @media (max-width: 90rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.column {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+  justify-content: space-between;
+}
+
+/* Fields */
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-3);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.input {
+  min-width: 0;
+  min-height: var(--density-control-height);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.checkOption {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* Rule tree: nesting is shown with an indent rule, not colour alone. */
+
+.group {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.groupNested {
+  border-inline-start: var(--border-width-thick, 2px) solid var(--border-default);
+}
+
+.groupHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.groupChildren {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.condition {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.conditionText {
+  flex: 1 1 14rem;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.narrowInput {
+  width: 5rem;
+}
+
+.emptyGroup {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* Validation */
+
+.issueList {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.issueRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  align-items: start;
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.issueTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.issueDetail {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* Versions */
+
+.versionList {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.versionRow {
+  display: grid;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.diffList {
+  display: grid;
+  gap: var(--space-1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.positive {
+  color: var(--change-gain);
+}
+
+.negative {
+  color: var(--change-loss);
+}
+
+.link {
+  font: inherit;
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.visuallyHidden {
+  @include mx.visually-hidden;
+}

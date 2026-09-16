@@ -7,7 +7,9 @@ import {
   generateOrders,
   generateSignals,
   generateStrategies,
+  generateStrategyDraft,
   generateStrategyLibrary,
+  generateStrategyVersions,
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { nowUtc } from '../../../shared/types/dateTime';
@@ -32,6 +34,27 @@ export const tradingHandlers: readonly HttpHandler[] = [
       return HttpResponse.json({ error: 'Failed to load the strategy library' }, { status: 500 });
     }
     return HttpResponse.json(generateStrategyLibrary(ctx, scenario === 'empty-portfolio'), {
+      status: 200,
+    });
+  }),
+
+  http.get('/api/v1/strategies/:id/draft', ({ params }) => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load the strategy' }, { status: 500 });
+    }
+    const draft = generateStrategyDraft(ctx, params['id'] as string);
+    return draft === undefined
+      ? HttpResponse.json({ error: 'Strategy not found' }, { status: 404 })
+      : HttpResponse.json(draft, { status: 200 });
+  }),
+
+  http.get('/api/v1/strategies/:id/versions', ({ params }) => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load version history' }, { status: 500 });
+    }
+    return HttpResponse.json(generateStrategyVersions(ctx, params['id'] as string), {
       status: 200,
     });
   }),

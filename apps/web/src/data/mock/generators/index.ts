@@ -98,3 +98,6 @@ export { tickQuotes, liveTicker } from './ticker';
 
 // Session 29: strategy library entries (UI spec 7.7)
 export { generateStrategyLibrary } from './strategyLibrary';
+
+// Session 30: strategy definitions for the editor (UI spec 7.8)
+export { generateStrategyDraft, generateStrategyVersions } from './strategyDrafts';

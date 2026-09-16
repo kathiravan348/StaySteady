@@ -9,7 +9,13 @@ export {
   usePortfolioSummary,
   useTransactions,
 } from './portfolioQueries';
-export { useSignals, useStrategies, useStrategyLibrary } from './tradingQueries';
+export {
+  useSignals,
+  useStrategies,
+  useStrategyDraft,
+  useStrategyLibrary,
+  useStrategyVersions,
+} from './tradingQueries';
 export type {
   MoveInstrumentVariables,
   SetInstrumentsVariables,
