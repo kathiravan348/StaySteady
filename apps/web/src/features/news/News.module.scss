@@ -1,0 +1,283 @@
+@use '../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+  justify-content: space-between;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+  padding: var(--space-3);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.input {
+  min-width: 0;
+  min-height: var(--density-control-height);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.checkOption {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: var(--density-control-height);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.meta,
+.note {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.note {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.link {
+  padding: 0;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+/* Feed */
+
+.feed {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.story {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* News on a holding: a thicker leading edge, and a "Held" label so colour is never the only cue. */
+.held {
+  box-shadow: inset var(--border-width-thick) 0 0 0 var(--interactive-primary);
+}
+
+.headline {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.headlineButton {
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+/* Sentiment is a model estimate, not a fact: dashed and italic, always with its confidence. */
+.estimate {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  padding: 0 var(--space-2);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  color: var(--text-secondary);
+  border: var(--border-width-thin) dashed var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.bullish {
+  color: var(--change-gain);
+}
+
+.bearish {
+  color: var(--change-loss);
+}
+
+.chip {
+  padding: 0 var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}
+
+.chipHeld {
+  font-weight: var(--font-weight-semibold);
+}
+
+.details {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.reports {
+  display: grid;
+  gap: var(--space-1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Calendar */
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.weekday {
+  padding: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.day {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  min-height: 6rem;
+  padding: var(--space-1);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+
+  @include mx.down(tablet) {
+    min-height: 4rem;
+  }
+}
+
+.outside {
+  background-color: var(--surface-sunken);
+  opacity: 0.6;
+}
+
+.today {
+  border-color: var(--interactive-primary);
+}
+
+.dayNumber {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.event {
+  display: grid;
+  gap: 0;
+  padding: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border-inline-start: var(--border-width-thick) solid var(--severity-low);
+  border-radius: var(--radius-sm);
+}
+
+.impactMedium {
+  border-inline-start-color: var(--severity-medium);
+}
+
+.impactHigh {
+  border-inline-start-color: var(--severity-high);
+}
+
+.restricted {
+  outline: var(--border-width-thin) dashed var(--severity-critical);
+}
+
+.eventList {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.dayGroup {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.dayHeading {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}

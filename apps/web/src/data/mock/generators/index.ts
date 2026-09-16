@@ -71,7 +71,8 @@ export type { EquityPoint } from './backtestDetail';
 export { generateBacktestDetail } from './backtestDetail';
 
 // M-11 News & Events
-export { generateNewsItems, generateCalendarEvents } from './newsEvents';
+export { generateNewsItems } from './newsEvents';
+export { generateCalendarEvents } from './calendarEvents';
 
 // M-12 Trading & Strategies
 export { generateStrategies, generateSignals, generateOrders, generateApprovals } from './trading';

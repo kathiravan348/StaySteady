@@ -1,14 +1,21 @@
-// News feed items and economic calendar events generator (M-11).
+// News feed items generator (M-11). Calendar events are in calendarEvents.ts.
 // Fulfills UI Spec 15 multi-language, duplicate story grouping, and macro event needs.
+// Session 41: stories are dated relative to `now` so the feed has a real order and can go stale,
+// and stories and events on held instruments (AAPL, SPY, gold, RELIANCE, AZN) were added.
 
 import type { z } from 'zod';
-import type { CalendarEventDto, NewsItemDto } from '../../schemas';
-import { CalendarEventSchema, NewsItemSchema } from '../../schemas';
+import type { NewsItemDto } from '../../schemas';
+import { NewsItemSchema } from '../../schemas';
 import { parseGeneratedList } from './validated';
-import type { MockGeneratorContext } from './mockContext';
 import { toInstrumentId, toMarketId } from '../../../shared/types/identifiers';
 
-export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemDto[] {
+const MINUTE_MS = 60_000;
+
+// Publication time a number of minutes before `now`.
+const ago = (now: Date, minutes: number): string =>
+  new Date(now.getTime() - minutes * MINUTE_MS).toISOString();
+
+export function generateNewsItems(now: Date): readonly NewsItemDto[] {
   const news: z.input<typeof NewsItemSchema>[] = [
     {
       id: 'news-01-reuters-fed',
@@ -18,7 +25,7 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'Reuters',
       url: 'https://news.example.com/fed-policy-update',
       language: 'en',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 38),
       category: 'macroeconomic',
       sentiment: 'neutral',
       sentimentConfidence: 0.88,
@@ -35,7 +42,7 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'Bloomberg',
       url: 'https://news.example.com/bloomberg-fed-hold',
       language: 'en',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 12),
       category: 'macroeconomic',
       sentiment: 'neutral',
       sentimentConfidence: 0.92,
@@ -52,7 +59,7 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'Financial Times',
       url: 'https://news.example.com/nvda-q4-results',
       language: 'en',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 2 * 1440 + 180),
       category: 'earnings',
       sentiment: 'bullish',
       sentimentConfidence: 0.96,
@@ -67,7 +74,7 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'Nikkei News',
       url: 'https://news.example.com/toyota-battery-jp',
       language: 'ja',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 1440 + 300),
       category: 'corporate_action',
       sentiment: 'bullish',
       sentimentConfidence: 0.84,
@@ -83,13 +90,14 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'Economic Times',
       url: 'https://news.example.com/reliance-leadership',
       language: 'en',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 3 * 1440 + 60),
       category: 'management_change',
       sentiment: 'bullish',
       sentimentConfidence: 0.76,
       importance: 'medium',
       relatedInstruments: [toInstrumentId('inst-in-reliance')],
       relatedMarkets: [toMarketId('IN')],
+      duplicateGroupId: 'dup-reliance-leadership',
     },
     {
       id: 'news-06-crypto-rumor',
@@ -99,7 +107,7 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       source: 'CryptoBriefing',
       url: 'https://news.example.com/mica-custody-rumor',
       language: 'en',
-      publishedAt: ctx.referenceTime,
+      publishedAt: ago(now, 125),
       category: 'unconfirmed_report',
       sentiment: 'bearish',
       sentimentConfidence: 0.55,
@@ -107,64 +115,132 @@ export function generateNewsItems(ctx: MockGeneratorContext): readonly NewsItemD
       relatedInstruments: [toInstrumentId('inst-us-btc')],
       relatedMarkets: [toMarketId('US')],
     },
+    {
+      id: 'news-07-reuters-aapl-eu',
+      title: 'EU Regulators Open Review of Apple App Store Fee Changes',
+      summary:
+        'The Commission will assess whether revised developer fees comply with the Digital Markets Act.',
+      source: 'Reuters',
+      url: 'https://news.example.com/aapl-eu-review',
+      language: 'en',
+      publishedAt: ago(now, 1440 + 190),
+      category: 'regulatory',
+      sentiment: 'bearish',
+      sentimentConfidence: 0.71,
+      importance: 'high',
+      relatedInstruments: [toInstrumentId('inst-us-aapl')],
+      relatedMarkets: [toMarketId('US')],
+      duplicateGroupId: 'dup-aapl-eu-review',
+    },
+    {
+      id: 'news-08-wsj-aapl-eu',
+      title: 'Apple Faces Fresh EU Scrutiny Over Developer Fees',
+      summary: 'Brussels opens a formal review; Apple says the new terms comply with the law.',
+      source: 'Wall Street Journal',
+      url: 'https://news.example.com/wsj-aapl-eu',
+      language: 'en',
+      publishedAt: ago(now, 1440 + 150),
+      category: 'regulatory',
+      sentiment: 'bearish',
+      sentimentConfidence: 0.66,
+      importance: 'high',
+      relatedInstruments: [toInstrumentId('inst-us-aapl')],
+      relatedMarkets: [toMarketId('US')],
+      duplicateGroupId: 'dup-aapl-eu-review',
+    },
+    {
+      id: 'news-09-ft-aapl-eu',
+      title: 'Brussels Tests Apple’s Compliance With Digital Markets Act',
+      summary: 'A review of App Store terms could lead to fines of up to 10% of global turnover.',
+      source: 'Financial Times',
+      url: 'https://news.example.com/ft-aapl-dma',
+      language: 'en',
+      publishedAt: ago(now, 1440 + 95),
+      category: 'regulatory',
+      sentiment: 'bearish',
+      sentimentConfidence: 0.74,
+      importance: 'high',
+      relatedInstruments: [toInstrumentId('inst-us-aapl')],
+      relatedMarkets: [toMarketId('US')],
+      duplicateGroupId: 'dup-aapl-eu-review',
+    },
+    {
+      id: 'news-10-azn-approval',
+      title: 'AstraZeneca Oncology Treatment Receives Regulatory Approval',
+      summary: 'Approval covers first-line use after late-stage trial data showed longer survival.',
+      source: 'The Guardian',
+      url: 'https://news.example.com/azn-approval',
+      language: 'en',
+      publishedAt: ago(now, 4 * 1440 + 240),
+      category: 'regulatory',
+      sentiment: 'bullish',
+      sentimentConfidence: 0.9,
+      importance: 'high',
+      relatedInstruments: [toInstrumentId('inst-uk-azn')],
+      relatedMarkets: [toMarketId('UK')],
+    },
+    {
+      id: 'news-11-gold-central-banks',
+      title: 'Gold Firms as Central Bank Purchases Stay Near Record Pace',
+      summary: 'Official sector buying and a softer dollar support bullion after a week of losses.',
+      source: 'Bloomberg',
+      url: 'https://news.example.com/gold-central-banks',
+      language: 'en',
+      publishedAt: ago(now, 2 * 1440 + 420),
+      category: 'macroeconomic',
+      sentiment: 'bullish',
+      sentimentConfidence: 0.67,
+      importance: 'medium',
+      relatedInstruments: [toInstrumentId('inst-us-gold')],
+      relatedMarkets: [toMarketId('US')],
+    },
+    {
+      id: 'news-12-spy-distribution',
+      title: 'SPDR S&P 500 ETF Trust Declares Quarterly Distribution',
+      summary: 'The distribution is payable to holders of record next month.',
+      source: 'Business Wire',
+      url: 'https://news.example.com/spy-distribution',
+      language: 'en',
+      publishedAt: ago(now, 8 * 1440),
+      category: 'corporate_action',
+      sentiment: 'neutral',
+      sentimentConfidence: 0.95,
+      importance: 'low',
+      relatedInstruments: [toInstrumentId('inst-us-spy')],
+      relatedMarkets: [toMarketId('US')],
+    },
+    {
+      id: 'news-13-mint-reliance',
+      title: 'Reliance Names New Head for Green Energy Business',
+      summary: 'The appointment follows a reorganisation of the new energy unit.',
+      source: 'Mint',
+      url: 'https://news.example.com/mint-reliance-head',
+      language: 'en',
+      publishedAt: ago(now, 3 * 1440 + 20),
+      category: 'management_change',
+      sentiment: 'bullish',
+      sentimentConfidence: 0.7,
+      importance: 'medium',
+      relatedInstruments: [toInstrumentId('inst-in-reliance')],
+      relatedMarkets: [toMarketId('IN')],
+      duplicateGroupId: 'dup-reliance-leadership',
+    },
+    {
+      id: 'news-14-rbi-minutes',
+      title: 'RBI Minutes Show Committee Divided on Timing of Next Move',
+      summary: 'Two members favoured a pause while others pointed to easing food inflation.',
+      source: 'Business Standard',
+      url: 'https://news.example.com/rbi-minutes',
+      language: 'en',
+      publishedAt: ago(now, 10 * 1440),
+      category: 'macroeconomic',
+      sentiment: 'neutral',
+      sentimentConfidence: 0.58,
+      importance: 'medium',
+      relatedInstruments: [],
+      relatedMarkets: [toMarketId('IN')],
+    },
   ];
 
   return parseGeneratedList(NewsItemSchema, news, 'newsItems');
-}
-
-export function generateCalendarEvents(): readonly CalendarEventDto[] {
-  const events: z.input<typeof CalendarEventSchema>[] = [
-    {
-      id: 'cal-fomc-rate-dec',
-      title: 'FOMC Interest Rate Decision',
-      marketId: toMarketId('US'),
-      date: '2026-09-16',
-      eventType: 'central_bank',
-      impact: 'high',
-      inTradingRestrictionWindow: true,
-      description: 'Federal Open Market Committee statement and economic projections release.',
-    },
-    {
-      id: 'cal-nvda-earnings',
-      title: 'NVIDIA Q3 Earnings Conference Call',
-      marketId: toMarketId('US'),
-      date: '2026-09-24',
-      eventType: 'earnings',
-      impact: 'high',
-      inTradingRestrictionWindow: true,
-      description: 'Quarterly financial report and live investor webcast.',
-    },
-    {
-      id: 'cal-rbi-mpc',
-      title: 'RBI Monetary Policy Committee Resolution',
-      marketId: toMarketId('IN'),
-      date: '2026-10-06',
-      eventType: 'central_bank',
-      impact: 'high',
-      inTradingRestrictionWindow: false,
-      description: 'Reserve Bank of India policy repo rate decision.',
-    },
-    {
-      id: 'cal-uk-cpi',
-      title: 'UK Consumer Price Inflation (CPI YoY)',
-      marketId: toMarketId('UK'),
-      date: '2026-09-18',
-      eventType: 'macro_economic',
-      impact: 'medium',
-      inTradingRestrictionWindow: false,
-      description: 'Office for National Statistics headline inflation metrics.',
-    },
-    {
-      id: 'cal-jp-holiday',
-      title: 'Autumnal Equinox Day (TSE Closed)',
-      marketId: toMarketId('JP'),
-      date: '2026-09-23',
-      eventType: 'holiday',
-      impact: 'low',
-      inTradingRestrictionWindow: false,
-      description: 'Tokyo Stock Exchange national market holiday.',
-    },
-  ];
-
-  return parseGeneratedList(CalendarEventSchema, events, 'calendarEvents');
 }

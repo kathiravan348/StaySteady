@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-18 done)
-OVERALL PROGRESS:   62% (55 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 18 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T17:52:00Z  |  local: 2026-09-16 23:22 IST
-LAST AGENT:         session 40 (S-18 Configuration — instruments, currencies, alerts)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,217 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-19 done)
+OVERALL PROGRESS:   64% (56 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 19 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T22:25:00Z  |  local: 2026-09-17 03:55 IST
+LAST AGENT:         session 41 (S-19 News & Events)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,238 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,35 +36,37 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-18 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-19 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders, Risk & Safety, and every Configuration area in UI spec 7.18 except
-  credentials (S-28) and the automation permission summary (S-29)). The owner asked the agent to
-  commit each finished screen (no push) and to take the recommended option whenever a choice comes
-  up (decision 26). typecheck and ESLint pass; Prettier fails on Windows checkouts only (CRLF, see
-  findings) — not a code defect.
+  screens, Strategy Library and Editor, Signals & Approvals, Orders, Risk & Safety, all 7.18
+  Configuration areas except credentials (S-28) and the automation permission summary (S-29), and
+  News & Events). The owner asked for the remaining S tasks one by one, each committed (no push),
+  taking the recommended option whenever a choice comes up (decision 26). typecheck and ESLint
+  pass; Prettier fails on Windows checkouts only (CRLF, see findings) — not a code defect.
 
-  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-37)
-  and is NOT session-start reading.
+  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
+  session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 40: S-18 Configuration — instruments, currencies, alerts. See session 40 end entry.
-  - Session 39: S-17 Configuration — brokers. Session 38: S-16 Configuration — providers.
+  - Session 41: S-19 News & Events. See session 41 end entry.
+  - Session 40: S-18 Configuration — instruments, currencies, alerts.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-19 News & Events (UI spec 7.6 — read that section; it is short). Routes:
-  ROUTES.NEWS_FEED (/news/feed) renders features/news/NewsFeedPage.tsx and ROUTES.NEWS_CALENDAR
-  (/news/calendar) renders features/news/NewsCalendarPage.tsx; check both before deciding what is
-  placeholder. Data exists: useNewsItems and useCalendarEvents in data/api/newsQueries.ts (M-11
-  news and calendar generators). Copy features/trading/orders for list + filters + row detail.
-  One story across screens: link news and events to instruments and holdings that already exist
-  rather than seeding new numbers. Every state (loading, empty, error, stale) must be built.
+  Claim S-20 Reports (UI spec 7.16: report types performance, allocation, costs, income, tax
+  summaries, strategy attribution; period presets and custom ranges; currency selector for the
+  whole report; comparison with benchmarks and previous periods; export; scheduled reports and
+  history). Find the route in routes/routes.ts (REPORTS*) and its placeholder page. L-13 (missing
+  analytical chart presets) is TODO — use the existing presets (equity curve, comparison curves,
+  drawdown, donut, monthly heatmap) and DataTable, and log what a missing preset would add rather
+  than building L-13 inside S-20. Derive every number from existing holdings, transactions,
+  dividends (holdingCashFlows), orders and backtests; convert with convertMoneyWithTable. Then
+  continue in registry order. S-26 Screener has no specification (open question 11): mark it
+  BLOCKED, do not invent it.
 
-FILES TOUCHED (session 40): see session 40 end entry.
+FILES TOUCHED (session 41): see session 41 end entry.
 
 WATCH OUT FOR:
  
@@ -198,7 +200,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-16 | Configuration — providers | DONE | 100 | Session 38 | Shared config pattern extended (form fields, draft hook, save card, test connection; decision 40); coverage, granularity, history, rate limits and cost, priority with failover order, credential reference, health check, freshness; health and faults shared with System Health; all states verified |
 | S-17 | Configuration — brokers | DONE | 100 | Session 39 | Markets, instrument types, order types, capabilities incl. paper account, fees, credential reference, automation switch per instrument type; API vs manual brokers; read-only connection test; health from System Health faults and usage plus holdings outside coverage; all states verified |
 | S-18 | Configuration — instruments, currencies, alerts | DONE | 100 | Session 40 | Instrument types (fixed list; markets, granularity, minimum sizes, settlement and tax overrides, manual-only, automation); currencies (versioned base currency, FX rate source and fallback, stale limit, conversion cost); alert rules (category, severity, channels, escalation, quiet hours with critical override, test alert); handler and hook factories (decision 41); all states verified |
-| S-19 | News & Events | TODO | 0 | | |
+| S-19 | News & Events | DONE | 100 | Session 41 | Live feed with grouped duplicate stories, sentiment always with confidence and styled as an estimate, importance, holdings emphasis, seven filters, price reaction per story, stale banner from the news provider's configured freshness; month/week/day calendar with impact, restriction windows and held-only filter; all states verified |
 | S-20 | Reports | TODO | 0 | | |
 | S-21 | Planning | TODO | 0 | | |
 | S-22 | Alerts Centre | TODO | 0 | | |
@@ -300,144 +302,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 37 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 38 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        38 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T16:47:59Z  |  local: 2026-09-16 22:17 IST (UTC+05:30)
-TASK CLAIMED:   S-16 Configuration — providers
-OWNER INPUT:    "check CLAUDE.md and continue pending process"; decision 26 (take recommended
-                options, commit each screen)
- 
-PRE-WORK VERIFICATION:
-  git:         S-15 committed as 8aededa, docs restructure as 4087604; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run at session start; Prettier CRLF finding unchanged)
- 
-SCOPE (UI spec 7.18):
-  - Data providers: coverage, granularity, history depth, rate limits, cost, priority order,
-    credential reference, health check, freshness expectation
-  - Built on shared/config (decision 38). Test connection is new to the pattern and goes in
-    shared/config; so do the generic text/number/select fields and the save card that the markets
-    form currently owns, since S-17 and S-18 need them too. Markets is re-pointed at them.
-  - Seeds come from the System Health sources (RELIABILITY_SOURCES, FRESHNESS, FAULTS) so request
-    limits, budgets, freshness expectations and the provider-down scenario agree on both screens.
-  - Credentials: a reference into a credential store only. A value that looks like a key is
-    rejected. Test connection is mock-only and contacts nothing.
-  - /settings/brokers and /settings/credentials render the providers placeholder today; they get
-    their own placeholder so they do not show the providers screen.
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        38 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T17:14:00Z  |  local: 2026-09-16 22:44 IST (UTC+05:30)
-TASK:           S-16 Configuration — providers — DONE
-
-WHAT WAS BUILT (UI spec 7.18):
-  Shared configuration pattern, extended (apps/web/src/shared/config, decision 40):
-  - FormFields: TextField, NumberField, SelectField (moved out of markets) and a new CheckboxGroup
-  - useConfigDraft: draft, touched fields, inline errors from the area's schema, dirty flag, reason
-  - ConfigSaveCard: blocking-error summary, reason, save and discard (moved out of MarketForm)
-  - ConnectionTest: tests the form as it stands (saved or not), each check marked in words and a
-    symbol, blocked while fields are invalid, and flagged as outdated once the form changes
-  - Markets now uses these; its behaviour is unchanged (re-verified below)
-  Data providers (/settings/providers):
-  - Identity; coverage (markets from the market configuration, data kinds, granularity, history
-    depth); rate limits and cost with a note on what the whole monthly limit would cost against
-    the budget; priority with the failover order per data kind, ties and markets with no fallback;
-    credential reference; health check interval and timeout; freshness expectation; enabled and
-    live switches
-  - Inline validation from the schema: timed data with no granularity, granularity on data that has
-    none, intraday with no intraday granularity, per-minute limit above the monthly one, a timeout
-    that outlasts the check interval, a missing reference when one is needed, and a value that
-    looks like a key instead of a reference
-  - /settings/brokers and /settings/credentials get their own placeholder (SettingsBrokersPage);
-    they previously rendered the providers placeholder
-
-MOCK DATA:
-  - GET/POST /api/v1/config/providers, PUT /:id, POST /:id/revert, POST /config/providers/test
-  - Seeds come from System Health: monthly request limits from RELIABILITY_SOURCES, freshness
-    expectations from FRESHNESS, latency and faults from COMPONENTS and FAULTS. Health measures
-    this month's usage and spend against the configured limit and budget, data age against the
-    configured expectation, scenario faults, and priority ties between live providers
-  - The connection test contacts nothing. A reference passes only if the mock credential store
-    holds it (the four seeded references); the provider-down scenario fails the primary provider
-  - History seeds: primary v1 had daily prices only on 250,000 requests; news v1 expected data
-    within 5 minutes. Both are invented mock history, not real vendor events
-  - Save rejects coverage naming a market that is not configured
-
-FILES CREATED:
-  - apps/web/src/data/schemas/config-providers.ts
-  - apps/web/src/data/mock/generators/{providerConfig,providerConnectionTest}.ts;
-    mock/handlers/providerConfigHandlers.ts
-  - apps/web/src/shared/config/{FormFields,ConfigSaveCard,ConnectionTest}.tsx, useConfigDraft.ts
-  - apps/web/src/features/settings/providers/** ; features/settings/SettingsBrokersPage.tsx
-FILES MODIFIED:
-  - data/schemas/{config,index}.ts; data/api/{configQueries,index}.ts;
-    mock/generators/index.ts; mock/handlers/configHandlers.ts; mock/stores/configStore.ts
-  - shared/config/{index.ts,Config.module.scss}
-  - features/settings/markets/sections/{MarketFields,MarketForm,MarketIdentityHours,
-    MarketCalendarRules}.tsx — shared fields, draft hook and save card
-  - features/settings/SettingsProvidersPage.tsx — rewritten; routes/AppRoutes.tsx
-  - Docs: sessions 32-35 moved verbatim to PROGRESS_ARCHIVE.md (rule 11; log was 1,015 lines)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - 40: shared config pattern extended with form fields, draft hook, save card and connection test
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  list:        4 providers by priority; primary 62% of requests, data 4 s old (late after 30 s);
-               FX and backup healthy; news "Problem: 96% of the monthly request limit used (+1
-               more)", the same 96% System Health shows
-  test:        primary passed all three checks in 38 ms (System Health's response time)
-  validation:  pasting sk_live_... as the reference showed "This looks like a key, not a
-               reference", blocked testing and marked the earlier result outdated; an unknown
-               vault reference failed the credential check and skipped the other two
-  save/revert: monthly limit 320,000 saved as v3 and health became 97% Problem; diff against v2
-               showed one row (500,000 -> 320,000); Revert stayed disabled until a reason was
-               given; v4 "Reverted to version 2" returned it to Healthy
-  new:         simulation notice shown, Live disabled, reason required; prov-alt saved in
-               simulation with "Not checked yet"; cost note $20.00 within $50.00
-  ties:        setting backup to priority 1 showed the tie warning in both failover chains
-  scenarios:   provider-down -> primary Problem "Connection refused" and a failed test, backup
-               "Carrying all market data traffic"; loading-error -> "Provider configuration
-               unavailable"; reset to healthy
-  markets:     re-verified after the refactor: emptied settlement shows "Enter a number", save
-               blocked with "1 field needs fixing", a valid save made US v3, select change and
-               Discard both work
-  placeholders: /settings/credentials shows its own "not built yet" page
-  theme:       dark theme tokens applied (computed styles); no horizontal overflow at 1024 px.
-               Screenshots came back blank, as noted in WATCH OUT FOR
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - I named the new fields file ConfigFields.tsx beside the existing configFields.ts; on a
-    case-insensitive filesystem that broke the build. Renamed to FormFields.tsx.
-  - providerConfig.ts reached 323 lines; the connection test moved to its own file.
-  - The first healthy summary quoted the freshness limit as if it were the data's age ("data
-    within 30 s"). It now states both: "newest data 4 s old (late after 30 s)".
-  - Failover order and priority ties first counted providers in simulation, which are never asked
-    for data. Both now count live, enabled providers only; a draft in simulation is shown where it
-    would sit once live.
-
-FINDINGS (out of scope, not fixed):
-  - Provider configuration is not read by System Health: changing a limit or freshness expectation
-    here changes this screen's health, but not System Health's meters or stale markers
-  - The credential store is a fixed list of four references; adding a credential belongs to S-28
-  - A granularity error only shows once the granularity field is touched or a save is attempted,
-    even when it was caused by ticking a data kind (visibleError tracks the field, not the cause)
-  - The connection test result is lost when the form resets (Discard, save, switching entries)
-  - Spend is compared with the budget only for USD budgets; other currencies get a warning
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        39 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -722,6 +591,118 @@ FINDINGS (out of scope, not fixed):
     is S-22 and still has its own route
   - Providers, brokers and markets still use their own handler and hook files; moving them onto the
     factories is a separate refactor
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        41 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T21:42:11Z  |  local: 2026-09-17 03:12 IST (UTC+05:30)
+TASK CLAIMED:   S-19 News & Events
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-18 committed as 9dd4302; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-18 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.6):
+  - Live feed: newest first; headline, source, time, affected instruments, category, sentiment with
+    confidence, importance; filters by market, country, instrument, category, sentiment,
+    importance and held only; emphasis for news on holdings; duplicate stories grouped and
+    collapsible with a source count; expanding shows the summary and a price reaction chart
+    around publication
+  - Calendar: month, week and day layouts; events marked by category and importance; restriction
+    window marked; held-only filter
+  - Sentiment always shows its confidence and is styled apart from confirmed facts
+  - Mock data: every story was published at the same instant and no story touched AAPL, AZN or
+    gold, so publication times are spread over recent days and stories on held instruments are
+    added. Calendar events gain an optional instrument so "held only" can work. Existing ids and
+    stories are kept.
+  - Stale: under the stale-data scenario the feed ages, and a banner appears when the newest story
+    is older than the news provider's freshness expectation (15 minutes, S-16 seed)
+  - Remaining S tasks will follow one at a time. S-26 Screener has no specification (open
+    question 11, "do not build until specified"); it will be marked BLOCKED rather than invented.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        41 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:25:00Z  |  local: 2026-09-17 03:55 IST (UTC+05:30)
+TASK:           S-19 News & Events — DONE
+
+WHAT WAS BUILT (UI spec 7.6):
+  Live feed (/news/feed):
+  - Stories newest first; reports of the same story grouped with "and N more sources", expandable
+    to every report; headline, source, relative time (full time on hover), instrument chips,
+    category, importance, and holdings marked with a Held badge and a leading edge
+  - Sentiment is always "Estimated sentiment: Bearish · 71% confidence" in a dashed, italic pill,
+    apart from the solid fact badges; an unconfirmed report is labelled as such
+  - Filters: market, country, instrument, category, sentiment, importance (medium or high, high
+    only), held only; no-results state with clear filters
+  - Expanding shows the summary, all reports, and the price reaction: daily bars before and after
+    publication with the publication day marked and the move stated in words
+  - Stale banner when the newest story is older than the news provider's freshness expectation, read
+    from the provider configuration (S-16) — the first screen to use saved configuration
+  Calendar (/news/calendar):
+  - Month, week and day layouts with previous, today and next; clicking a date opens its day
+  - Impact shown by a coloured edge and in words; category in words; events inside a trading
+    restriction window have a dashed outline and say so; held instruments are named
+  - Held-only filter; empty message per range
+
+MOCK DATA:
+  - Every story had been published at the same instant; stories are now dated minutes to days
+    before the request, so the feed has an order and the stale-data scenario can age it by 3 hours
+  - Added 8 stories (a three-source Apple story, AstraZeneca, gold, SPY, a second Reliance report
+    grouped with the first, RBI minutes) so holdings have news; existing ids kept
+  - Calendar events may name an instrument (optional instrumentId); 6 events added for held
+    instruments and major releases; calendarEvents.ts split out of newsEvents.ts (line limit)
+
+FILES CREATED:
+  - features/news/{News.module.scss, model/newsFeed.ts, model/calendarModel.ts}
+  - features/news/sections/{NewsFeedView,NewsFilterBar,NewsStoryCard,PriceReaction,CalendarView,
+    CalendarEventItem}.tsx
+  - data/mock/generators/calendarEvents.ts
+FILES MODIFIED:
+  - features/news/{NewsFeedPage,NewsCalendarPage}.tsx — rewritten from placeholders
+  - data/schemas/news.ts (optional instrumentId); data/mock/generators/{newsEvents,index}.ts;
+    data/mock/handlers/newsHandlers.ts
+  - Docs: session 38 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  feed:        "14 reports in 10 stories · 7 about holdings"; newest is the Fed story (Bloomberg and
+               1 more source, 12m ago, SPY held); the Apple story shows "Financial Times and 2 more
+               sources"; expanding it listed all three reports and drew the reaction chart with
+               "AAPL moved -0.79% ... The reaction is still forming"
+  filters:     high importance 4 stories; high and bearish 1; held only 7; India 2; earnings in IN
+               -> "No stories match these filters"
+  states:      stale-data -> banner "newest story is 3 h old; news is expected within 15 min";
+               loading-error -> "News unavailable" and "Calendar unavailable"; reset to healthy
+  calendar:    September 2026 month grid, 7 events, 2 in restriction windows, today marked; held
+               only -> 2 events; week of 14 September with details; next month October with 4
+               events; clicking 29 October opened the day with "Apple Q4 Earnings ... AAPL (held)
+               ... Inside a trading restriction window"
+  regression:  Overview still shows news and the FOMC event with no unavailable sections
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first stale banner put an explanation in StaleState's "Last update" slot, which read
+    "Last update: The news provider is expected..."; it now shows the newest story's time there
+  - The first month-range loop had contradictory stop conditions; replaced with a range from the
+    week of the 1st to the week of the last day
+
+FINDINGS (out of scope, not fixed):
+  - Restriction windows are a fixed flag on each event; nothing configures them yet (S-33)
+  - News only has daily prices around publication; an intraday reaction needs intraday history
+  - The feed is not live-pushed; it refreshes when the query refetches
+  - Calendar dates are UTC calendar dates, not each market's local date
 ────────────────────────────────────────────────────────────
 ```
  

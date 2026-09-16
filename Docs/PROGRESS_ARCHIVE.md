@@ -3437,3 +3437,144 @@ NOTES FOR NEXT AGENT:
     Planning and E-06/E-07 depend on. Consider it before the Reports and Planning extensions.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 38 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        38 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T16:47:59Z  |  local: 2026-09-16 22:17 IST (UTC+05:30)
+TASK CLAIMED:   S-16 Configuration — providers
+OWNER INPUT:    "check CLAUDE.md and continue pending process"; decision 26 (take recommended
+                options, commit each screen)
+ 
+PRE-WORK VERIFICATION:
+  git:         S-15 committed as 8aededa, docs restructure as 4087604; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run at session start; Prettier CRLF finding unchanged)
+ 
+SCOPE (UI spec 7.18):
+  - Data providers: coverage, granularity, history depth, rate limits, cost, priority order,
+    credential reference, health check, freshness expectation
+  - Built on shared/config (decision 38). Test connection is new to the pattern and goes in
+    shared/config; so do the generic text/number/select fields and the save card that the markets
+    form currently owns, since S-17 and S-18 need them too. Markets is re-pointed at them.
+  - Seeds come from the System Health sources (RELIABILITY_SOURCES, FRESHNESS, FAULTS) so request
+    limits, budgets, freshness expectations and the provider-down scenario agree on both screens.
+  - Credentials: a reference into a credential store only. A value that looks like a key is
+    rejected. Test connection is mock-only and contacts nothing.
+  - /settings/brokers and /settings/credentials render the providers placeholder today; they get
+    their own placeholder so they do not show the providers screen.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        38 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:14:00Z  |  local: 2026-09-16 22:44 IST (UTC+05:30)
+TASK:           S-16 Configuration — providers — DONE
+
+WHAT WAS BUILT (UI spec 7.18):
+  Shared configuration pattern, extended (apps/web/src/shared/config, decision 40):
+  - FormFields: TextField, NumberField, SelectField (moved out of markets) and a new CheckboxGroup
+  - useConfigDraft: draft, touched fields, inline errors from the area's schema, dirty flag, reason
+  - ConfigSaveCard: blocking-error summary, reason, save and discard (moved out of MarketForm)
+  - ConnectionTest: tests the form as it stands (saved or not), each check marked in words and a
+    symbol, blocked while fields are invalid, and flagged as outdated once the form changes
+  - Markets now uses these; its behaviour is unchanged (re-verified below)
+  Data providers (/settings/providers):
+  - Identity; coverage (markets from the market configuration, data kinds, granularity, history
+    depth); rate limits and cost with a note on what the whole monthly limit would cost against
+    the budget; priority with the failover order per data kind, ties and markets with no fallback;
+    credential reference; health check interval and timeout; freshness expectation; enabled and
+    live switches
+  - Inline validation from the schema: timed data with no granularity, granularity on data that has
+    none, intraday with no intraday granularity, per-minute limit above the monthly one, a timeout
+    that outlasts the check interval, a missing reference when one is needed, and a value that
+    looks like a key instead of a reference
+  - /settings/brokers and /settings/credentials get their own placeholder (SettingsBrokersPage);
+    they previously rendered the providers placeholder
+
+MOCK DATA:
+  - GET/POST /api/v1/config/providers, PUT /:id, POST /:id/revert, POST /config/providers/test
+  - Seeds come from System Health: monthly request limits from RELIABILITY_SOURCES, freshness
+    expectations from FRESHNESS, latency and faults from COMPONENTS and FAULTS. Health measures
+    this month's usage and spend against the configured limit and budget, data age against the
+    configured expectation, scenario faults, and priority ties between live providers
+  - The connection test contacts nothing. A reference passes only if the mock credential store
+    holds it (the four seeded references); the provider-down scenario fails the primary provider
+  - History seeds: primary v1 had daily prices only on 250,000 requests; news v1 expected data
+    within 5 minutes. Both are invented mock history, not real vendor events
+  - Save rejects coverage naming a market that is not configured
+
+FILES CREATED:
+  - apps/web/src/data/schemas/config-providers.ts
+  - apps/web/src/data/mock/generators/{providerConfig,providerConnectionTest}.ts;
+    mock/handlers/providerConfigHandlers.ts
+  - apps/web/src/shared/config/{FormFields,ConfigSaveCard,ConnectionTest}.tsx, useConfigDraft.ts
+  - apps/web/src/features/settings/providers/** ; features/settings/SettingsBrokersPage.tsx
+FILES MODIFIED:
+  - data/schemas/{config,index}.ts; data/api/{configQueries,index}.ts;
+    mock/generators/index.ts; mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/{index.ts,Config.module.scss}
+  - features/settings/markets/sections/{MarketFields,MarketForm,MarketIdentityHours,
+    MarketCalendarRules}.tsx — shared fields, draft hook and save card
+  - features/settings/SettingsProvidersPage.tsx — rewritten; routes/AppRoutes.tsx
+  - Docs: sessions 32-35 moved verbatim to PROGRESS_ARCHIVE.md (rule 11; log was 1,015 lines)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - 40: shared config pattern extended with form fields, draft hook, save card and connection test
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        4 providers by priority; primary 62% of requests, data 4 s old (late after 30 s);
+               FX and backup healthy; news "Problem: 96% of the monthly request limit used (+1
+               more)", the same 96% System Health shows
+  test:        primary passed all three checks in 38 ms (System Health's response time)
+  validation:  pasting sk_live_... as the reference showed "This looks like a key, not a
+               reference", blocked testing and marked the earlier result outdated; an unknown
+               vault reference failed the credential check and skipped the other two
+  save/revert: monthly limit 320,000 saved as v3 and health became 97% Problem; diff against v2
+               showed one row (500,000 -> 320,000); Revert stayed disabled until a reason was
+               given; v4 "Reverted to version 2" returned it to Healthy
+  new:         simulation notice shown, Live disabled, reason required; prov-alt saved in
+               simulation with "Not checked yet"; cost note $20.00 within $50.00
+  ties:        setting backup to priority 1 showed the tie warning in both failover chains
+  scenarios:   provider-down -> primary Problem "Connection refused" and a failed test, backup
+               "Carrying all market data traffic"; loading-error -> "Provider configuration
+               unavailable"; reset to healthy
+  markets:     re-verified after the refactor: emptied settlement shows "Enter a number", save
+               blocked with "1 field needs fixing", a valid save made US v3, select change and
+               Discard both work
+  placeholders: /settings/credentials shows its own "not built yet" page
+  theme:       dark theme tokens applied (computed styles); no horizontal overflow at 1024 px.
+               Screenshots came back blank, as noted in WATCH OUT FOR
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I named the new fields file ConfigFields.tsx beside the existing configFields.ts; on a
+    case-insensitive filesystem that broke the build. Renamed to FormFields.tsx.
+  - providerConfig.ts reached 323 lines; the connection test moved to its own file.
+  - The first healthy summary quoted the freshness limit as if it were the data's age ("data
+    within 30 s"). It now states both: "newest data 4 s old (late after 30 s)".
+  - Failover order and priority ties first counted providers in simulation, which are never asked
+    for data. Both now count live, enabled providers only; a draft in simulation is shown where it
+    would sit once live.
+
+FINDINGS (out of scope, not fixed):
+  - Provider configuration is not read by System Health: changing a limit or freshness expectation
+    here changes this screen's health, but not System Health's meters or stale markers
+  - The credential store is a fixed list of four references; adding a credential belongs to S-28
+  - A granularity error only shows once the granularity field is touched or a save is attempted,
+    even when it was caused by ticking a data kind (visibleError tracks the field, not the cause)
+  - The connection test result is lost when the form resets (Discard, save, switching entries)
+  - Spend is compared with the budget only for USD budgets; other currencies get a warning
+────────────────────────────────────────────────────────────
+```

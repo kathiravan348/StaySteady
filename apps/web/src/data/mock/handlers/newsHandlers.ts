@@ -1,15 +1,11 @@
 // MSW request handlers for news items and economic calendar (M-14).
 
 import { http, HttpResponse, type HttpHandler } from 'msw';
-import {
-  createMockGeneratorContext,
-  generateCalendarEvents,
-  generateNewsItems,
-} from '../generators';
+import { generateCalendarEvents, generateNewsItems } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 
-const ctx = createMockGeneratorContext();
-const news = generateNewsItems(ctx);
+// The stale-data scenario holds the feed back three hours, past the news provider's 15 minutes.
+const STALE_DELAY_MS = 3 * 3_600_000;
 const calendar = generateCalendarEvents();
 
 export const newsHandlers: readonly HttpHandler[] = [
@@ -22,7 +18,8 @@ export const newsHandlers: readonly HttpHandler[] = [
     const category = url.searchParams.get('category');
     const instrumentId = url.searchParams.get('instrumentId');
 
-    let filtered = news;
+    const now = new Date(Date.now() - (scenario === 'stale-data' ? STALE_DELAY_MS : 0));
+    let filtered = generateNewsItems(now);
     if (category) {
       filtered = filtered.filter((n) => n.category === category);
     }

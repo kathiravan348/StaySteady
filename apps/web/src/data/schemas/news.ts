@@ -69,5 +69,7 @@ export const CalendarEventSchema = z.object({
   // UI spec 7.6 — marks events inside a configured trading restriction window
   inTradingRestrictionWindow: z.boolean(),
   description: z.string().optional(),
+  // UI spec 7.6 — the instrument an event concerns, so the calendar can show held instruments only.
+  instrumentId: InstrumentIdSchema.optional(),
 });
 export type CalendarEventDto = z.infer<typeof CalendarEventSchema>;
