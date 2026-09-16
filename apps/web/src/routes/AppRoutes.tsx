@@ -49,6 +49,7 @@ import { PlanningGoalsPage } from '../features/planning/PlanningGoalsPage';
 import { PlanningScenariosPage } from '../features/planning/PlanningScenariosPage';
 
 import { SettingsMarketsPage } from '../features/settings/SettingsMarketsPage';
+import { SettingsBrokersPage } from '../features/settings/SettingsBrokersPage';
 import { SettingsProvidersPage } from '../features/settings/SettingsProvidersPage';
 import { SettingsDisplayPage } from '../features/settings/SettingsDisplayPage';
 import { WorkbenchShell } from '@staysteady/ui';
@@ -120,11 +121,14 @@ export function AppRoutes(): ReactElement {
         {/* Settings */}
         <Route path={ROUTES.SETTINGS_MARKETS} element={<SettingsMarketsPage />} />
         <Route path={ROUTES.SETTINGS_PROVIDERS} element={<SettingsProvidersPage />} />
-        <Route path={ROUTES.SETTINGS_BROKERS} element={<SettingsProvidersPage />} />
+        <Route path={ROUTES.SETTINGS_BROKERS} element={<SettingsBrokersPage area="Brokers" />} />
         <Route path={ROUTES.SETTINGS_INSTRUMENTS} element={<SettingsMarketsPage />} />
         <Route path={ROUTES.SETTINGS_CURRENCIES} element={<SettingsMarketsPage />} />
         <Route path={ROUTES.SETTINGS_ALERTS} element={<AlertsPage />} />
-        <Route path={ROUTES.SETTINGS_CREDENTIALS} element={<SettingsProvidersPage />} />
+        <Route
+          path={ROUTES.SETTINGS_CREDENTIALS}
+          element={<SettingsBrokersPage area="Credentials" />}
+        />
         <Route path={ROUTES.SETTINGS_DISPLAY} element={<SettingsDisplayPage />} />
 
         {/* Catch-all 404 */}

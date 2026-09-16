@@ -25,3 +25,4 @@ export * from './order-history';
 export * from './risk';
 export * from './config';
 export * from './config-markets';
+export * from './config-providers';

@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import { SUPPORTED_CURRENCIES } from '../../../../shared/types/currency';
 import { SUPPORTED_TIMEZONES } from '../../../../shared/types/dateTime';
 import { humanizeToken } from '../../../../shared/format';
-import { FieldError } from '../../../../shared/config';
+import { FieldError, NumberField, SelectField, TextField } from '../../../../shared/config';
 import styles from '../../Settings.module.scss';
 import { WEEKDAYS } from '../model/marketDraft';
-import { NumberField, SelectField, TextField, TimeField, type SectionProps } from './MarketFields';
+import { TimeField, type SectionProps } from './MarketFields';
 
 type Session = SectionProps['draft']['regularHours'][number];
 const DEFAULT_EXTENDED: Session = { start: { hour: 7, minute: 0 }, end: { hour: 9, minute: 0 } };

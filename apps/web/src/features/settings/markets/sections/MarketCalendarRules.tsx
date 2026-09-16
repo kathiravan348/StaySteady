@@ -3,11 +3,11 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import { InstrumentTypeSchema } from '../../../../data/schemas';
-import { CapabilitySwitch, FieldError } from '../../../../shared/config';
+import { CapabilitySwitch, FieldError, NumberField, TextField } from '../../../../shared/config';
 import { humanizeToken } from '../../../../shared/format';
 import styles from '../../Settings.module.scss';
 import { weekendHolidays } from '../model/marketDraft';
-import { NumberField, TextField, type SectionProps } from './MarketFields';
+import type { SectionProps } from './MarketFields';
 
 export function MarketCalendarSection({ draft, update, error }: SectionProps): ReactElement {
   const [date, setDate] = useState('');

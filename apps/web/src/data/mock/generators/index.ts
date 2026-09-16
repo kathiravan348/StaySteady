@@ -116,3 +116,7 @@ export { generateRiskBreaches } from './riskBreaches';
 
 // Session 34: configuration, markets (UI spec 7.18)
 export { marketConfigHealth, seedMarketConfigs, seedMarketHistory } from './marketConfig';
+
+// Session 38: configuration, data providers (UI spec 7.18)
+export { providerConfigHealth, seedProviderConfigs, seedProviderHistory } from './providerConfig';
+export { testProviderConnection } from './providerConnectionTest';

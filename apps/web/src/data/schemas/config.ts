@@ -3,6 +3,8 @@
 
 import { z } from 'zod';
 
+import { IsoUtcTimestampSchema } from './common';
+
 export const ConfigHealthStatusSchema = z.enum(['healthy', 'warning', 'critical']);
 export type ConfigHealthStatusDto = z.infer<typeof ConfigHealthStatusSchema>;
 
@@ -26,3 +28,19 @@ export const RevertRequestSchema = z.object({
   reason: ChangeReasonSchema,
 });
 export type RevertRequestDto = z.infer<typeof RevertRequestSchema>;
+
+// The outcome of "Test connection" (UI spec 7.18). Each check says what was tried, so a failure
+// points at the thing to fix. In the mock phase nothing outside the app is contacted.
+export const ConnectionCheckSchema = z.object({
+  label: z.string().min(1),
+  passed: z.boolean(),
+  detail: z.string().min(1),
+});
+
+export const ConnectionTestResultSchema = z.object({
+  testedAt: IsoUtcTimestampSchema,
+  passed: z.boolean(),
+  latencyMs: z.number().int().nonnegative().nullable(),
+  checks: z.array(ConnectionCheckSchema).min(1),
+});
+export type ConnectionTestResultDto = z.infer<typeof ConnectionTestResultSchema>;

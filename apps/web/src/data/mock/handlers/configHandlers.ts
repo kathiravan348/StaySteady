@@ -13,6 +13,7 @@ import {
   SaveMarketConfigRequestSchema,
 } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
+import { providerConfigHandlers } from './providerConfigHandlers';
 
 const failure = (message: string, status: number): Response =>
   HttpResponse.json({ error: message }, { status });
@@ -110,4 +111,6 @@ export const configHandlers: readonly HttpHandler[] = [
     );
     return marketEntries();
   }),
+
+  ...providerConfigHandlers,
 ];

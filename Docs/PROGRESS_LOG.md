@@ -1,4 +1,4 @@
-﻿# StaySteady — Progress Log
+# StaySteady — Progress Log
  
 **Single source of truth for build progress across all agents.**
  
@@ -12,74 +12,66 @@
 ---
  
 ## 1. Current Status
- 
+
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-15 done); requirements review done (session 37)
-OVERALL PROGRESS:   59% (52 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 15 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T15:55:00Z  |  local: 2026-09-16 21:25 IST
-LAST AGENT:         session 37 (requirements review — docs only, no code changed)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,120 kB chunk, up from 2,534 — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-16 done)
+OVERALL PROGRESS:   60% (53 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 16 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T17:14:00Z  |  local: 2026-09-16 22:44 IST
+LAST AGENT:         session 38 (S-16 Configuration — providers)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,150 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
-                    so `pnpm lint` reports all 519 files. Not a code defect — see findings.
+                    so `pnpm lint` reports every file. Not a code defect — see findings.
 BLOCKERS:           none for building. But see Q13: do not enable automation against a real
                     broker until the employer-trading-policy question is answered.
-AUDIT NOTE:         Task count 65 -> 74 (session 36, spec coverage) -> 88 (session 37, requirements
-                    review). The percentage fell because the denominator grew, not because work
-                    was lost. Requirements sections 25-34 and UI spec 19 are new.
 ```
- 
+
 ---
- 
+
 ## 2. Handoff Note — Read This First
- 
+
 > Rewritten completely at the end of every session. Written for an agent with no memory of any previous session.
- 
+
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-15 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-16 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders, Risk & Safety, Configuration — markets). The owner asked the agent to
-  commit each finished screen (no push) and to take the recommended option whenever a choice comes
-  up (decision 26). typecheck and ESLint pass; Prettier fails on Windows checkouts only (CRLF, see
-  findings) — not a code defect.
- 
-  DOCS RESTRUCTURED IN SESSION 35 (decision 39). Read only: AGENT_RULES.md, this file's sections
-  1–3, and DECISIONS.md. Session history older than the last three sessions is in
-  PROGRESS_ARCHIVE.md and is NOT session-start reading. A root CLAUDE.md carries the same read
-  order. Session start now costs ~11k tokens instead of ~62k.
- 
+  Approval Queue, Orders, Risk & Safety, Configuration — markets, Configuration — providers). The
+  owner asked the agent to commit each finished screen (no push) and to take the recommended
+  option whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier fails on
+  Windows checkouts only (CRLF, see findings) — not a code defect.
+
+  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-35)
+  and is NOT session-start reading.
+
 WHAT I COMPLETED THIS SESSION:
-  - Session 37: requirements review against the owner's stated purpose (this platform is for his
-    entire investment future, not a trading side-project). Added requirements sections 25-34,
-    UI spec section 19, tasks S-30..S-33, Stage E (E-01..E-09), M-17, questions Q13-Q18.
-    Docs only. See session 37 entry.
-  - Session 36: spec coverage audit + re-validation of Antigravity/Gemini stages — docs only.
-    Registry grew 65 -> 74 tasks. L-12 reopened. See session 36 entry.
-  - Session 35: documentation restructure only, no application code touched — see session 35 entry.
-  - Session 34: S-15 Configuration — markets — see session 34 end entry.
- 
+  - Session 38: S-16 Configuration — providers, plus the shared config pattern extended with form
+    fields, a draft hook, a save card and a connection test (decision 40). Markets moved onto them.
+    Sessions 32-35 archived per rule 11. See session 38 end entry.
+
 WHAT IS PARTIALLY DONE:
   Nothing.
- 
+
 EXACT NEXT STEP:
-  Claim S-16 Configuration — providers (UI spec 7.18: coverage, granularity, history depth, rate
-  limits, cost, priority order, credential reference, health check, freshness expectation).
-  Route ROUTES.SETTINGS_PROVIDERS (/settings/providers) renders
-  features/settings/SettingsProvidersPage.tsx, a placeholder. Build it on apps/web/src/shared/config
-  exactly as markets does (decision 38): a zod schema with superRefine in data/schemas, seeds and a
-  health function in a generator, versions in data/mock/stores/configStore.ts, handlers in
-  configHandlers.ts, hooks in data/api/configQueries.ts. Providers need "Test connection", which
-  markets did not; add it to the shared pattern rather than the feature. Provider data already
-  exists: the System Health screen's source reliability (useSourceReliability, healthDetails and
-  healthMonitorData generators) carries each provider's request usage, cost budget and failover —
-  seed from it so the two screens agree. Credentials must be references only, never values.
- 
-FILES TOUCHED (session 34): see session 34 end entry.
- 
+  Claim S-17 Configuration — brokers (UI spec 7.18: markets, instrument types, capabilities, order
+  types, simulation availability, fees, credentials, automation toggles per instrument type).
+  Route ROUTES.SETTINGS_BROKERS (/settings/brokers) renders features/settings/SettingsBrokersPage.tsx,
+  a placeholder shared with /settings/credentials (S-28) — give brokers its own page and leave the
+  placeholder for credentials. Copy features/settings/providers, which is now the fullest example
+  of decision 38 + 40: schema with superRefine in data/schemas, seeds and health in a generator,
+  versions in mock/stores/configStore.ts (appendVersion is generic), handlers beside
+  providerConfigHandlers.ts, hooks in data/api/configQueries.ts, and in the form useConfigDraft,
+  FormFields, ConfigSaveCard and ConnectionTest. Broker data already exists: useBrokers
+  (portfolioQueries), brk-ibkr and brk-zerodha in the System Health sources (RELIABILITY_SOURCES,
+  COMPONENTS, FAULTS incl. the broker-disconnected scenario), and per-broker fees in the order
+  history generator — seed from those so the screens agree. No code path may place an order, even
+  for "test connection": test with a read-only check only. Credentials stay references.
+
+FILES TOUCHED (session 38): see session 38 end entry.
+
 WATCH OUT FOR:
  
  - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
@@ -105,6 +97,8 @@ WATCH OUT FOR:
   - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
   - packages/ui must NEVER import from apps/web or domain DTOs.
+  - Two files differing only in case (configFields.ts / ConfigFields.tsx) break the build on
+    Windows. Pick a distinct name.
   - Open findings: configuration is not yet read by the rest of the app; the top bar kill switch has
     no confirmation or record; chart theme colours hardcoded hex; single large JS chunk (P-04);
     Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
@@ -205,7 +199,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-13 | Orders | DONE | 100 | Session 32 | Order history endpoint with broker, fees, signed slippage and lifecycle; DataTable getRowClassName; unconfirmed orders escalated by banner, row and badge; filters by broker/market/status/strategy/date; lifecycle row detail; all states verified |
 | S-14 | Risk & Safety Panel | DONE | 100 | Session 33 | Limits derived from holdings/orders/strategy definitions and grouped global/market/type/strategy; two-step limit changes and typed-word emergency controls, both recorded; derived breach history; shared mock stores (decision 37); all states verified |
 | S-15 | Configuration — markets | DONE | 100 | Session 34 | Shared config pattern (entry list, capability switches, simulation notice, inline errors, version diff and revert; decision 38); markets form with schema-driven validation; calendar-coverage health; versioned saves with reasons; all states verified |
-| S-16 | Configuration — providers | TODO | 0 | | |
+| S-16 | Configuration — providers | DONE | 100 | Session 38 | Shared config pattern extended (form fields, draft hook, save card, test connection; decision 40); coverage, granularity, history, rate limits and cost, priority with failover order, credential reference, health check, freshness; health and faults shared with System Health; all states verified |
 | S-17 | Configuration — brokers | TODO | 0 | | |
 | S-18 | Configuration — instruments, currencies, alerts | TODO | 0 | | |
 | S-19 | News & Events | TODO | 0 | | |
@@ -310,432 +304,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 31 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 35 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        32 — START ENTRY
-AGENT:          Claude Fable 5.1 (claude-fable-5-1)
-START:          2026-09-16T07:55:56Z  |  local: 2026-09-16 13:25 IST (UTC+05:30)
-TASK CLAIMED:   S-13 Orders
-OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
- 
-PRE-WORK VERIFICATION:
-  git:         S-12 committed as 4d66572; working tree clean
-  type check:  PASS, lint: PASS, build: PASS (checked before the S-12 commit, nothing changed since)
- 
-SCOPE (UI spec 7.13):
-  - Full order history and live order state
-  - Columns: instrument, market, broker, direction, quantity, order type, status, requested price,
-    filled price, slippage, fees, timestamps, originating strategy or manual
-  - Status indicators for pending, partially filled, filled, rejected, cancelled and unconfirmed
-  - Unconfirmed orders visually escalated — these are the dangerous ones
-  - Filters by broker, market, status, strategy and date
-  - Detail view showing the full lifecycle timeline of a single order
-  - Mock addition: OrderSchema has no broker, fees, slippage, filled price or timeline, so an
-    enriched orders endpoint is needed, in the same shape as the approval queue (decision 33)
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        32 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T11:22:05Z  |  local: 2026-09-16 16:52 IST (UTC+05:30)
-TASK:           S-13 Orders — DONE
-NOTE:           The owner switched model mid-session. The start entry and the schema and generator
-                were written by Claude Fable 5.1; the screen, verification and this entry by
-                Claude Opus 5.
- 
-WHAT WAS BUILT (UI spec 7.13):
-  - Order history in the library DataTable with every column the spec lists: instrument, market,
-    broker, direction, quantity, order type, status, requested price, filled price, slippage, fees,
-    last update and originating strategy or manual
-  - Status badges for pending, partly filled, filled, rejected, cancelled and unconfirmed
-  - Unconfirmed orders escalated three ways: a banner naming each one and what to do about it, a
-    tinted row with a red rule down its leading edge, and a critical status badge
-  - Filters by broker, market, status, strategy (including "placed by hand") and date range
-  - Row detail with the order's full lifecycle: signal, approval request, decision with the reason
-    the owner gave, submission, acknowledgement or lost confirmation, fills, cancellation
-  - Summary counts: total, still working, unconfirmed, simulated
- 
-LIBRARY (packages/ui):
-  - DataTable gains getRowClassName, so a screen can escalate a row without the table knowing what
-    the data means. Optional, so existing tables are unaffected
- 
-MOCK DATA:
-  - New GET /api/v1/orders/history, built from the live order and approval stores
-  - Broker comes from the holding profile, else the first broker serving the market; fees follow
-    each broker's charging model (0.05% with a 1.00 floor, 20 INR flat, 11.95 GBP flat)
-  - Slippage is signed so positive always means a worse fill than requested, on either side
-  - Rejecting in the approval queue now marks the raw order rejected too, and the order's timeline
-    ends at the rejection with the reason given
- 
-FILES CREATED:
-  - apps/web/src/data/schemas/order-history.ts
-  - apps/web/src/data/mock/generators/orderHistory.ts
-  - apps/web/src/features/trading/orders/** (model, sections, styles)
-FILES MODIFIED:
-  - packages/ui/src/table/{types.ts,DataTable.tsx,DataTableRow.tsx}
-  - apps/web/src/data/schemas/index.ts; mock/generators/{trading,index}.ts;
-    mock/handlers/tradingHandlers.ts; data/api/{tradingQueries,index}.ts
-  - apps/web/src/features/trading/TradingOrdersPage.tsx — rewritten
- 
-DECISIONS MADE:
-  - None beyond decisions 23, 26 and 33
- 
-VERIFICATION RUN:
-  type check:  PASS — exit 0 (first run)
-  lint:        PASS — exit 0
-  build:       PASS — exit 0
-  browser:     7 orders; banner "1 order was never confirmed by its broker ... Sell 15 NVDA at
-               Interactive Brokers"; SPY filled at $559.68 against a $560.00 limit is -5.7 bps with
-               $7.00 fees (25 x 559.68 x 0.05% = 6.996); TSLA partly filled 20 of 50 with $2.35 fees;
-               INR orders in rupees via Zerodha
-  escalation:  the NVDA row carries the unconfirmed class, a 2px red inset rule on its first cell and
-               a tinted background; its timeline reads Submitted 00:00:00, No acknowledgement 00:00:30
-  cross-screen: rejecting appr-003 through the decide endpoint turns TATAMOTORS into a rejected
-               order whose timeline ends "Rejected by owner. The order was never sent. Reason given:
-               Too much rupee exposure." with no submission event
-  filters:     broker = Zerodha shows 2 of 7 (RELIANCE, TATAMOTORS)
-  states:      loading-error -> "Order history unavailable" with the failing path and Try again
- 
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - RELIANCE read "Manual" as its origin while its own timeline said a strategy's signal proposed it
-    and the signals feed attributed that signal to RSI Oversold Mean Reversion. The raw order had no
-    strategyId; it now carries the one every other screen already implies.
-  - The rejection reason the owner typed was dropped from the order timeline, because it lives in
-    the handler's decision record and not on the approval. The reasons are now passed through.
-  - The table was given a page size of 25, which is not one of its page-size options (10, 20, 50,
-    100). Changed to 20.
-  - The DataTable prop was added to its types and row component before it was threaded through
-    DataTable itself; typecheck would have passed with the prop silently ignored.
- 
-FINDINGS (out of scope, not fixed):
-  - Approving an order does not submit it: an approved order stays pending with no submission event,
-    because nothing in the mock plays the part of the execution layer
-  - There is no action to resolve an unconfirmed order (mark as confirmed live, or as not placed);
-    the screen says to check with the broker but offers nothing afterwards
-  - Order timestamps are fixed per order, so relative times all read the same age for orders created
-    at the reference time
-  - Fees are in the order's currency and are not converted or totalled
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        33 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T11:30:18Z  |  local: 2026-09-16 17:00 IST (UTC+05:30)
-TASK CLAIMED:   S-14 Risk & Safety Panel
-OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
- 
-PRE-WORK VERIFICATION:
-  git:         S-13 committed as d3613bc; working tree clean
-  type check:  PASS, lint: PASS, build: PASS (checked before the S-13 commit, nothing changed since)
- 
-SCOPE (UI spec 7.14):
-  - See and adjust every limit in one place; each shows threshold, current usage and headroom as a bar
-  - Grouped: global, per market, per instrument type, per strategy
-  - Limits: maximum per instrument, sector, market and country; total deployed capital ceiling;
-    mandatory cash reserve; daily, weekly and monthly loss limits; order count limits; repeat-action
-    cooldowns
-  - Visual escalation as usage approaches a threshold (library UsageMeter, decision 35)
-  - Breach history with cause, time, what was halted and how it resolved
-  - Emergency controls, visually separated, with confirmation steps
-  - Changing any limit requires explicit confirmation and is recorded
-  - Two routes exist (/risk/limits, /risk/breaches): recommended split taken per decision 26 —
-    limits, emergency controls and the change log on the first, breach history on the second
-  - Mock addition: no risk schema exists; usage must derive from holdings, strategy definitions and
-    orders so it agrees with the signals feed, approval queue and orders screen (decision 33)
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        33 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T11:47:09Z  |  local: 2026-09-16 17:17 IST (UTC+05:30)
-TASK:           S-14 Risk & Safety Panel — DONE
- 
-WHAT WAS BUILT (UI spec 7.14) — two routes:
-  Risk & safety (/risk/limits):
-  - Every limit as a card with threshold, usage and headroom on the library UsageMeter, escalating
-    in colour, symbol and words; exceeded and near limits also carry a badge
-  - Grouped global, per market, per instrument type and per strategy (one block per strategy)
-  - Global limits: any one instrument, sector, country; deployed capital ceiling; cash reserve (a
-    floor, drawn as reserve held back so headroom is spendable cash); daily, weekly and monthly
-    loss; orders per day; repeat-action cooldown with anything currently cooling down
-  - Changing a limit: value and reason, then a review step naming the change, what is measured now,
-    whether it ends or starts a breach, and a warning when it loosens a safety limit; recorded
-  - Emergency controls in their own bordered section: stop or resume all automation, and cancel all
-    working orders, each needing a reason and a typed word; recorded
-  - Change log with every limit change and emergency action and its reason
-  Breach history (/risk/breaches):
-  - Each breach with cause, start time and duration, what was halted and how it resolved; open
-    breaches first, filterable to open or resolved
- 
-MOCK DATA:
-  - GET /api/v1/risk/panel and /risk/breaches; PATCH /risk/limits/:id; POST /risk/emergency
-  - Usage is measured from holdings, quotes, 5- and 21-bar price history, FX, orders and each
-    strategy's own definition (S-11). Standing breaches are derived from that usage, so they match
-    S-12 exactly: Dual MA's SPY at 30.60% against its 15% position limit (why NVDA was blocked and
-    AAPL failed its check) and Donchian at 42.60% capital against 25% (with sell appr-004 waiting)
-  - The unconfirmed NVDA order from S-13 is an open safety breach; the daily loss breach that
-    blocked the BTCUSD signal is in the history
-  - The safety-breach scenario simulates a 5.60% weekly loss that halts all automation
-  - Orders and approvals moved to data/mock/stores/tradingStore.ts (decision 37). The approval
-    queue now reads those stores, and a withdrawn approval shows as Withdrawn on its card and at the
-    end of its order's timeline
-  - The panel's stop control drives the same SystemStateProvider state as the top bar's kill switch
- 
-FILES CREATED:
-  - apps/web/src/data/schemas/risk.ts
-  - apps/web/src/data/mock/generators/{riskLimits,riskGroupLimits,riskMeasures,riskPanel,riskBreaches}.ts
-  - apps/web/src/data/mock/stores/{tradingStore,riskStore}.ts
-  - apps/web/src/data/mock/handlers/riskHandlers.ts; apps/web/src/data/api/riskQueries.ts
-  - apps/web/src/features/risk/{model,sections}/**, Risk.module.scss
-FILES MODIFIED:
-  - apps/web/src/data/mock/handlers/{tradingHandlers,index}.ts; mock/generators/{approvalQueue,
-    orderHistory,index}.ts; data/schemas/index.ts; data/api/index.ts
-  - apps/web/src/features/trading/approvalQueue/sections/ApprovalCard.tsx
-  - apps/web/src/features/risk/{RiskLimitsPage,RiskBreachesPage}.tsx — rewritten
- 
-DECISIONS MADE:
-  - 37: shared mock stores; risk usage and standing breaches derived, only changes stored
- 
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        PASS — exit 0
-  build:       PASS — exit 0
-  browser:     3 exceeded, 7 near; capital $110,497.11 (invested $98,047.11 + cash $12,450.00);
-               XAUUSD 41.60% of 45% "Approaching limit, 3.40% headroom"; USA 94.70% of 97%;
-               deployed 88.73% of 95%; cash 12,450 against a 10,000 floor; today a gain so daily
-               loss 0; orders today 5 of 20; sector shown as not measured
-  change:      Donchian capital 25% -> 45% with a reason: review said it ends a standing breach and
-               loosens a safety limit; after confirming, exceeded fell 3 -> 2, the change log
-               recorded it, and the breach closed as "Resolved by the owner changing the limit to
-               45.00%. Reason given: ..."
-  emergency:   Cancel all working orders did nothing until CANCEL was typed; then TSLA, AAPL,
-               TATAMOTORS and XAUUSD cancelled, NVDA (unconfirmed) left, their approvals expired in
-               the queue, AAPL's timeline ends "Withdrawn ... never sent", badge "0 working", logged
-               Stop all automation flipped the panel to Stopped and the top bar to "Resume Auto"
-  breaches:    6 listed with cause, time, duration, halted and resolution; an owner-resolved breach
-               renders after an in-app navigation
-  scenarios:   safety-breach -> weekly loss 5.6/5, "All automation stopped by the safety gate";
-               loading-error -> "Risk panel unavailable" and "Breach history unavailable"
-  regression:  on a fresh load the approval queue still has 3 pending and order history 7 orders
- 
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - riskLimits.ts reached 442 lines once Prettier put every limit field on its own line; split into
-    riskMeasures (loss and exposure measurement) and riskGroupLimits (market, type, strategy).
-  - The review step read "This ends a standing breach: new buys by donchian channel breakout are
-    blocked. stops applying." — lowercasing the consequence mangled the strategy name and the
-    sentence. Rewritten.
-  - The automation card described what stopping does while automation was running, which read as
-    if it were already stopped. It now says the current state, then what stopping would do.
- 
-FINDINGS (out of scope, not fixed):
-  - The top bar's kill switch stops automation with no confirmation and no record, while the panel's
-    control asks for both. The top bar should route through the same confirmation.
-  - Automation state is client-only (SystemStateProvider) and resets on reload; /system/state has
-    its own killSwitchActive that nothing on the panel reads
-  - Thresholds are fixed in the generator; a real limit configuration store belongs to S-15..S-18
-  - Weekly and monthly loss use today's FX rates for the whole period
-  - Instruments have no sector, so the sector limit cannot be measured (same gap as S-01)
-  - Stopping automation does not yet stop the mock strategies from showing new signals
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        34 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T11:59:45Z  |  local: 2026-09-16 17:29 IST (UTC+05:30)
-TASK CLAIMED:   S-15 Configuration — markets
-OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
- 
-PRE-WORK VERIFICATION:
-  git:         S-14 committed as 1deeddd; working tree clean
-  type check:  PASS, lint: PASS, build: PASS (checked before the S-14 commit, nothing changed since)
- 
-SCOPE (UI spec 7.18):
-  - The shared configuration layout every area uses: a list of entries with status, enabled toggle
-    and health indicator; a detail form for adding or editing; inline validation before saving;
-    test connection where applicable; a clear notice that new entries start in simulation mode;
-    capability flags as explicit switches; version history with diff and revert
-  - Countries and markets: identity, currency, timezone, trading hours, holiday calendar,
-    settlement, fees, tax rules, permitted instrument types, automation permitted
-  - Split taken per decision 26: 7.18 is one section spread over S-15..S-18, so S-15 builds the
-    shared pattern in apps/web/src/shared for the later three to reuse, plus the markets screen.
-    Credentials and the automation permission summary are named in 7.18 but not in the registry;
-    they are left for S-18 to claim or raise.
-  - Health: every seeded holiday calendar ends before today (US 2026-07-03, IN 2026-08-15, UK/JP/SG
-    2026-01-01), so health derives from calendar coverage. Future-dated holidays only are added for
-    US and IN; past dates would change price history other screens depend on.
-  - Fees come from the per-market cost defaults S-07 already serves, not new numbers.
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        34 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T12:15:22Z  |  local: 2026-09-16 17:45 IST (UTC+05:30)
-TASK:           S-15 Configuration — markets — DONE
- 
-WHAT WAS BUILT (UI spec 7.18):
-  Shared configuration pattern (apps/web/src/shared/config, decision 38):
-  - ConfigEntryList: entries with health badge, live or simulation, disabled marker, an enabled
-    switch and the health summary
-  - CapabilitySwitch (a labelled switch saying what it allows), SimulationNotice, FieldError
-  - VersionHistory: every version with its reason and time; compare any older version against the
-    one in force; revert with a reason, saved as a new version
-  - errorsByPath / visibleError: inline errors from a zod error, shown once a field is touched or
-    after a save attempt; diffDescriptions compares two versions described in the screen's words
-  Countries & markets (/settings/markets):
-  - Identity, currency, timezone, settlement; regular sessions (several, for lunch breaks), pre- and
-    post-market, weekly closed days; holiday calendar with half days; fees; tax rules; permitted
-    instrument types; enabled, automation permitted and live switches
-  - Inline validation from the schema: sessions that end before they start or overlap, extended
-    hours that run into regular trading, a week with no trading day, duplicate holidays, a
-    long-term tax rate with no long-term holding period, out-of-range fees and rates
-  - Save needs a reason; a blocked save lists every field that needs fixing
- 
-MOCK DATA:
-  - GET/POST /api/v1/config/markets, PUT /config/markets/:id, POST /config/markets/:id/revert
-  - Commission and minimum commission come from S-07's per-market cost defaults, so both screens
-    agree. Tax rates are stated as assumptions for an India-resident owner
-  - Health derives from how far the holiday calendar reaches: every seeded calendar had already run
-    out, so future-dated holidays were added for US and IN only (past dates would change price
-    history); UK, JP and SG still show the problem
-  - History seeds are real events: US moved to T+1 settlement (2024-05-28); India's Budget 2024 set
-    short-term gains tax to 20% and long-term to 12.5%
-  - apiSend accepts PUT
- 
-FILES CREATED:
-  - apps/web/src/data/schemas/{config,config-markets}.ts
-  - apps/web/src/data/mock/generators/marketConfig.ts; mock/stores/configStore.ts;
-    mock/handlers/configHandlers.ts; data/api/configQueries.ts
-  - apps/web/src/shared/config/** ; apps/web/src/features/settings/{Settings.module.scss, markets/**}
-FILES MODIFIED:
-  - apps/web/src/data/api/{apiClient,index}.ts; data/schemas/index.ts;
-    mock/generators/index.ts; mock/handlers/index.ts
-  - apps/web/src/features/settings/SettingsMarketsPage.tsx — rewritten
- 
-DECISIONS MADE:
-  - 38: shared configuration pattern and one validation source
- 
-VERIFICATION RUN:
-  type check:  PASS — exit 0 (first run)
-  lint:        PASS — exit 0
-  build:       PASS — exit 0
-  browser:     5 markets; US and IN healthy (calendar runs to 2026-12-25), UK, JP and SG "Problem:
-               Holiday calendar ran out on 2026-01-01"; US v2 with 18 holidays
-  diff:        US version 1 against current shows one row, Settlement T+2 -> T+1
-  validation:  setting the US session to close at 08:00 showed "A session must end after it starts"
-               beside the field before saving, marked it invalid and showed Unsaved changes;
-               Save then listed "1 field needs fixing", asked for a reason, and saved nothing
-  save:        adding Christmas 2026 to the UK calendar with a reason made it v2 and turned its
-               health from Problem to Healthy; the diff shows the one added holiday
-  list toggle: disabling Singapore from the list saved v2 "Disabled from the market list."
-  new market:  the simulation notice shows and the Live switch is disabled; Hong Kong saved in
-               simulation and flagged "No holiday calendar, so closures are unknown."
-  revert:      Revert stayed disabled until a reason was given; US v3 is version 1's T+2 with the
-               reason recorded, and the list and form both refreshed
-  states:      loading-error -> "Market configuration unavailable" with the failing path
- 
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - I made a holiday that falls on a weekend a validation error. The dates were right (Republic Day
-    2025 was a Sunday), but the rule was wrong: exchanges list national holidays that fall on
-    weekends, so it rejected real calendars and the whole list failed to load. It is now a note on
-    the form, not an error.
-  - Discard set the selection to null and straight back, which React batches into no change, so the
-    form never reset. A reset counter in the form's key fixes it.
-  - The version history kept its open comparison when switching markets, because it tracks the open
-    panel by version number and was not keyed per market. It is now keyed by market.
- 
-FINDINGS (out of scope, not fixed):
-  - Market configuration is not read by anything else yet: /api/v1/markets, market hours in the top
-    bar and the backtest cost defaults still use the canonical seeds, so a saved change here does
-    not reach them
-  - Holiday calendars are entered by hand; there is no import from an exchange calendar source
-  - Credentials and the automation permission summary are named in UI spec 7.18 but have no registry
-    task; S-18 should claim or raise them
-  - Switching a market to live has no extra confirmation beyond the reason on save
-  - Instrument type labels read "Etf" and "Ipo" (the humanizeToken finding from S-10)
-────────────────────────────────────────────────────────────
- 
-────────────────────────────────────────────────────────────
-SESSION:        35
-AGENT:          AI assistant using Copilot SDK in VS Code
-START:          2026-09-16T14:10:00Z  |  local: 2026-09-16 19:40 IST (UTC+05:30)
-END:            2026-09-16T14:55:00Z  |  local: 2026-09-16 20:25 IST (UTC+05:30)
-TASK CLAIMED:   none — documentation restructure requested directly by the owner
-END STATUS:     DONE
- 
-OWNER INPUT:    Claude Pro usage limit was being exhausted before work began. Owner asked for
-                the context fixes: split the log, extract DECISIONS.md, add CLAUDE.md.
- 
-COMPLETED:
-  - Docs/PROGRESS_ARCHIVE.md created: sessions 0-31 (2,753 lines) moved verbatim out of
-    section 4. Verified byte-for-byte: archive body + retained sessions reconstruct the
-    original entries region exactly (181,215 chars in, 181,215 chars out).
-  - Docs/PROGRESS_LOG.md trimmed 3,425 -> 639 lines. Entry template and sessions 32, 33, 34
-    retained per rule 11. Pointers left at section 4 and section 6.
-  - Docs/DECISIONS.md created: decisions 1-38 moved verbatim (table compared identical),
-    plus decision 39 recording this restructure.
-  - Docs/AGENT_RULES.md: read order and rule 1 now ask for PROGRESS_LOG sections 1-3 plus
-    DECISIONS.md, not the whole log. Rule 11 rewritten for the three-file layout and states
-    that archiving is not the rule 12 violation it might look like. Rule 9 conflict order now
-    ranks DECISIONS.md above the standards doc.
-  - Docs/AGENT_RULES.md rule 4 corrected: file limit 250 —> 300, citing decision 18, which had
-    raised it without rule 4 ever being updated.
-  - CLAUDE.md created at repo root (54 lines) so Claude Code auto-loads the read order,
-    commands, hard constraints and reference implementations.
-  - Section 1 Current Status refreshed: it still claimed S-01 to S-08 / 71% while the registry
-    and handoff note both said S-15. Now S-15 / 82% (53 of 65).
- 
-MEASURED EFFECT:
-  Session-start read 62,110 —> 11,446 tokens (82% reduction), no information lost.
-  AGENT_RULES 2,331 + PROGRESS_LOG sections 1-3 5,151 + DECISIONS 3,238 + CLAUDE.md 726.
-  PROGRESS_ARCHIVE.md (45,167 tokens) is no longer read at session start.
- 
-FILES CREATED:
-  - CLAUDE.md
-  - Docs/DECISIONS.md
-  - Docs/PROGRESS_ARCHIVE.md
-FILES MODIFIED:
-  - Docs/PROGRESS_LOG.md — history archived, status refreshed, pointers added
-  - Docs/AGENT_RULES.md — rules 1, 4, 9, 11 and the read order
- 
-DEPENDENCIES ADDED:
-  - none
- 
-DECISIONS MADE:
-  - Decision 39 — see DECISIONS.md
-  - Kept three sessions rather than one, forgoing ~5k further tokens: rule 11 says three, and
-    rule 9 puts the owner’s rule above an agent’s preference
- 
-VERIFICATION RUN:
-  type check:  PASS (tsc --noEmit, both workspaces)
-  lint:        ESLint PASS (exit 0). Prettier FAILS on this Windows checkout — pre-existing,
-               unrelated to this change (see findings)
-  build:       not re-run — documentation-only change, no code touched
-  integrity:   archive + log reconstruct the original entries byte-for-byte; decisions 1-38
-               compared identical to the original table
- 
-FINDINGS (out of scope, not fixed):
-  - No .gitattributes. With core.autocrlf=true, checkout writes CRLF while .prettierrc sets
-    endOfLine "lf", so `pnpm lint` fails on all 519 files on Windows. Rule 1 tells every agent
-    to run lint at session start, so every session opens on a false alarm. One-line fix.
-  - Zero tests and no CI. Every correctness question costs model judgement, which is the main
-    reason a cheaper model is risky here. Tests would turn that into a free boolean.
-  - Bundle is one 3,120 kB chunk, up from the 2,534 kB recorded in session 27, with no
-    React.lazy anywhere. P-04 is still TODO.
-  - Global kill switch in shell/TopBar.tsx is a bare onClick with no confirmation and no
-    record, while the risk panel requires a typed word for lesser actions.
- 
-NOTES FOR NEXT AGENT:
-  - Read AGENT_RULES.md, this file sections 1-3, and DECISIONS.md. That is the whole
-    session-start read now. Do not open PROGRESS_ARCHIVE.md unless you need a named session.
-  - Next task is unchanged: claim S-16 Configuration — providers. See EXACT NEXT STEP above.
-  - S-16, S-17 and S-18 all repeat the decision 38 config pattern with features/settings/
-    markets as the reference implementation, so they are good candidates for a cheaper model.
-────────────────────────────────────────────────────────────
- 
 ────────────────────────────────────────────────────────────
 SESSION:        36
 AGENT:          AI assistant using Copilot SDK in VS Code
@@ -949,6 +522,139 @@ NOTES FOR NEXT AGENT:
     order at a real broker, and treat S-33 Compliance as required rather than optional.
   - S-30 Net Worth is the highest-value new screen: it corrects the denominator that S-21
     Planning and E-06/E-07 depend on. Consider it before the Reports and Planning extensions.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        38 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T16:47:59Z  |  local: 2026-09-16 22:17 IST (UTC+05:30)
+TASK CLAIMED:   S-16 Configuration — providers
+OWNER INPUT:    "check CLAUDE.md and continue pending process"; decision 26 (take recommended
+                options, commit each screen)
+ 
+PRE-WORK VERIFICATION:
+  git:         S-15 committed as 8aededa, docs restructure as 4087604; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run at session start; Prettier CRLF finding unchanged)
+ 
+SCOPE (UI spec 7.18):
+  - Data providers: coverage, granularity, history depth, rate limits, cost, priority order,
+    credential reference, health check, freshness expectation
+  - Built on shared/config (decision 38). Test connection is new to the pattern and goes in
+    shared/config; so do the generic text/number/select fields and the save card that the markets
+    form currently owns, since S-17 and S-18 need them too. Markets is re-pointed at them.
+  - Seeds come from the System Health sources (RELIABILITY_SOURCES, FRESHNESS, FAULTS) so request
+    limits, budgets, freshness expectations and the provider-down scenario agree on both screens.
+  - Credentials: a reference into a credential store only. A value that looks like a key is
+    rejected. Test connection is mock-only and contacts nothing.
+  - /settings/brokers and /settings/credentials render the providers placeholder today; they get
+    their own placeholder so they do not show the providers screen.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        38 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:14:00Z  |  local: 2026-09-16 22:44 IST (UTC+05:30)
+TASK:           S-16 Configuration — providers — DONE
+
+WHAT WAS BUILT (UI spec 7.18):
+  Shared configuration pattern, extended (apps/web/src/shared/config, decision 40):
+  - FormFields: TextField, NumberField, SelectField (moved out of markets) and a new CheckboxGroup
+  - useConfigDraft: draft, touched fields, inline errors from the area's schema, dirty flag, reason
+  - ConfigSaveCard: blocking-error summary, reason, save and discard (moved out of MarketForm)
+  - ConnectionTest: tests the form as it stands (saved or not), each check marked in words and a
+    symbol, blocked while fields are invalid, and flagged as outdated once the form changes
+  - Markets now uses these; its behaviour is unchanged (re-verified below)
+  Data providers (/settings/providers):
+  - Identity; coverage (markets from the market configuration, data kinds, granularity, history
+    depth); rate limits and cost with a note on what the whole monthly limit would cost against
+    the budget; priority with the failover order per data kind, ties and markets with no fallback;
+    credential reference; health check interval and timeout; freshness expectation; enabled and
+    live switches
+  - Inline validation from the schema: timed data with no granularity, granularity on data that has
+    none, intraday with no intraday granularity, per-minute limit above the monthly one, a timeout
+    that outlasts the check interval, a missing reference when one is needed, and a value that
+    looks like a key instead of a reference
+  - /settings/brokers and /settings/credentials get their own placeholder (SettingsBrokersPage);
+    they previously rendered the providers placeholder
+
+MOCK DATA:
+  - GET/POST /api/v1/config/providers, PUT /:id, POST /:id/revert, POST /config/providers/test
+  - Seeds come from System Health: monthly request limits from RELIABILITY_SOURCES, freshness
+    expectations from FRESHNESS, latency and faults from COMPONENTS and FAULTS. Health measures
+    this month's usage and spend against the configured limit and budget, data age against the
+    configured expectation, scenario faults, and priority ties between live providers
+  - The connection test contacts nothing. A reference passes only if the mock credential store
+    holds it (the four seeded references); the provider-down scenario fails the primary provider
+  - History seeds: primary v1 had daily prices only on 250,000 requests; news v1 expected data
+    within 5 minutes. Both are invented mock history, not real vendor events
+  - Save rejects coverage naming a market that is not configured
+
+FILES CREATED:
+  - apps/web/src/data/schemas/config-providers.ts
+  - apps/web/src/data/mock/generators/{providerConfig,providerConnectionTest}.ts;
+    mock/handlers/providerConfigHandlers.ts
+  - apps/web/src/shared/config/{FormFields,ConfigSaveCard,ConnectionTest}.tsx, useConfigDraft.ts
+  - apps/web/src/features/settings/providers/** ; features/settings/SettingsBrokersPage.tsx
+FILES MODIFIED:
+  - data/schemas/{config,index}.ts; data/api/{configQueries,index}.ts;
+    mock/generators/index.ts; mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/{index.ts,Config.module.scss}
+  - features/settings/markets/sections/{MarketFields,MarketForm,MarketIdentityHours,
+    MarketCalendarRules}.tsx — shared fields, draft hook and save card
+  - features/settings/SettingsProvidersPage.tsx — rewritten; routes/AppRoutes.tsx
+  - Docs: sessions 32-35 moved verbatim to PROGRESS_ARCHIVE.md (rule 11; log was 1,015 lines)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - 40: shared config pattern extended with form fields, draft hook, save card and connection test
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        4 providers by priority; primary 62% of requests, data 4 s old (late after 30 s);
+               FX and backup healthy; news "Problem: 96% of the monthly request limit used (+1
+               more)", the same 96% System Health shows
+  test:        primary passed all three checks in 38 ms (System Health's response time)
+  validation:  pasting sk_live_... as the reference showed "This looks like a key, not a
+               reference", blocked testing and marked the earlier result outdated; an unknown
+               vault reference failed the credential check and skipped the other two
+  save/revert: monthly limit 320,000 saved as v3 and health became 97% Problem; diff against v2
+               showed one row (500,000 -> 320,000); Revert stayed disabled until a reason was
+               given; v4 "Reverted to version 2" returned it to Healthy
+  new:         simulation notice shown, Live disabled, reason required; prov-alt saved in
+               simulation with "Not checked yet"; cost note $20.00 within $50.00
+  ties:        setting backup to priority 1 showed the tie warning in both failover chains
+  scenarios:   provider-down -> primary Problem "Connection refused" and a failed test, backup
+               "Carrying all market data traffic"; loading-error -> "Provider configuration
+               unavailable"; reset to healthy
+  markets:     re-verified after the refactor: emptied settlement shows "Enter a number", save
+               blocked with "1 field needs fixing", a valid save made US v3, select change and
+               Discard both work
+  placeholders: /settings/credentials shows its own "not built yet" page
+  theme:       dark theme tokens applied (computed styles); no horizontal overflow at 1024 px.
+               Screenshots came back blank, as noted in WATCH OUT FOR
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I named the new fields file ConfigFields.tsx beside the existing configFields.ts; on a
+    case-insensitive filesystem that broke the build. Renamed to FormFields.tsx.
+  - providerConfig.ts reached 323 lines; the connection test moved to its own file.
+  - The first healthy summary quoted the freshness limit as if it were the data's age ("data
+    within 30 s"). It now states both: "newest data 4 s old (late after 30 s)".
+  - Failover order and priority ties first counted providers in simulation, which are never asked
+    for data. Both now count live, enabled providers only; a draft in simulation is shown where it
+    would sit once live.
+
+FINDINGS (out of scope, not fixed):
+  - Provider configuration is not read by System Health: changing a limit or freshness expectation
+    here changes this screen's health, but not System Health's meters or stale markers
+  - The credential store is a fixed list of four references; adding a credential belongs to S-28
+  - A granularity error only shows once the granularity field is touched or a save is attempted,
+    even when it was caused by ticking a data kind (visibleError tracks the field, not the cause)
+  - The connection test result is lost when the form resets (Discard, save, switching entries)
+  - Spend is compared with the budget only for USD budgets; other currencies get a warning
 ────────────────────────────────────────────────────────────
 ```
  
