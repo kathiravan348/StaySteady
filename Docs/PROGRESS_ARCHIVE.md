@@ -3880,3 +3880,123 @@ FINDINGS (out of scope, not fixed):
     factories is a separate refactor
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 41 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        41 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T21:42:11Z  |  local: 2026-09-17 03:12 IST (UTC+05:30)
+TASK CLAIMED:   S-19 News & Events
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-18 committed as 9dd4302; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-18 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.6):
+  - Live feed: newest first; headline, source, time, affected instruments, category, sentiment with
+    confidence, importance; filters by market, country, instrument, category, sentiment,
+    importance and held only; emphasis for news on holdings; duplicate stories grouped and
+    collapsible with a source count; expanding shows the summary and a price reaction chart
+    around publication
+  - Calendar: month, week and day layouts; events marked by category and importance; restriction
+    window marked; held-only filter
+  - Sentiment always shows its confidence and is styled apart from confirmed facts
+  - Mock data: every story was published at the same instant and no story touched AAPL, AZN or
+    gold, so publication times are spread over recent days and stories on held instruments are
+    added. Calendar events gain an optional instrument so "held only" can work. Existing ids and
+    stories are kept.
+  - Stale: under the stale-data scenario the feed ages, and a banner appears when the newest story
+    is older than the news provider's freshness expectation (15 minutes, S-16 seed)
+  - Remaining S tasks will follow one at a time. S-26 Screener has no specification (open
+    question 11, "do not build until specified"); it will be marked BLOCKED rather than invented.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        41 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:25:00Z  |  local: 2026-09-17 03:55 IST (UTC+05:30)
+TASK:           S-19 News & Events — DONE
+
+WHAT WAS BUILT (UI spec 7.6):
+  Live feed (/news/feed):
+  - Stories newest first; reports of the same story grouped with "and N more sources", expandable
+    to every report; headline, source, relative time (full time on hover), instrument chips,
+    category, importance, and holdings marked with a Held badge and a leading edge
+  - Sentiment is always "Estimated sentiment: Bearish · 71% confidence" in a dashed, italic pill,
+    apart from the solid fact badges; an unconfirmed report is labelled as such
+  - Filters: market, country, instrument, category, sentiment, importance (medium or high, high
+    only), held only; no-results state with clear filters
+  - Expanding shows the summary, all reports, and the price reaction: daily bars before and after
+    publication with the publication day marked and the move stated in words
+  - Stale banner when the newest story is older than the news provider's freshness expectation, read
+    from the provider configuration (S-16) — the first screen to use saved configuration
+  Calendar (/news/calendar):
+  - Month, week and day layouts with previous, today and next; clicking a date opens its day
+  - Impact shown by a coloured edge and in words; category in words; events inside a trading
+    restriction window have a dashed outline and say so; held instruments are named
+  - Held-only filter; empty message per range
+
+MOCK DATA:
+  - Every story had been published at the same instant; stories are now dated minutes to days
+    before the request, so the feed has an order and the stale-data scenario can age it by 3 hours
+  - Added 8 stories (a three-source Apple story, AstraZeneca, gold, SPY, a second Reliance report
+    grouped with the first, RBI minutes) so holdings have news; existing ids kept
+  - Calendar events may name an instrument (optional instrumentId); 6 events added for held
+    instruments and major releases; calendarEvents.ts split out of newsEvents.ts (line limit)
+
+FILES CREATED:
+  - features/news/{News.module.scss, model/newsFeed.ts, model/calendarModel.ts}
+  - features/news/sections/{NewsFeedView,NewsFilterBar,NewsStoryCard,PriceReaction,CalendarView,
+    CalendarEventItem}.tsx
+  - data/mock/generators/calendarEvents.ts
+FILES MODIFIED:
+  - features/news/{NewsFeedPage,NewsCalendarPage}.tsx — rewritten from placeholders
+  - data/schemas/news.ts (optional instrumentId); data/mock/generators/{newsEvents,index}.ts;
+    data/mock/handlers/newsHandlers.ts
+  - Docs: session 38 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  feed:        "14 reports in 10 stories · 7 about holdings"; newest is the Fed story (Bloomberg and
+               1 more source, 12m ago, SPY held); the Apple story shows "Financial Times and 2 more
+               sources"; expanding it listed all three reports and drew the reaction chart with
+               "AAPL moved -0.79% ... The reaction is still forming"
+  filters:     high importance 4 stories; high and bearish 1; held only 7; India 2; earnings in IN
+               -> "No stories match these filters"
+  states:      stale-data -> banner "newest story is 3 h old; news is expected within 15 min";
+               loading-error -> "News unavailable" and "Calendar unavailable"; reset to healthy
+  calendar:    September 2026 month grid, 7 events, 2 in restriction windows, today marked; held
+               only -> 2 events; week of 14 September with details; next month October with 4
+               events; clicking 29 October opened the day with "Apple Q4 Earnings ... AAPL (held)
+               ... Inside a trading restriction window"
+  regression:  Overview still shows news and the FOMC event with no unavailable sections
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first stale banner put an explanation in StaleState's "Last update" slot, which read
+    "Last update: The news provider is expected..."; it now shows the newest story's time there
+  - The first month-range loop had contradictory stop conditions; replaced with a range from the
+    week of the 1st to the week of the last day
+
+FINDINGS (out of scope, not fixed):
+  - Restriction windows are a fixed flag on each event; nothing configures them yet (S-33)
+  - News only has daily prices around publication; an intraday reaction needs intraday history
+  - The feed is not live-pushed; it refreshes when the query refetches
+  - Calendar dates are UTC calendar dates, not each market's local date
+────────────────────────────────────────────────────────────
+```

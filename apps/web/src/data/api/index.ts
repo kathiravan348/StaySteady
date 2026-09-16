@@ -124,3 +124,5 @@ export {
   useSaveAllocationPlan,
   useTradePreview,
 } from './planningQueries';
+export type { AlertActionVariables } from './alertCentreQueries';
+export { useAlertAction, useAlertCentre } from './alertCentreQueries';
