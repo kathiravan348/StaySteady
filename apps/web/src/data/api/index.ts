@@ -38,6 +38,7 @@ export {
 export { useAlerts, useApprovals, useSystemHealth } from './systemQueries';
 export type { BacktestTradeDto } from './researchQueries';
 export {
+  backtestDetailQueryOptions,
   useBacktest,
   useBacktestCostDefaults,
   useBacktestDetail,

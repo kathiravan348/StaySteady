@@ -3,9 +3,16 @@
 // saved final capital and its worst drawdown matches the saved metric.
 
 import { Decimal } from 'decimal.js';
+import type { z } from 'zod';
 
-import type { BacktestDetailDto, BacktestResultDto } from '../../schemas';
+import type {
+  BacktestDetailDto,
+  BacktestResultDto,
+  BacktestSettingsSchema,
+  StrategyDto,
+} from '../../schemas';
 import { BacktestDetailSchema } from '../../schemas';
+import { getInstrumentById } from './instruments';
 import { buildMetricGroups } from './backtestMetricGroups';
 import { buildBreakdowns, buildCosts, buildValidation } from './backtestMetrics';
 import type { MockGeneratorContext } from './mockContext';
@@ -131,6 +138,31 @@ function monthlyReturns(
   });
 }
 
+// The configuration this run was made with. Seeded per backtest so two runs differ in a few
+// fields, which is what the comparison screen's settings diff exists to show.
+function buildSettings(
+  ctx: MockGeneratorContext,
+  result: BacktestResultDto,
+  strategy: StrategyDto | undefined,
+  instrumentIds: readonly string[],
+): z.input<typeof BacktestSettingsSchema> {
+  const stream = ctx.random.fork(`backtest-settings:${result.id}`);
+  const granularity = strategy?.timeframe === '4h' ? '1h' : '1d';
+  return {
+    strategyName: strategy?.name ?? result.strategyId,
+    strategyVersion: strategy?.version ?? '1.0.0',
+    startDate: result.startDate,
+    endDate: result.endDate,
+    instrumentSymbols: instrumentIds.map((id) => getInstrumentById(id)?.symbol ?? String(id)),
+    initialCapital: result.initialCapital,
+    granularity,
+    benchmarkLabel: 'SPY · SPDR S&P 500 ETF Trust',
+    commissionBps: Math.round(stream.float(2, 6)),
+    slippageBps: Math.round(stream.float(3, 8)),
+    fxConversionBps: 25,
+  };
+}
+
 export function generateBacktestDetail(
   ctx: MockGeneratorContext,
   result: BacktestResultDto,
@@ -144,6 +176,7 @@ export function generateBacktestDetail(
     BacktestDetailSchema,
     {
       backtestId: result.id,
+      settings: buildSettings(ctx, result, strategy, instrumentIds),
       benchmarkLabel: 'SPY · SPDR S&P 500 ETF Trust',
       equityCurve: points,
       monthlyReturns: months,

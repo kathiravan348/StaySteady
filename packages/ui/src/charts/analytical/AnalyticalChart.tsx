@@ -3,6 +3,7 @@ import * as echarts from 'echarts';
 import { cx } from '../../utils/cx';
 import { useChartTheme } from '../theme/useChartTheme';
 import {
+  createComparisonCurvesOption,
   createDonutOption,
   createDrawdownOption,
   createEquityCurveOption,
@@ -10,6 +11,7 @@ import {
 } from './analyticalPresets';
 import type {
   AnalyticalChartProps,
+  ComparisonCurvesData,
   DonutData,
   DrawdownData,
   EquityCurveData,
@@ -40,6 +42,9 @@ export function AnalyticalChart({
     if (preset === 'equity-curve' && data) {
       const d = data as EquityCurveData;
       computedOptions = createEquityCurveOption(d.dates, d.equity, d.benchmark, themeColors);
+    } else if (preset === 'comparison-curves' && data) {
+      const d = data as ComparisonCurvesData;
+      computedOptions = createComparisonCurvesOption(d.dates, d.series, d.baseline, themeColors);
     } else if (preset === 'underwater-drawdown' && data) {
       const d = data as DrawdownData;
       computedOptions = createDrawdownOption(d.dates, d.drawdowns, themeColors);
@@ -72,6 +77,11 @@ export function AnalyticalChart({
       const d = data as EquityCurveData;
       chartRef.current.setOption(
         createEquityCurveOption(d.dates, d.equity, d.benchmark, themeColors),
+      );
+    } else if (preset === 'comparison-curves' && data) {
+      const d = data as ComparisonCurvesData;
+      chartRef.current.setOption(
+        createComparisonCurvesOption(d.dates, d.series, d.baseline, themeColors),
       );
     } else if (preset === 'underwater-drawdown' && data) {
       const d = data as DrawdownData;

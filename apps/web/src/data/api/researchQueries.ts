@@ -1,7 +1,7 @@
 // Backtest server state (UI spec 7.9, 7.10). A started run is polled until it finishes, so the
 // setup screen can show progress and offer cancellation.
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import { z } from 'zod';
 
@@ -61,17 +61,24 @@ export function useBacktest(backtestId: string | null): UseQueryResult<BacktestR
   });
 }
 
-export function useBacktestDetail(backtestId: string | null): UseQueryResult<BacktestDetailDto> {
-  return useQuery({
+// Shared with the comparison screen, which loads several details at once through useQueries.
+export function backtestDetailQueryOptions(backtestId: string) {
+  return queryOptions({
     queryKey: ['backtests', backtestId, 'detail'],
     queryFn: ({ signal }) =>
       apiGet(
-        `/api/v1/backtests/${encodeURIComponent(backtestId ?? '')}/detail`,
+        `/api/v1/backtests/${encodeURIComponent(backtestId)}/detail`,
         BacktestDetailSchema,
         signal,
       ),
-    enabled: backtestId !== null,
     staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useBacktestDetail(backtestId: string | null): UseQueryResult<BacktestDetailDto> {
+  return useQuery({
+    ...backtestDetailQueryOptions(backtestId ?? ''),
+    enabled: backtestId !== null,
   });
 }
 

@@ -100,8 +100,25 @@ export const ValidationSchema = z.object({
 });
 export type ValidationDto = z.infer<typeof ValidationSchema>;
 
+// What the run was configured with, so two runs can be compared field by field (UI spec 7.11).
+export const BacktestSettingsSchema = z.object({
+  strategyName: z.string().min(1),
+  strategyVersion: z.string().min(1),
+  startDate: IsoDateSchema,
+  endDate: IsoDateSchema,
+  instrumentSymbols: z.array(z.string().min(1)),
+  initialCapital: MoneySchema,
+  granularity: z.string().min(1),
+  benchmarkLabel: z.string().min(1).nullable(),
+  commissionBps: z.number().nonnegative(),
+  slippageBps: z.number().nonnegative(),
+  fxConversionBps: z.number().nonnegative(),
+});
+export type BacktestSettingsDto = z.infer<typeof BacktestSettingsSchema>;
+
 export const BacktestDetailSchema = z.object({
   backtestId: BacktestIdSchema,
+  settings: BacktestSettingsSchema,
   benchmarkLabel: z.string().min(1).nullable(),
   equityCurve: z.array(EquityPointSchema).min(2),
   monthlyReturns: z.array(MonthlyReturnSchema),

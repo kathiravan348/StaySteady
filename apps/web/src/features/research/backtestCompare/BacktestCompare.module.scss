@@ -1,0 +1,189 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack,
+.section {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+/* Run picker */
+
+.pickerList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pickerOption {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  align-items: start;
+  padding: var(--space-3);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+
+  &:focus-within {
+    @include mx.focus-ring;
+  }
+}
+
+.pickerOptionSelected {
+  border-color: var(--border-strong, var(--border-default));
+}
+
+.pickerOptionDisabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.pickerName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.pickerMeta {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Legend tying each run to its colour on the chart */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.legendItem {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.swatch {
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+/* Tables */
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    text-align: start;
+    border-bottom: var(--border-width-thin) solid var(--border-subtle);
+  }
+
+  thead th {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+  }
+
+  tbody th {
+    font-weight: var(--font-weight-regular, 400);
+    color: var(--text-primary);
+  }
+}
+
+.numeric {
+  @include mx.numeric(end);
+}
+
+/* Best and worst are marked in words as well as colour, never colour alone. */
+
+.best {
+  color: var(--change-gain);
+}
+
+.worst {
+  color: var(--change-loss);
+}
+
+.marker {
+  margin-inline-start: var(--space-2);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Settings diff: rows that differ carry a left rule and a "changed" tag. */
+
+.changedRow {
+  th,
+  td {
+    background-color: var(--surface-raised);
+  }
+
+  th:first-child {
+    border-inline-start: var(--border-width-thick, 2px) solid var(--border-default);
+  }
+}
+
+.changedTag {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.link {
+  font: inherit;
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}

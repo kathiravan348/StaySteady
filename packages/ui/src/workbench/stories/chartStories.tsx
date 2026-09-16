@@ -44,6 +44,31 @@ export const chartStories: readonly ComponentStory[] = [
     render: () => <TradingChartDemo />,
   },
   {
+    id: 'comparison-curves',
+    name: 'AnalyticalChart (comparison curves)',
+    category: 'Charts',
+    description:
+      'Two to four series normalised to a common start on one date axis, each in a palette colour, with a dashed baseline at the starting value.',
+    render: () => (
+      <AnalyticalChart
+        preset="comparison-curves"
+        data={{
+          dates: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          baseline: 100,
+          series: [
+            { name: 'Momentum · 2023-01 to 2023-06', values: [100, 104, 102, 108, 114, 118] },
+            {
+              name: 'Momentum · 2023-01 to 2023-06 (wider stops)',
+              values: [100, 102, 103, 101, 106, 109],
+            },
+            { name: 'Mean reversion · 2023-01 to 2023-06', values: [100, 99, 101, 104, 103, 107] },
+          ],
+        }}
+        height={300}
+      />
+    ),
+  },
+  {
     id: 'analytical-chart',
     name: 'AnalyticalChart (ECharts)',
     category: 'Charts',

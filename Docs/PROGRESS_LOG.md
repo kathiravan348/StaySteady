@@ -1,4 +1,4 @@
-# StaySteady — Progress Log
+﻿# StaySteady — Progress Log
 
 **Single source of truth for build progress across all agents.**
 
@@ -31,45 +31,50 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-08 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-09 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  Setup, Backtest Results). The owner asked the agent to commit each finished screen (no push) and
-  to take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build
-  all pass.
+  Setup, Backtest Results, Backtest Comparison). The owner asked the agent to commit each finished
+  screen (no push) and to take the recommended option whenever a choice comes up (decision 26).
+  typecheck, lint, build all pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 27: S-08 Backtest Results — see session 27 end entry.
+  - Session 28: S-09 Backtest Comparison — see session 28 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-09 Backtest Comparison (UI spec 7.11). Route ROUTES.RESEARCH_BACKTEST_COMPARE
-  (/research/backtest/compare) renders features/research/BacktestComparePage.tsx, still a
-  placeholder; the results screen already links to it ("Compare with another run"). Needs: pick two
-  to four saved runs, overlay their equity curves normalised to a common start, a metric table with
-  differences highlighted, and a settings diff showing exactly what changed between runs. Data:
-  GET /api/v1/backtests (3 saved runs), GET /api/v1/backtests/:id, and /:id/detail (equity curve,
-  metric groups, costs, validation) with hooks useBacktests, useBacktest, useBacktestDetail,
-  useBacktestTrades in data/api/researchQueries.ts. The saved results carry no settings snapshot
-  yet, so the settings diff needs one added to the mock layer (decision 33).
+  Claim S-10 Strategy Library (UI spec 7.7). Route ROUTES.RESEARCH_STRATEGIES
+  (/research/strategies) renders features/research/ResearchStrategiesPage.tsx, still a placeholder.
+  Data already exists: GET /api/v1/strategies with useStrategies in data/api/tradingQueries.ts,
+  StrategySchema carries id, name, version, stage (draft, backtested, observation, semi_automatic,
+  fully_automatic), timeframe and instrument ids. The backtest results screen already writes
+  promotion requests to sessionStorage, so the library should read the same lifecycle stages.
 
-FILES TOUCHED (session 27): see session 27 end entry.
+FILES TOUCHED (session 28): see session 28 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
   - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutations that
-    replace the cache with the server response (decision 33).
+    replace the cache with the server response (decision 33). Need several of one query at once?
+    Export a queryOptions factory from data/api and feed it to useQueries — never call apiGet in a
+    feature (backtestDetailQueryOptions is the pattern).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
   - Keep files near 300 lines (decision 18): Prettier expands data tables and metric text, so split
     them early.
   - MSW route order matters: register specific paths before /:id catch-alls.
   - Browser tests: synthetic mouse events do not reach lightweight-charts; React Aria keyboard drag
     needs real key presses; the mock scenario lives in localStorage — test states in ONE tab via
-    (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
+    (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id)
+    and always set it back to 'healthy' afterwards.
+  - Element refs from read_page go stale after the page re-renders; re-read before clicking.
+  - Adding an import while the dev server runs can leave a stale cached module in the browser
+    ("X is not defined" for a symbol that plainly is imported). Restart the preview and reload
+    before believing it; confirm by loading a route that does not use the symbol.
   - Mock in-memory stores (watchlists, alert channel tests, backtest runs) and sessionStorage edits
     (position, backtest result) reset on a page reload.
-  - packages/ui must NEVER import from apps/web or domain DTOs.
+  - packages/ui must NEVER import from apps/web or domain DTOs — anything needing echarts or
+    lightweight-charts option types belongs in the library as a preset.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
     JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
 ```
@@ -159,7 +164,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-06 | System Health | DONE | 100 | Session 25 | Watchdog endpoints that survive an API outage; component board, data freshness, reliability with UsageMeter headroom, incident history with filters, alert channel tests; all scenarios verified |
 | S-07 | Backtest Setup | DONE | 100 | Session 26 | Cost defaults per market, data coverage and run endpoints with progress and cancel; strategy, range presets, universe, capital, costs, granularity, benchmarks; pre-run checks; all states verified |
 | S-08 | Backtest Results | DONE | 100 | Session 27 | Detail endpoint (equity, drawdown, monthly returns, metrics with explanations, breakdowns, costs, validation); headline strip, always-visible warnings, six tabs, session-only save/name/tag/promote; all states verified |
-| S-09 | Backtest Comparison | TODO | 0 | | |
+| S-09 | Backtest Comparison | DONE | 100 | Session 28 | Settings snapshot on the detail response; library comparison-curves preset; run picker, normalised overlay, metric table with best/worst and spreads, settings diff; selection in the URL; all states verified |
 | S-10 | Strategy Library | TODO | 0 | | |
 | S-11 | Strategy Editor | TODO | 0 | | |
 | S-12 | Signals & Approval Queue | TODO | 0 | | |
@@ -2556,6 +2561,101 @@ FINDINGS (out of scope, not fixed):
   - The benchmark is the same series for every backtest regardless of the traded universe
   - Compare and promotion actions are placeholders: compare links to the S-09 screen and promotion
     is recorded in the session only
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        28 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T01:37:41Z  |  local: 2026-09-16 07:07 IST (UTC+05:30)
+TASK CLAIMED:   S-09 Backtest Comparison
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-08 committed as 048f9f6; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-08 commit, nothing changed since)
+
+SCOPE (UI spec 7.11):
+  - Side-by-side comparison of two to four saved runs
+  - Overlaid equity curves, normalised to a common starting point
+  - Metric table with the differences highlighted
+  - Settings diff showing exactly what changed between runs
+  - Mock addition: a settings snapshot on the backtest detail response, so the diff compares real
+    configuration rather than invented text (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        28 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T02:35:00Z  |  local: 2026-09-16 08:05 IST (UTC+05:30)
+TASK:           S-09 Backtest Comparison — DONE
+
+WHAT WAS BUILT (UI spec 7.11):
+  - Run picker: two to four saved runs, capped at four with the remaining rows disabled, not hidden
+  - Equity curves normalised to a common start of 100, overlaid in one chart with a dashed baseline
+  - Metric table: 11 metrics, one column per run, best and worst marked in words and colour, plus
+    the spread between the extremes
+  - Settings diff: all nine configuration fields, with the ones that differ flagged
+  - Selection lives in the URL (?runs=a,b,c) so a comparison can be linked and reloaded
+
+LIBRARY (packages/ui):
+  - AnalyticalChart gains a 'comparison-curves' preset (types, preset builder, both create and
+    theme-update branches) with a workbench story; apps/web has no echarts dependency, so the
+    multi-series option had to be built inside the library
+  - createComparisonCurvesOption colours each series from the theme palette in a fixed order
+
+MOCK DATA:
+  - BacktestSettingsSchema added to the detail response: strategy name and version, period,
+    instrument symbols, starting capital, granularity, benchmark, commission, slippage and
+    conversion charges (decision 33) — so the diff compares real configuration
+
+FILES CREATED:
+  - apps/web/src/features/research/backtestCompare/** (model, sections, hook, styles)
+FILES MODIFIED:
+  - packages/ui/src/charts/analytical/{types,analyticalPresets,AnalyticalChart}.ts(x);
+    workbench/stories/chartStories.tsx
+  - apps/web/src/data/schemas/backtest-detail.ts; mock/generators/backtestDetail.ts
+  - apps/web/src/data/api/{researchQueries,index}.ts — backtestDetailQueryOptions shared with useQueries
+  - apps/web/src/features/research/BacktestComparePage.tsx — rewritten as composition
+  - apps/web/src/features/research/backtestResults/sections/ResultActions.tsx — the compare
+    link now seeds ?runs= with the run being read
+
+DECISIONS MADE:
+  - None beyond decisions 22, 26 and 33
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: z namespace not imported in backtestDetail.ts)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     two runs by default; three-run comparison shows Total return 84.25 / 12.40 WORST /
+               115.00 BEST with spread 102.60%, drawdown -11.45 BEST / -24.80 WORST / -18.20,
+               costs 6.81 / 25.02 WORST / 3.00 BEST, and 5 of 9 settings flagged (strategy,
+               instruments, granularity, commission, slippage); selecting a run updates the URL to
+               ?runs=bt-01-trend-follow,bt-02-mean-revert,bt-03-outlier-dependent
+  states:      Clear → "Pick at least two runs"; loading-error → "Comparison unavailable" with
+               "/api/v1/backtests responded with status 500" and Try again; the results screen's
+               "Compare with another run" link arrives with that run preselected
+  workbench:   comparison-curves story renders three normalised series with the baseline
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The drawdown spread printed "-13.35%": the row's value formatter prepends a minus, but a gap
+    between two runs is a magnitude. Spreads now use a separate unsigned formatter.
+  - Trades was ranked "higher is better", marking 320 trades BEST and 215 WORST. A trade count says
+    nothing about quality; it is now a neutral row with no marking.
+  - Two runs tied at 20.70% and only the first was marked BEST, because the lookup used find().
+    Ties now mark every run holding the extreme value.
+  - Clear removed the runs parameter, which fell back to the default first-two, so the button could
+    never actually clear. An absent parameter and an empty one are now different states.
+  - useCompareRuns first called apiGet directly, breaking decision 22; the detail query moved into
+    data/api as backtestDetailQueryOptions and is shared with useBacktestDetail.
+  - A stale browser-cached module made the page report "queryOptions is not defined" after the
+    import was added; a dev server restart and fresh load cleared it. Verified by loading a route
+    that does not use it (/overview reported no errors at all, proving the buffer clears).
+
+FINDINGS (out of scope, not fixed):
+  - Only three saved runs exist, so the four-run cap and its disabled rows cannot be exercised
+  - Curves are aligned by calendar date with the last value carried forward; runs over different
+    periods are comparable in shape but their start dates are not re-based to a common day 0
+  - The settings snapshot is generated per run rather than recorded when the run was executed
 ────────────────────────────────────────────────────────────
 ```
 

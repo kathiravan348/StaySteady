@@ -54,6 +54,58 @@ export function createEquityCurveOption(
   };
 }
 
+// Two to four normalised series on one axis, each in a palette colour (UI spec 7.11).
+export function createComparisonCurvesOption(
+  dates: readonly string[],
+  series: readonly { readonly name: string; readonly values: readonly number[] }[],
+  baseline: number | undefined,
+  theme?: ChartThemeColors,
+): EChartsOption {
+  const palette = theme?.palette ?? ['#60a5fa', '#f59e0b', '#a78bfa', '#34d399'];
+  return {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: theme?.tooltipBackground ?? '#1e293b',
+      textStyle: { color: theme?.textColor ?? '#f8fafc' },
+    },
+    legend: { textStyle: { color: theme?.textColor ?? '#94a3b8' }, top: 10 },
+    grid: { left: '3%', right: '4%', bottom: '3%', top: '18%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: [...dates],
+      axisLine: { lineStyle: { color: theme?.borderColor ?? '#334155' } },
+      axisLabel: { color: theme?.textColor ?? '#94a3b8' },
+    },
+    yAxis: {
+      type: 'value',
+      scale: true,
+      axisLine: { lineStyle: { color: theme?.borderColor ?? '#334155' } },
+      splitLine: { lineStyle: { color: theme?.gridColor ?? '#1e293b' } },
+      axisLabel: { color: theme?.textColor ?? '#94a3b8' },
+    },
+    series: series.map((item, index) => ({
+      name: item.name,
+      type: 'line' as const,
+      data: [...item.values],
+      smooth: true,
+      showSymbol: false,
+      itemStyle: { color: palette[index % palette.length] ?? '#60a5fa' },
+      lineStyle: { width: 2 },
+      ...(index === 0 && baseline !== undefined
+        ? {
+            markLine: {
+              silent: true,
+              symbol: 'none',
+              lineStyle: { color: theme?.borderColor ?? '#334155', type: 'dashed' as const },
+              data: [{ yAxis: baseline }],
+            },
+          }
+        : {}),
+    })),
+  };
+}
+
 export function createDrawdownOption(
   dates: readonly string[],
   drawdowns: readonly number[],

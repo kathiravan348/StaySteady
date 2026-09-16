@@ -99,7 +99,10 @@ export function ResultActions({
         <Button variant="secondary" isDisabled={edits.isSaved} onPress={actions.save}>
           {edits.isSaved ? 'Saved in this session' : 'Save run'}
         </Button>
-        <Link to={ROUTES.RESEARCH_BACKTEST_COMPARE} className={styles.link}>
+        <Link
+          to={`${ROUTES.RESEARCH_BACKTEST_COMPARE}?runs=${encodeURIComponent(String(result.id))}`}
+          className={styles.link}
+        >
           Compare with another run
         </Link>
         {nextStage !== undefined &&
