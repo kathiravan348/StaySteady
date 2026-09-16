@@ -4,19 +4,13 @@
 import type {
   AlertDto,
   AuditLogDto,
-  IncidentDto,
   ServiceHealthDto,
   SystemHealthResponseDto,
 } from '../../schemas';
-import {
-  AlertSchema,
-  AuditLogSchema,
-  IncidentSchema,
-  SystemHealthResponseSchema,
-} from '../../schemas';
+import { AlertSchema, AuditLogSchema, SystemHealthResponseSchema } from '../../schemas';
 import { parseGenerated, parseGeneratedList } from './validated';
 import type { MockGeneratorContext } from './mockContext';
-import { toAlertId, toIncidentId } from '../../../shared/types/identifiers';
+import { toAlertId } from '../../../shared/types/identifiers';
 import { toIsoUtcTimestamp } from '../../../shared/types/dateTime';
 
 export function generateHealthServices(
@@ -130,37 +124,6 @@ export function generateAlerts(ctx: MockGeneratorContext): readonly AlertDto[] {
   ];
 
   return parseGeneratedList(AlertSchema, alerts, 'alerts');
-}
-
-export function generateIncidents(): readonly IncidentDto[] {
-  const incidents: IncidentDto[] = [
-    {
-      id: toIncidentId('inc-001-feed-outage'),
-      severity: 'high',
-      title: 'Primary Market Data Socket Drop',
-      affectedComponents: ['market-data-feed', 'risk-safety-engine'],
-      startedAt: toIsoUtcTimestamp('2026-09-10T13:45:00Z'),
-      resolvedAt: toIsoUtcTimestamp('2026-09-10T13:48:30Z'),
-      automaticActions: [
-        'Halted active order dispatch',
-        'Switched to secondary websocket cluster',
-        'Verified quote timestamp freshness',
-      ],
-      resolution: 'Secondary provider successfully caught up. Zero missed orders.',
-    },
-    {
-      id: toIncidentId('inc-002-order-reject'),
-      severity: 'medium',
-      title: 'Broker Gateway Timeout on Margin Validation',
-      affectedComponents: ['broker-routing-gateway'],
-      startedAt: toIsoUtcTimestamp('2026-09-08T15:20:00Z'),
-      resolvedAt: toIsoUtcTimestamp('2026-09-08T15:22:15Z'),
-      automaticActions: ['Retried order status query', 'Alerted owner on unconfirmed fill'],
-      resolution: 'Broker confirmed order rejected due to collateral lock.',
-    },
-  ];
-
-  return parseGeneratedList(IncidentSchema, incidents, 'incidents');
 }
 
 export function generateAuditLogs(ctx: MockGeneratorContext): readonly AuditLogDto[] {

@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-05 done)
-OVERALL PROGRESS:   66% (43 of 65 active tasks done; Stage F, M, L 100%; Stage S 5 of 23)
-LAST UPDATED:       2026-09-15T21:16:10Z  |  local: 2026-09-16 02:46 IST
-LAST AGENT:         Claude Opus 5 (session 24)
+PHASE:              Stage S Screens — in progress (S-01 to S-06 done)
+OVERALL PROGRESS:   68% (44 of 65 active tasks done; Stage F, M, L 100%; Stage S 6 of 23)
+LAST UPDATED:       2026-09-16T01:06:18Z  |  local: 2026-09-16 06:36 IST
+LAST AGENT:         Claude Opus 5 (session 25)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -32,36 +32,41 @@ BLOCKERS:           none
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 Overview,
-  S-02 Holdings, S-03 Position Detail, S-04 Instrument Workspace and S-05 Watchlists done. The owner
-  asked the agent to commit each finished screen (no push) and to take the recommended option
-  whenever a choice comes up (decision 26). typecheck, lint and build pass.
+  S-02 Holdings, S-03 Position Detail, S-04 Instrument Workspace, S-05 Watchlists and
+  S-06 System Health done. The owner asked the agent to commit each finished screen (no push) and to
+  take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 24: S-05 Watchlists — see session 24 end entry.
+  - Session 25: S-06 System Health — see session 25 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-06 System Health (UI spec 7.15). Routes /health/status, /health/incidents and
-  /health/reliability have placeholder pages. Data: GET /api/v1/system/health, /system/incidents,
-  /system/alerts, /system/state, /system/audit-logs; hooks useSystemHealth, useAlerts, useApprovals
-  exist in data/api/systemQueries.ts. Writes follow decision 33 (apiSend + in-memory mock store).
+  Claim S-07 Backtest Setup (UI spec 7.9). Route ROUTES.RESEARCH_BACKTEST_NEW (/research/backtest/new)
+  currently renders the ResearchEditorPage placeholder — give it its own page and repoint the route in
+  routes/AppRoutes.tsx. Data today: GET /api/v1/strategies (5 strategies with stage, universe,
+  timeframe, parameters), GET /api/v1/backtests (3 saved results, one outlier-dependent),
+  GET /api/v1/backtests/:id/trades; daily price history starts 2022-01-03 (PRICE_HISTORY_ORIGIN_DATE)
+  and bars carry isEstimated; the only cost constant is BUY_FEE 1.50 in the portfolio generator.
+  Missing and needed: cost assumption defaults per market or broker, and a mock run endpoint with
+  progress and cancel (decision 33: in-memory store, validated bodies, apiSend + mutation hooks).
 
-FILES TOUCHED (session 24): see session 24 end entry.
+FILES TOUCHED (session 25): see session 25 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutation hooks
-    that replace the cache with the server's response (decision 33).
+  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutations that
+    replace the cache with the server response (decision 33).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
+  - Keep files near 300 lines (decision 18): Prettier expands data tables, so split them early.
   - Browser tests: synthetic mouse events do not reach lightweight-charts; React Aria keyboard drag
-    needs real key presses; mock scenario lives in localStorage — test states in ONE tab via
+    needs real key presses; the mock scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
-  - Mock in-memory stores reset on a full page reload.
+  - Mock in-memory stores (watchlists, alert channel tests) reset on a full page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single
-    large JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
+  - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
+    JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -146,7 +151,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-03 | Position Detail | DONE | 100 | Session 22 | PriceChart markers + price levels; dividends from corporate actions and conversion charges in mock data; chart, lots, transactions, costs/income, news, events, strategy/notes; session-only actions; all states verified |
 | S-04 | Instrument Workspace (charts) | DONE | 100 | Session 23 | Library TradingChart (panes, styles, scales, drawings, keyboard, image export); indicators; fundamentals + watchlists mock data; intraday bars aligned to daily close; saved layouts; all states verified |
 | S-05 | Watchlists | DONE | 100 | Session 24 | Library ReorderableList + DropTarget (React Aria drag and drop); mock watchlist write API with validation; optimistic mutations; quick-add filters; live rows with sparklines; all states verified |
-| S-06 | System Health | TODO | 0 | | |
+| S-06 | System Health | DONE | 100 | Session 25 | Watchdog endpoints that survive an API outage; component board, data freshness, reliability with UsageMeter headroom, incident history with filters, alert channel tests; all scenarios verified |
 | S-07 | Backtest Setup | TODO | 0 | | |
 | S-08 | Backtest Results | TODO | 0 | | |
 | S-09 | Backtest Comparison | TODO | 0 | | |
@@ -2263,6 +2268,101 @@ FINDINGS (out of scope, not fixed):
   - Quick-add shows the first 8 matches only; no virtualisation for a large instrument universe
   - "Move…" dialog lists every other list without search
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        25 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-15T21:17:13Z  |  local: 2026-09-16 02:47 IST (UTC+05:30)
+TASK CLAIMED:   S-06 System Health
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-05 committed as 2324111; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (end of session 24, nothing changed since)
+
+SCOPE (UI spec 7.15):
+  - Live status board: one tile per monitored component (collectors, providers, brokers, cache,
+    databases, strategy engine, execution layer, scheduled jobs, notification channels, watchdog)
+    with state, last successful check, response time, current issue; severity colour plus
+    non-colour indicators
+  - Data freshness per market and per provider versus expected, with explicit stale indicators
+  - Provider and broker reliability: uptime history over selectable periods, failures and
+    failovers, request usage and cost against limits with headroom bars
+  - Incident history: start, duration, severity, components, automatic actions, resolution;
+    filterable and searchable
+  - Alert channel test control with last result and timestamp
+  - Must stay usable when most of the system is down: each panel loads and fails on its own
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        25 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T01:06:18Z  |  local: 2026-09-16 06:36 IST (UTC+05:30)
+TASK CLAIMED:   S-06 System Health
+END STATUS:     DONE
+
+COMPLETED:
+  - Mock data: component health (15 components across collectors, providers, brokers, cache,
+    databases, strategy engine, execution, scheduled jobs, notifications and the watchdog), data
+    freshness per market and provider, provider and broker reliability (90 days sliced to 7/30/90),
+    alert channels with test results, and an incident history with a live incident per scenario
+  - Endpoint split (decision 34): /system/components, /system/freshness and /system/alert-channels
+    are served by the watchdog and stay up under loading-error; /system/reliability and
+    /system/incidents fail with the application API. Incidents moved out of systemHandlers.
+  - packages/ui UsageMeter: usage against a limit with headroom, escalating at 80% and 95% in
+    colour, symbol and words; role="meter" with a spoken value; workbench story
+  - Screen (three routes, shared section nav): live status board sorted most urgent first with last
+    successful check, response time and current issue; data freshness with fresh/late/stale and a
+    market-closed state; alert channel tests with pending, passed and failed results; reliability
+    cards with an uptime strip (summarised for screen readers), failures, failovers and usage and
+    cost meters; incident history table with search, severity, status and component filters, and row
+    details listing automatic actions and the resolution
+  - States: loading, per-panel errors with retry, no results, stale data, and a degraded-mode banner
+    when the latest check fails but earlier data is shown
+
+FILES CREATED:
+  - apps/web/src/data/schemas/system-health.ts
+  - apps/web/src/data/mock/generators/{healthDetails,healthMonitorData,healthHistoryData}.ts
+  - apps/web/src/data/mock/handlers/healthHandlers.ts; data/api/healthQueries.ts
+  - apps/web/src/features/health/** (model, sections, hook, styles)
+  - packages/ui/src/data-display/UsageMeter/**
+FILES MODIFIED:
+  - apps/web/src/data/schemas/index.ts; mock/generators/{index,healthAlerts}.ts;
+    mock/handlers/{index,systemHandlers}.ts; data/api/index.ts
+  - apps/web/src/features/health/{HealthStatusPage,HealthReliabilityPage,HealthIncidentsPage}.tsx
+  - packages/ui/src/data-display/index.ts; workbench/stories/dataDisplayStories.tsx
+
+DECISIONS MADE:
+  - 34, 35 (section 6)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: NavLink className from a CSS module can be undefined)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     healthy -> "All systems healthy", 15 tiles, 9 freshness rows, 4 alert channels;
+               provider-down -> "1 down, 2 degraded" with the provider tile first and its issue text,
+               freshness shows the provider Stale and US Late; broker-disconnected -> "1 down,
+               1 degraded" with the broker tile first; alert test shows "Testing…" then Email passed
+               and Webhook failed with "Endpoint returned 502 Bad Gateway"; reliability: uptime strips
+               carry text summaries, 7-day switch works, news provider meter reads "96% used… At or
+               near limit", primary provider "62% used, 190,000 headroom"; incidents: "8 incidents
+               recorded · 1 ongoing", ongoing/critical/search/no-results filters and row details
+  states:      loading-error -> watchdog board still works and reports ledger database and quote
+               cache Down while reliability and incidents show their own error states with retry
+  themes:      light and dark screenshots readable
+  workbench:   usage-meter story shows within-limit, approaching and at-limit
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The status board could read "updated -1 s ago" when the ticker lagged the query timestamp; the
+    age is now clamped at zero.
+  - The first health generator was 517 lines and the first split still left 416; it is now three
+    files of 109-205 lines (decision 18 habit).
+
+FINDINGS (out of scope, not fixed):
+  - Alert channel test results reset on a full page reload (in-memory mock store)
+  - The legacy /api/v1/system/health endpoint still returns its own four-service list for the top bar
+  - Incident history has no export; the component filter lists ids that have incidents only
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -2323,6 +2423,8 @@ FINDINGS (out of scope, not fixed):
 | 31 | 2026-09-16 | Mock intraday bars open at the previous daily close; fundamentals and watchlists are new mock endpoints (read-only until S-05) | One price source (decision 19); the workspace right panel needs this data | Yes | Session 23 |
 | 32 | 2026-09-16 | Library ReorderableList and DropTarget wrap React Aria drag and drop (GridList + DropZone) with a custom drag type; every drag action also has a button alternative | Accessible pointer and keyboard reordering, reusable for strategy and layout lists | Yes | Session 24 |
 | 33 | 2026-09-16 | Mock write endpoints keep an in-memory store per page load and validate request bodies with shared zod schemas; writes return the full resource set and the client applies optimistic updates with rollback | Realistic mutation flows without a backend; mock edits reset on reload | Yes | Session 24 |
+| 34 | 2026-09-16 | System Health data is split by source: component checks, freshness and alert-channel tests come from watchdog endpoints that stay up when the application API fails; reliability history and incidents fail with the API | UI spec 7.15 — the screen must stay informative when most of the system is down | Yes | Session 25 |
+| 35 | 2026-09-16 | Library UsageMeter shows usage against a limit with headroom and escalates at 80% and 95% in colour, symbol and words | Reused by System Health now and by the Risk and Safety panel (S-14) later | Yes | Session 25 |
 
 
 

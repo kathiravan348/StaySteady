@@ -36,4 +36,12 @@ export {
   useQuotes,
 } from './marketQueries';
 export { useAlerts, useApprovals, useSystemHealth } from './systemQueries';
+export {
+  useAlertChannels,
+  useComponentHealth,
+  useDataFreshness,
+  useIncidents,
+  useSourceReliability,
+  useTestAlertChannel,
+} from './healthQueries';
 export { useCalendarEvents, useNewsItems } from './newsQueries';

@@ -1,30 +1,27 @@
-// System Health Incidents screen (UI spec 13.2).
+// System Health — incident history (UI spec 7.15): every failure, filterable and searchable.
 
 import type { ReactElement } from 'react';
+
+import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import styles from './Health.module.scss';
+import { HealthNav } from './sections/HealthNav';
+import { IncidentsPanel } from './sections/IncidentsPanel';
 
 export function HealthIncidentsPage(): ReactElement {
   return (
     <PageShell
-      title="Incident History"
-      description="Service degradation events, network drops, and automated recovery logs"
+      title="Incident history"
+      description="Failures with their duration, affected components, automatic actions and resolution."
       breadcrumbs={[
-        { label: 'Overview', to: '/overview' },
-        { label: 'Health', to: '/health/status' },
+        { label: 'Overview', to: ROUTES.OVERVIEW },
+        { label: 'System health', to: ROUTES.HEALTH_STATUS },
         { label: 'Incidents' },
       ]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Historical downtime records and resolution timeline.
-        </p>
+      <div className={styles.page}>
+        <HealthNav />
+        <IncidentsPanel />
       </div>
     </PageShell>
   );

@@ -1,26 +1,30 @@
-// System Health Status screen (UI spec 13.1).
+// System Health — live status (UI spec 7.15): what is broken right now, data freshness and alert
+// channel tests. Each panel loads and fails on its own, so the page stays useful during outages.
 
 import type { ReactElement } from 'react';
+
+import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import styles from './Health.module.scss';
+import { AlertChannelsPanel } from './sections/AlertChannelsPanel';
+import { FreshnessPanel } from './sections/FreshnessPanel';
+import { HealthNav } from './sections/HealthNav';
+import { StatusBoard } from './sections/StatusBoard';
 
 export function HealthStatusPage(): ReactElement {
   return (
     <PageShell
-      title="System Health & Watchdog"
-      description="Real-time uptime, collector latency, and service heartbeat status"
-      breadcrumbs={[{ label: 'Overview', to: '/overview' }, { label: 'System Health' }]}
+      title="System health"
+      description="What is working, what is not, and how fresh the data is."
+      breadcrumbs={[{ label: 'Overview', to: ROUTES.OVERVIEW }, { label: 'System health' }]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Service watchdog metrics for ingestion, strategy engines, and brokers.
-        </p>
+      <div className={styles.page}>
+        <HealthNav />
+        <StatusBoard />
+        <div className={styles.twoColumn}>
+          <FreshnessPanel />
+          <AlertChannelsPanel />
+        </div>
       </div>
     </PageShell>
   );

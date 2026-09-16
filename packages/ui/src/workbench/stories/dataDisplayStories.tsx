@@ -2,6 +2,7 @@ import { DataList } from '../../data-display/DataList/DataList';
 import { KeyValuePair } from '../../data-display/KeyValuePair/KeyValuePair';
 import { MetricDisplay } from '../../data-display/MetricDisplay/MetricDisplay';
 import { Sparkline } from '../../data-display/Sparkline/Sparkline';
+import { UsageMeter } from '../../data-display/UsageMeter/UsageMeter';
 import type { ComponentStory } from '../types';
 
 export const dataDisplayStories: readonly ComponentStory[] = [
@@ -86,6 +87,26 @@ export const dataDisplayStories: readonly ComponentStory[] = [
             direction="negative"
           />
         </div>
+      </div>
+    ),
+  },
+  {
+    id: 'usage-meter',
+    name: 'UsageMeter',
+    category: 'Data Display',
+    description:
+      'Usage against a limit with headroom; escalates at 80% and 95% with colour, symbol and words.',
+    render: () => (
+      <div style={{ display: 'grid', gap: '1.25rem', maxWidth: 420 }}>
+        <UsageMeter label="API requests this month" used={62_000} limit={100_000} />
+        <UsageMeter label="Order count today" used={42} limit={50} />
+        <UsageMeter
+          label="Data cost this month"
+          used={86.4}
+          limit={90}
+          formatValue={(value) => `USD ${value.toFixed(2)}`}
+          description="Budget resets on the first of the month."
+        />
       </div>
     ),
   },

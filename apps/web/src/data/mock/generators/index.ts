@@ -69,12 +69,17 @@ export { generateNewsItems, generateCalendarEvents } from './newsEvents';
 export { generateStrategies, generateSignals, generateOrders, generateApprovals } from './trading';
 
 // M-13 Health, Alerts, Incidents & Audit
+export { generateHealthServices, generateAlerts, generateAuditLogs } from './healthAlerts';
+
+// Session 25: System Health detail data
 export {
-  generateHealthServices,
-  generateAlerts,
-  generateIncidents,
-  generateAuditLogs,
-} from './healthAlerts';
+  generateAlertChannels,
+  generateComponentHealth,
+  generateDataFreshness,
+  generateIncidentHistory,
+  generateSourceReliability,
+  testAlertChannel,
+} from './healthDetails';
 
 // Session 23: fundamentals and watchlists for the instrument workspace
 export { generateInstrumentFundamentals, generateWatchlists } from './researchData';

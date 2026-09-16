@@ -1,0 +1,75 @@
+.meter {
+  display: grid;
+  gap: var(--space-1, 0.25rem);
+  min-width: 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--text-secondary);
+}
+
+.header,
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  justify-content: space-between;
+}
+
+.label {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary);
+}
+
+.values {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.track {
+  position: relative;
+  height: 0.5rem;
+  overflow: hidden;
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin, 1px) solid var(--border-subtle);
+  border-radius: var(--radius-full, 999px);
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  background-color: var(--status-healthy, var(--interactive-primary));
+  border-radius: inherit;
+}
+
+.marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--border-strong);
+}
+
+.warning .fill {
+  background-color: var(--status-warning, #d97706);
+}
+
+.critical .fill {
+  background-color: var(--status-critical, #dc2626);
+}
+
+.level {
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.warning .level {
+  color: var(--status-warning-text, var(--text-primary));
+}
+
+.critical .level {
+  color: var(--status-critical-text, var(--text-primary));
+}
+
+.description {
+  margin: 0;
+  color: var(--text-muted);
+}

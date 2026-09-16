@@ -6,6 +6,7 @@ import { tradingHandlers } from './tradingHandlers';
 import { researchHandlers } from './researchHandlers';
 import { newsHandlers } from './newsHandlers';
 import { researchDataHandlers } from './researchDataHandlers';
+import { healthHandlers } from './healthHandlers';
 
 /**
  * Combined MSW Request Handlers (M-01..M-14).
@@ -19,9 +20,11 @@ export const handlers: readonly HttpHandler[] = [
   ...researchHandlers,
   ...newsHandlers,
   ...researchDataHandlers,
+  ...healthHandlers,
 ];
 
 export {
+  healthHandlers,
   researchDataHandlers,
   systemHandlers,
   marketHandlers,

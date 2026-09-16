@@ -1,30 +1,27 @@
-// Provider & Broker Reliability screen (UI spec 13.3).
+// System Health — provider and broker reliability (UI spec 7.15).
 
 import type { ReactElement } from 'react';
+
+import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import styles from './Health.module.scss';
+import { HealthNav } from './sections/HealthNav';
+import { ReliabilityPanel } from './sections/ReliabilityPanel';
 
 export function HealthReliabilityPage(): ReactElement {
   return (
     <PageShell
-      title="Provider & Broker Reliability"
-      description="API latency percentiles, error rates, and quota consumption stats"
+      title="Provider and broker reliability"
+      description="Uptime history, failures and failovers, and usage against limits and budgets."
       breadcrumbs={[
-        { label: 'Overview', to: '/overview' },
-        { label: 'Health', to: '/health/status' },
+        { label: 'Overview', to: ROUTES.OVERVIEW },
+        { label: 'System health', to: ROUTES.HEALTH_STATUS },
         { label: 'Reliability' },
       ]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          External data provider SLAs and rate limit tracking.
-        </p>
+      <div className={styles.page}>
+        <HealthNav />
+        <ReliabilityPanel />
       </div>
     </PageShell>
   );
