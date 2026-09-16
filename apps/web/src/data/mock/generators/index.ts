@@ -120,3 +120,7 @@ export { marketConfigHealth, seedMarketConfigs, seedMarketHistory } from './mark
 // Session 38: configuration, data providers (UI spec 7.18)
 export { providerConfigHealth, seedProviderConfigs, seedProviderHistory } from './providerConfig';
 export { testProviderConnection } from './providerConnectionTest';
+
+// Session 39: configuration, brokers (UI spec 7.18)
+export { brokerConfigHealth, seedBrokerConfigs, seedBrokerHistory } from './brokerConfig';
+export { testBrokerConnection } from './brokerConnectionTest';

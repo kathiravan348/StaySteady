@@ -77,17 +77,23 @@ export {
   useRiskPanel,
 } from './riskQueries';
 export type {
+  RevertBrokerConfigVariables,
   RevertMarketConfigVariables,
   RevertProviderConfigVariables,
+  SaveBrokerConfigVariables,
   SaveMarketConfigVariables,
   SaveProviderConfigVariables,
 } from './configQueries';
 export {
+  useBrokerConfigs,
   useMarketConfigs,
   useProviderConfigs,
+  useRevertBrokerConfig,
   useRevertMarketConfig,
   useRevertProviderConfig,
+  useSaveBrokerConfig,
   useSaveMarketConfig,
   useSaveProviderConfig,
+  useTestBrokerConnection,
   useTestProviderConnection,
 } from './configQueries';

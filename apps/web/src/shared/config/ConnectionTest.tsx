@@ -14,6 +14,8 @@ export interface ConnectionTestProps {
   // The form changed after the result was taken, so the result may no longer apply.
   readonly isOutdated: boolean;
   readonly onTest: () => void;
+  // What the test does, when the area needs to say more than the default.
+  readonly description?: string;
 }
 
 // UI spec 7.18 — test connection where applicable. It tests the form as it stands, so a new or edited
@@ -25,6 +27,7 @@ export function ConnectionTest({
   blockedReason,
   isOutdated,
   onTest,
+  description = 'Tests the settings in this form, saved or not.',
 }: ConnectionTestProps): ReactElement {
   return (
     <Card
@@ -47,9 +50,7 @@ export function ConnectionTest({
           >
             {result === undefined ? 'Test connection' : 'Test again'}
           </Button>
-          <span className={styles.meta}>
-            {blockedReason ?? 'Tests the settings in this form, saved or not.'}
-          </span>
+          <span className={styles.meta}>{blockedReason ?? description}</span>
         </span>
 
         {error !== null && <p className={styles.warning}>{error}</p>}

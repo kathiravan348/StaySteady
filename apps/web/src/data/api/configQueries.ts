@@ -5,6 +5,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 
 import type {
+  BrokerConfigEntryDto,
+  BrokerConfigInput,
   ConnectionTestResultDto,
   MarketConfigEntryDto,
   MarketConfigInput,
@@ -12,6 +14,7 @@ import type {
   ProviderConfigInput,
 } from '../schemas';
 import {
+  BrokerConfigListSchema,
   ConnectionTestResultSchema,
   MarketConfigListSchema,
   ProviderConfigListSchema,
@@ -154,5 +157,80 @@ export function useTestProviderConnection(): UseMutationResult<
   return useMutation({
     mutationFn: (config: ProviderConfigInput) =>
       apiSend('POST', '/api/v1/config/providers/test', { config }, ConnectionTestResultSchema),
+  });
+}
+
+const BROKERS_KEY = ['config', 'brokers'] as const;
+
+export function useBrokerConfigs(): UseQueryResult<BrokerConfigEntryDto[]> {
+  return useQuery({
+    queryKey: BROKERS_KEY,
+    queryFn: ({ signal }) => apiGet('/api/v1/config/brokers', BrokerConfigListSchema, signal),
+  });
+}
+
+export interface SaveBrokerConfigVariables {
+  readonly isNew: boolean;
+  readonly config: BrokerConfigInput;
+  readonly reason: string;
+}
+
+export function useSaveBrokerConfig(): UseMutationResult<
+  BrokerConfigEntryDto[],
+  Error,
+  SaveBrokerConfigVariables
+> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ isNew, config, reason }: SaveBrokerConfigVariables) =>
+      isNew
+        ? apiSend('POST', '/api/v1/config/brokers', { config, reason }, BrokerConfigListSchema)
+        : apiSend(
+            'PUT',
+            `/api/v1/config/brokers/${encodeURIComponent(config.brokerId)}`,
+            { config, reason },
+            BrokerConfigListSchema,
+          ),
+    onSuccess: (entries) => {
+      client.setQueryData(BROKERS_KEY, entries);
+    },
+  });
+}
+
+export interface RevertBrokerConfigVariables {
+  readonly brokerId: string;
+  readonly version: number;
+  readonly reason: string;
+}
+
+export function useRevertBrokerConfig(): UseMutationResult<
+  BrokerConfigEntryDto[],
+  Error,
+  RevertBrokerConfigVariables
+> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ brokerId, version, reason }: RevertBrokerConfigVariables) =>
+      apiSend(
+        'POST',
+        `/api/v1/config/brokers/${encodeURIComponent(brokerId)}/revert`,
+        { version, reason },
+        BrokerConfigListSchema,
+      ),
+    onSuccess: (entries) => {
+      client.setQueryData(BROKERS_KEY, entries);
+    },
+  });
+}
+
+// Read-only test of the form as it stands: credential, session and account read, never an order.
+export function useTestBrokerConnection(): UseMutationResult<
+  ConnectionTestResultDto,
+  Error,
+  BrokerConfigInput
+> {
+  return useMutation({
+    mutationFn: (config: BrokerConfigInput) =>
+      apiSend('POST', '/api/v1/config/brokers/test', { config }, ConnectionTestResultSchema),
   });
 }

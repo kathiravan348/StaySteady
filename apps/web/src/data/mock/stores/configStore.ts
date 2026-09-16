@@ -1,8 +1,10 @@
 // In-memory configuration for the page load (decisions 33 and 37). Each entry keeps every saved
 // version as a full snapshot, newest first, so diff and revert work from the same record.
 
-import type { MarketConfigInput, ProviderConfigInput } from '../../schemas';
+import type { BrokerConfigInput, MarketConfigInput, ProviderConfigInput } from '../../schemas';
 import {
+  seedBrokerConfigs,
+  seedBrokerHistory,
   seedMarketConfigs,
   seedMarketHistory,
   seedProviderConfigs,
@@ -32,6 +34,7 @@ function appendVersion<T>(
 
 let markets: VersionStore<MarketConfigInput> | null = null;
 let providers: VersionStore<ProviderConfigInput> | null = null;
+let brokers: VersionStore<BrokerConfigInput> | null = null;
 
 export function getMarketVersions(): VersionStore<MarketConfigInput> {
   markets ??= new Map(
@@ -63,4 +66,20 @@ export function appendProviderVersion(
   savedAt: string,
 ): void {
   appendVersion(getProviderVersions(), providerId, snapshot, reason, savedAt);
+}
+
+export function getBrokerVersions(): VersionStore<BrokerConfigInput> {
+  brokers ??= new Map(
+    seedBrokerConfigs().map((config) => [config.brokerId, [...seedBrokerHistory(config)]]),
+  );
+  return brokers;
+}
+
+export function appendBrokerVersion(
+  brokerId: string,
+  snapshot: BrokerConfigInput,
+  reason: string,
+  savedAt: string,
+): void {
+  appendVersion(getBrokerVersions(), brokerId, snapshot, reason, savedAt);
 }

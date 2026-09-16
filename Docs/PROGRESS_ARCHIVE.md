@@ -3204,3 +3204,123 @@ NOTES FOR NEXT AGENT:
     markets as the reference implementation, so they are good candidates for a cheaper model.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 36 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4 in session 39, per rule 11. Nothing was
+reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        36
+AGENT:          AI assistant using Copilot SDK in VS Code
+START:          2026-09-16T15:00:00Z  |  local: 2026-09-16 20:30 IST (UTC+05:30)
+END:            2026-09-16T15:20:00Z  |  local: 2026-09-16 20:50 IST (UTC+05:30)
+TASK CLAIMED:   none — owner asked for a spec coverage audit and a re-validation of the
+                work completed by the Antigravity / Gemini sessions. Docs only, no code.
+END STATUS:     DONE
+ 
+METHOD:
+  Enumerated every screen in the nav map (UI spec 6) and screen specs (7.1-7.20), mapped each to
+  a route, a page component and a registry task. Then checked each Antigravity-completed task
+  against what is actually in the repository, rather than against what its note claims.
+ 
+FINDING 1 - SIX SPEC SCREENS HAD NO REGISTRY TASK (now S-24..S-29):
+  The registry was not a complete decomposition of the spec. Finishing every task in it would
+  still have left these unbuilt, each currently a ~29-line placeholder:
+    - Portfolio > Transactions        /portfolio/transactions   -> S-24
+    - Portfolio > Performance         /portfolio/performance    -> S-25 (see Q9)
+    - Markets > Screener              /markets/screener         -> S-26 (see Q11)
+    - Trading > Positions             /trading/positions        -> S-27 (see Q10)
+    - Configuration > Credentials     /settings/credentials     -> S-28
+    - Automation permission summary   no route at all           -> S-29
+  S-28 and S-29 were raised as findings in session 34 but never became tasks, so they would
+  have been lost. Q9, Q10 and Q11 record the genuine ambiguities rather than guessing.
+ 
+FINDING 2 - L-12 WAS MARKED DONE WITH NO DELIVERABLE IN THE REPOSITORY:
+  L-12 "Visual regression test setup" was DONE/100. In fact:
+    - verify_stage_l.ts does not exist in this repository (0 matches)
+    - README told the reader to run it from
+      C:\Users\kathiravan\.gemini\antigravity-ide\brain\<uuid>\scratch\ - another machine
+    - there is no visual regression tooling of any kind: no Playwright, no screenshot
+      baselines, no test runner, no scripts/ directory
+    - a file-length and export check is not visual regression testing in any case
+  Reopened as PARTIAL/20. The story registry is real and is the only part delivered.
+  README section 3 corrected so it no longer instructs running a file that cannot exist.
+ 
+FINDING 3 - VERIFICATION CLAIMS IN M-02 AND M-03 ARE NOT REPRODUCIBLE:
+  M-02 claims "71 schemas, 21 runtime cases pass"; M-03 claims "23 runtime checks pass".
+  No such scripts are in the repository, so none of it can be re-run. The schema count is also
+  stale: there are now 173 exported *Schema consts, not 71. The schemas themselves are present
+  and typecheck, so this is an auditability problem, not a correctness one.
+ 
+FINDING 4 - L-10 IS DONE/100 BUT COVERS 5 OF ~18 REQUIRED CHART TYPES (now L-13):
+  Present: equity curve, comparison curves, drawdown, donut, monthly heatmap.
+  UI spec 8.1 also requires: returns distribution histogram, allocation treemap, stacked area,
+  correlation matrix heatmap, rolling metric lines, bar charts, waterfall, scatter.
+  These are exactly what S-20 Reports and S-21 Planning will need, so an agent claiming S-20
+  would have found the chart layer short while the registry said it was finished.
+ 
+FINDING 5 - THE PARTIAL-DATA STATE IS NOT BUILT (now L-14):
+  UI spec 10 lists 11 states. SystemStatusState covers halted, degraded and offline. There is
+  no partial-data state anywhere ("some markets or providers unavailable, others fine, shown
+  per section not globally") - 0 matches in either workspace. L-07 was DONE/100.
+ 
+FINDING 6 - MANUAL-ONLY INSTRUMENT TYPE IS ABSENT (now M-16):
+  UI spec 15 requires a holdings set including a manual-only instrument type, and 7.18 requires
+  a manual-only flag on instrument types. Zero occurrences in the entire app. M-07 and M-09
+  were both DONE/100.
+ 
+FINDING 7 - README COUNTS WERE STALE:
+  Claimed 41 components and 38 stories; actual is 48 exported components and 43 stories
+  (ReorderableList, DropTarget, UsageMeter, TradingChart and others were added in S-04..S-06
+  without the README being updated). Corrected.
+ 
+ANTIGRAVITY WORK THAT RE-VALIDATED CLEANLY:
+  - M-01 MSW worker present (public/mockServiceWorker.js) plus the dev fetch fallback
+  - M-14 scenario switcher: all 8 scenarios in UI spec 15 present, exact match, verified in
+    the browser
+  - M-15 live ticking verified running (portfolio value moved between two reads)
+  - L-03..L-08 component inventory complete: 10 primitives, 10 composites, 6 layout,
+    5 data-display, 6 state, DataTable
+  - packages/ui decoupling holds: 0 imports from apps/web or domain schemas
+  - Order statuses include unconfirmed and partially_filled as spec 15 requires
+  - Duplicate news stories from multiple sources present in the news generator
+  - Strategy lifecycle stages present
+ 
+FILES CREATED:
+  - none
+FILES MODIFIED:
+  - Docs/PROGRESS_LOG.md — registry (S-24..S-29, L-13, L-14, M-16 added; L-12 reopened;
+    M-02 and M-15 notes corrected), open questions 9-12, status, handoff, this entry
+  - README.md — removed the unrunnable absolute-path verification command, corrected
+    component and story counts
+ 
+DEPENDENCIES ADDED:
+  - none
+ 
+VERIFICATION RUN:
+  type check:  PASS (tsc --noEmit, both workspaces) - unchanged, no code touched
+  lint:        ESLint PASS. Prettier still fails on Windows checkouts (pre-existing, see below)
+  build:       not re-run — documentation-only change
+  audit basis: file existence and grep over apps/web/src and packages/ui/src, plus the running
+               dev server for the scenario switcher and live ticking checks
+ 
+FINDINGS (out of scope, not fixed):
+  - Still open from session 35: no .gitattributes (breaks `pnpm lint` on Windows), no tests or
+    CI, single 3,120 kB bundle with no code splitting, kill switch with no confirmation.
+  - The deeper pattern behind findings 2-6: a task was marked DONE when the agent believed it
+    was done, with no artefact in the repository proving it. Every one of these would have been
+    caught by a committed check. This is the strongest argument for the test suite.
+ 
+NOTES FOR NEXT AGENT:
+  - The registry is now 74 tasks, not 65. Do not trust an older percentage.
+  - Next task is still S-16 Configuration — providers. The audit did not change that.
+  - Before claiming S-20 Reports or S-21 Planning, read L-13: the analytical chart presets they
+    need do not exist yet.
+  - Answer Q9, Q10 and Q11 before building S-25, S-26 or S-27; they may be duplicates or
+    unspecified. Do not guess.
+────────────────────────────────────────────────────────────
+```

@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-16 done)
-OVERALL PROGRESS:   60% (53 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 16 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T17:14:00Z  |  local: 2026-09-16 22:44 IST
-LAST AGENT:         session 38 (S-16 Configuration — providers)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,150 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-17 done)
+OVERALL PROGRESS:   61% (54 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 17 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-16T17:31:00Z  |  local: 2026-09-16 23:01 IST
+LAST AGENT:         session 39 (S-17 Configuration — brokers)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,175 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,41 +36,45 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-16 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-17 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders, Risk & Safety, Configuration — markets, Configuration — providers). The
-  owner asked the agent to commit each finished screen (no push) and to take the recommended
-  option whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier fails on
-  Windows checkouts only (CRLF, see findings) — not a code defect.
+  Approval Queue, Orders, Risk & Safety, Configuration — markets, providers and brokers). The owner
+  asked the agent to commit each finished screen (no push) and to take the recommended option
+  whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier fails on Windows
+  checkouts only (CRLF, see findings) — not a code defect.
 
-  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-35)
+  Session history older than the last three sessions is in PROGRESS_ARCHIVE.md (sessions 0-36)
   and is NOT session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 38: S-16 Configuration — providers, plus the shared config pattern extended with form
-    fields, a draft hook, a save card and a connection test (decision 40). Markets moved onto them.
-    Sessions 32-35 archived per rule 11. See session 38 end entry.
+  - Session 39: S-17 Configuration — brokers. See session 39 end entry.
+  - Session 38: S-16 Configuration — providers, and the shared config pattern extended (decision
+    40). See session 38 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-17 Configuration — brokers (UI spec 7.18: markets, instrument types, capabilities, order
-  types, simulation availability, fees, credentials, automation toggles per instrument type).
-  Route ROUTES.SETTINGS_BROKERS (/settings/brokers) renders features/settings/SettingsBrokersPage.tsx,
-  a placeholder shared with /settings/credentials (S-28) — give brokers its own page and leave the
-  placeholder for credentials. Copy features/settings/providers, which is now the fullest example
-  of decision 38 + 40: schema with superRefine in data/schemas, seeds and health in a generator,
-  versions in mock/stores/configStore.ts (appendVersion is generic), handlers beside
-  providerConfigHandlers.ts, hooks in data/api/configQueries.ts, and in the form useConfigDraft,
-  FormFields, ConfigSaveCard and ConnectionTest. Broker data already exists: useBrokers
-  (portfolioQueries), brk-ibkr and brk-zerodha in the System Health sources (RELIABILITY_SOURCES,
-  COMPONENTS, FAULTS incl. the broker-disconnected scenario), and per-broker fees in the order
-  history generator — seed from those so the screens agree. No code path may place an order, even
-  for "test connection": test with a read-only check only. Credentials stay references.
+  Claim S-18 Configuration — instruments, currencies, alerts (UI spec 7.18):
+  - Instrument types: enabled, automation permitted, applicable markets, granularity, minimum
+    sizes, settlement, tax thresholds, manual-only flag
+  - Currencies: base currency selection, exchange rate source, conversion cost assumptions
+  - Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with
+    critical override
+  Routes: /settings/instruments and /settings/currencies still render SettingsMarketsPage, and
+  /settings/alerts renders AlertsPage — give each its own page. This is three configuration areas;
+  if it is too large for one session, build them in that order and mark S-18 PARTIAL with exactly
+  what remains. Copy features/settings/brokers or providers (decisions 38 and 40: schema with
+  superRefine, generator seeds and health, versions in configStore, handlers beside
+  brokerConfigHandlers.ts, hooks in configQueries.ts, form on useConfigDraft, FormFields,
+  ConfigSaveCard). Seed from existing data: instrument types from InstrumentTypeSchema and the
+  market configs' permittedInstrumentTypes; the manual-only flag is M-16's gap (no manual-only type
+  exists yet — raise, do not invent silently); currencies from SUPPORTED_CURRENCIES, the FX rates
+  provider (prov-fx) and the 0.25% conversion charge (decision 28); alert channels from System
+  Health's ALERT_CHANNELS. Test connection applies only to alert channels, if at all.
 
-FILES TOUCHED (session 38): see session 38 end entry.
+FILES TOUCHED (session 39): see session 39 end entry.
 
 WATCH OUT FOR:
  
@@ -200,7 +204,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-14 | Risk & Safety Panel | DONE | 100 | Session 33 | Limits derived from holdings/orders/strategy definitions and grouped global/market/type/strategy; two-step limit changes and typed-word emergency controls, both recorded; derived breach history; shared mock stores (decision 37); all states verified |
 | S-15 | Configuration — markets | DONE | 100 | Session 34 | Shared config pattern (entry list, capability switches, simulation notice, inline errors, version diff and revert; decision 38); markets form with schema-driven validation; calendar-coverage health; versioned saves with reasons; all states verified |
 | S-16 | Configuration — providers | DONE | 100 | Session 38 | Shared config pattern extended (form fields, draft hook, save card, test connection; decision 40); coverage, granularity, history, rate limits and cost, priority with failover order, credential reference, health check, freshness; health and faults shared with System Health; all states verified |
-| S-17 | Configuration — brokers | TODO | 0 | | |
+| S-17 | Configuration — brokers | DONE | 100 | Session 39 | Markets, instrument types, order types, capabilities incl. paper account, fees, credential reference, automation switch per instrument type; API vs manual brokers; read-only connection test; health from System Health faults and usage plus holdings outside coverage; all states verified |
 | S-18 | Configuration — instruments, currencies, alerts | TODO | 0 | | |
 | S-19 | News & Events | TODO | 0 | | |
 | S-20 | Reports | TODO | 0 | | |
@@ -304,122 +308,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 35 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 36 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        36
-AGENT:          AI assistant using Copilot SDK in VS Code
-START:          2026-09-16T15:00:00Z  |  local: 2026-09-16 20:30 IST (UTC+05:30)
-END:            2026-09-16T15:20:00Z  |  local: 2026-09-16 20:50 IST (UTC+05:30)
-TASK CLAIMED:   none — owner asked for a spec coverage audit and a re-validation of the
-                work completed by the Antigravity / Gemini sessions. Docs only, no code.
-END STATUS:     DONE
- 
-METHOD:
-  Enumerated every screen in the nav map (UI spec 6) and screen specs (7.1-7.20), mapped each to
-  a route, a page component and a registry task. Then checked each Antigravity-completed task
-  against what is actually in the repository, rather than against what its note claims.
- 
-FINDING 1 - SIX SPEC SCREENS HAD NO REGISTRY TASK (now S-24..S-29):
-  The registry was not a complete decomposition of the spec. Finishing every task in it would
-  still have left these unbuilt, each currently a ~29-line placeholder:
-    - Portfolio > Transactions        /portfolio/transactions   -> S-24
-    - Portfolio > Performance         /portfolio/performance    -> S-25 (see Q9)
-    - Markets > Screener              /markets/screener         -> S-26 (see Q11)
-    - Trading > Positions             /trading/positions        -> S-27 (see Q10)
-    - Configuration > Credentials     /settings/credentials     -> S-28
-    - Automation permission summary   no route at all           -> S-29
-  S-28 and S-29 were raised as findings in session 34 but never became tasks, so they would
-  have been lost. Q9, Q10 and Q11 record the genuine ambiguities rather than guessing.
- 
-FINDING 2 - L-12 WAS MARKED DONE WITH NO DELIVERABLE IN THE REPOSITORY:
-  L-12 "Visual regression test setup" was DONE/100. In fact:
-    - verify_stage_l.ts does not exist in this repository (0 matches)
-    - README told the reader to run it from
-      C:\Users\kathiravan\.gemini\antigravity-ide\brain\<uuid>\scratch\ - another machine
-    - there is no visual regression tooling of any kind: no Playwright, no screenshot
-      baselines, no test runner, no scripts/ directory
-    - a file-length and export check is not visual regression testing in any case
-  Reopened as PARTIAL/20. The story registry is real and is the only part delivered.
-  README section 3 corrected so it no longer instructs running a file that cannot exist.
- 
-FINDING 3 - VERIFICATION CLAIMS IN M-02 AND M-03 ARE NOT REPRODUCIBLE:
-  M-02 claims "71 schemas, 21 runtime cases pass"; M-03 claims "23 runtime checks pass".
-  No such scripts are in the repository, so none of it can be re-run. The schema count is also
-  stale: there are now 173 exported *Schema consts, not 71. The schemas themselves are present
-  and typecheck, so this is an auditability problem, not a correctness one.
- 
-FINDING 4 - L-10 IS DONE/100 BUT COVERS 5 OF ~18 REQUIRED CHART TYPES (now L-13):
-  Present: equity curve, comparison curves, drawdown, donut, monthly heatmap.
-  UI spec 8.1 also requires: returns distribution histogram, allocation treemap, stacked area,
-  correlation matrix heatmap, rolling metric lines, bar charts, waterfall, scatter.
-  These are exactly what S-20 Reports and S-21 Planning will need, so an agent claiming S-20
-  would have found the chart layer short while the registry said it was finished.
- 
-FINDING 5 - THE PARTIAL-DATA STATE IS NOT BUILT (now L-14):
-  UI spec 10 lists 11 states. SystemStatusState covers halted, degraded and offline. There is
-  no partial-data state anywhere ("some markets or providers unavailable, others fine, shown
-  per section not globally") - 0 matches in either workspace. L-07 was DONE/100.
- 
-FINDING 6 - MANUAL-ONLY INSTRUMENT TYPE IS ABSENT (now M-16):
-  UI spec 15 requires a holdings set including a manual-only instrument type, and 7.18 requires
-  a manual-only flag on instrument types. Zero occurrences in the entire app. M-07 and M-09
-  were both DONE/100.
- 
-FINDING 7 - README COUNTS WERE STALE:
-  Claimed 41 components and 38 stories; actual is 48 exported components and 43 stories
-  (ReorderableList, DropTarget, UsageMeter, TradingChart and others were added in S-04..S-06
-  without the README being updated). Corrected.
- 
-ANTIGRAVITY WORK THAT RE-VALIDATED CLEANLY:
-  - M-01 MSW worker present (public/mockServiceWorker.js) plus the dev fetch fallback
-  - M-14 scenario switcher: all 8 scenarios in UI spec 15 present, exact match, verified in
-    the browser
-  - M-15 live ticking verified running (portfolio value moved between two reads)
-  - L-03..L-08 component inventory complete: 10 primitives, 10 composites, 6 layout,
-    5 data-display, 6 state, DataTable
-  - packages/ui decoupling holds: 0 imports from apps/web or domain schemas
-  - Order statuses include unconfirmed and partially_filled as spec 15 requires
-  - Duplicate news stories from multiple sources present in the news generator
-  - Strategy lifecycle stages present
- 
-FILES CREATED:
-  - none
-FILES MODIFIED:
-  - Docs/PROGRESS_LOG.md — registry (S-24..S-29, L-13, L-14, M-16 added; L-12 reopened;
-    M-02 and M-15 notes corrected), open questions 9-12, status, handoff, this entry
-  - README.md — removed the unrunnable absolute-path verification command, corrected
-    component and story counts
- 
-DEPENDENCIES ADDED:
-  - none
- 
-VERIFICATION RUN:
-  type check:  PASS (tsc --noEmit, both workspaces) - unchanged, no code touched
-  lint:        ESLint PASS. Prettier still fails on Windows checkouts (pre-existing, see below)
-  build:       not re-run — documentation-only change
-  audit basis: file existence and grep over apps/web/src and packages/ui/src, plus the running
-               dev server for the scenario switcher and live ticking checks
- 
-FINDINGS (out of scope, not fixed):
-  - Still open from session 35: no .gitattributes (breaks `pnpm lint` on Windows), no tests or
-    CI, single 3,120 kB bundle with no code splitting, kill switch with no confirmation.
-  - The deeper pattern behind findings 2-6: a task was marked DONE when the agent believed it
-    was done, with no artefact in the repository proving it. Every one of these would have been
-    caught by a committed check. This is the strongest argument for the test suite.
- 
-NOTES FOR NEXT AGENT:
-  - The registry is now 74 tasks, not 65. Do not trust an older percentage.
-  - Next task is still S-16 Configuration — providers. The audit did not change that.
-  - Before claiming S-20 Reports or S-21 Planning, read L-13: the analytical chart presets they
-    need do not exist yet.
-  - Answer Q9, Q10 and Q11 before building S-25, S-26 or S-27; they may be duplicates or
-    unspecified. Do not guess.
-────────────────────────────────────────────────────────────
- 
 ────────────────────────────────────────────────────────────
 SESSION:        37
 AGENT:          AI assistant using Copilot SDK in VS Code
@@ -655,6 +548,135 @@ FINDINGS (out of scope, not fixed):
     even when it was caused by ticking a data kind (visibleError tracks the field, not the cause)
   - The connection test result is lost when the form resets (Discard, save, switching entries)
   - Spend is compared with the budget only for USD budgets; other currencies get a warning
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        39 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T17:16:27Z  |  local: 2026-09-16 22:46 IST (UTC+05:30)
+TASK CLAIMED:   S-17 Configuration — brokers
+OWNER INPUT:    "start s-17"; decision 26 (take recommended options, commit each screen)
+
+PRE-WORK VERIFICATION:
+  git:         S-16 committed as cd91b55; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-16 commit; nothing has
+               changed since)
+
+SCOPE (UI spec 7.18):
+  - Brokers: markets, instrument types, capabilities, order types, simulation availability, fees,
+    credentials, automation toggles per instrument type
+  - Built on shared/config (decisions 38 and 40). Seeds come from CANONICAL_BROKERS (markets,
+    account currency, automation support), the order history fee rules (IBKR 5 bps with a 1.00
+    minimum, Zerodha 20 flat, HL 11.95 flat, private agent none) and the System Health broker
+    sources and faults, so the screens agree
+  - Brokers with no API (HL, private placement agent) are tracking-only: no orders, no credential,
+    no automation, and no connection test
+  - Test connection reads the session and account only. It never places, changes or cancels an
+    order, and says so on the screen
+  - /settings/credentials keeps the placeholder; /settings/brokers gets the real page
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        39 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T17:31:00Z  |  local: 2026-09-16 23:01 IST (UTC+05:30)
+TASK:           S-17 Configuration — brokers — DONE
+
+WHAT WAS BUILT (UI spec 7.18):
+  Brokers (/settings/brokers), on shared/config (decisions 38 and 40):
+  - Account: id, name, country, account currency, connection (API, or manual from imported
+    statements)
+  - What it trades: markets (from the market configuration), instrument types, order types
+  - Capabilities as switches: places orders, streams positions, fractional quantities, short
+    selling, paper account (simulation availability)
+  - Fees: percentage with a minimum, flat per order, or none, with the commission on a 10,000 trade
+  - Credential reference (API brokers only)
+  - Automation by instrument type: one switch per instrument type the broker trades, off unless the
+    broker places orders, with a note naming covered markets whose own configuration blocks
+    automation (currently SG)
+  - Read-only Test connection for API brokers (credential, session, account read, paper account);
+    manual brokers say there is nothing to test
+  - Inline validation from the schema: a manual broker that places orders, streams positions, has
+    a paper account or a credential; an API broker without a valid reference (a key-like value is
+    rejected); order types without order placement or vice versa; automation without order
+    placement or for a type the broker does not trade; a percentage fee with no rate; a flat fee
+    with no amount
+  - Switching to manual, turning order placement off, or removing an instrument type clears what
+    can no longer apply (order types, automation), so the form never shows errors it caused itself
+  - /settings/credentials now has its own placeholder (SettingsCredentialsPage)
+  - Shared ConnectionTest takes an optional description
+
+MOCK DATA:
+  - GET/POST /api/v1/config/brokers, PUT /:id, POST /:id/revert, POST /config/brokers/test
+  - Seeds: markets, account currency and country from CANONICAL_BROKERS; fees are the order history
+    rules (IBKR 5 bps min 1.00, Zerodha 20.00 flat, HL 11.95 flat, private agent none); API usage,
+    latency and faults from System Health. HL and the private placement agent are manual
+  - Health: scenario faults, API usage against the limit (Zerodha 84%, as on System Health), an API
+    broker never connected, holdings (from HOLDING_PROFILES) outside the configured markets or
+    instrument types, and a disabled broker that still holds positions
+  - The test contacts nothing and has no order step. Known references are the two seeded ones
+  - History seeds are invented mock history: IBKR v1 covered US and UK only; Zerodha v1 allowed no
+    automation
+  - Save rejects markets that are not configured
+
+FILES CREATED:
+  - apps/web/src/data/schemas/config-brokers.ts
+  - apps/web/src/data/mock/generators/{brokerConfig,brokerConnectionTest}.ts;
+    mock/handlers/brokerConfigHandlers.ts
+  - apps/web/src/features/settings/brokers/** ; features/settings/SettingsCredentialsPage.tsx
+FILES MODIFIED:
+  - data/schemas/index.ts; data/api/{configQueries,index}.ts; mock/generators/index.ts;
+    mock/handlers/configHandlers.ts; mock/stores/configStore.ts
+  - shared/config/ConnectionTest.tsx (description prop)
+  - features/settings/SettingsBrokersPage.tsx — rewritten from the placeholder; routes/AppRoutes.tsx
+  - Docs: session 36 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (follows 38 and 40)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        IBKR healthy "Connected; 4 holdings, 35% of monthly API requests used"; Zerodha
+               "Needs attention: 84% of the monthly API request limit used"; HL and private agent
+               "Tracked from imported statements; 1 holding"
+  test:        IBKR passed credential, session (64 ms, System Health's figure), account read (USD,
+               4 positions) and paper account
+  validation:  "U1234567:hunter2" as the reference -> "This looks like a key, not a reference",
+               test blocked; switching to manual hid the credential, disabled order placement and
+               replaced the test with a note; a flat fee of 0 -> "A flat fee needs an amount"
+  save/revert: removing Digital asset saved v3 and health became "Holds BTCUSD outside the markets
+               or instrument types set here"; revert to v2 with a reason made v4, Healthy again;
+               IBKR v1 diff shows one row, Markets US, UK -> US, UK, JP, SG
+  new:         simulation notice; Groww saved as an API broker in simulation, "Needs attention: Not
+               connected yet"; its test failed on the unknown reference; turning on Places orders
+               showed order types and enabled automation switches; removing Long term removed its
+               automation
+  scenarios:   broker-disconnected -> IBKR Problem "Session expired; new orders to this broker are
+               paused" and a failed session check; loading-error -> "Broker configuration
+               unavailable"; reset to healthy
+  placeholder: /settings/credentials shows "Credentials configuration is not built yet"
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - A new API broker first reported "Connected; 0 holdings" though it had never connected. It now
+    warns "Not connected yet".
+  - Seeds listed instrument types in a different order from the checkboxes, so an edit showed as a
+    whole-list change in the diff. The version description now lists them in a fixed order.
+  - The Bash tool stopped working mid-session (temp-directory error); PowerShell was used instead.
+
+FINDINGS (out of scope, not fixed):
+  - Broker configuration is not read elsewhere: orders, approvals and holdings still use
+    CANONICAL_BROKERS and the fixed fee rules in orderHistory.ts
+  - The automation permission summary (S-29) should combine market, broker, instrument type and
+    strategy; this screen only notes markets that block automation
+  - Fee amounts are "in each trade's currency", matching order history, so a minimum of 1.00 means
+    1 USD on a US trade and 1 GBP on a UK trade; a real broker may state minimums per currency
+  - Instrument type labels elsewhere still read "Etf" and "Ipo" (humanizeToken); fixed on this
+    screen only
 ────────────────────────────────────────────────────────────
 ```
  

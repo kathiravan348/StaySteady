@@ -26,3 +26,4 @@ export * from './risk';
 export * from './config';
 export * from './config-markets';
 export * from './config-providers';
+export * from './config-brokers';
