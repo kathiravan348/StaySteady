@@ -7,6 +7,7 @@ import { BacktestConfigSchema } from '../../schemas';
 import {
   createMockGeneratorContext,
   describeRun,
+  generateBacktestDetail,
   generateBacktestResults,
   generateBacktestTrades,
   generateDataCoverage,
@@ -96,6 +97,14 @@ export const researchHandlers: readonly HttpHandler[] = [
     const result = backtests.find((item) => item.id === params['id']);
     if (result === undefined) return problem(404, 'Backtest not found');
     return HttpResponse.json(result);
+  }),
+
+  http.get('/api/v1/backtests/:id/detail', ({ params }) => {
+    const failed = failure('Failed to load backtest detail');
+    if (failed !== null) return failed;
+    const result = backtests.find((item) => item.id === params['id']);
+    if (result === undefined) return problem(404, 'Backtest not found');
+    return HttpResponse.json(generateBacktestDetail(ctx, result));
   }),
 
   http.get('/api/v1/backtests/:id/trades', ({ params, request }) => {

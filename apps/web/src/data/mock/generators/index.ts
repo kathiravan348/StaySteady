@@ -66,6 +66,10 @@ export { generateBacktestResults, generateBacktestTrades } from './backtests';
 export type { BacktestRunState } from './backtestSetup';
 export { describeRun, generateDataCoverage, generateMarketCostDefaults } from './backtestSetup';
 
+// Session 27: backtest result detail (UI spec 7.10)
+export type { EquityPoint } from './backtestDetail';
+export { generateBacktestDetail } from './backtestDetail';
+
 // M-11 News & Events
 export { generateNewsItems, generateCalendarEvents } from './newsEvents';
 

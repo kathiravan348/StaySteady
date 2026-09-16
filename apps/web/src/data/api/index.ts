@@ -36,10 +36,14 @@ export {
   useQuotes,
 } from './marketQueries';
 export { useAlerts, useApprovals, useSystemHealth } from './systemQueries';
+export type { BacktestTradeDto } from './researchQueries';
 export {
+  useBacktest,
   useBacktestCostDefaults,
+  useBacktestDetail,
   useBacktestRun,
   useBacktests,
+  useBacktestTrades,
   useCancelBacktestRun,
   useDataCoverage,
   useStartBacktestRun,

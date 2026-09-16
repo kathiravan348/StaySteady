@@ -17,3 +17,4 @@ export * from './news';
 export * from './research-data';
 export * from './system-health';
 export * from './backtest-setup';
+export * from './backtest-detail';

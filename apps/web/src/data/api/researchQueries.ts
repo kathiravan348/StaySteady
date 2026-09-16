@@ -7,26 +7,89 @@ import { z } from 'zod';
 
 import type {
   BacktestConfigDto,
+  BacktestDetailDto,
   BacktestResultDto,
   BacktestRunDto,
   DataCoverageDto,
   MarketCostDefaultsDto,
 } from '../schemas';
 import {
+  BacktestDetailSchema,
   BacktestResultSchema,
   BacktestRunSchema,
   DataCoverageListSchema,
   MarketCostDefaultsListSchema,
 } from '../schemas';
+
 import { apiGet, apiSend } from './apiClient';
 
 const SLOW_STALE_MS = 5 * 60_000;
 const RUN_POLL_MS = 400;
 
+// Trades come from the mock generator's own shape, so they are validated here rather than in M-02.
+const BacktestTradeSchema = z.object({
+  id: z.string().min(1),
+  backtestId: z.string().min(1),
+  instrumentSymbol: z.string().min(1),
+  side: z.enum(['buy', 'sell']),
+  entryDate: z.string().min(1),
+  exitDate: z.string().min(1),
+  returnPercent: z.number(),
+  pnlAmount: z.string().min(1),
+  isOutlier: z.boolean(),
+});
+const BacktestTradeListSchema = z.array(BacktestTradeSchema);
+export type BacktestTradeDto = z.infer<typeof BacktestTradeSchema>;
+
 export function useBacktests(): UseQueryResult<BacktestResultDto[]> {
   return useQuery({
     queryKey: ['backtests'],
     queryFn: ({ signal }) => apiGet('/api/v1/backtests', z.array(BacktestResultSchema), signal),
+  });
+}
+
+export function useBacktest(backtestId: string | null): UseQueryResult<BacktestResultDto> {
+  return useQuery({
+    queryKey: ['backtests', backtestId],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/backtests/${encodeURIComponent(backtestId ?? '')}`,
+        BacktestResultSchema,
+        signal,
+      ),
+    enabled: backtestId !== null,
+  });
+}
+
+export function useBacktestDetail(backtestId: string | null): UseQueryResult<BacktestDetailDto> {
+  return useQuery({
+    queryKey: ['backtests', backtestId, 'detail'],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/backtests/${encodeURIComponent(backtestId ?? '')}/detail`,
+        BacktestDetailSchema,
+        signal,
+      ),
+    enabled: backtestId !== null,
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+// `count` comes from the result's own trade total, so the list matches the headline metric.
+export function useBacktestTrades(
+  backtestId: string | null,
+  count?: number,
+): UseQueryResult<BacktestTradeDto[]> {
+  return useQuery({
+    queryKey: ['backtests', backtestId, 'trades', count ?? null],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `/api/v1/backtests/${encodeURIComponent(backtestId ?? '')}/trades${count === undefined ? '' : `?count=${count}`}`,
+        BacktestTradeListSchema,
+        signal,
+      ),
+    enabled: backtestId !== null,
+    staleTime: SLOW_STALE_MS,
   });
 }
 

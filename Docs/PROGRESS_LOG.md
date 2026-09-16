@@ -13,10 +13,10 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-07 done)
-OVERALL PROGRESS:   69% (45 of 65 active tasks done; Stage F, M, L 100%; Stage S 7 of 23)
-LAST UPDATED:       2026-09-16T01:19:31Z  |  local: 2026-09-16 06:49 IST
-LAST AGENT:         Claude Opus 5 (session 26)
+PHASE:              Stage S Screens — in progress (S-01 to S-08 done)
+OVERALL PROGRESS:   71% (46 of 65 active tasks done; Stage F, M, L 100%; Stage S 8 of 23)
+LAST UPDATED:       2026-09-16T01:36:40Z  |  local: 2026-09-16 07:06 IST
+LAST AGENT:         Claude Opus 5 (session 27)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 2,534 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               PASS — ESLint recommended + Prettier (0 errors, 0 warnings)
@@ -31,42 +31,44 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-07 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-08 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  Setup). The owner asked the agent to commit each finished screen (no push) and to take the
-  recommended option whenever a choice comes up (decision 26). typecheck, lint and build pass.
+  Setup, Backtest Results). The owner asked the agent to commit each finished screen (no push) and
+  to take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build
+  all pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 26: S-07 Backtest Setup — see session 26 end entry.
+  - Session 27: S-08 Backtest Results — see session 27 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-08 Backtest Results (UI spec 7.10 and section 8 — the heaviest metric and chart screen).
-  Route ROUTES.RESEARCH_BACKTEST_RESULTS(_ID) renders features/research/BacktestResultsPage.tsx,
-  still a placeholder. Data today: GET /api/v1/backtests (3 saved results, one flagged
-  hasOutlierDependency), GET /api/v1/backtests/:id, GET /api/v1/backtests/:id/trades (mock trades
-  with symbol, side, entry and exit dates, returnPercent, pnlAmount, isOutlier); hooks useBacktests
-  and the run hooks are in data/api/researchQueries.ts. Missing and likely needed: an equity curve
-  and drawdown series, per-period and per-market breakdowns, cost totals and validation data
-  (out-of-sample, parameter sensitivity) — add to the mock layer the same way (decision 33).
-  Charts available: AnalyticalChart presets (equity-curve, drawdown, monthly heatmap, donut) and the
-  library TradingChart; DataTable for the trade list.
+  Claim S-09 Backtest Comparison (UI spec 7.11). Route ROUTES.RESEARCH_BACKTEST_COMPARE
+  (/research/backtest/compare) renders features/research/BacktestComparePage.tsx, still a
+  placeholder; the results screen already links to it ("Compare with another run"). Needs: pick two
+  to four saved runs, overlay their equity curves normalised to a common start, a metric table with
+  differences highlighted, and a settings diff showing exactly what changed between runs. Data:
+  GET /api/v1/backtests (3 saved runs), GET /api/v1/backtests/:id, and /:id/detail (equity curve,
+  metric groups, costs, validation) with hooks useBacktests, useBacktest, useBacktestDetail,
+  useBacktestTrades in data/api/researchQueries.ts. The saved results carry no settings snapshot
+  yet, so the settings diff needs one added to the mock layer (decision 33).
 
-FILES TOUCHED (session 26): see session 26 end entry.
+FILES TOUCHED (session 27): see session 27 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
   - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutations that
     replace the cache with the server response (decision 33).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - Keep files near 300 lines (decision 18): Prettier expands data tables, so split them early.
+  - Keep files near 300 lines (decision 18): Prettier expands data tables and metric text, so split
+    them early.
   - MSW route order matters: register specific paths before /:id catch-alls.
   - Browser tests: synthetic mouse events do not reach lightweight-charts; React Aria keyboard drag
     needs real key presses; the mock scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id).
-  - Mock in-memory stores (watchlists, alert channel tests, backtest runs) reset on a page reload.
+  - Mock in-memory stores (watchlists, alert channel tests, backtest runs) and sessionStorage edits
+    (position, backtest result) reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
     JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -156,7 +158,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-05 | Watchlists | DONE | 100 | Session 24 | Library ReorderableList + DropTarget (React Aria drag and drop); mock watchlist write API with validation; optimistic mutations; quick-add filters; live rows with sparklines; all states verified |
 | S-06 | System Health | DONE | 100 | Session 25 | Watchdog endpoints that survive an API outage; component board, data freshness, reliability with UsageMeter headroom, incident history with filters, alert channel tests; all scenarios verified |
 | S-07 | Backtest Setup | DONE | 100 | Session 26 | Cost defaults per market, data coverage and run endpoints with progress and cancel; strategy, range presets, universe, capital, costs, granularity, benchmarks; pre-run checks; all states verified |
-| S-08 | Backtest Results | TODO | 0 | | |
+| S-08 | Backtest Results | DONE | 100 | Session 27 | Detail endpoint (equity, drawdown, monthly returns, metrics with explanations, breakdowns, costs, validation); headline strip, always-visible warnings, six tabs, session-only save/name/tag/promote; all states verified |
 | S-09 | Backtest Comparison | TODO | 0 | | |
 | S-10 | Strategy Library | TODO | 0 | | |
 | S-11 | Strategy Editor | TODO | 0 | | |
@@ -2457,6 +2459,103 @@ FINDINGS (out of scope, not fixed):
   - Granularity is offered as daily, hourly and 15-minute, but only daily history exists for the
     whole range; hourly and 15-minute would fall back to daily in a real run
   - Cost assumptions apply one market's configuration to a multi-market universe
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        27 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T01:20:13Z  |  local: 2026-09-16 06:50 IST (UTC+05:30)
+TASK CLAIMED:   S-08 Backtest Results
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-07 committed as 23633ae; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-07 commit, nothing changed since)
+
+SCOPE (UI spec 7.10 and section 8):
+  - Headline metric strip; equity curve with benchmark overlay; drawdown chart aligned beneath on
+    the same time axis
+  - Tabs: summary, trades (with the ability to jump to that moment on a chart), metrics grouped by
+    category, breakdown by year and market and instrument type and currency, costs, validation
+    (out-of-sample, parameter sensitivity, outlier dependency)
+  - Always-visible warnings: few-trade dependence, suspiciously high returns, data quality in range,
+    unrealistically low cost assumptions
+  - Actions: save, name, tag, compare, promote strategy stage
+  - Mock additions: equity and drawdown series, monthly returns, breakdowns, cost totals and
+    validation data behind a detail endpoint (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        27 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T01:36:40Z  |  local: 2026-09-16 07:06 IST (UTC+05:30)
+TASK CLAIMED:   S-08 Backtest Results
+END STATUS:     DONE
+
+COMPLETED:
+  - Mock data: GET /api/v1/backtests/:id/detail returns a weekly equity curve with a benchmark and
+    per-point drawdown, monthly returns derived from that curve, metric groups, breakdowns, cost
+    totals and validation. The curve is seeded per backtest, lands exactly on the saved final
+    capital, and its noise is tuned until the worst drawdown matches the saved metric, so chart and
+    headline never disagree
+  - Metrics (UI spec 8.2): return, risk and trade groups; each metric carries a plain-language
+    explanation and, where it misleads, its limitation (CAGR hides the path, Sharpe flatters rare
+    large losses, value at risk says nothing about the worst week)
+  - Breakdowns by year, market, instrument type and currency; yearly contributions split in
+    proportion to each year's return so they sum to the result
+  - Costs: fees, slippage and conversion, gross against net, cost per trade and share of gross
+  - Validation: earlier against later period, parameter sensitivity around the chosen setting, and
+    the share of profit carried by the top trades
+  - Screen: headline strip; always-visible "what could make this result misleading" panel (profit
+    concentrated in a few trades, suspiciously high annual return, low cost assumptions, estimated
+    bars, weak out-of-sample, negative net); equity curve with benchmark and a drawdown chart on the
+    same dates; tabs for summary, trades (sortable table, outlier badges and an outlier-only filter,
+    links to the instrument workspace), metrics, breakdown (monthly heatmap plus tables), costs
+    (donut and totals) and validation; actions to name, tag, save, compare and request a stage
+    promotion, all session-only; the id-less route lists saved runs
+
+FILES CREATED:
+  - apps/web/src/data/schemas/backtest-detail.ts
+  - apps/web/src/data/mock/generators/{backtestDetail,backtestMetrics,backtestMetricGroups}.ts
+  - apps/web/src/features/research/backtestResults/** (model, sections, hook, styles)
+FILES MODIFIED:
+  - apps/web/src/data/schemas/index.ts; mock/generators/index.ts; mock/handlers/researchHandlers.ts;
+    data/api/{researchQueries,index}.ts
+  - apps/web/src/features/research/BacktestResultsPage.tsx — rewritten as composition
+
+DECISIONS MADE:
+  - None beyond decisions 33 and 36, which already cover mock detail endpoints and session-only edits
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (one error fixed: the cost helper widened the currency to string)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     bt-03 shows +115.00% total, CAGR 29.07%, drawdown -18.20%, Sharpe 2.12, 185 trades,
+               costs USD 3,561.25 (3.00% of gross +118,561.25); warnings lead with "64% of the
+               profit came from 2 trades" and "An annualised 29.1% is high enough to be suspicious";
+               tabs verified: summary, trades ("185 trades · 2 outliers", outlier-only filter shows
+               the two +135.71% and +137.49% trades), metrics with explanations, breakdown (yearly
+               contributions -7,229.67 / +48,610.21 / +47,243.91 / +26,375.55 summing to the total),
+               costs, validation (earlier +55.78% Sharpe 2.33 against later +38.01% Sharpe 1.52,
+               sensitivity peaking at the chosen 20 bars); naming, tagging, saving and a promotion
+               request persist in sessionStorage and the withdrawal clears it
+  states:      id-less route lists the three saved runs; unknown id -> "Backtest not found";
+               loading-error -> "Backtest result unavailable" with the failing path
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The headline "Net of costs" repeated the total return, because the saved return is already net;
+    the tile now shows costs paid against gross.
+  - Yearly contributions were all the same size; they are now proportional to each year's return.
+  - The trade list used the endpoint's default of 160 rows while the headline said 185; the result's
+    own trade count is now passed through.
+  - The first metrics generator reached 383 lines; metric groups moved to their own file.
+
+FINDINGS (out of scope, not fixed):
+  - Trades are generated independently of the equity curve, so individual trade dates and profits do
+    not reconstruct the curve
+  - The benchmark is the same series for every backtest regardless of the traded universe
+  - Compare and promotion actions are placeholders: compare links to the S-09 screen and promotion
+    is recorded in the session only
 ────────────────────────────────────────────────────────────
 ```
 
