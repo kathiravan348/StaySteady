@@ -31,63 +31,62 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-11 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-12 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor). The owner asked
-  the agent to commit each finished screen (no push) and to take the recommended option whenever a
-  choice comes up (decision 26). typecheck, lint, build all pass.
+  Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
+  Approval Queue). The owner asked the agent to commit each finished screen (no push) and to take
+  the recommended option whenever a choice comes up (decision 26). typecheck, lint, build all pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 28: S-09 Backtest Comparison — see session 28 end entry.
-  - Session 29: S-10 Strategy Library — see session 29 end entry.
-  - Session 30: S-11 Strategy Editor — see session 30 end entry.
+  - Session 28: S-09 Backtest Comparison. Session 29: S-10 Strategy Library.
+  - Session 30: S-11 Strategy Editor. Session 31: S-12 Signals & Approval Queue.
 
 WHAT IS PARTIALLY DONE:
-  Nothing built is incomplete, but two states of S-11 could not be verified in the browser pane:
-  the 404 "Strategy not found" branch and the loading-error branch. Re-check them when the pane
-  stops parking failed queries (see the session 30 finding).
+  Nothing. The S-11 states session 30 could not verify are now verified (see the correction in the
+  session 31 end entry).
 
 EXACT NEXT STEP:
-  Claim S-12 Signals & Approval Queue (UI spec 7.12). Routes ROUTES.TRADING_SIGNALS
-  (/trading/signals) and ROUTES.TRADING_APPROVALS (/trading/approvals) render
-  features/trading/TradingSignalsPage.tsx and TradingApprovalsPage.tsx, both still placeholders.
-  Data already exists: useSignals (SignalSchema: strategyId, instrumentId, direction, targetQuantity,
-  targetPrice, confidence, rationale, generatedAt, expiresAt) and useApprovals (ApprovalSchema:
-  orderId, reason, status, requestedAt, expiresAt, decidedAt, decidedBy), plus a working mock write
-  endpoint POST /api/v1/approvals/:id/decide in tradingHandlers.ts. Strategy stage vocabulary and
-  the promotion wording live in features/research/strategyLibrary/model — keep them consistent.
+  Claim S-13 Orders (UI spec 7.13). Route ROUTES.TRADING_ORDERS (/trading/orders) renders
+  features/trading/TradingOrdersPage.tsx, still a placeholder. Needs: full order history and live
+  state; columns for instrument, market, broker, direction, quantity, order type, status, requested
+  price, filled price, slippage, fees, timestamps and originating strategy or manual; unconfirmed
+  orders visually escalated because those are the dangerous ones; filters by broker, market, status,
+  strategy and date; and a detail view showing one order's full lifecycle timeline. Data: useOrders
+  does not exist yet but GET /api/v1/orders is served from tradingHandlers.ts with 7 orders covering
+  filled, partially_filled, pending, unconfirmed and cancelled. OrderSchema has no broker, fees,
+  slippage, filled price or timeline, so an enriched endpoint is needed (decision 33), in the same
+  shape as the approval queue built in S-12.
 
-FILES TOUCHED (session 30): see session 30 end entry.
+FILES TOUCHED (session 31): see session 31 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
   - READ a component's props before using it. Badge variants are neutral, positive, negative,
-    warning, critical, info — there is no success or danger (Button does have danger).
-    LoadingState layouts are table, cards, chart, detail — there is no form.
-  - Money in a DTO is a string amount; formatMoney needs moneyFromDto first. formatRelativeTime
-    needs a branded IsoUtcTimestamp (toIsoUtcTimestamp on a plain string).
-  - usePriceHistories returns { histories: Map, isPending, error, refetch }.
-  - There is no global sr-only class; use the visually-hidden mixin in a module class.
-  - A React state updater must be pure: never call another setState inside one, or the work happens
-    twice in development.
-  - Indicators need their warm-up: evaluate over the full history and window the display, never the
-    other way round.
-  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutations that
-    replace the cache with the server response (decision 33). Need several of one query at once?
-    Export a queryOptions factory from data/api and feed it to useQueries (backtestDetailQueryOptions).
+    warning, critical, info — no success, no danger (Button does have danger). LoadingState
+    layouts are table, cards, chart, detail — no form.
+  - Money in a DTO is a string amount; formatMoney needs moneyFromDto. formatRelativeTime needs a
+    branded IsoUtcTimestamp. Mixing currencies is the easiest way to print a nonsense number:
+    convert through the FX table (convertMoneyWithTable) before comparing with portfolio totals.
+  - A React state updater must be pure: never call another setState inside one.
+  - Do not generate mock data at module evaluation in a handler file; build it on first use.
+  - Screens fetch only through data/api hooks (decision 22); writes use apiSend and return the full
+    resource set (decision 33). Several of one query at once: export a queryOptions factory and feed
+    it to useQueries (backtestDetailQueryOptions).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - Keep files near 300 lines (decision 18).
-  - MSW route order matters: register specific paths before /:id catch-alls.
-  - Browser pane: failed queries may park at fetchStatus "paused" and never error, so error states
-    can be unreachable; restarting the preview does not always clear it. Element refs go stale after
-    a re-render; modal content is portalled outside <main>, so read the dialog ref, not page text.
+  - Keep files near 300 lines (decision 18). MSW: register specific paths before /:id catch-alls.
+  - Browser pane: element refs go stale after a re-render and read_page truncates on long pages —
+    use find, and read a dialog by its ref because modal content is portalled outside <main>.
+    Label clicks may not toggle a wrapped checkbox; click the input, or call .click() on it.
     The mock scenario lives in localStorage — set it in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id)
     and always set it back to 'healthy'.
+  - Stale modules are common here: after adding an import or editing several files, a page can run
+    half-updated JS and throw ReferenceErrors for symbols that plainly exist. Restart the preview,
+    and if that does not clear it delete apps/web/node_modules/.vite and restart.
   - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
     file-writing tool.
   - Mock in-memory stores and sessionStorage edits (position, backtest result, strategy promotions,
-    strategy versions) reset on a page reload.
+    strategy versions, approval decisions) reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
     JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
@@ -181,7 +180,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-09 | Backtest Comparison | DONE | 100 | Session 28 | Settings snapshot on the detail response; library comparison-curves preset; run picker, normalised overlay, metric table with best/worst and spreads, settings diff; selection in the URL; all states verified |
 | S-10 | Strategy Library | DONE | 100 | Session 29 | Strategy library endpoint joining holdings and backtests; stage badges, allocation, backtest and live result with divergence, last run; filters by stage/market/type/performance; three-step promotion; all states verified |
 | S-11 | Strategy Editor | DONE | 100 | Session 30 | Recursive rule schema and draft endpoints; scope, nestable entry/exit rule builders, sizing, forced exits, news and risk; live validation; preview over real price history; version compare and revert. Error and not-found branches unverified in the pane (see session 30 end entry) |
-| S-12 | Signals & Approval Queue | TODO | 0 | | |
+| S-12 | Signals & Approval Queue | DONE | 100 | Session 31 | Signals feed with outcomes and blocking limits; approval queue with impact preview, risk checks, countdown, approve/modify/reject-with-reason and restricted bulk approve; enriched feed and queue endpoints; all states verified |
 | S-13 | Orders | TODO | 0 | | |
 | S-14 | Risk & Safety Panel | TODO | 0 | | |
 | S-15 | Configuration — markets | TODO | 0 | | |
@@ -2891,6 +2890,131 @@ FINDINGS (out of scope, not fixed):
   - The rule builder has no undo and no drag to reorder conditions
   - The preview uses the first instrument in scope only, and applies no sizing, costs or capital
   - Saving a version does not bump the version number; every saved version carries the same one
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        31 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T06:58:58Z  |  local: 2026-09-16 12:28 IST (UTC+05:30)
+TASK CLAIMED:   S-12 Signals & Approval Queue
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-11 committed as 6f2d4e5; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-11 commit, nothing changed since)
+
+SCOPE (UI spec 7.12) — two routes, /trading/signals and /trading/approvals:
+  - Signals feed: every signal generated including ones the safety layer rejected, showing
+    instrument, direction, strategy, trigger reason, timestamp and outcome; a rejected signal says
+    which limit blocked it
+  - Approval queue: pending orders awaiting a decision, each showing the proposed action, quantity,
+    estimated cost, current price, the reasoning and the risk checks it passed
+  - Impact preview: what the portfolio looks like after the action, with new allocation and the
+    limits left
+  - Countdown when the opportunity is time-sensitive
+  - Approve, modify, reject, and reject with a reason
+  - Bulk approve deliberately restricted or requiring extra confirmation
+  - Clear separation between simulated and real proposed actions
+  - Mock addition: SignalSchema carries no outcome or blocking limit and ApprovalSchema carries no
+    action, cost, risk checks or impact, so both need enriched endpoints derived from the existing
+    signals, orders, holdings and quotes (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        31 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T07:38:42Z  |  local: 2026-09-16 13:08 IST (UTC+05:30)
+TASK:           S-12 Signals & Approval Queue — DONE
+
+WHAT WAS BUILT (UI spec 7.12) — two screens:
+  Signals feed (/trading/signals):
+  - Every signal with instrument, direction, quantity, target price, strategy, trigger reason,
+    confidence, timestamp and outcome
+  - A blocked signal names the limit that stopped it and what it would have taken to pass
+  - Counts across the top: total, awaiting approval, blocked, simulated
+  - Filters by outcome, strategy, direction and real-versus-simulated
+  Approval queue (/trading/approvals):
+  - Proposed action, quantity, order type, estimated cost, current price and the reasoning
+  - Impact preview: position value, allocation, cash and strategy capital before and after, and the
+    positions this strategy would then have open against its own limit
+  - Risk checks derived from the strategy's real limits, each saying what was examined
+  - Countdown that ticks under an hour and says plainly when a proposal has expired
+  - Approve, modify (approve a changed quantity or price), reject, and reject with a reason
+  - Bulk approve behind a separate dialog that lists every order, names the ones that failed a risk
+    check, says how many are simulated, and does nothing until APPROVE is typed
+  - Simulated proposals are marked on the card and drawn with a dashed border, never mistakable for
+    real ones
+
+MOCK DATA:
+  - GET /api/v1/signals/feed and /api/v1/approvals/queue; POST /decide now validates its body,
+    records modified quantity and price, and returns the whole queue (decision 33)
+  - Simulated versus real is derived from the strategy's lifecycle stage: anything below
+    semi-automatic never reaches a broker, which matches S-10's stage vocabulary
+  - Two more pending orders and approvals seeded so the queue has enough to decide on
+
+FILES CREATED:
+  - apps/web/src/data/schemas/trading-queue.ts
+  - apps/web/src/data/mock/generators/{signalFeed,approvalQueue}.ts
+  - apps/web/src/features/trading/signalsFeed/** and approvalQueue/**
+FILES MODIFIED:
+  - apps/web/src/data/schemas/index.ts; mock/generators/{trading,index}.ts;
+    mock/handlers/tradingHandlers.ts; data/api/{tradingQueries,index}.ts; data/api/queryClient.ts
+  - apps/web/src/features/trading/{TradingSignalsPage,TradingApprovalsPage}.tsx — rewritten
+
+DECISIONS MADE:
+  - None beyond decisions 22, 26 and 33
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     feed shows 8 signals, 3 awaiting approval, 2 blocked, 2 simulated; NVDA blocked by
+               "Maximum position size" (120 shares would be 16.1% against a 15% limit) and BTCUSD by
+               "Daily loss limit"; INR prices render as rupees; filters narrow correctly
+  queue:       3 pending. AAPL buy 30 costs $4,680.60 at $156.02, allocation 17.00% to 21.80%,
+               cash $12,450.00 to $7,769.40, 2 of 4 positions for that strategy, expired 13 hours
+               ago and said so. TATAMOTORS buy 60 at 985 INR converts to $804.33, allocation 0.82%,
+               cash to $11,645.67. XAUUSD sell 2 reduces the position $40,782.82 to $37,682.82.
+  decisions:   approve moves a card to "Already decided" and drops the count; reject does nothing
+               until a reason is typed, then keeps the reason on the decided card; bulk approve
+               lists both orders, warns that 2 failed a risk check, and does nothing until APPROVE
+               is typed, after which the queue reads "0 awaiting you"
+  states:      loading-error gives "Signals feed unavailable" and "Approval queue unavailable" with
+               the failing path and Try again
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The impact preview mixed currencies: a 59,100 rupee order was divided by a dollar portfolio and
+    subtracted from dollar cash, reading as 60% of the portfolio and cash of -$46,650. Allocation
+    and cash now convert through the FX table first, the same way the portfolio generator does.
+  - Concurrent positions counted every holding in the portfolio against one strategy's limit, so a
+    card read "7 of 4". Only that strategy's positions are counted now.
+  - A seeded approval reason claimed a $6,800 trade over a $5,000 threshold while the derived cost
+    was $4,680.60. The reason now states something the numbers support.
+  - The handlers generated their approval and order stores at module evaluation, which depends on
+    the whole generator barrel being initialised. They are built on first use instead.
+  - Wording: "1 positions", "against a 8% limit", "1 of these are simulated".
+
+DECISION-CHANGE / CORRECTION TO SESSION 30:
+  - Session 30 recorded that error and not-found states could not be reached in the browser pane and
+    blamed duplicate @tanstack/react-query module instances. That was wrong. There is exactly one
+    copy installed. The real cause was retry: a failed query's RETRY parks at fetchStatus "paused"
+    (failureCount 1, no error surfaced), so the screen sits on loading skeletons forever.
+    queryClient now sets retry: 0, because the mock API is in-page and deterministic so a retry only
+    repeats the same failure. With that change every previously unreachable state renders:
+      - S-11 unknown id -> "Strategy not found. No strategy has the id ..."
+      - S-11 loading-error -> "Strategy unavailable" with the failing path
+      - S-12 both screens -> their error states
+    networkMode 'always' (added in session 30) is kept: it is correct for an in-page API, though it
+    was not what fixed this.
+
+FINDINGS (out of scope, not fixed):
+  - Approving does not change the underlying order's status, so the Orders screen (S-13) will still
+    show those orders as pending
+  - Signal outcomes are fixed in the generator rather than following from the approval decisions, so
+    approving an order does not flip its signal from "awaiting approval" to "executed"
+  - The feed has no date range filter and no pagination
+  - Estimated cost ignores commission, slippage and conversion charges, which the backtest costs
+    model already knows how to express
 ────────────────────────────────────────────────────────────
 ```
 

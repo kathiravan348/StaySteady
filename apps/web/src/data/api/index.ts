@@ -9,7 +9,11 @@ export {
   usePortfolioSummary,
   useTransactions,
 } from './portfolioQueries';
+export type { DecideApprovalVariables } from './tradingQueries';
 export {
+  useApprovalQueue,
+  useDecideApproval,
+  useSignalFeed,
   useSignals,
   useStrategies,
   useStrategyDraft,

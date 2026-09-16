@@ -1,31 +1,45 @@
-// Approval Queue screen (UI spec 11.2).
+// Approval queue (UI spec 7.12): the screen where money decisions actually get made.
 
+import { ErrorState, LoadingState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
+
+import { useApprovalQueue } from '../../data/api';
+import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { QueueView } from './approvalQueue/sections/QueueView';
+
+function QueueBody(): ReactElement {
+  const queue = useApprovalQueue();
+
+  if (queue.isError) {
+    return (
+      <ErrorState
+        title="Approval queue unavailable"
+        message={queue.error.message}
+        onRetry={() => {
+          void queue.refetch();
+        }}
+      />
+    );
+  }
+  if (queue.data === undefined) {
+    return <LoadingState layout="cards" count={3} />;
+  }
+  return <QueueView requests={queue.data} />;
+}
 
 export function TradingApprovalsPage(): ReactElement {
   return (
     <PageShell
-      title="Trade Approval Queue"
-      description="Orders pending owner review before dispatch to execution layer"
+      title="Approval queue"
+      description="Orders waiting on your decision, what each would cost, and what it would do to the portfolio."
       breadcrumbs={[
-        { label: 'Overview', to: '/overview' },
-        { label: 'Trading', to: '/trading/orders' },
+        { label: 'Overview', to: ROUTES.OVERVIEW },
+        { label: 'Signals', to: ROUTES.TRADING_SIGNALS },
         { label: 'Approvals' },
       ]}
     >
-      <div
-        style={{
-          padding: 'var(--space-4)',
-          backgroundColor: 'var(--surface-raised)',
-          borderRadius: 'var(--radius-md)',
-          border: 'var(--border-width-thin) solid var(--border-subtle)',
-        }}
-      >
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Manual approval queue for semi-automated execution modes.
-        </p>
-      </div>
+      <QueueBody />
     </PageShell>
   );
 }

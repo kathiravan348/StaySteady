@@ -171,6 +171,34 @@ export function generateOrders(ctx: MockGeneratorContext): readonly OrderDto[] {
       createdAt: toIsoUtcTimestamp('2026-09-12T09:30:00Z'),
       updatedAt: toIsoUtcTimestamp('2026-09-12T15:30:00Z'),
     },
+    // Session 31: two more orders awaiting approval, so the queue (UI spec 7.12) has enough to
+    // decide on and bulk approval means something.
+    {
+      id: toOrderId('ord-0006-pending'),
+      strategyId: toStrategyId('strat-rsi-reversion'),
+      instrumentId: toInstrumentId('inst-in-tatamotors'),
+      side: 'buy',
+      type: 'limit',
+      quantity: toQuantity(60),
+      filledQuantity: toQuantity(0),
+      limitPrice: { amount: '985.00', currency: 'INR' },
+      status: 'pending',
+      createdAt: ctx.referenceTime,
+      updatedAt: ctx.referenceTime,
+    },
+    {
+      id: toOrderId('ord-0007-pending'),
+      strategyId: toStrategyId('strat-breakout-vol'),
+      instrumentId: toInstrumentId('inst-us-gold'),
+      side: 'sell',
+      type: 'limit',
+      quantity: toQuantity(2),
+      filledQuantity: toQuantity(0),
+      limitPrice: { amount: '1550.00', currency: 'USD' },
+      status: 'pending',
+      createdAt: ctx.referenceTime,
+      updatedAt: ctx.referenceTime,
+    },
   ];
 
   return parseGeneratedList(OrderSchema, orders, 'orders');
@@ -181,7 +209,8 @@ export function generateApprovals(ctx: MockGeneratorContext): readonly ApprovalD
     {
       id: 'appr-001-expiring',
       orderId: toOrderId('ord-0003-pending'),
-      reason: 'Semi-automatic trade size exceeds $5,000 threshold ($6,800 proposed).',
+      reason:
+        'Adding to a position already near its single-position limit, so the strategy asks before buying more.',
       status: 'pending',
       requestedAt: ctx.referenceTime,
       expiresAt: toIsoUtcTimestamp('2026-09-15T18:00:00Z'),
@@ -195,6 +224,22 @@ export function generateApprovals(ctx: MockGeneratorContext): readonly ApprovalD
       expiresAt: toIsoUtcTimestamp('2026-09-14T16:00:00Z'),
       decidedAt: toIsoUtcTimestamp('2026-09-14T14:25:00Z'),
       decidedBy: 'owner',
+    },
+    {
+      id: 'appr-003-currency',
+      orderId: toOrderId('ord-0006-pending'),
+      reason: 'Buying in INR adds foreign currency exposure above the 5% unhedged threshold.',
+      status: 'pending',
+      requestedAt: ctx.referenceTime,
+      expiresAt: toIsoUtcTimestamp('2026-09-16T11:30:00Z'),
+    },
+    {
+      id: 'appr-004-trailing',
+      orderId: toOrderId('ord-0007-pending'),
+      reason: 'Gold position breached its 15% trailing stop; the strategy proposes closing half.',
+      status: 'pending',
+      requestedAt: ctx.referenceTime,
+      expiresAt: toIsoUtcTimestamp('2026-09-18T20:00:00Z'),
     },
   ];
 

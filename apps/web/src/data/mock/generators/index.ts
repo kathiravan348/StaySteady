@@ -101,3 +101,7 @@ export { generateStrategyLibrary } from './strategyLibrary';
 
 // Session 30: strategy definitions for the editor (UI spec 7.8)
 export { generateStrategyDraft, generateStrategyVersions } from './strategyDrafts';
+
+// Session 31: signals feed and approval queue (UI spec 7.12)
+export { generateSignalFeed } from './signalFeed';
+export { generateApprovalQueue } from './approvalQueue';

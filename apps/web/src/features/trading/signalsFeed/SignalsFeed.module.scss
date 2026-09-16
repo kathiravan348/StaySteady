@@ -1,0 +1,192 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.summaryLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.summaryValue {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 10rem;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.input {
+  min-width: 0;
+  min-height: var(--density-control-height);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+/* Feed rows */
+
+.feedList {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+
+  @media (max-width: 60rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* A blocked signal is marked with a rule as well as a badge, so it reads as different at a glance
+   without relying on colour. */
+
+.rowBlocked {
+  border-inline-start: var(--border-width-thick, 2px) solid
+    var(--border-strong, var(--border-default));
+}
+
+.headline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+}
+
+.symbol {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.side {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.buy {
+  color: var(--change-gain);
+}
+
+.sell {
+  color: var(--change-loss);
+}
+
+.rationale {
+  grid-column: 1;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.blockedNote {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}
+
+.side2 {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+  justify-items: end;
+
+  @media (max-width: 60rem) {
+    justify-items: start;
+  }
+}
+
+.numeric {
+  @include mx.numeric(end);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.link {
+  font: inherit;
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}

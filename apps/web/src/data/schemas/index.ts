@@ -20,3 +20,4 @@ export * from './backtest-setup';
 export * from './backtest-detail';
 export * from './strategy-library';
 export * from './strategy-rules';
+export * from './trading-queue';

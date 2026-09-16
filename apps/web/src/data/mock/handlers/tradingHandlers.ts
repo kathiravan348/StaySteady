@@ -3,8 +3,10 @@
 import { http, HttpResponse, type HttpHandler } from 'msw';
 import {
   createMockGeneratorContext,
+  generateApprovalQueue,
   generateApprovals,
   generateOrders,
+  generateSignalFeed,
   generateSignals,
   generateStrategies,
   generateStrategyDraft,
@@ -12,11 +14,58 @@ import {
   generateStrategyVersions,
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
-import { nowUtc } from '../../../shared/types/dateTime';
+import type { ApprovalDto, ApprovalRequestDto, OrderDto } from '../../schemas';
+import { ApprovalDecisionSchema } from '../../schemas';
+import { nowUtc, type IsoUtcTimestamp } from '../../../shared/types/dateTime';
+import { toQuantity } from '../../../shared/types/quantities';
 
 const ctx = createMockGeneratorContext();
-let currentApprovals = [...generateApprovals(ctx)];
-const currentOrders = [...generateOrders(ctx)];
+
+// Built on first use rather than at module evaluation. Generating during evaluation depends on
+// every module in the generator barrel already being initialised, and through a circular import
+// that is not guaranteed: the first request could see an undefined binding and fail.
+let currentApprovals: ApprovalDto[] | null = null;
+let currentOrders: OrderDto[] | null = null;
+
+function approvalsStore(): ApprovalDto[] {
+  currentApprovals ??= [...generateApprovals(ctx)];
+  return currentApprovals;
+}
+
+function ordersStore(): OrderDto[] {
+  currentOrders ??= [...generateOrders(ctx)];
+  return currentOrders;
+}
+
+// Decisions live in memory for the page load (decision 33). The queue is regenerated per request,
+// so without this a decided approval would come straight back as pending.
+interface DecisionRecord {
+  readonly status: 'approved' | 'rejected';
+  readonly decidedAt: IsoUtcTimestamp;
+  readonly decisionReason: string | null;
+  readonly quantity: number | null;
+  readonly limitPrice: string | null;
+}
+const decisions = new Map<string, DecisionRecord>();
+
+function decidedQueue(): readonly ApprovalRequestDto[] {
+  return generateApprovalQueue(ctx).map((item): ApprovalRequestDto => {
+    const decision = decisions.get(item.approvalId);
+    if (decision === undefined) return item;
+    return {
+      ...item,
+      status: decision.status,
+      decidedAt: decision.decidedAt,
+      decidedBy: 'owner',
+      decisionReason: decision.decisionReason,
+      quantity: decision.quantity === null ? item.quantity : toQuantity(decision.quantity),
+      limitPrice:
+        decision.limitPrice === null || item.limitPrice === null
+          ? item.limitPrice
+          : { ...item.limitPrice, amount: decision.limitPrice },
+    };
+  });
+}
 
 export const tradingHandlers: readonly HttpHandler[] = [
   http.get('/api/v1/strategies', () => {
@@ -59,6 +108,15 @@ export const tradingHandlers: readonly HttpHandler[] = [
     });
   }),
 
+  // Registered before /api/v1/signals, so the specific path wins.
+  http.get('/api/v1/signals/feed', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load the signals feed' }, { status: 500 });
+    }
+    return HttpResponse.json(generateSignalFeed(ctx), { status: 200 });
+  }),
+
   http.get('/api/v1/signals', () => {
     const scenario = getActiveDeveloperScenario();
     if (scenario === 'loading-error') {
@@ -72,7 +130,16 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load orders' }, { status: 500 });
     }
-    return HttpResponse.json(currentOrders, { status: 200 });
+    return HttpResponse.json(ordersStore(), { status: 200 });
+  }),
+
+  // Registered before /api/v1/approvals, so the specific path wins.
+  http.get('/api/v1/approvals/queue', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load the approval queue' }, { status: 500 });
+    }
+    return HttpResponse.json(decidedQueue(), { status: 200 });
   }),
 
   http.get('/api/v1/approvals', () => {
@@ -80,27 +147,44 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load approvals' }, { status: 500 });
     }
-    return HttpResponse.json(currentApprovals, { status: 200 });
+    return HttpResponse.json(approvalsStore(), { status: 200 });
   }),
 
+  // Modifying is approving a changed order, so a modified quantity or price arrives with the
+  // decision and the whole queue comes back (decision 33).
   http.post('/api/v1/approvals/:id/decide', async ({ params, request }) => {
+    const id = params['id'] as string;
+    let body: unknown;
     try {
-      const body = (await request.json()) as { decision?: 'approved' | 'rejected' };
-      const id = params['id'] as string;
-      currentApprovals = currentApprovals.map((appr) => {
-        if (appr.id === id) {
-          return {
-            ...appr,
-            status: body.decision ?? 'approved',
-            decidedAt: nowUtc(),
-            decidedBy: 'owner',
-          };
-        }
-        return appr;
-      });
-      return HttpResponse.json({ success: true, approvals: currentApprovals }, { status: 200 });
+      body = await request.json();
     } catch {
       return HttpResponse.json({ error: 'Invalid decision payload' }, { status: 400 });
     }
+
+    const parsed = ApprovalDecisionSchema.safeParse(body);
+    if (!parsed.success) {
+      return HttpResponse.json(
+        { error: `Invalid decision payload: ${parsed.error.issues[0]?.message ?? 'unknown'}` },
+        { status: 400 },
+      );
+    }
+    if (!approvalsStore().some((approval) => approval.id === id)) {
+      return HttpResponse.json({ error: 'Approval not found' }, { status: 404 });
+    }
+
+    const decidedAt = nowUtc();
+    decisions.set(id, {
+      status: parsed.data.decision,
+      decidedAt,
+      decisionReason: parsed.data.reason,
+      quantity: parsed.data.modifiedQuantity,
+      limitPrice: parsed.data.modifiedLimitPrice,
+    });
+    currentApprovals = approvalsStore().map((approval) =>
+      approval.id === id
+        ? { ...approval, status: parsed.data.decision, decidedAt, decidedBy: 'owner' }
+        : approval,
+    );
+    return HttpResponse.json(decidedQueue(), { status: 200 });
   }),
 ];
