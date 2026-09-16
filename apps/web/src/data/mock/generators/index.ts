@@ -95,3 +95,6 @@ export { generateInstrumentFundamentals, generateWatchlists } from './researchDa
 // M-15 Live Ticking
 export type { QuoteTickListener } from './ticker';
 export { tickQuotes, liveTicker } from './ticker';
+
+// Session 29: strategy library entries (UI spec 7.7)
+export { generateStrategyLibrary } from './strategyLibrary';

@@ -7,6 +7,7 @@ import {
   generateOrders,
   generateSignals,
   generateStrategies,
+  generateStrategyLibrary,
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { nowUtc } from '../../../shared/types/dateTime';
@@ -22,6 +23,17 @@ export const tradingHandlers: readonly HttpHandler[] = [
       return HttpResponse.json({ error: 'Failed to load strategies' }, { status: 500 });
     }
     return HttpResponse.json(generateStrategies(ctx), { status: 200 });
+  }),
+
+  // Registered before /api/v1/strategies/:id would be, so the specific path wins.
+  http.get('/api/v1/strategies/library', () => {
+    const scenario = getActiveDeveloperScenario();
+    if (scenario === 'loading-error') {
+      return HttpResponse.json({ error: 'Failed to load the strategy library' }, { status: 500 });
+    }
+    return HttpResponse.json(generateStrategyLibrary(ctx, scenario === 'empty-portfolio'), {
+      status: 200,
+    });
   }),
 
   http.get('/api/v1/signals', () => {

@@ -31,30 +31,41 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-09 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-10 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
-  Setup, Backtest Results, Backtest Comparison). The owner asked the agent to commit each finished
-  screen (no push) and to take the recommended option whenever a choice comes up (decision 26).
-  typecheck, lint, build all pass.
+  Setup, Backtest Results, Backtest Comparison, Strategy Library). The owner asked the agent to
+  commit each finished screen (no push) and to take the recommended option whenever a choice comes
+  up (decision 26). typecheck, lint, build all pass.
 
 WHAT I COMPLETED THIS SESSION:
   - Session 28: S-09 Backtest Comparison — see session 28 end entry.
+  - Session 29: S-10 Strategy Library — see session 29 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-10 Strategy Library (UI spec 7.7). Route ROUTES.RESEARCH_STRATEGIES
-  (/research/strategies) renders features/research/ResearchStrategiesPage.tsx, still a placeholder.
-  Data already exists: GET /api/v1/strategies with useStrategies in data/api/tradingQueries.ts,
-  StrategySchema carries id, name, version, stage (draft, backtested, observation, semi_automatic,
-  fully_automatic), timeframe and instrument ids. The backtest results screen already writes
-  promotion requests to sessionStorage, so the library should read the same lifecycle stages.
+  Claim S-11 Strategy Editor (UI spec 7.8). Route ROUTES.RESEARCH_EDITOR (/research/editor) renders
+  features/research/ResearchEditorPage.tsx, still a placeholder. Needs: scope (markets, instrument
+  types, instruments), a visual entry-condition rule builder with add/group/nest, exit conditions
+  separate from entry including forced exits, position sizing, capital allocation limits, holding
+  period expectations, optional news and event inputs, per-strategy risk overrides, a live
+  validation panel naming conflicts and impossible conditions, a preview of where the conditions
+  would have triggered on a recent chart, and version history with compare and revert. Data:
+  StrategySchema (data/schemas/research.ts) carries only id, name, description, version, stage,
+  universe, timeframe and a flat parameters record — it has no rule tree, so the editor needs a
+  rule schema and a mock draft store (decision 33). The library screen (S-10) reads stages and
+  shows promotion requests, so keep the stage vocabulary identical.
 
-FILES TOUCHED (session 28): see session 28 end entry.
+FILES TOUCHED (session 29): see session 29 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
+  - READ a component's props before using it. Badge variants are neutral, positive, negative,
+    warning, critical, info — there is no success or danger. Button does have danger.
+  - Money in a DTO is a string amount; formatMoney needs moneyFromDto first. formatRelativeTime
+    needs a branded IsoUtcTimestamp (toIsoUtcTimestamp on a plain string).
+  - There is no global sr-only class; use the visually-hidden mixin in a module class.
   - Screens fetch only through data/api hooks (decision 22); writes use apiSend and mutations that
     replace the cache with the server response (decision 33). Need several of one query at once?
     Export a queryOptions factory from data/api and feed it to useQueries — never call apiGet in a
@@ -67,12 +78,15 @@ WATCH OUT FOR:
     needs real key presses; the mock scenario lives in localStorage — test states in ONE tab via
     (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id)
     and always set it back to 'healthy' afterwards.
-  - Element refs from read_page go stale after the page re-renders; re-read before clicking.
+  - Element refs from read_page go stale after the page re-renders; re-read before clicking. Modal
+    content is portalled outside <main>, so get_page_text misses it — read the dialog ref instead.
+  - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
+    file-writing tool.
   - Adding an import while the dev server runs can leave a stale cached module in the browser
     ("X is not defined" for a symbol that plainly is imported). Restart the preview and reload
     before believing it; confirm by loading a route that does not use the symbol.
   - Mock in-memory stores (watchlists, alert channel tests, backtest runs) and sessionStorage edits
-    (position, backtest result) reset on a page reload.
+    (position, backtest result, strategy promotions) reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs — anything needing echarts or
     lightweight-charts option types belongs in the library as a preset.
   - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
@@ -165,7 +179,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-07 | Backtest Setup | DONE | 100 | Session 26 | Cost defaults per market, data coverage and run endpoints with progress and cancel; strategy, range presets, universe, capital, costs, granularity, benchmarks; pre-run checks; all states verified |
 | S-08 | Backtest Results | DONE | 100 | Session 27 | Detail endpoint (equity, drawdown, monthly returns, metrics with explanations, breakdowns, costs, validation); headline strip, always-visible warnings, six tabs, session-only save/name/tag/promote; all states verified |
 | S-09 | Backtest Comparison | DONE | 100 | Session 28 | Settings snapshot on the detail response; library comparison-curves preset; run picker, normalised overlay, metric table with best/worst and spreads, settings diff; selection in the URL; all states verified |
-| S-10 | Strategy Library | TODO | 0 | | |
+| S-10 | Strategy Library | DONE | 100 | Session 29 | Strategy library endpoint joining holdings and backtests; stage badges, allocation, backtest and live result with divergence, last run; filters by stage/market/type/performance; three-step promotion; all states verified |
 | S-11 | Strategy Editor | TODO | 0 | | |
 | S-12 | Signals & Approval Queue | TODO | 0 | | |
 | S-13 | Orders | TODO | 0 | | |
@@ -2656,6 +2670,112 @@ FINDINGS (out of scope, not fixed):
   - Curves are aligned by calendar date with the last value carried forward; runs over different
     periods are comparable in shape but their start dates are not re-based to a common day 0
   - The settings snapshot is generated per run rather than recorded when the run was executed
+────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        29 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T06:04:53Z  |  local: 2026-09-16 11:34 IST (UTC+05:30)
+TASK CLAIMED:   S-10 Strategy Library
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-09 committed as a689634; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-09 commit, nothing changed since)
+
+SCOPE (UI spec 7.7):
+  - Card or table listing of every strategy
+  - Per entry: name and description, lifecycle stage badge (draft, backtested, observation,
+    semi-automatic, fully automatic), markets and instrument types, capital allocated, backtest
+    headline result, live result to date where applicable, divergence of live against backtest,
+    last run timestamp and status
+  - Filters by stage, market, instrument type and performance
+  - Stage promotion that is deliberately multi-step, never a single click
+  - Mock addition: StrategySchema carries none of the allocation, live result, divergence or run
+    status, so a strategy library endpoint must derive them from existing strategies, saved
+    backtests and holdings (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        29 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T06:24:44Z  |  local: 2026-09-16 11:54 IST (UTC+05:30)
+TASK:           S-10 Strategy Library — DONE
+
+WHAT WAS BUILT (UI spec 7.7):
+  - Card listing of every strategy with name, description, version, timeframe, markets, instrument
+    types and instruments
+  - Lifecycle stage badge whose colour rises with how much the strategy may do unattended
+  - Capital allocated with its share of the portfolio; backtest headline; live result to date with
+    gain and open positions; divergence of live against the backtest's annual expectation
+  - Last run timestamp, status and what the run actually did
+  - Filters by stage, market, instrument type and performance, with options built from the data so
+    no dead choice is ever offered
+  - Promotion in three steps (review the consequence, acknowledge every unmet condition one by one,
+    confirm); Continue stays disabled until each unmet condition is ticked
+
+MOCK DATA:
+  - New strategy library endpoint: GET /api/v1/strategies/library, registered before any
+    /strategies/:id path would be
+  - StrategyLibraryEntrySchema joins each strategy to the holdings it opened and the backtest it was
+    proven with, so allocation, live return, divergence and run status are derived rather than
+    invented (decision 33)
+
+FILES CREATED:
+  - apps/web/src/data/schemas/strategy-library.ts
+  - apps/web/src/data/mock/generators/strategyLibrary.ts
+  - apps/web/src/features/research/strategyLibrary/** (model, sections, hook, styles)
+FILES MODIFIED:
+  - apps/web/src/data/schemas/index.ts; mock/generators/index.ts; mock/handlers/tradingHandlers.ts;
+    data/api/{tradingQueries,index}.ts
+  - apps/web/src/features/research/ResearchStrategiesPage.tsx — rewritten as composition
+
+DECISIONS MADE:
+  - None beyond decisions 22, 26 and 33
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (six errors fixed, all from inferred component APIs)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     5 strategies listed. Dual Moving Average Momentum: $46,670.42 allocated (47.60%),
+               backtest +84.25%, live +4.01% (+$1,799.33, 2 open positions), "Diverged — live
+               return is 18.57 points behind the backtested 22.58% a year", succeeded 19h ago.
+               Donchian Channel Breakout: never backtested, live -29.21% (-$17,234.71), failed run
+               "gold price history had a gap the strategy could not span". Draft strategy: never
+               run, no allocation. Gain arithmetic checks out: 46,670.42 / 1.0401 = 44,871.09, so
+               the gain is 1,799.33.
+  filters:     stage=Draft shows 1 of 5; options list only the markets and types present in data
+  promotion:   draft strategy reports "3 conditions are not met"; Continue does nothing until all
+               three are ticked; confirming records the request, which survives a reload
+               (sessionStorage), and Withdraw restores the Promote button
+  states:      loading-error -> "Strategy library unavailable" with the failing path and Try again
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I wrote four components against component APIs I had inferred rather than read, and typecheck
+    rejected all of it: Badge has no 'success' or 'danger' variant (the union is neutral, positive,
+    negative, warning, critical, info), formatMoney takes a Money and needs moneyFromDto on a DTO,
+    and formatRelativeTime needs a branded IsoUtcTimestamp, not the plain string my sessionStorage
+    schema stores.
+  - I labelled the acknowledge checkboxes with a global "sr-only" class that does not exist in this
+    project, so the label text would have rendered visibly. This project has a visually-hidden
+    mixin; the module now defines .visuallyHidden from it.
+  - The generator emitted live.value, which duplicated allocatedCapital by construction, while
+    gainLoss and openPositions were generated and never shown. Removed the duplicate, showed the
+    other two.
+  - A bash heredoc mangled the generator file because the content mixes single quotes, apostrophes
+    and backtick template literals; the file-writing tool handled it.
+
+FINDINGS (out of scope, not fixed):
+  - InstrumentTypeSchema mixes holding horizon (intraday, swing, long_term) with asset class (etf,
+    bond, commodity), so a strategy reads "Etf, Long term" under instrument types. Pre-existing M-02
+    taxonomy shared with other screens; changing it would ripple.
+  - Last-run data is synthesised per lifecycle stage rather than recorded by a scheduler, and one
+    strategy is pinned to a failed run so the failure state appears somewhere
+  - The empty-portfolio scenario zeroes allocations but still lists every strategy, so the screen's
+    EmptyState is only reachable if no strategies exist at all
+  - Live return is weighted by portfolio allocation share, so strategies holding several currencies
+    are compared in base currency only
 ────────────────────────────────────────────────────────────
 ```
 

@@ -1,0 +1,230 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack,
+.section {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+/* Filter bar */
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 11rem;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.input {
+  min-height: var(--density-control-height);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+/* Strategy cards */
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.cardHeader {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.metric {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.metricLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.metricValue {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.positive {
+  color: var(--change-gain);
+}
+
+.negative {
+  color: var(--change-loss);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+/* Divergence and run status lines */
+
+.statusRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Promotion dialog */
+
+.dialogBody {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+}
+
+.stepList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.stepCurrent {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.checkList {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.checkRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  align-items: start;
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.checkLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.checkDetail {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.checkOption {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.consequence {
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-md);
+}
+
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.link {
+  font: inherit;
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.visuallyHidden {
+  @include mx.visually-hidden;
+}

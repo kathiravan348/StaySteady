@@ -4,12 +4,21 @@ import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import type { SignalDto, StrategyDto } from '../schemas';
-import { SignalSchema, StrategySchema } from '../schemas';
+import type { SignalDto, StrategyDto, StrategyLibraryEntryDto } from '../schemas';
+import { SignalSchema, StrategyLibraryListSchema, StrategySchema } from '../schemas';
 import { apiGet } from './apiClient';
 
 const StrategyListSchema = z.array(StrategySchema);
 const SignalListSchema = z.array(SignalSchema);
+
+// UI spec 7.7 — strategies joined to their allocation, live result, divergence and last run.
+export function useStrategyLibrary(): UseQueryResult<StrategyLibraryEntryDto[]> {
+  return useQuery({
+    queryKey: ['strategies', 'library'],
+    queryFn: ({ signal }) =>
+      apiGet('/api/v1/strategies/library', StrategyLibraryListSchema, signal),
+  });
+}
 
 export function useStrategies(): UseQueryResult<StrategyDto[]> {
   return useQuery({
