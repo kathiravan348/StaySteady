@@ -1,8 +1,8 @@
 # StaySteady
 ## Detailed Requirements — Personal Multi-Market Investment & Backtesting Platform
-
+ 
 ## 1. Revised Project Overview
-
+ 
 - Project name: StaySteady
 - Name rationale:
   - Reflects the core philosophy — patient, disciplined investing over fast reactive trading
@@ -22,9 +22,8 @@
   - Everything automated must first be provable in simulation
   - Nothing goes live-automatic until it has been run in observe-only mode for a meaningful period
   - The system must tell me when it is broken, loudly and immediately
-
 ## 2. What Changes From The Earlier Plan
-
+ 
 - Multi-user accounts, registration and shared-tracking-across-users logic: no longer needed
 - Login/identity still needed, but only to protect my own system from outside access
 - Efficiency focus shifts from "avoid duplicate calls across many users" to "stay inside data provider rate limits and cost budgets"
@@ -34,9 +33,8 @@
 - Third addition: news and event intelligence as a first-class feature, not an afterthought
 - Fourth addition: a dedicated health watchdog that monitors the system itself and alerts me instantly on any failure
 - Historical data is no longer a "future value" side-effect — it is now a core dependency for backtesting
-
 ## 3. Core Capability Pillars
-
+ 
 - Pillar 0 — Configuration Layer: everything market, provider, broker and instrument specific is defined as settings, not code
 - Pillar 1 — Data Foundation: continuously collect and store prices, fundamentals, news and events
 - Pillar 2 — Research & Backtesting: replay history to evaluate whether a strategy actually works
@@ -44,9 +42,8 @@
 - Pillar 4 — Execution & Automation: act on signals, with hard safety limits
 - Pillar 5 — Health & Monitoring: know instantly when any part of the system stops working
 - Pillar 6 — Reporting & Planning: goal setting, allocation targets, rebalancing and tax awareness
-
 ## 4. Enhanced System Architecture
-
+ 
 ```mermaid
 graph TD
     classDef me fill:#3498db,stroke:#2980b9,stroke-width:2px,color:white,font-weight:bold;
@@ -57,10 +54,10 @@ graph TD
     classDef config fill:#1abc9c,stroke:#16a085,stroke-width:3px,color:white,font-weight:bold;
     classDef health fill:#c0392b,stroke:#922b21,stroke-width:3px,color:white,font-weight:bold;
     classDef tools fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:white;
-
+ 
     Me((Me / Owner)):::me -->|Dashboard + Controls| App{Personal Control Layer}:::service
     Me -->|Defines all settings| Config[[CONFIGURATION LAYER<br/>Countries, Markets, Providers,<br/>Brokers, Instruments, Base Currency]]:::config
-
+ 
     Config -.->|Drives behaviour of everything| INGEST
     Config -.-> Norm
     Config -.-> Strat
@@ -68,46 +65,46 @@ graph TD
     Config -.-> Exec
     Config -.-> Report
     Config -.-> Health
-
+ 
     subgraph INGEST [Data Collection Layer - Provider Agnostic]
         PriceW[Price Collector]:::service
         NewsW[News & Event Collector]:::service
         FundW[Fundamentals & Corporate Actions Collector]:::service
     end
-
+ 
     PriceW -->|Per configured provider,<br/>with fallback order| MktAPI[Market Data Providers<br/>configurable per market]:::external
     NewsW -->|Configured feeds| NewsAPI[News & Filing Sources]:::external
     FundW -->|Configured sources| FundAPI[Fundamental & Calendar Sources]:::external
     PriceW -->|Optional data source| Broker
-
+ 
     PriceW -->|Latest snapshot| Cache[(Fast-Access Live Cache)]:::db
     PriceW -->|Append time-series| HistDB[(Historical Price Archive)]:::db
     NewsW -->|Scored & tagged items| NewsDB[(News & Event Store)]:::db
     FundW -->|Reference data| RefDB[(Instrument & Reference Data)]:::db
-
+ 
     RefDB -->|Currency, exchange, calendar rules| Norm[Normalisation & Currency Layer]:::service
     Norm --> HistDB
-
+ 
     HistDB -->|Replay historical bars| BT[Backtesting Engine]:::service
     NewsDB -->|Event context| BT
     BT -->|Performance results| ResDB[(Strategy Results Store)]:::db
     ResDB -->|Approved strategies only| Strat[Live Strategy & Signal Engine]:::service
-
+ 
     Cache -->|Current prices| Strat
     NewsDB -->|Live sentiment & events| Strat
     Strat -->|Proposed orders| Risk[RISK & SAFETY GATE]:::safety
     Risk -->|Rejected / flagged| Notify[Notification Channels]:::tools
     Risk -->|Approved orders| Exec[Execution Layer]:::service
-
+ 
     Me -->|Manual approval when required| Risk
     Exec -->|Only where automation is<br/>enabled in config| Broker[Broker & Fund Platforms<br/>configurable per country]:::external
     Exec -->|Fills, positions, cash| PortDB[(Portfolio & Transaction Ledger)]:::db
-
+ 
     PortDB -->|Holdings, P&L, tax lots| Report[Analytics, Reporting & Planning]:::service
     HistDB --> Report
     Report --> App
     Report -->|Scheduled summaries| Notify
-
+ 
     Health{{HEALTH WATCHDOG<br/>runs independently}}:::health
     Health -.->|Heartbeat & freshness checks| INGEST
     Health -.-> Cache
@@ -122,9 +119,9 @@ graph TD
     App -.->|Activity + Audit Trail| Logs[Monitoring & Log Store]:::tools
     Logs --> Health
 ```
-
+ 
 ## 5. Configuration-Driven Design (Core Principle)
-
+ 
 - Nothing market-specific, provider-specific or broker-specific is fixed inside the system's logic
 - Everything below is defined as settings that I can add, change, enable or disable without rebuilding anything:
   - Countries and markets
@@ -148,9 +145,8 @@ graph TD
   - Anything newly configured starts in simulation mode by default, never live
   - All configuration changes are versioned, with who/when/what recorded and the ability to roll back
   - Changes affecting money movement or risk limits require an extra confirmation step
-
 ## 6. Country & Market Configuration
-
+ 
 - Each country or market is defined as its own configurable entry
 - Settings held per market:
   - Market identity and the country it belongs to
@@ -167,9 +163,8 @@ graph TD
   - Which data providers and brokers are linked to this market
 - Adding a new country must be a configuration exercise only — no logic changes anywhere in the system
 - A market can be disabled without deleting its history, so past data and past results remain intact
-
 ## 7. Data Provider Configuration
-
+ 
 - Each data source is a separately configurable entry, whether it supplies prices, news, fundamentals or exchange rates
 - Settings held per provider:
   - Which markets, instrument types and data categories it covers
@@ -190,9 +185,8 @@ graph TD
   - Track usage against each provider's limits continuously
   - Warn before a limit is reached, not after
   - Optionally reduce collection frequency instead of stopping entirely when approaching a limit
-
 ## 8. Broker & Platform Configuration
-
+ 
 - Each broker, fund platform or investment account is a separately configurable entry
 - Settings held per broker:
   - Which country and markets it operates in
@@ -213,9 +207,8 @@ graph TD
 - Reconciliation requirement:
   - Positions, cash and transactions recorded in the system must be regularly compared against each broker's actual records
   - Any mismatch raises an immediate alert and pauses automation for that broker
-
 ## 9. Instrument Type Configuration
-
+ 
 - Instrument types available to configure:
   - Intraday / day trading positions
   - Short-term / swing positions held days to weeks
@@ -239,9 +232,8 @@ graph TD
   - Whether it requires a manual action step that cannot be automated
 - The automation permission is deliberately layered — an action only proceeds if the market, the broker, the instrument type and the strategy all permit it
 - Instrument types that cannot be automated must still be fully trackable, with manual transactions recorded as first-class entries
-
 ## 10. Currency & Reporting Configuration
-
+ 
 - A base reporting currency is configurable and can be changed later
 - When the base currency is changed:
   - All historical reporting is recalculated using the stored historical exchange rates for the correct dates
@@ -252,9 +244,8 @@ graph TD
   - View results in the base currency, in any local currency, or side by side
   - Separate investment return from currency movement effect, since currency alone can change the outcome
   - Configurable currency conversion cost assumptions, applied consistently in both backtests and live reporting
-
 ## 11. Health Monitoring & Immediate Alerting Service
-
+ 
 - Built as an independent watchdog that runs separately from the main system, so it survives when the main system fails
 - What it monitors:
   - Each data collector — is it running and completing on schedule
@@ -296,9 +287,8 @@ graph TD
   - An incident record for every failure, with duration, cause and resolution
   - Reliability statistics feeding back into provider and broker priority decisions
 - The alerting path itself must be tested on a regular schedule, so I know it still works before I actually need it
-
 ## 12. Data Foundation Requirements
-
+ 
 - Price history collected at multiple granularities, driven by what each configured instrument type requires:
   - Fine-grained intraday bars for day-trading strategy testing
   - Daily bars for swing and positional strategies
@@ -316,9 +306,8 @@ graph TD
   - Cross-check against a secondary configured provider where one is available
   - Mark any data point that was estimated or filled in, so backtests can exclude it
   - Every quality failure is reported to the health watchdog, not just logged
-
 ## 13. News, Events & Sentiment Intelligence
-
+ 
 - Sources are configurable per country and per market, since relevant outlets differ by region
 - Source categories to support:
   - General and financial news outlets
@@ -341,9 +330,8 @@ graph TD
 - Limitation to design around:
   - Sentiment scoring aids judgement, it is not a reliable standalone trading signal
   - Any strategy leaning heavily on news sentiment must be tested with extra scepticism, including on data it was never tuned against
-
 ## 14. Backtesting Engine
-
+ 
 - Purpose: replay historical market conditions to estimate how a strategy would have performed
 - Must work across every configured market and instrument type, using that market's own configured rules
 - Core requirements:
@@ -371,9 +359,8 @@ graph TD
   - Vary strategy settings slightly to check robustness versus lucky fit
   - Flag when results depend on a small number of outlier trades
 - Every run saved with its exact settings, data range, configuration snapshot and results, so past conclusions can be re-examined later
-
 ## 15. Strategy & Signal Engine
-
+ 
 - Strategies are configurable definitions, adjustable without rewriting system logic
 - Each strategy definition includes:
   - Which configured markets and instrument types it applies to
@@ -393,9 +380,8 @@ graph TD
   - Define what happens when one strategy wants to buy while another wants to sell the same instrument
   - Prevent multiple strategies from unknowingly building an oversized combined position
   - Enforce an overall capital ceiling across all strategies together
-
 ## 16. Automated Investment & Execution
-
+ 
 - Supported actions, subject to configuration permitting each one:
   - Place, modify and cancel orders on connected trading accounts
   - Subscribe to and redeem from fund-type investments
@@ -413,9 +399,8 @@ graph TD
   - Manual approval mode
   - Full automation mode
 - Instruments and markets configured as manual-only are still fully tracked, with manual actions recorded as proper transactions
-
 ## 17. Risk Management & Safety Controls
-
+ 
 - A dedicated safety layer sits between strategy decisions and real order placement — nothing bypasses it
 - All thresholds are configurable, and can be set globally, per market, per instrument type and per strategy
 - Position-level limits:
@@ -437,9 +422,8 @@ graph TD
   - Automatic pause triggered by the health watchdog on stale data, provider failure, broker disconnection or unexpected restart
   - Automatic pause when actual results diverge sharply from strategy expectations
 - Every safety intervention generates an immediate notification stating the reason
-
 ## 18. Portfolio Analytics, Reporting & Planning
-
+ 
 - Consolidated view requirements:
   - Total portfolio value across all configured countries, currencies and instrument types
   - Breakdown by country, currency, sector, instrument type, broker and strategy
@@ -466,9 +450,8 @@ graph TD
   - Track progress against personal goals with target amounts and dates
   - Schedule and monitor recurring contributions
   - Model what-if scenarios before committing capital
-
 ## 19. Alerts & Notifications
-
+ 
 - Alert categories:
   - Critical: system component down, safety limit breached, automation halted, execution failure, account mismatch
   - Action needed: order awaiting approval, IPO window closing, rebalancing required, credential expiring
@@ -481,9 +464,8 @@ graph TD
   - Every alert states what happened, why, and what action is available
 - Alert rules configurable per category, per market, per broker and per strategy
 - Delivery channels are themselves monitored and tested on a schedule
-
 ## 20. Access & Security
-
+ 
 - Single-owner access, treated as security-sensitive because the system can move real money
 - Requirements:
   - Strong authentication, with a second verification factor for anything that can place orders or change limits or configuration
@@ -494,9 +476,8 @@ graph TD
   - The system not exposed openly to the public internet unless properly protected
   - Complete, tamper-evident audit trail of every configuration change, approval and order
   - Regular encrypted backups of the historical archive, configuration and transaction ledger, with restoration tested rather than assumed
-
 ## 21. Deployment & Operations
-
+ 
 - Scale expectation: personal use, single operator — infrastructure modest and cost-controlled
 - The health watchdog should run with as few shared dependencies as possible, ideally outside the main system, so it can still report when everything else is down
 - All components packaged so the whole system can be rebuilt from scratch predictably, including its configuration
@@ -507,9 +488,8 @@ graph TD
 - Automated testing before any update reaches the live environment, with extra scrutiny on anything touching order placement, risk limits or configuration handling
 - Updates must not be applied while markets are open and positions are active, unless it is an emergency fix
 - Every significant system action logged with a shared tracking reference, so a full decision chain can be reconstructed from signal to order to fill
-
 ## 22. Suggested Build Order
-
+ 
 - Stage 1 — Configuration and foundation:
   - Configuration layer first, since everything else depends on it
   - Instrument reference data, currency handling, trading calendars
@@ -539,9 +519,8 @@ graph TD
 - Stage 8 — Depth:
   - Additional markets, brokers, instrument types and strategies, all by configuration
   - Advanced planning, tax and scenario tooling
-
 ## 23. Key Risks To Stay Aware Of
-
+ 
 - A backtest that looks excellent is more often a modelling error than a great strategy
 - Strategies tuned until they fit past data perfectly usually fail on new data
 - Ignoring costs, taxes and slippage turns losing strategies into apparently winning ones
@@ -551,9 +530,19 @@ graph TD
 - Broad market moves affect all holdings at once, so apparent diversification may be weaker than it looks
 - Regulatory rules on automated trading and cross-border investing differ by country and change over time
 - Personal risk: automation removes the pause for reflection, so deliberate human checkpoints are a feature, not a limitation
-
+### Added during the session 37 review
+ 
+- A system that models only what is traded through a broker measures the wrong denominator: allocation, concentration and goal progress computed on a fraction of net worth will be confidently wrong
+- Acting through an automated system does not remove a personal obligation under an employer trading policy or a regulator's rules — the system must enforce those restrictions, not provide a route around them
+- The security model that protects this system also locks out the people who would need it if I were unavailable; strong access control without a tested emergency route is a single point of failure for my dependants
+- My own behaviour during a sharp fall or a long rally is a larger long-run risk than any single strategy failing, and friction on manual action is the only practical guard
+- Nominal returns flatter reality over a multi-decade horizon; a plan that ignores inflation, costs and taxes will overstate progress in exactly the direction I want to believe
+- A strategy with no defined way down keeps trading after it stops working, because promotion paths are usually built with more care than retirement criteria
+- Concentration risk includes employment: salary, employer equity and any correlated holdings are one exposure, not three
+- The failure of a broker or custodian is low-probability and high-severity, and is not the same risk as a broker being temporarily unreachable
+- Tax rules, remittance limits and disclosure obligations change; anything hardcoded becomes silently wrong at a date nobody notices
 ## 24. Remaining Open Questions
-
+ 
 - Which market will be configured first, to prove the design before adding more?
 - Which two independent channels will carry critical alerts, and will at least one work if the main system's host is down?
 - What is the maximum amount of capital automation will ever be permitted to control?
@@ -562,3 +551,247 @@ graph TD
 - How much time per week is available to monitor and maintain the system once it is live?
 - What is the fallback plan if the system is unavailable while positions are open?
 - How quickly do I need to be alerted — seconds, or is a few minutes acceptable for each failure type?
+### Added during the session 37 requirements review
+ 
+- Which assets sit outside the brokers (provident fund, pension, deposits, gold, property, insurance-linked savings), and should the platform hold the complete picture or only the traded part?
+- Am I subject to an employer trading policy — restricted lists, blackout windows, pre-clearance or minimum holding periods? This changes what the system is allowed to do.
+- Who needs to reach this information if I cannot, and how would they do it today?
+- Is this system the record of truth for my holdings, or is the broker, with this system as a view over it?
+- What is the emergency reserve, in months of expenses, and is it held outside the invested capital?
+- Will there be a withdrawal phase to model, or is this accumulation only for the foreseeable future?
+- Which tax year does reporting follow, and which country am I tax resident in for the whole period being reported?
+- At what total portfolio value would I want automation reduced or stopped rather than expanded?
+---
+ 
+# Part II — Requirements Added In The Session 37 Review
+ 
+> Sections 25 to 34 were added on 2026-09-16 at the owner's request, after reviewing the original
+> requirements against the stated purpose: this platform is for a single person's **entire**
+> investment future, not a trading side-project.
+>
+> The original 24 sections describe a technically sound trading and monitoring system. What follows
+> covers what that system still needs in order to be trusted with someone's whole financial life.
+> Nothing above was changed or removed.
+>
+> **Tax, regulatory and compliance rules below are expressed as concepts the system must be able to
+> represent, never as fixed rates or thresholds.** Consistent with Pillar 0, every rate, limit,
+> holding period and date is configuration, verified with a qualified professional and versioned
+> when it changes. The system organises information; it does not give tax, legal or financial advice.
+ 
+## 25. Complete Net Worth — Assets Held Outside The Brokers
+ 
+The original requirements model only what is traded through a configured broker. For a single-owner
+platform intended to cover a whole financial future, that is usually a minority of net worth, and
+every allocation target, goal projection and concentration limit computed without the rest is wrong.
+ 
+- Record assets that are held but never traded through this system, at minimum:
+  - Retirement and statutory savings — provident fund, pension accounts, government savings schemes
+  - Cash and deposits — bank balances, term deposits, recurring deposits, with maturity dates
+  - Physical and quasi-physical assets — gold, bullion, sovereign gold instruments
+  - Property — with purchase cost, an occasional manual valuation, and any loan secured against it
+  - Insurance-linked savings, where a policy has a maturity or surrender value
+  - Employer equity — vested and unvested, with vesting schedule and any lock-in
+  - Liabilities — loans and outstanding credit, since net worth is assets minus debts
+- These are manual-entry, low-frequency records, not market-fed:
+  - Each carries the date it was last updated, and is visibly marked stale after a configurable age
+  - Valuations may be manual, periodic, or formula-based (for example a deposit accruing at a known rate)
+  - No automation ever acts on these — they are read-only for the strategy and execution layers
+- Once recorded, they participate in:
+  - Total net worth, and the split between market-exposed and non-market assets
+  - Allocation targets and drift, so the picture reflects reality rather than the traded slice
+  - Goal progress and funding projections
+  - Concentration limits, so exposure is measured against total wealth, not just the brokerage balance
+  - Liquidity classification — what could be converted to cash quickly, and what could not
+- Concentration must be measurable against total wealth including employment:
+  - Employer equity plus salary dependence is a single concentrated exposure and must be shown as one
+  - Warn when any single issuer, sector or asset class exceeds a configured share of total net worth
+## 26. Tax Requirements In Depth
+ 
+The original requirements cover purchase lots, holding-period thresholds and country-wise summaries.
+That is the foundation, but the parts that actually cause loss — missed disclosures, unclaimed
+reliefs, unplanned instalments — are not yet represented.
+ 
+- Tax rules are configuration, per country of residence and per instrument type:
+  - Distinct short-term and long-term treatment, each with its own configurable holding period and rate
+  - Different rules per asset class, since equity, funds, debt, gold and property commonly differ
+  - A configurable cost-basis rule per jurisdiction, with the method recorded on every disposal
+  - Historical cost-basis protections where a regime changed on a known date, applied to assets acquired before it
+  - Transaction-level taxes and duties captured as costs at the time they occur
+- Gains, losses and reliefs:
+  - Separate realised and unrealised gains by tax category, not just by instrument
+  - Track losses available to offset gains, including how long each remains available and when it expires
+  - Show the effect of an intended disposal before it happens — which category it falls in, what it offsets, what it costs
+  - Flag positions approaching a holding-period boundary where waiting materially changes the outcome
+- Income:
+  - Dividends, interest and payouts classified by their own treatment, which often differs from capital gains
+  - Tax withheld at source recorded per payment, per country, so it can be reclaimed or credited
+  - Where a treaty reduces withholding, record whether the required declaration is in place and when it expires
+- Cross-border obligations, where foreign assets are held:
+  - Track any statutory annual disclosure of foreign assets, with the values and periods it requires
+  - Track any cap on outward remittance per year, with spend to date and headroom remaining
+  - Track relief for tax already paid abroad, and the evidence needed to claim it
+  - Warn before a remittance would breach a configured annual limit
+- Timing and filing:
+  - Reporting periods follow the configured tax year, which is not necessarily the calendar year
+  - Estimate periodic advance instalments where required, with due dates and a projected liability
+  - Produce a year-end pack per jurisdiction: realised gains by category, income, taxes withheld,
+    costs, losses carried in and out, and foreign holdings
+  - Retain the underlying records for a configurable statutory period, exportable on demand
+- The system prepares and organises. It never files, and never claims a figure is final.
+## 27. Personal Regulatory & Employer Compliance
+ 
+Absent entirely, and the highest-consequence gap in the document. A breach here is not a financial
+loss — it is a career and legal exposure, and it is caused by a system acting on my behalf.
+ 
+- Employer trading policy must be representable as configuration and enforced by the safety layer:
+  - A restricted list of instruments I may not trade at all, maintained manually
+  - Blackout windows during which I may not trade, recurring or ad hoc
+  - A pre-clearance requirement: certain trades need recorded approval before they may be placed
+  - A minimum holding period preventing short-term round trips where policy requires it
+  - Personal disclosure obligations, with reminders before their deadlines
+- Enforcement rules:
+  - These checks sit in the same safety layer as risk limits, and nothing bypasses them
+  - A restricted or blacked-out instrument is refused at signal stage, not at order stage, so it never reaches a broker
+  - A refusal is recorded with its reason and is visible in the audit log
+  - Restrictions apply identically to manual actions and automated ones — the system must not become the easy way around a policy
+- Jurisdictional awareness:
+  - Rules on automated trading and cross-border investing differ by country and change; treat them as configuration with a review date
+  - Record a periodic prompt to re-check that the configured rules still match current policy and law
+## 28. Continuity, Succession & Incapacity
+ 
+The security requirements correctly make this system hard to get into. Nothing makes it possible to
+get into when it matters most. A single-owner system holding a complete financial picture becomes a
+single point of failure for the people who would need it.
+ 
+- Emergency access:
+  - A documented, tested way for a nominated person to reach the complete position record if I cannot
+  - Access to information must be separable from the ability to trade — a nominee needs to see, not act
+  - Stored so that it survives the loss of my devices, and does not depend on this system running
+- Records that must exist outside the system:
+  - Which brokers, banks and custodians hold what, and the account references
+  - Where credentials and recovery material are kept, without the credentials themselves being in the document
+  - Nominee and beneficiary registrations held at each institution, with the date each was last confirmed
+  - A plain-language explanation of what is automated, how to stop it, and who to contact
+- Automation must fail safe when I am absent:
+  - A configurable inactivity threshold after which automation pauses rather than continues unattended
+  - Escalating reminders before that pause, so it is never a surprise
+  - Resumption is always a deliberate act, consistent with the existing watchdog rules
+- Reviewed and re-tested on a fixed schedule, with the date of the last successful test recorded and visible
+## 29. Behavioural Safeguards On My Own Decisions
+ 
+The document already recognises that "automation removes the pause for reflection". The safety layer
+implements that insight for machine decisions only. For a personal portfolio, the larger long-run
+risk is my own behaviour during a drawdown or a rally, and nothing currently guards against it.
+ 
+- Manual actions pass through the safety layer, not around it:
+  - A manual order is checked against the same position, loss, activity and compliance limits as an automated one
+  - Overriding a limit is possible but always deliberate, recorded, and shown with what the limit was protecting against
+- Friction proportional to consequence:
+  - A configurable cooling-off period between deciding and executing for trades above a configured size
+  - A configurable daily cap on manual trades, separate from the automated cap
+  - A confirmation that states the cost of the action — fees, taxes, realised gain or loss — before it is committed
+- Pattern detection on my own activity, reported to me without judgement:
+  - Unusual clustering of manual trades, particularly after a loss
+  - Repeated overrides of the same limit
+  - Trading concentrated in periods of high market volatility or immediately after significant news
+  - Divergence between my stated allocation targets and what I actually do
+- A decision journal:
+  - Every manual trade and every override can carry a short stated reason, prompted at the time
+  - Reasons are reviewable later alongside the outcome, so the record shows which reasoning worked
+  - Optional by configuration, but on by default — this is the mechanism that makes the pause real
+- Scheduled review rather than continuous watching:
+  - A periodic review view designed to be the normal way I engage with the portfolio
+  - Discourage the dashboard becoming something checked many times a day
+## 30. Liquidity, Emergency Reserve & Withdrawal Phase
+ 
+The existing "mandatory cash reserve that cannot be invested" is a trading control. It is not the
+same as a life emergency fund, and the document models accumulation only.
+ 
+- Emergency reserve:
+  - Defined in months of living expenses, configurable, held outside investable capital
+  - Tracked and reported separately from the trading cash reserve
+  - Warn when it falls below target, and never allow automation to consume it
+- Liquidity classification:
+  - Every asset classified by how quickly it could become spendable cash, including settlement time
+  - A view of what is reachable within days, weeks and months
+  - Warn when upcoming known commitments exceed what can be liquidated in time
+- Known future commitments:
+  - Record expected outflows with dates and amounts
+  - Show them against projected liquidity so a shortfall is visible in advance
+- Withdrawal phase, when it applies:
+  - Model a sustainable withdrawal rate against the portfolio and its assumptions
+  - Plan the order in which assets would be drawn down, taking tax treatment and holding periods into account
+  - Show the effect of poor returns early in a withdrawal period, since sequence matters more than average return
+  - Model a partial withdrawal phase, where some income is drawn while contributions continue
+## 31. Real Returns & Long-Horizon Planning
+ 
+Every metric in the specification is nominal. Over the horizon this platform is meant to serve, that
+systematically overstates progress.
+ 
+- Inflation:
+  - A configurable inflation assumption per country, with actual historical figures where available
+  - Report returns and goal progress in both nominal and inflation-adjusted terms
+  - Express long-dated goals in today's purchasing power, not just a future figure
+- Projections:
+  - Show a range of outcomes rather than a single line, with the assumptions stated on the view
+  - Include contributions, costs, taxes and inflation in any projection, since excluding them flatters the result
+  - Record the assumptions used with each saved projection so past projections remain interpretable
+- Honesty controls:
+  - Show what the same money would have done in a simple benchmark alternative, so the value of all this effort is measurable
+  - Track total costs and taxes paid to date as a percentage of gross return
+  - Report return since inception on a basis that accounts for the timing of contributions
+## 32. Counterparty & Custodian Risk
+ 
+The health watchdog monitors whether a broker is *reachable*. It does not consider what happens if a
+broker or custodian *fails*, which for a personal portfolio is a low-probability, high-severity event.
+ 
+- Exposure per counterparty:
+  - Show assets held per broker, custodian and bank, as a share of total net worth
+  - Warn when any single counterparty exceeds a configured share
+  - Record what protection scheme, if any, applies per institution and up to what limit
+- Independent verification:
+  - Where the market provides a statement from the central depository or registrar independent of the broker, reconcile against it on a schedule
+  - Treat a mismatch between broker records and the independent statement as critical, in the same tier as an account mismatch
+- Continuity:
+  - Record how holdings would be recovered or transferred if an institution became unavailable
+  - Keep enough of an independent record — holdings, costs, lots — that my position is provable without the broker's system
+  - Prefer that the ability to reconstruct my portfolio never depends on a single third party
+## 33. Strategy Decay & Retirement
+ 
+Strategies have lifecycle stages and a promotion path. There is no defined way down, so a strategy
+that stops working can quietly keep trading.
+ 
+- Retirement criteria defined before a strategy goes live, not after it disappoints:
+  - Rolling performance thresholds over a configured window that trigger review
+  - Maximum acceptable divergence from backtest expectation before automatic demotion
+  - A maximum period without meeting expectations, after which the strategy is retired regardless
+- Automatic demotion, not just alerting:
+  - Breaching a review threshold moves a strategy to observation, reducing or removing its allocation
+  - Demotion is recorded with the evidence that triggered it
+  - Returning a strategy to live requires the same deliberate promotion path as the first time
+- Portfolio-level awareness:
+  - Detect when strategies that are supposed to be independent begin behaving alike, since apparent diversification then disappears
+  - Track how much of total return depends on a single strategy
+  - Record a regular review of whether each strategy's original reasoning still holds
+## 34. Data Ownership, Export & Dormant Operation
+ 
+Backups are specified. Portability and graceful neglect are not, and both matter for something
+intended to run for decades.
+ 
+- Export:
+  - Complete export of holdings, lots, transactions, income, costs, configuration and history in open, documented formats
+  - Export must be usable without this software, since its purpose is to outlive it
+  - Available on demand and on a schedule, included in the backup set
+- Longevity:
+  - Prefer plain, documented storage formats over anything proprietary
+  - Keep the historical archive separable from the application, so the data survives a rewrite
+  - Record the meaning of stored fields, since a future reader will not remember the conventions
+- Dormant operation:
+  - A defined low-maintenance mode: monitoring, reconciliation, income recording and alerting continue while automation is paused
+  - Safe to leave unattended for an extended period without silent failure or data loss
+  - On return, a summary of what happened while I was away, rather than an undifferentiated backlog
+- Cost control:
+  - Track running cost per month against a configured budget, including data, hosting and broker charges
+  - Report cost as a share of portfolio value, since a fixed cost becomes significant on a small portfolio
+  - Warn when cost per month exceeds a configured threshold or grows unexpectedly
+ 

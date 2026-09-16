@@ -1,8 +1,9 @@
+
 # StaySteady
 ## UI Specification — Mock Data Phase
-
+ 
 ## 1. Purpose Of This Document
-
+ 
 - Project name: StaySteady
 - The system requirements document describes behaviour; it does not describe screens
 - This document covers what is needed to build a complete, working, clickable interface using mock data only
@@ -16,18 +17,16 @@
   - Forces early decisions about what data is actually needed and in what shape
   - Exposes missing requirements before backend effort is spent
   - Produces a usable reference for building the real data layer against
-
 ## 2. Assumptions Made (Change If Wrong)
-
+ 
 - Primary target is desktop/large screen, since this is a dense data application
 - Mobile is a secondary, read-only-focused experience — monitoring and approvals, not research
 - Dark theme is the default, light theme available
 - Single user, so no user management, team, or sharing screens
 - Interface language is English for now, but currency, date and number formatting must respect market conventions
 - The UI will eventually talk to a single backend of my own, not directly to brokers or providers
-
 ## 3. Branding Notes
-
+ 
 - Name: StaySteady
 - Tone the interface should carry:
   - Calm, not urgent — this is a tool for patient decisions, not a trading floor
@@ -37,9 +36,8 @@
   - The safety and risk screens are the clearest expression of it
   - The confirmation language on irreversible actions can lean on it without being cute
 - Visual identity decisions deliberately left open for now; the mock phase needs layout and behaviour settled first, not a logo
-
 ## 4. Design Foundations
-
+ 
 - Information density:
   - Favour dense, compact layouts over spacious marketing-style design
   - This is a working tool, not a consumer app — more visible data per screen is better
@@ -66,9 +64,8 @@
 - Motion:
   - Price updates flash briefly, then settle — no continuous animation
   - Avoid animation on charts when data updates, as it makes reading harder
-
 ## 5. Global Interface Elements
-
+ 
 - Persistent top bar containing:
   - Product name and mark on the left, acting as a link back to Overview
   - System mode indicator — simulation, observation, manual approval, or full automation — always visible, colour coded, impossible to miss
@@ -81,9 +78,8 @@
 - Persistent side navigation with the main sections
 - Mock-phase requirement: a visible banner or badge indicating mock data is in use, so it can never be confused with real data
 - A hidden developer panel to switch between mock scenarios (see section 15)
-
 ## 6. Navigation Map
-
+ 
 - Overview
 - Portfolio
   - Holdings
@@ -133,11 +129,10 @@
   - Credentials
 - Alerts
 - Audit log
-
 ## 7. Screen Specifications
-
+ 
 ### 7.1 Overview (Landing Screen)
-
+ 
 - Purpose: answer "is everything fine, and where do I stand" in under five seconds
 - Top row of headline cards:
   - Total portfolio value in base currency, with change today and change since inception
@@ -159,9 +154,8 @@
   - Every card links through to its detailed screen
   - Period selector affects the value chart only, not the headline cards
   - Currency toggle switches all figures on the screen
-
 ### 7.2 Holdings
-
+ 
 - Purpose: complete list of everything currently held
 - Dense sortable, filterable, groupable table
 - Columns to support (user-selectable, saved as a layout):
@@ -190,9 +184,8 @@
   - Small bar showing position size relative to the largest holding
   - Colour-coded distance to exit level
 - Empty state: guidance to add a holding manually or import
-
 ### 7.3 Position Detail
-
+ 
 - Purpose: everything about one held instrument
 - Header: instrument identity, market, currency, current price, position summary
 - Tabs or panels:
@@ -205,9 +198,8 @@
   - Upcoming events for this instrument
   - Which strategy holds it and why it was opened
 - Actions: adjust exit level, close position, add manual transaction, add note
-
 ### 7.4 Instrument Workspace (Chart Screen)
-
+ 
 - Purpose: the research and analysis screen; this is the most chart-heavy screen in the system
 - Layout: large chart area, collapsible left instrument panel, collapsible right info panel, bottom detail strip
 - Chart capabilities required:
@@ -240,9 +232,8 @@
   - Recent news
   - Any strategy signals currently active on this instrument
 - Saved chart layouts per instrument, and a default layout per instrument type
-
 ### 7.5 Watchlists
-
+ 
 - Multiple named watchlists, each able to mix countries and instrument types
 - Compact quote table with live-updating prices
 - Inline sparkline per row
@@ -250,9 +241,8 @@
 - Drag to reorder, drag between lists
 - Quick-add search with market and instrument type filters
 - Per-list summary showing how many are up, down, and the average move
-
 ### 7.6 News & Events
-
+ 
 - Two views: live feed and calendar
 - Live feed:
   - Chronological stream with newest first
@@ -267,9 +257,8 @@
   - Marks which events fall inside a configured trading restriction window
   - Filter to held instruments only
 - Sentiment must always display its confidence level, and be visually distinguishable from confirmed facts
-
 ### 7.7 Strategy Library
-
+ 
 - Card or table listing of all strategies
 - Each entry showing:
   - Name and short description
@@ -282,9 +271,8 @@
   - Last run timestamp and status
 - Filters by stage, market, instrument type and performance
 - Stage promotion control that is deliberately multi-step, never a single click
-
 ### 7.8 Strategy Editor
-
+ 
 - Purpose: define a strategy without writing system-level code
 - Sections:
   - Scope — which markets, instrument types and specific instruments
@@ -298,9 +286,8 @@
 - Live validation panel showing conflicts, impossible conditions and missing settings
 - Preview panel showing where these conditions would have triggered on a recent chart
 - Version history with the ability to compare and revert
-
 ### 7.9 Backtest Setup
-
+ 
 - Input sections:
   - Strategy selection
   - Date range, with presets and warnings if the range includes unusual market periods
@@ -315,9 +302,8 @@
   - Range too short to be meaningful
   - Settings that differ from live configuration
 - Run control with progress indication and the ability to cancel
-
 ### 7.10 Backtest Results
-
+ 
 - This screen carries the heaviest metric and chart load; detail in section 8
 - Layout:
   - Headline metric strip across the top
@@ -337,17 +323,15 @@
   - Data quality issues within the tested range
   - Unrealistically low cost assumptions
 - Actions: save, name, tag, compare with another run, promote strategy stage
-
 ### 7.11 Backtest Comparison
-
+ 
 - Side-by-side comparison of two to four runs
 - Overlaid equity curves, normalised
 - Metric table with differences highlighted
 - Settings diff showing exactly what changed between runs
 - Useful for parameter sensitivity checks
-
 ### 7.12 Signals & Approval Queue
-
+ 
 - Purpose: the screen where money decisions actually get made
 - Signals feed:
   - Every signal generated, including ones the safety layer rejected
@@ -361,18 +345,16 @@
   - Approve, modify, reject, or reject with reason
   - Bulk approve deliberately restricted or requiring extra confirmation
 - Clear separation between simulated and real proposed actions
-
 ### 7.13 Orders
-
+ 
 - Full order history and live order state
 - Columns: instrument, market, broker, direction, quantity, order type, status, requested price, filled price, slippage, fees, timestamps, originating strategy or manual
 - Status indicators for pending, partially filled, filled, rejected, cancelled and unconfirmed
 - Unconfirmed orders visually escalated — these are the dangerous ones
 - Filters by broker, market, status, strategy and date
 - Detail view showing the full lifecycle timeline of a single order
-
 ### 7.14 Risk & Safety Panel
-
+ 
 - Purpose: see and adjust every limit in one place
 - Grouped limit displays, each showing the configured threshold, current usage and headroom as a bar
 - Grouping: global, per market, per instrument type, per strategy
@@ -387,9 +369,8 @@
 - Breach history log with cause, time, what was halted and how it resolved
 - Emergency controls section, visually separated, with confirmation steps
 - Changing any limit requires explicit confirmation and is recorded
-
 ### 7.15 System Health
-
+ 
 - Purpose: know immediately what is broken
 - Live status board:
   - One tile per monitored component — collectors, providers, brokers, cache, databases, strategy engine, execution layer, scheduled jobs, notification channels, the watchdog itself
@@ -408,18 +389,16 @@
   - Filterable and searchable
 - Alert channel test control, with the last test result and timestamp
 - This screen must remain usable and informative even when most of the system is down
-
 ### 7.16 Reports
-
+ 
 - Report types: performance, allocation, costs, income, tax summaries, strategy attribution
 - Period selector with presets and custom ranges
 - Currency selector affecting the whole report
 - Comparison against benchmarks and against previous periods
 - Export controls
 - Scheduled report configuration and history
-
 ### 7.17 Planning
-
+ 
 - Allocation targets:
   - Define target percentages by instrument type, country, currency and sector
   - Visual comparison of target versus actual, with drift highlighted
@@ -430,9 +409,8 @@
 - Scenario modelling:
   - Adjust assumptions and see projected outcomes
   - Model the effect of a proposed trade before committing
-
 ### 7.18 Configuration Screens
-
+ 
 - Shared layout pattern across all configuration areas:
   - List of configured entries with status, enabled toggle and health indicator
   - Detail form for adding or editing
@@ -449,26 +427,23 @@
 - Alert rules: per category, per severity, channel selection, escalation rules, quiet hours with critical override
 - Credentials: stored references only, never displayed, with expiry tracking and warnings
 - Automation permission summary screen showing the layered result — market, broker, instrument type and strategy together — so it is obvious what can actually trade
-
 ### 7.19 Alerts Centre
-
+ 
 - Chronological list of all alerts with severity, category, source, timestamp and acknowledgement state
 - Filters by severity, category, market and acknowledged state
 - Grouping of repeated alerts
 - Acknowledge and resolve actions with optional notes
 - Escalation state visible for unacknowledged critical alerts
-
 ### 7.20 Audit Log
-
+ 
 - Complete record of configuration changes, approvals, orders, limit changes and stage promotions
 - Each entry showing what changed, before and after values, timestamp and trigger
 - Filterable and searchable
 - Ability to trace a single decision chain end to end, from signal through approval to order to fill
-
 ## 8. Chart & Metrics Specification
-
+ 
 ### 8.1 Chart Types Required
-
+ 
 - Candlestick and OHLC bar — price history, the primary chart type
 - Line and area — portfolio value, simple price series, normalised comparisons
 - Equity curve — strategy value over time, with benchmark overlay
@@ -488,9 +463,8 @@
 - Gauge or bar meters — limit usage and headroom
 - Sparklines — inline trend indicators within tables
 - Volume profile — optional, later
-
 ### 8.2 Metrics To Display
-
+ 
 - Return metrics:
   - Total return, absolute and percentage
   - Annualised return
@@ -532,9 +506,8 @@
   - Divergence magnitude, flagged when it exceeds a threshold
   - Actual slippage versus modelled slippage
 - Every metric must have an accessible explanation of how it is calculated and what it does and does not tell me
-
 ### 8.3 Chart Interaction Requirements
-
+ 
 - Crosshair with values for all series at the hovered point
 - Synchronised crosshair and time axis across stacked panels
 - Zoom by scroll, drag-select and range presets
@@ -546,9 +519,8 @@
 - Copy underlying data
 - Keyboard navigation for accessibility
 - Performance target: charts with large historical datasets must remain responsive, using downsampling for wide views and full detail when zoomed in
-
 ## 9. Data Table Requirements
-
+ 
 - Shared table behaviour across all screens:
   - Column show/hide, reorder and resize
   - Multi-column sorting
@@ -562,9 +534,8 @@
   - Inline visual elements — sparklines, progress bars, badges
   - Keyboard navigation
 - Number columns right-aligned with aligned decimal points
-
 ## 10. Interface States To Build
-
+ 
 - Loading — skeleton placeholders matching final layout, not spinners, so layout does not jump
 - Empty — first-use state with guidance on what to do
 - No results — filtered state distinct from genuinely empty
@@ -576,9 +547,8 @@
 - Halted — automation stopped by a safety breach, with cause prominently displayed
 - Unconfirmed — order state unknown, deliberately escalated visually
 - Market closed — prices shown as last close, clearly labelled, not presented as live
-
 ## 11. Multi-Country Interface Considerations
-
+ 
 - Country indicator on every instrument reference
 - Market local time shown alongside any market-specific timestamp
 - Currency always explicit where more than one is present
@@ -587,9 +557,8 @@
 - Holiday indication rather than showing a market as simply closed
 - Number and date formatting following the relevant market convention where appropriate
 - Gain/loss colour convention configurable per market
-
 ## 12. Responsive Behaviour
-
+ 
 - Large desktop: full multi-panel layouts, side panels expanded
 - Small desktop and laptop: side panels collapsible, tables reduce to essential columns
 - Tablet: single main panel, navigation drawer, charts simplified
@@ -600,18 +569,16 @@
   - Health status
   - Master stop control
   - Research, configuration and backtesting deliberately excluded
-
 ## 13. Accessibility Requirements
-
+ 
 - Never convey gain, loss, or system state by colour alone
 - Sufficient contrast in both themes, checked against standard guidelines
 - Full keyboard navigation, including chart interaction
 - Screen reader labels for every metric and chart, with a data table alternative available
 - Respect reduced-motion preferences
 - Text scaling without layout breakage
-
 ## 14. Library Recommendations
-
+ 
 - Charting:
   - Lightweight Charts by TradingView — best fit for candlestick, financial time series, very fast, small, free. Use this for the instrument workspace and equity curves.
   - TradingView Advanced Charts — far richer drawing tools and indicators, free for non-commercial use but requires applying for access. Worth considering later for the research screen specifically.
@@ -640,9 +607,8 @@
 - Forms and validation:
   - React Hook Form with a schema validation library, since the configuration screens are form-heavy
 - Do not build custom charting from scratch — the effort is large and the result will be worse
-
 ## 15. Mock Data Requirements
-
+ 
 - Mock data must be realistic enough to expose layout and readability problems
 - Datasets needed:
   - At least three markets across different countries, currencies and timezones, including one where the market is closed while another is open
@@ -672,9 +638,8 @@
   - Market closed, all markets
   - Loading and error states on demand
 - Simulated live updates — prices should tick on a timer so update behaviour and flash animation can be evaluated
-
 ## 16. Suggested UI Build Order
-
+ 
 - Step 1 — Foundations: design tokens, theme, typography, number and date formatting utilities, layout shell, navigation
 - Step 2 — Mock infrastructure: request interception, data generators, scenario switcher, simulated ticking
 - Step 3 — Shared components: data table, metric card, chart wrappers, state components for loading, empty, error and stale
@@ -687,9 +652,8 @@
 - Step 10 — News, reports and planning
 - Step 11 — Responsive and accessibility passes across everything
 - Step 12 — Full state review, forcing every screen through every state
-
 ## 17. Reference Software Worth Studying
-
+ 
 - TradingView — the benchmark for chart workspace layout, timeframe controls, indicator panels and drawing tools
 - Zerodha Kite and Console — clean, fast, uncluttered retail trading interface with good Indian market conventions; Console is a good model for holdings, P&L and tax reporting views
 - Interactive Brokers — multi-country, multi-currency, multi-instrument handling; dense but instructive for how much information can coexist
@@ -703,9 +667,8 @@
 - Uptime Kuma and public status pages — simple, effective health status board design
 - Yahoo Finance and Google Finance — news and quote layout conventions, and how they pair news with price reaction
 - Bloomberg Terminal, if accessible — extreme information density, worth studying even though it is not a design target
-
 ## 18. Decisions Still Needed Before Starting
-
+ 
 - Is desktop-first with a read-only mobile view the right call, or is full mobile parity needed?
 - Dark-first or light-first as the default theme?
 - Which market's conventions should the interface default to when nothing is configured?
@@ -713,3 +676,75 @@
 - How many markets and instrument types should the mock dataset cover initially — enough to prove the design, without slowing the build?
 - Is chart drawing tool support needed in the first version, or can it wait?
 - Should the mock phase target a genuinely swappable data layer from day one, or is throwaway mock acceptable?
+---
+ 
+## 19. Screens Implied By Requirements Part II (Added Session 37)
+ 
+> Sections 25–34 of `Personal_Investment_Platform_Requirements.md` were added after the original UI
+> specification was written, so no screen in section 7 covers them. This section maps each new
+> requirement to either a new screen or an existing screen that must be extended, so nothing is
+> silently dropped. Build order is unchanged: these come after the existing Stage S screens.
+ 
+### 19.1 New screens
+ 
+- **Net Worth** (requirements 25) — the complete picture, market and non-market together
+  - Total net worth, split market-exposed versus non-market, and assets versus liabilities
+  - Manual asset register: type, institution, value, last-updated date, valuation method, liquidity class
+  - Every manual asset visibly stale after its configured age — this is the normal state, not an error
+  - Concentration by issuer, sector and asset class measured against total net worth, not the brokerage balance
+  - Employer equity and salary dependence shown as one combined exposure
+  - Read-only to strategy and execution — show clearly that nothing here can be traded
+- **Decision Journal** (requirements 29) — the record of why, alongside the outcome
+  - Chronological list of manual trades and limit overrides with the reason given at the time
+  - The outcome attached to each entry once known, so reasoning can be reviewed against results
+  - Filters by type, instrument, strategy and whether an override was involved
+  - Behaviour patterns surfaced here: override repetition, post-loss clustering, target drift
+- **Continuity** (requirements 28) — what happens if I am not here
+  - Institution register: broker, bank, custodian, account reference, nominee status, date last confirmed
+  - Where recovery material is kept, described without containing any credential
+  - Emergency access instructions, and the date the access route was last successfully tested
+  - Inactivity threshold configuration, and the current countdown to an automation pause
+  - Prominent warning when any confirmation or test is older than its configured review period
+- **Compliance** (requirements 27) — employer and jurisdictional restrictions
+  - Restricted instrument list, blackout windows, pre-clearance requirements, minimum holding periods
+  - Current state answered plainly for any instrument: may I trade this right now, and why not
+  - Record of refusals, with the rule that caused each
+  - Review date per rule set, with a warning when a review is overdue
+### 19.2 Existing screens that must be extended
+ 
+- **Holdings (7.2)** — liquidity class per position; manual assets included in totals but visually distinct
+- **Position Detail (7.3)** — tax category and holding-period boundary for this lot; the cost of disposing today
+- **Orders (7.13)** and **Approval Queue (7.12)** — compliance check result shown alongside risk checks;
+  cooling-off countdown where one applies; reason prompt on manual action and on override
+- **Risk & Safety (7.14)** — counterparty exposure per broker and custodian; compliance limits shown
+  in the same panel as risk limits, since both are enforced by the same layer
+- **System Health (7.15)** — independent-statement reconciliation status and its last run
+- **Reports (7.16)** — real (inflation-adjusted) returns alongside nominal; tax pack per jurisdiction
+  with gains by category, income, withholding, losses carried in and out, and foreign holdings;
+  cost and tax as a share of gross return; benchmark alternative comparison
+- **Planning (7.17)** — emergency reserve tracked separately from trading cash; liquidity ladder;
+  known future commitments against projected liquidity; withdrawal-phase modelling where it applies;
+  projections shown as a range with assumptions stated on the view
+- **Strategy Library (7.7)** — retirement criteria defined at promotion; current standing against those
+  criteria; demotion history; correlation between strategies that are supposed to be independent
+- **Configuration (7.18)** — tax rule sets per country and instrument type; inflation assumptions;
+  employer policy rules; export settings; monthly cost budget
+### 19.3 States these screens need beyond the usual set
+ 
+- **Stale by design** — a manually valued asset is expected to be out of date; show age plainly without
+  treating it as a failure
+- **Unverified** — a value entered by hand and never independently confirmed, distinct from stale
+- **Restricted** — an instrument that may not be traded right now, with the reason, distinct from an error
+- **Cooling off** — an action that is decided but deliberately not yet executable, with time remaining
+- **Overdue review** — a rule, nominee confirmation or access test past its review date
+### 19.4 Mock data these screens need
+ 
+- Non-market assets across every category in requirements 25, including one deliberately stale and one never verified
+- A liability, so net worth is not simply the sum of assets
+- Employer equity with a vesting schedule, partly vested
+- A restricted instrument and an active blackout window, so refusals can be shown
+- Manual trades and overrides with stated reasons and known outcomes, including one clearly poor decision
+- A counterparty holding a disproportionate share of net worth
+- A strategy that has decayed past its review threshold and been demoted
+- Historical inflation figures for at least two countries, so real returns differ visibly from nominal
+- Losses carried forward with differing expiry dates, and dividends with tax withheld at source
