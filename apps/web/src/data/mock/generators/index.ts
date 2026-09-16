@@ -108,3 +108,8 @@ export { generateApprovalQueue } from './approvalQueue';
 
 // Session 32: order history with broker, fees, slippage and lifecycle (UI spec 7.13)
 export { generateOrderHistory } from './orderHistory';
+
+// Session 33: risk and safety panel (UI spec 7.14)
+export { generateRiskLimits } from './riskLimits';
+export { generateRiskPanel } from './riskPanel';
+export { generateRiskBreaches } from './riskBreaches';

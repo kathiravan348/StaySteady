@@ -2,11 +2,8 @@
 
 import { http, HttpResponse, type HttpHandler } from 'msw';
 import {
-  createMockGeneratorContext,
   generateApprovalQueue,
-  generateApprovals,
   generateOrderHistory,
-  generateOrders,
   generateSignalFeed,
   generateSignals,
   generateStrategies,
@@ -15,42 +12,21 @@ import {
   generateStrategyVersions,
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
-import type { ApprovalDto, ApprovalRequestDto, OrderDto } from '../../schemas';
+import {
+  decisions,
+  getApprovals,
+  getOrders,
+  setApprovals,
+  setOrders,
+  tradingContext as ctx,
+} from '../stores/tradingStore';
+import type { ApprovalRequestDto } from '../../schemas';
 import { ApprovalDecisionSchema } from '../../schemas';
-import { nowUtc, type IsoUtcTimestamp } from '../../../shared/types/dateTime';
+import { nowUtc } from '../../../shared/types/dateTime';
 import { toQuantity } from '../../../shared/types/quantities';
 
-const ctx = createMockGeneratorContext();
-
-// Built on first use rather than at module evaluation. Generating during evaluation depends on
-// every module in the generator barrel already being initialised, and through a circular import
-// that is not guaranteed: the first request could see an undefined binding and fail.
-let currentApprovals: ApprovalDto[] | null = null;
-let currentOrders: OrderDto[] | null = null;
-
-function approvalsStore(): ApprovalDto[] {
-  currentApprovals ??= [...generateApprovals(ctx)];
-  return currentApprovals;
-}
-
-function ordersStore(): OrderDto[] {
-  currentOrders ??= [...generateOrders(ctx)];
-  return currentOrders;
-}
-
-// Decisions live in memory for the page load (decision 33). The queue is regenerated per request,
-// so without this a decided approval would come straight back as pending.
-interface DecisionRecord {
-  readonly status: 'approved' | 'rejected';
-  readonly decidedAt: IsoUtcTimestamp;
-  readonly decisionReason: string | null;
-  readonly quantity: number | null;
-  readonly limitPrice: string | null;
-}
-const decisions = new Map<string, DecisionRecord>();
-
 function decidedQueue(): readonly ApprovalRequestDto[] {
-  return generateApprovalQueue(ctx).map((item): ApprovalRequestDto => {
+  return generateApprovalQueue(ctx, getApprovals(), getOrders()).map((item): ApprovalRequestDto => {
     const decision = decisions.get(item.approvalId);
     if (decision === undefined) return item;
     return {
@@ -134,7 +110,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
       return HttpResponse.json({ error: 'Failed to load order history' }, { status: 500 });
     }
     const reasons = new Map([...decisions].map(([id, record]) => [id, record.decisionReason]));
-    return HttpResponse.json(generateOrderHistory(ctx, ordersStore(), approvalsStore(), reasons), {
+    return HttpResponse.json(generateOrderHistory(ctx, getOrders(), getApprovals(), reasons), {
       status: 200,
     });
   }),
@@ -144,7 +120,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load orders' }, { status: 500 });
     }
-    return HttpResponse.json(ordersStore(), { status: 200 });
+    return HttpResponse.json(getOrders(), { status: 200 });
   }),
 
   // Registered before /api/v1/approvals, so the specific path wins.
@@ -161,7 +137,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load approvals' }, { status: 500 });
     }
-    return HttpResponse.json(approvalsStore(), { status: 200 });
+    return HttpResponse.json(getApprovals(), { status: 200 });
   }),
 
   // Modifying is approving a changed order, so a modified quantity or price arrives with the
@@ -182,7 +158,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
         { status: 400 },
       );
     }
-    if (!approvalsStore().some((approval) => approval.id === id)) {
+    if (!getApprovals().some((approval) => approval.id === id)) {
       return HttpResponse.json({ error: 'Approval not found' }, { status: 404 });
     }
 
@@ -194,18 +170,22 @@ export const tradingHandlers: readonly HttpHandler[] = [
       quantity: parsed.data.modifiedQuantity,
       limitPrice: parsed.data.modifiedLimitPrice,
     });
-    currentApprovals = approvalsStore().map((approval) =>
-      approval.id === id
-        ? { ...approval, status: parsed.data.decision, decidedAt, decidedBy: 'owner' }
-        : approval,
+    setApprovals(
+      getApprovals().map((approval) =>
+        approval.id === id
+          ? { ...approval, status: parsed.data.decision, decidedAt, decidedBy: 'owner' }
+          : approval,
+      ),
     );
     // A rejected order was never sent, so the raw order record must say so too.
     if (parsed.data.decision === 'rejected') {
-      const orderId = currentApprovals.find((approval) => approval.id === id)?.orderId;
-      currentOrders = ordersStore().map((order) =>
-        String(order.id) === String(orderId ?? '')
-          ? { ...order, status: 'rejected', updatedAt: decidedAt }
-          : order,
+      const orderId = getApprovals().find((approval) => approval.id === id)?.orderId;
+      setOrders(
+        getOrders().map((order) =>
+          String(order.id) === String(orderId ?? '')
+            ? { ...order, status: 'rejected', updatedAt: decidedAt }
+            : order,
+        ),
       );
     }
     return HttpResponse.json(decidedQueue(), { status: 200 });

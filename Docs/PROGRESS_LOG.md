@@ -31,61 +31,63 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-13 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-14 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders). The owner asked the agent to commit each finished screen (no push) and to
-  take the recommended option whenever a choice comes up (decision 26). typecheck, lint, build pass.
+  Approval Queue, Orders, Risk & Safety). The owner asked the agent to commit each finished screen
+  (no push) and to take the recommended option whenever a choice comes up (decision 26).
+  typecheck, lint, build all pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 32: S-13 Orders — see session 32 end entry.
+  - Session 33: S-14 Risk & Safety Panel — see session 33 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-14 Risk & Safety Panel (UI spec 7.14). Read the spec section first (Docs/UI_Specification_
-  Mock_Phase.md, from the "### 7.14" heading). Route ROUTES.RISK_LIMITS (/risk/limits) — check
-  routes.ts and features/ for the placeholder page. The library UsageMeter (decision 35) was built
-  for this panel: usage against a limit with headroom, escalating at 80% and 95% in colour, symbol
-  and words. Limits already referenced elsewhere: the daily loss limit and maximum position size
-  that blocked signals in the S-12 feed (signalFeed.ts), each strategy's capital and concurrent
-  position limits (strategyDrafts.ts), and the automation mode and kill switch in the top bar.
-  Keep those numbers consistent across screens.
+  Claim S-15 Configuration — markets (UI spec 7.18). Read the spec section from the "### 7.18"
+  heading first; S-15..S-18 are four registry tasks drawn from that one section, so decide the
+  split before building. Look for the route in routes/routes.ts and the placeholder in features/.
+  Market data exists: getCanonicalMarkets / getMarketById in mock/generators/markets.ts (marketId,
+  country, currency, sessions and holidays) and useMarkets in data/api/marketQueries.ts. Keep new
+  write endpoints on the decision 33 pattern and put any state several handler files need in
+  data/mock/stores (decision 37). Risk thresholds are still fixed in riskLimits.ts and
+  riskGroupLimits.ts; if configuration screens need them, read them from there rather than
+  duplicating the numbers.
 
-FILES TOUCHED (session 32): see session 32 end entry.
+FILES TOUCHED (session 33): see session 33 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - READ a component's props before using it. Badge variants are neutral, positive, negative,
-    warning, critical, info — no success, no danger (Button does have danger). LoadingState
-    layouts are table, cards, chart, detail — no form. DataTable page sizes are 10, 20, 50, 100.
-  - When adding a prop to a library component, thread it through every layer; typecheck will not
-    catch an optional prop that is declared but never passed on.
+  - READ a component's props before using it. Badge variants: neutral, positive, negative, warning,
+    critical, info. LoadingState layouts: table, cards, chart, detail. DataTable page sizes: 10, 20,
+    50, 100. UsageMeter takes used, limit, formatValue, description and escalates at 0.8 and 0.95.
+  - Thread a new library prop through every layer; typecheck will not catch an optional prop that
+    is declared but never passed on.
   - Money in a DTO is a string amount; formatMoney needs moneyFromDto. formatRelativeTime and
-    formatDateTime need a branded IsoUtcTimestamp. Convert through the FX table
-    (convertMoneyWithTable) before comparing amounts in different currencies.
-  - Cross-check seeded mock records against every screen that shows them: an order's strategy, its
-    signal and its approval must tell the same story in the feed, the queue and the order history.
-  - A React state updater must be pure. Do not generate mock data at module evaluation in a handler.
+    formatDateTime need a branded IsoUtcTimestamp. Convert through convertMoneyWithTable before
+    comparing amounts in different currencies.
+  - One story across screens: a seeded record's strategy, signal, approval, order and breach must
+    agree on every screen that shows them. Derive rather than seed wherever you can.
+  - Prettier puts each object field on its own line, so data-heavy generators grow fast — check
+    wc -l after formatting and split before 300 lines (decision 18).
+  - A React state updater must be pure. Do not generate mock data at module evaluation.
   - Screens fetch only through data/api hooks (decision 22); writes return the full resource set
-    (decision 33). queryClient uses retry 0 and networkMode always (see session 31 correction).
+    (decision 33). queryClient uses retry 0 and networkMode always.
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - Keep files near 300 lines (decision 18). MSW: register specific paths before /:id catch-alls.
-  - Browser pane: refs go stale after re-render and read_page truncates long pages — use find, or
-    query the DOM with javascript_tool for tables. Modal content is portalled outside <main>.
-    The mock scenario lives in localStorage — set it in ONE tab via
-    (await import('/src/data/mock/scenarios/scenarioContext.ts')).setActiveDeveloperScenario(id)
-    and always set it back to 'healthy'. To test an error state, set the scenario, navigate away,
-    then navigate back so the query loads fresh.
-  - Stale modules: after editing several files a page can run half-updated JS. Restart the preview;
-    if that does not clear it, delete apps/web/node_modules/.vite and restart.
+  - MSW: register specific paths before /:id catch-alls.
+  - Browser pane: mock stores reset on a full navigation, so to see a write's effect on another
+    page, move there with an in-app link. Refs go stale after re-render; read_page truncates — use
+    find or javascript_tool. Modal content is portalled outside <main>. The scenario lives in
+    localStorage: set it via (await import('/src/data/mock/scenarios/scenarioContext.ts'))
+    .setActiveDeveloperScenario(id), navigate away and back to load fresh, and reset to 'healthy'.
+  - Stale modules: restart the preview; if that fails, delete apps/web/node_modules/.vite.
   - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
-  - Mock in-memory stores and sessionStorage edits reset on a page reload.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Open findings: chart theme colours hardcoded hex; Card.module.scss missing tokens; single large
-    JS chunk (P-04); Node 20.11 blocks ESLint 10 / Vite 7 (Q7, Q8).
+  - Open findings: top bar kill switch has no confirmation or record; chart theme colours hardcoded
+    hex; Card.module.scss missing tokens; single large JS chunk (P-04); Node 20.11 blocks ESLint 10
+    and Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -178,7 +180,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-11 | Strategy Editor | DONE | 100 | Session 30 | Recursive rule schema and draft endpoints; scope, nestable entry/exit rule builders, sizing, forced exits, news and risk; live validation; preview over real price history; version compare and revert. Error and not-found branches unverified in the pane (see session 30 end entry) |
 | S-12 | Signals & Approval Queue | DONE | 100 | Session 31 | Signals feed with outcomes and blocking limits; approval queue with impact preview, risk checks, countdown, approve/modify/reject-with-reason and restricted bulk approve; enriched feed and queue endpoints; all states verified |
 | S-13 | Orders | DONE | 100 | Session 32 | Order history endpoint with broker, fees, signed slippage and lifecycle; DataTable getRowClassName; unconfirmed orders escalated by banner, row and badge; filters by broker/market/status/strategy/date; lifecycle row detail; all states verified |
-| S-14 | Risk & Safety Panel | TODO | 0 | | |
+| S-14 | Risk & Safety Panel | DONE | 100 | Session 33 | Limits derived from holdings/orders/strategy definitions and grouped global/market/type/strategy; two-step limit changes and typed-word emergency controls, both recorded; derived breach history; shared mock stores (decision 37); all states verified |
 | S-15 | Configuration — markets | TODO | 0 | | |
 | S-16 | Configuration — providers | TODO | 0 | | |
 | S-17 | Configuration — brokers | TODO | 0 | | |
@@ -3118,6 +3120,127 @@ FINDINGS (out of scope, not fixed):
     at the reference time
   - Fees are in the order's currency and are not converted or totalled
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        33 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T11:30:18Z  |  local: 2026-09-16 17:00 IST (UTC+05:30)
+TASK CLAIMED:   S-14 Risk & Safety Panel
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-13 committed as d3613bc; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-13 commit, nothing changed since)
+
+SCOPE (UI spec 7.14):
+  - See and adjust every limit in one place; each shows threshold, current usage and headroom as a bar
+  - Grouped: global, per market, per instrument type, per strategy
+  - Limits: maximum per instrument, sector, market and country; total deployed capital ceiling;
+    mandatory cash reserve; daily, weekly and monthly loss limits; order count limits; repeat-action
+    cooldowns
+  - Visual escalation as usage approaches a threshold (library UsageMeter, decision 35)
+  - Breach history with cause, time, what was halted and how it resolved
+  - Emergency controls, visually separated, with confirmation steps
+  - Changing any limit requires explicit confirmation and is recorded
+  - Two routes exist (/risk/limits, /risk/breaches): recommended split taken per decision 26 —
+    limits, emergency controls and the change log on the first, breach history on the second
+  - Mock addition: no risk schema exists; usage must derive from holdings, strategy definitions and
+    orders so it agrees with the signals feed, approval queue and orders screen (decision 33)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        33 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T11:47:09Z  |  local: 2026-09-16 17:17 IST (UTC+05:30)
+TASK:           S-14 Risk & Safety Panel — DONE
+
+WHAT WAS BUILT (UI spec 7.14) — two routes:
+  Risk & safety (/risk/limits):
+  - Every limit as a card with threshold, usage and headroom on the library UsageMeter, escalating
+    in colour, symbol and words; exceeded and near limits also carry a badge
+  - Grouped global, per market, per instrument type and per strategy (one block per strategy)
+  - Global limits: any one instrument, sector, country; deployed capital ceiling; cash reserve (a
+    floor, drawn as reserve held back so headroom is spendable cash); daily, weekly and monthly
+    loss; orders per day; repeat-action cooldown with anything currently cooling down
+  - Changing a limit: value and reason, then a review step naming the change, what is measured now,
+    whether it ends or starts a breach, and a warning when it loosens a safety limit; recorded
+  - Emergency controls in their own bordered section: stop or resume all automation, and cancel all
+    working orders, each needing a reason and a typed word; recorded
+  - Change log with every limit change and emergency action and its reason
+  Breach history (/risk/breaches):
+  - Each breach with cause, start time and duration, what was halted and how it resolved; open
+    breaches first, filterable to open or resolved
+
+MOCK DATA:
+  - GET /api/v1/risk/panel and /risk/breaches; PATCH /risk/limits/:id; POST /risk/emergency
+  - Usage is measured from holdings, quotes, 5- and 21-bar price history, FX, orders and each
+    strategy's own definition (S-11). Standing breaches are derived from that usage, so they match
+    S-12 exactly: Dual MA's SPY at 30.60% against its 15% position limit (why NVDA was blocked and
+    AAPL failed its check) and Donchian at 42.60% capital against 25% (with sell appr-004 waiting)
+  - The unconfirmed NVDA order from S-13 is an open safety breach; the daily loss breach that
+    blocked the BTCUSD signal is in the history
+  - The safety-breach scenario simulates a 5.60% weekly loss that halts all automation
+  - Orders and approvals moved to data/mock/stores/tradingStore.ts (decision 37). The approval
+    queue now reads those stores, and a withdrawn approval shows as Withdrawn on its card and at the
+    end of its order's timeline
+  - The panel's stop control drives the same SystemStateProvider state as the top bar's kill switch
+
+FILES CREATED:
+  - apps/web/src/data/schemas/risk.ts
+  - apps/web/src/data/mock/generators/{riskLimits,riskGroupLimits,riskMeasures,riskPanel,riskBreaches}.ts
+  - apps/web/src/data/mock/stores/{tradingStore,riskStore}.ts
+  - apps/web/src/data/mock/handlers/riskHandlers.ts; apps/web/src/data/api/riskQueries.ts
+  - apps/web/src/features/risk/{model,sections}/**, Risk.module.scss
+FILES MODIFIED:
+  - apps/web/src/data/mock/handlers/{tradingHandlers,index}.ts; mock/generators/{approvalQueue,
+    orderHistory,index}.ts; data/schemas/index.ts; data/api/index.ts
+  - apps/web/src/features/trading/approvalQueue/sections/ApprovalCard.tsx
+  - apps/web/src/features/risk/{RiskLimitsPage,RiskBreachesPage}.tsx — rewritten
+
+DECISIONS MADE:
+  - 37: shared mock stores; risk usage and standing breaches derived, only changes stored
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     3 exceeded, 7 near; capital $110,497.11 (invested $98,047.11 + cash $12,450.00);
+               XAUUSD 41.60% of 45% "Approaching limit, 3.40% headroom"; USA 94.70% of 97%;
+               deployed 88.73% of 95%; cash 12,450 against a 10,000 floor; today a gain so daily
+               loss 0; orders today 5 of 20; sector shown as not measured
+  change:      Donchian capital 25% -> 45% with a reason: review said it ends a standing breach and
+               loosens a safety limit; after confirming, exceeded fell 3 -> 2, the change log
+               recorded it, and the breach closed as "Resolved by the owner changing the limit to
+               45.00%. Reason given: ..."
+  emergency:   Cancel all working orders did nothing until CANCEL was typed; then TSLA, AAPL,
+               TATAMOTORS and XAUUSD cancelled, NVDA (unconfirmed) left, their approvals expired in
+               the queue, AAPL's timeline ends "Withdrawn ... never sent", badge "0 working", logged
+               Stop all automation flipped the panel to Stopped and the top bar to "Resume Auto"
+  breaches:    6 listed with cause, time, duration, halted and resolution; an owner-resolved breach
+               renders after an in-app navigation
+  scenarios:   safety-breach -> weekly loss 5.6/5, "All automation stopped by the safety gate";
+               loading-error -> "Risk panel unavailable" and "Breach history unavailable"
+  regression:  on a fresh load the approval queue still has 3 pending and order history 7 orders
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - riskLimits.ts reached 442 lines once Prettier put every limit field on its own line; split into
+    riskMeasures (loss and exposure measurement) and riskGroupLimits (market, type, strategy).
+  - The review step read "This ends a standing breach: new buys by donchian channel breakout are
+    blocked. stops applying." — lowercasing the consequence mangled the strategy name and the
+    sentence. Rewritten.
+  - The automation card described what stopping does while automation was running, which read as
+    if it were already stopped. It now says the current state, then what stopping would do.
+
+FINDINGS (out of scope, not fixed):
+  - The top bar's kill switch stops automation with no confirmation and no record, while the panel's
+    control asks for both. The top bar should route through the same confirmation.
+  - Automation state is client-only (SystemStateProvider) and resets on reload; /system/state has
+    its own killSwitchActive that nothing on the panel reads
+  - Thresholds are fixed in the generator; a real limit configuration store belongs to S-15..S-18
+  - Weekly and monthly loss use today's FX rates for the whole period
+  - Instruments have no sector, so the sector limit cannot be measured (same gap as S-01)
+  - Stopping automation does not yet stop the mock strategies from showing new signals
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -3181,6 +3304,7 @@ FINDINGS (out of scope, not fixed):
 | 34 | 2026-09-16 | System Health data is split by source: component checks, freshness and alert-channel tests come from watchdog endpoints that stay up when the application API fails; reliability history and incidents fail with the API | UI spec 7.15 — the screen must stay informative when most of the system is down | Yes | Session 25 |
 | 35 | 2026-09-16 | Library UsageMeter shows usage against a limit with headroom and escalates at 80% and 95% in colour, symbol and words | Reused by System Health now and by the Risk and Safety panel (S-14) later | Yes | Session 25 |
 | 36 | 2026-09-16 | Backtest runs are mock-only: an in-memory run advances on elapsed time through named stages, can be cancelled, and completes to an existing saved result; cost assumptions come from per-market defaults that stand in for live configuration | UI spec 7.9 needs progress, cancellation and "differs from live configuration" warnings without a backtest engine | Yes | Session 26 |
+| 37 | 2026-09-16 | Mock order and approval state lives in data/mock/stores and is shared by every handler file; risk limit usage and standing breaches are derived from holdings, orders and strategy definitions on each request, with only threshold changes and the change log stored | An emergency cancel on the risk panel must change the same orders the orders screen and approval queue show; a derived breach can never disagree with the limit it belongs to | Yes | Session 33 |
 
 
 

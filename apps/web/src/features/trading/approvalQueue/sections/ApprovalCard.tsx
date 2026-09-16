@@ -112,8 +112,20 @@ export function ApprovalCard({
         </div>
       ) : (
         <div className={styles.inline}>
-          <Badge variant={request.status === 'approved' ? 'positive' : 'negative'}>
-            {request.status === 'approved' ? 'Approved' : 'Rejected'}
+          <Badge
+            variant={
+              request.status === 'approved'
+                ? 'positive'
+                : request.status === 'expired'
+                  ? 'neutral'
+                  : 'negative'
+            }
+          >
+            {request.status === 'approved'
+              ? 'Approved'
+              : request.status === 'expired'
+                ? 'Withdrawn'
+                : 'Rejected'}
           </Badge>
           {request.decisionReason !== null && (
             <span className={styles.meta}>{request.decisionReason}</span>

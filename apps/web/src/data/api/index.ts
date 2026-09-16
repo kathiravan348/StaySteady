@@ -69,3 +69,10 @@ export {
   useTestAlertChannel,
 } from './healthQueries';
 export { useCalendarEvents, useNewsItems } from './newsQueries';
+export type { ChangeRiskLimitVariables } from './riskQueries';
+export {
+  useChangeRiskLimit,
+  useEmergencyAction,
+  useRiskBreaches,
+  useRiskPanel,
+} from './riskQueries';

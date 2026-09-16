@@ -22,3 +22,4 @@ export * from './strategy-library';
 export * from './strategy-rules';
 export * from './trading-queue';
 export * from './order-history';
+export * from './risk';

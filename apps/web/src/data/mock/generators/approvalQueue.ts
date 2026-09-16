@@ -245,9 +245,13 @@ function buildRequest(
   };
 }
 
-export function generateApprovalQueue(ctx: MockGeneratorContext): readonly ApprovalRequestDto[] {
-  const approvals = generateApprovals(ctx);
-  const orders = generateOrders(ctx);
+// Approvals and orders default to freshly generated ones; the handlers pass their live stores so a
+// decision or an emergency cancel is reflected in the queue.
+export function generateApprovalQueue(
+  ctx: MockGeneratorContext,
+  approvals: readonly ApprovalDto[] = generateApprovals(ctx),
+  orders: readonly OrderDto[] = generateOrders(ctx),
+): readonly ApprovalRequestDto[] {
   const strategies = generateStrategies(ctx);
   const quotes = generateInitialQuotes(ctx);
   const portfolio = generatePortfolioData(ctx);

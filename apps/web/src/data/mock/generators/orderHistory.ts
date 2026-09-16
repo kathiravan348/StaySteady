@@ -171,6 +171,16 @@ function timelineFor(inputs: TimelineInputs): OrderEventDto[] {
   if (approval?.status === 'pending') {
     return events.map((event) => event as OrderEventDto);
   }
+  // Withdrawn before a decision, by the emergency cancel on the risk panel.
+  if (approval?.status === 'expired') {
+    events.push({
+      at: String(approval.decidedAt ?? updated),
+      kind: 'cancelled',
+      title: 'Withdrawn',
+      detail: 'Cancelled by an emergency control while still awaiting approval. It was never sent.',
+    });
+    return events.map((event) => event as OrderEventDto);
+  }
 
   events.push({
     at: created,
