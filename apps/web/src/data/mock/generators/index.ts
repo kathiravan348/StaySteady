@@ -113,3 +113,6 @@ export { generateOrderHistory } from './orderHistory';
 export { generateRiskLimits } from './riskLimits';
 export { generateRiskPanel } from './riskPanel';
 export { generateRiskBreaches } from './riskBreaches';
+
+// Session 34: configuration, markets (UI spec 7.18)
+export { marketConfigHealth, seedMarketConfigs, seedMarketHistory } from './marketConfig';

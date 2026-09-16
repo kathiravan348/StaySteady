@@ -71,7 +71,7 @@ export async function apiGet<S extends z.ZodType>(
 }
 
 export async function apiSend<S extends z.ZodType>(
-  method: 'POST' | 'PATCH' | 'DELETE',
+  method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   body: unknown,
   schema: S,

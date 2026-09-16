@@ -76,3 +76,5 @@ export {
   useRiskBreaches,
   useRiskPanel,
 } from './riskQueries';
+export type { RevertMarketConfigVariables, SaveMarketConfigVariables } from './configQueries';
+export { useMarketConfigs, useRevertMarketConfig, useSaveMarketConfig } from './configQueries';

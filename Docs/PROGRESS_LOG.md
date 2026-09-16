@@ -31,63 +31,61 @@ BLOCKERS:           none
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-14 done
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-15 done
   (Overview, Holdings, Position Detail, Instrument Workspace, Watchlists, System Health, Backtest
   Setup, Backtest Results, Backtest Comparison, Strategy Library, Strategy Editor, Signals &
-  Approval Queue, Orders, Risk & Safety). The owner asked the agent to commit each finished screen
-  (no push) and to take the recommended option whenever a choice comes up (decision 26).
-  typecheck, lint, build all pass.
+  Approval Queue, Orders, Risk & Safety, Configuration — markets). The owner asked the agent to
+  commit each finished screen (no push) and to take the recommended option whenever a choice comes
+  up (decision 26). typecheck, lint, build all pass.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 33: S-14 Risk & Safety Panel — see session 33 end entry.
+  - Session 34: S-15 Configuration — markets — see session 34 end entry.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-15 Configuration — markets (UI spec 7.18). Read the spec section from the "### 7.18"
-  heading first; S-15..S-18 are four registry tasks drawn from that one section, so decide the
-  split before building. Look for the route in routes/routes.ts and the placeholder in features/.
-  Market data exists: getCanonicalMarkets / getMarketById in mock/generators/markets.ts (marketId,
-  country, currency, sessions and holidays) and useMarkets in data/api/marketQueries.ts. Keep new
-  write endpoints on the decision 33 pattern and put any state several handler files need in
-  data/mock/stores (decision 37). Risk thresholds are still fixed in riskLimits.ts and
-  riskGroupLimits.ts; if configuration screens need them, read them from there rather than
-  duplicating the numbers.
+  Claim S-16 Configuration — providers (UI spec 7.18: coverage, granularity, history depth, rate
+  limits, cost, priority order, credential reference, health check, freshness expectation).
+  Route ROUTES.SETTINGS_PROVIDERS (/settings/providers) renders
+  features/settings/SettingsProvidersPage.tsx, a placeholder. Build it on apps/web/src/shared/config
+  exactly as markets does (decision 38): a zod schema with superRefine in data/schemas, seeds and a
+  health function in a generator, versions in data/mock/stores/configStore.ts, handlers in
+  configHandlers.ts, hooks in data/api/configQueries.ts. Providers need "Test connection", which
+  markets did not; add it to the shared pattern rather than the feature. Provider data already
+  exists: the System Health screen's source reliability (useSourceReliability, healthDetails and
+  healthMonitorData generators) carries each provider's request usage, cost budget and failover —
+  seed from it so the two screens agree. Credentials must be references only, never values.
 
-FILES TOUCHED (session 33): see session 33 end entry.
+FILES TOUCHED (session 34): see session 34 end entry.
 
 WATCH OUT FOR:
   - Commands: pnpm typecheck | pnpm lint | pnpm build | pnpm format | pnpm dev
-  - READ a component's props before using it. Badge variants: neutral, positive, negative, warning,
-    critical, info. LoadingState layouts: table, cards, chart, detail. DataTable page sizes: 10, 20,
-    50, 100. UsageMeter takes used, limit, formatValue, description and escalates at 0.8 and 0.95.
-  - Thread a new library prop through every layer; typecheck will not catch an optional prop that
-    is declared but never passed on.
-  - Money in a DTO is a string amount; formatMoney needs moneyFromDto. formatRelativeTime and
-    formatDateTime need a branded IsoUtcTimestamp. Convert through convertMoneyWithTable before
-    comparing amounts in different currencies.
-  - One story across screens: a seeded record's strategy, signal, approval, order and breach must
-    agree on every screen that shows them. Derive rather than seed wherever you can.
-  - Prettier puts each object field on its own line, so data-heavy generators grow fast — check
-    wc -l after formatting and split before 300 lines (decision 18).
-  - A React state updater must be pure. Do not generate mock data at module evaluation.
-  - Screens fetch only through data/api hooks (decision 22); writes return the full resource set
-    (decision 33). queryClient uses retry 0 and networkMode always.
+  - READ a component's props before using it. Badge: neutral, positive, negative, warning,
+    critical, info. LoadingState: table, cards, chart, detail. DataTable page sizes 10/20/50/100.
+    Toggle is a React Aria Switch (isSelected, onChange, isDisabled, aria-label).
+  - A validation rule must describe something truly invalid. Check it against real-world data
+    before making it an error; a note on the form is often the right answer.
+  - Anything that should reset a component when a selection changes must be in its key.
+  - Money in a DTO is a string amount; formatMoney needs moneyFromDto. Convert currencies through
+    convertMoneyWithTable before comparing.
+  - One story across screens: derive from existing generators instead of seeding new numbers.
+  - Prettier expands objects one field per line; check wc -l and split before 300 (decision 18).
+  - Screens fetch only through data/api hooks (decision 22); writes return the full set
+    (decision 33); shared mock state lives in data/mock/stores (decision 37).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - MSW: register specific paths before /:id catch-alls.
-  - Browser pane: mock stores reset on a full navigation, so to see a write's effect on another
-    page, move there with an in-app link. Refs go stale after re-render; read_page truncates — use
-    find or javascript_tool. Modal content is portalled outside <main>. The scenario lives in
-    localStorage: set it via (await import('/src/data/mock/scenarios/scenarioContext.ts'))
-    .setActiveDeveloperScenario(id), navigate away and back to load fresh, and reset to 'healthy'.
+  - Browser pane: typing does not reach native time and date inputs, and label clicks may not reach
+    wrapped inputs. Set the value with the native HTMLInputElement value setter and dispatch an
+    input event, which runs React's onChange. Mock stores reset on a full navigation. Modal content
+    is portalled outside <main>. Set the scenario with setActiveDeveloperScenario in one tab and
+    reset it to 'healthy'. Screenshots can come back blank; read the DOM instead.
   - Stale modules: restart the preview; if that fails, delete apps/web/node_modules/.vite.
   - The Bash tool mangles heredocs containing quotes and backticks; write TypeScript with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Open findings: top bar kill switch has no confirmation or record; chart theme colours hardcoded
-    hex; Card.module.scss missing tokens; single large JS chunk (P-04); Node 20.11 blocks ESLint 10
-    and Vite 7 (Q7, Q8).
+  - Open findings: configuration is not yet read by the rest of the app; the top bar kill switch has
+    no confirmation or record; chart theme colours hardcoded hex; single large JS chunk (P-04);
+    Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -181,7 +179,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-12 | Signals & Approval Queue | DONE | 100 | Session 31 | Signals feed with outcomes and blocking limits; approval queue with impact preview, risk checks, countdown, approve/modify/reject-with-reason and restricted bulk approve; enriched feed and queue endpoints; all states verified |
 | S-13 | Orders | DONE | 100 | Session 32 | Order history endpoint with broker, fees, signed slippage and lifecycle; DataTable getRowClassName; unconfirmed orders escalated by banner, row and badge; filters by broker/market/status/strategy/date; lifecycle row detail; all states verified |
 | S-14 | Risk & Safety Panel | DONE | 100 | Session 33 | Limits derived from holdings/orders/strategy definitions and grouped global/market/type/strategy; two-step limit changes and typed-word emergency controls, both recorded; derived breach history; shared mock stores (decision 37); all states verified |
-| S-15 | Configuration — markets | TODO | 0 | | |
+| S-15 | Configuration — markets | DONE | 100 | Session 34 | Shared config pattern (entry list, capability switches, simulation notice, inline errors, version diff and revert; decision 38); markets form with schema-driven validation; calendar-coverage health; versioned saves with reasons; all states verified |
 | S-16 | Configuration — providers | TODO | 0 | | |
 | S-17 | Configuration — brokers | TODO | 0 | | |
 | S-18 | Configuration — instruments, currencies, alerts | TODO | 0 | | |
@@ -3241,6 +3239,122 @@ FINDINGS (out of scope, not fixed):
   - Instruments have no sector, so the sector limit cannot be measured (same gap as S-01)
   - Stopping automation does not yet stop the mock strategies from showing new signals
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        34 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T11:59:45Z  |  local: 2026-09-16 17:29 IST (UTC+05:30)
+TASK CLAIMED:   S-15 Configuration — markets
+OWNER INPUT:    decision 26 — continue screens one by one, take recommended options, commit each
+
+PRE-WORK VERIFICATION:
+  git:         S-14 committed as 1deeddd; working tree clean
+  type check:  PASS, lint: PASS, build: PASS (checked before the S-14 commit, nothing changed since)
+
+SCOPE (UI spec 7.18):
+  - The shared configuration layout every area uses: a list of entries with status, enabled toggle
+    and health indicator; a detail form for adding or editing; inline validation before saving;
+    test connection where applicable; a clear notice that new entries start in simulation mode;
+    capability flags as explicit switches; version history with diff and revert
+  - Countries and markets: identity, currency, timezone, trading hours, holiday calendar,
+    settlement, fees, tax rules, permitted instrument types, automation permitted
+  - Split taken per decision 26: 7.18 is one section spread over S-15..S-18, so S-15 builds the
+    shared pattern in apps/web/src/shared for the later three to reuse, plus the markets screen.
+    Credentials and the automation permission summary are named in 7.18 but not in the registry;
+    they are left for S-18 to claim or raise.
+  - Health: every seeded holiday calendar ends before today (US 2026-07-03, IN 2026-08-15, UK/JP/SG
+    2026-01-01), so health derives from calendar coverage. Future-dated holidays only are added for
+    US and IN; past dates would change price history other screens depend on.
+  - Fees come from the per-market cost defaults S-07 already serves, not new numbers.
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        34 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T12:15:22Z  |  local: 2026-09-16 17:45 IST (UTC+05:30)
+TASK:           S-15 Configuration — markets — DONE
+
+WHAT WAS BUILT (UI spec 7.18):
+  Shared configuration pattern (apps/web/src/shared/config, decision 38):
+  - ConfigEntryList: entries with health badge, live or simulation, disabled marker, an enabled
+    switch and the health summary
+  - CapabilitySwitch (a labelled switch saying what it allows), SimulationNotice, FieldError
+  - VersionHistory: every version with its reason and time; compare any older version against the
+    one in force; revert with a reason, saved as a new version
+  - errorsByPath / visibleError: inline errors from a zod error, shown once a field is touched or
+    after a save attempt; diffDescriptions compares two versions described in the screen's words
+  Countries & markets (/settings/markets):
+  - Identity, currency, timezone, settlement; regular sessions (several, for lunch breaks), pre- and
+    post-market, weekly closed days; holiday calendar with half days; fees; tax rules; permitted
+    instrument types; enabled, automation permitted and live switches
+  - Inline validation from the schema: sessions that end before they start or overlap, extended
+    hours that run into regular trading, a week with no trading day, duplicate holidays, a
+    long-term tax rate with no long-term holding period, out-of-range fees and rates
+  - Save needs a reason; a blocked save lists every field that needs fixing
+
+MOCK DATA:
+  - GET/POST /api/v1/config/markets, PUT /config/markets/:id, POST /config/markets/:id/revert
+  - Commission and minimum commission come from S-07's per-market cost defaults, so both screens
+    agree. Tax rates are stated as assumptions for an India-resident owner
+  - Health derives from how far the holiday calendar reaches: every seeded calendar had already run
+    out, so future-dated holidays were added for US and IN only (past dates would change price
+    history); UK, JP and SG still show the problem
+  - History seeds are real events: US moved to T+1 settlement (2024-05-28); India's Budget 2024 set
+    short-term gains tax to 20% and long-term to 12.5%
+  - apiSend accepts PUT
+
+FILES CREATED:
+  - apps/web/src/data/schemas/{config,config-markets}.ts
+  - apps/web/src/data/mock/generators/marketConfig.ts; mock/stores/configStore.ts;
+    mock/handlers/configHandlers.ts; data/api/configQueries.ts
+  - apps/web/src/shared/config/** ; apps/web/src/features/settings/{Settings.module.scss, markets/**}
+FILES MODIFIED:
+  - apps/web/src/data/api/{apiClient,index}.ts; data/schemas/index.ts;
+    mock/generators/index.ts; mock/handlers/index.ts
+  - apps/web/src/features/settings/SettingsMarketsPage.tsx — rewritten
+
+DECISIONS MADE:
+  - 38: shared configuration pattern and one validation source
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0 (first run)
+  lint:        PASS — exit 0
+  build:       PASS — exit 0
+  browser:     5 markets; US and IN healthy (calendar runs to 2026-12-25), UK, JP and SG "Problem:
+               Holiday calendar ran out on 2026-01-01"; US v2 with 18 holidays
+  diff:        US version 1 against current shows one row, Settlement T+2 -> T+1
+  validation:  setting the US session to close at 08:00 showed "A session must end after it starts"
+               beside the field before saving, marked it invalid and showed Unsaved changes;
+               Save then listed "1 field needs fixing", asked for a reason, and saved nothing
+  save:        adding Christmas 2026 to the UK calendar with a reason made it v2 and turned its
+               health from Problem to Healthy; the diff shows the one added holiday
+  list toggle: disabling Singapore from the list saved v2 "Disabled from the market list."
+  new market:  the simulation notice shows and the Live switch is disabled; Hong Kong saved in
+               simulation and flagged "No holiday calendar, so closures are unknown."
+  revert:      Revert stayed disabled until a reason was given; US v3 is version 1's T+2 with the
+               reason recorded, and the list and form both refreshed
+  states:      loading-error -> "Market configuration unavailable" with the failing path
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - I made a holiday that falls on a weekend a validation error. The dates were right (Republic Day
+    2025 was a Sunday), but the rule was wrong: exchanges list national holidays that fall on
+    weekends, so it rejected real calendars and the whole list failed to load. It is now a note on
+    the form, not an error.
+  - Discard set the selection to null and straight back, which React batches into no change, so the
+    form never reset. A reset counter in the form's key fixes it.
+  - The version history kept its open comparison when switching markets, because it tracks the open
+    panel by version number and was not keyed per market. It is now keyed by market.
+
+FINDINGS (out of scope, not fixed):
+  - Market configuration is not read by anything else yet: /api/v1/markets, market hours in the top
+    bar and the backtest cost defaults still use the canonical seeds, so a saved change here does
+    not reach them
+  - Holiday calendars are entered by hand; there is no import from an exchange calendar source
+  - Credentials and the automation permission summary are named in UI spec 7.18 but have no registry
+    task; S-18 should claim or raise them
+  - Switching a market to live has no extra confirmation beyond the reason on save
+  - Instrument type labels read "Etf" and "Ipo" (the humanizeToken finding from S-10)
+────────────────────────────────────────────────────────────
 ```
 
 ---
@@ -3305,6 +3419,7 @@ FINDINGS (out of scope, not fixed):
 | 35 | 2026-09-16 | Library UsageMeter shows usage against a limit with headroom and escalates at 80% and 95% in colour, symbol and words | Reused by System Health now and by the Risk and Safety panel (S-14) later | Yes | Session 25 |
 | 36 | 2026-09-16 | Backtest runs are mock-only: an in-memory run advances on elapsed time through named stages, can be cancelled, and completes to an existing saved result; cost assumptions come from per-market defaults that stand in for live configuration | UI spec 7.9 needs progress, cancellation and "differs from live configuration" warnings without a backtest engine | Yes | Session 26 |
 | 37 | 2026-09-16 | Mock order and approval state lives in data/mock/stores and is shared by every handler file; risk limit usage and standing breaches are derived from holdings, orders and strategy definitions on each request, with only threshold changes and the change log stored | An emergency cancel on the risk panel must change the same orders the orders screen and approval queue show; a derived breach can never disagree with the limit it belongs to | Yes | Session 33 |
+| 38 | 2026-09-16 | Every configuration area uses apps/web/src/shared/config (entry list with enabled toggle and health, capability switches, simulation notice, field errors, version history with diff and revert). Cross-field rules live in the area's zod schema via superRefine, so the form's inline validation and the server's save validation are one check. Versions are full snapshots, newest first; a revert saves the old snapshot as a new version, and a new entry is forced into simulation by the server | UI spec 7.18 asks for one layout pattern across S-15..S-18; one validation source means the form can never pass something the server rejects | Yes | Session 34 |
 
 
 
