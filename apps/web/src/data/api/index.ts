@@ -37,6 +37,7 @@ export {
 export {
   useClassificationIndex,
   useClassificationTaxonomy,
+  useCompanyProfile,
   useCorporateStructure,
   useFundLookThrough,
   useInstrumentClassification,

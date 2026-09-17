@@ -4,6 +4,7 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 
 import {
   createMockGeneratorContext,
+  generateCompanyProfile,
   generateClassificationIndex,
   generateClassificationTaxonomy,
   generateCorporateStructure,
@@ -44,6 +45,13 @@ export const classificationHandlers: readonly HttpHandler[] = [
     if (failed !== null) return failed;
     const classification = generateInstrumentClassification(ctx, String(params['id']));
     return classification === null ? notFound() : HttpResponse.json(classification);
+  }),
+
+  http.get('/api/v1/instruments/:id/company', ({ params }) => {
+    const failed = failure('Failed to load the company record');
+    if (failed !== null) return failed;
+    const profile = generateCompanyProfile(ctx, String(params['id']));
+    return profile === null ? notFound() : HttpResponse.json(profile);
   }),
 
   http.get('/api/v1/instruments/:id/structure', ({ params }) => {

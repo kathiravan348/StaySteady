@@ -17,6 +17,8 @@ import {
   InstrumentClassificationSchema,
   InstrumentOwnershipResponseSchema,
 } from '../schemas/classification';
+import type { CompanyProfileResponseDto } from '../schemas/company-research';
+import { CompanyProfileResponseSchema } from '../schemas/company-research';
 import type { FundLookThroughResponseDto } from '../schemas/fund-lookthrough';
 import { FundLookThroughResponseSchema } from '../schemas/fund-lookthrough';
 import { apiGet } from './apiClient';
@@ -56,6 +58,16 @@ export function useInstrumentClassification(
         InstrumentClassificationSchema,
         signal,
       ),
+    enabled: instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useCompanyProfile(instrumentId: string): UseQueryResult<CompanyProfileResponseDto> {
+  return useQuery({
+    queryKey: ['classification', 'company', instrumentId],
+    queryFn: ({ signal }) =>
+      apiGet(instrumentPath(instrumentId, 'company'), CompanyProfileResponseSchema, signal),
     enabled: instrumentId !== '',
     staleTime: SLOW_STALE_MS,
   });

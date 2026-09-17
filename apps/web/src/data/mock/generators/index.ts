@@ -102,6 +102,7 @@ export {
   sectorNameForSymbol,
 } from './classification';
 export { ASSET_CLASSES, TAXONOMY_SECTORS } from './classificationTaxonomy';
+export { companyProfileFor, generateCompanyProfile } from './companyResearch';
 export type { ExposureBreakdown, ExposureSlice } from './exposureBreakdown';
 export { groupExposure, sectorExposure } from './exposureBreakdown';
 export { fundLookThroughFor, generateFundLookThrough, isLookThroughFund } from './fundLookThrough';

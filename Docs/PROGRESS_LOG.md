@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   84% (90 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 3 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T04:00:00Z  |  local: 2026-09-18 09:30 IST
-LAST AGENT:         Claude Opus 5 (session 86)
-BUILD STATE:        PASS (pnpm build, session 86)
+OVERALL PROGRESS:   85% (91 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 4 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T04:45:00Z  |  local: 2026-09-18 10:15 IST
+LAST AGENT:         Claude Opus 5 (session 87)
+BUILD STATE:        PASS (pnpm build, session 86; session 87 added data-layer files only)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-04 is next: the company research record.
+BLOCKERS:           none. R-05 financial statements is next and is the largest remaining data task.
 ```
 
 ---
@@ -34,28 +34,28 @@ BLOCKERS:           none. R-04 is next: the company research record.
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R is the active
-  scope (requirements Part III, UI spec 20, decisions 48-54). R-01 built the classification data
-  layer, R-02 wired it into Overview, Holdings, Planning and the Screener, R-03 added fund
-  look-through and made sector and group exposure measurable. R-04 is next.
+  scope (requirements Part III, UI spec 20, decisions 48-54). R-01 classification data, R-02 wired
+  into Overview/Holdings/Planning/Screener, R-03 fund look-through with sector and group exposure,
+  R-04 the company research record. R-05 financial statements is next.
 
-WHAT R-03 ADDED (session 86):
-  - data/schemas/fund-lookthrough.ts and generators/fundLookThrough.ts: sector weights, largest
-    holdings, index tracked and assets under management for SPY, VTSAX, QQQ and NIFTYBEES.
-    Endpoint GET /api/v1/instruments/:id/look-through, hook useFundLookThrough. A non-fund answers
-    with the reason rather than an error.
-  - generators/exposureBreakdown.ts: sectorExposure and groupExposure over the holdings. A company's
-    value lands on its own sector or group; a fund's value is split across its disclosed weights;
-    anything with no company behind it raises an honest uncovered share rather than being hidden.
-  - riskLimits.ts: "Maximum in any one sector" is measured at last (27.82% Information technology,
-    of which 10.18% is held through SPY) and a new "Maximum in any one business group" limit sits
-    beside it (Tata group 1.47% across TATAMOTORS and TCS, threshold 20%).
-  - Mock data: TCS added as a canonical instrument (inst-in-tcs) and both Tata companies are now
-    held through Zerodha, so group exposure has real data behind it. The portfolio is 9 holdings.
+WHAT R-04 ADDED (session 87, data layer only):
+  - data/schemas/company-research.ts: company profile (legal name, plain business description,
+    listings, headquarters, employees, reporting currency, fiscal year end as MM-DD, ISIN and local
+    code, revenue by segment and by geography, key people with whether they were appointed in the
+    last year, auditor with a qualified-opinion flag, what the business depends on) and a response
+    that carries the reason when there is no record.
+  - generators/companyProfiles.ts: six full profiles (AAPL, RELIANCE, TATAMOTORS, TCS, AZN, D05).
+    Coverage is deliberately partial so the "no provider record yet" state has real data behind it.
+  - generators/companyResearch.ts, endpoint GET /api/v1/instruments/:id/company, hook
+    useCompanyProfile.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-04 company research record: profile, business description, segment and geography revenue,
-     key people, auditor. Schema, generator, endpoint, hook. No screen yet (R-07 builds it).
-  2. R-05 financial statements (the largest remaining data task), R-06 the ratio engine.
+  1. R-05 financial statements: five years annual and eight quarters interim, consolidated and
+     standalone distinct, each with reporting currency, period end, audited and restated flags and
+     the publication date (decision 50). Must tie to price history (decision 19): assets equal
+     liabilities plus equity, EPS from net profit and shares, market cap from price times shares.
+     Keep the definitions out of the generator file; six companies will not fit in 300 lines.
+  2. R-06 the ratio engine in apps/web/src/shared/fundamentals (decision 53).
   3. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
   4. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   5. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
@@ -262,7 +262,7 @@ already built but cannot work without classification.
 | R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | DONE | 100 | Claude Opus 5 (session 84) | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
 | R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | DONE | 100 | Claude Opus 5 (session 85) | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
 | R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | DONE | 100 | Claude Opus 5 (session 86) | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
-| R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | TODO | 0 | | Requirements 35 |
+| R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | DONE | 100 | Claude Opus 5 (session 87) | Requirements 35 |
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | TODO | 0 | | Requirements 37; decision 50. Must tie to price history (decision 19) |
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | TODO | 0 | | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | TODO | 0 | | UI spec 20.1 |
@@ -1351,6 +1351,50 @@ apps/web/src/data/mock/generators/{canonicalInstruments.ts,holdingProfiles.ts,ri
 index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
 apps/web/src/data/api/{classificationQueries.ts,index.ts}, visual/baselines (6 rebaselined),
 Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 87 | Claude Opus 5
+START:          2026-09-18T04:05:00Z  |  local: 2026-09-18 09:35 IST
+END:            2026-09-18T04:45:00Z  |  local: 2026-09-18 10:15 IST
+TASK CLAIMED:   R-04 company research record
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Schema data/schemas/company-research.ts: CompanyProfile with the requirements-35 fields, and
+    CompanyProfileResponse carrying either the profile or the reason there is none. Fiscal year end
+    is held as MM-DD because every statement date has to be read against it (India to 31 March,
+    Apple to late September). A key person records whether they were appointed within the last year,
+    and the auditor records whether the opinion was qualified.
+  - generators/companyProfiles.ts: six profiles with plain business descriptions, revenue by segment
+    and by geography, executives, auditors and what each business depends on. Coverage stops there
+    on purpose: SWIGGY and the screener-only names answer "no provider has supplied a company record
+    for this business yet", which is the state UI spec 20.3 asks the interface to show.
+  - generators/companyResearch.ts, endpoint GET /api/v1/instruments/:id/company, hook
+    useCompanyProfile.
+
+NOT COMPLETED / LIMITS:
+  - No screen shows this yet; the Overview tab of the Company Research screen (R-07) does that.
+  - Profiles are seeded rather than derived, which is right for a provider-supplied record but means
+    the figures are plausible, not current.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide). Not re-run: pnpm build and pnpm visual, because
+  no component, style or markup changed this session (data-layer files and the API barrel only).
+  In the browser against the dev server: Tata Motors returns its four segments led by Jaguar Land
+  Rover at 66.8%, a 31 March year end, a chief executive appointed within the last year with the
+  note saying so, and its two dependencies; Apple returns a 30 September year end, USD reporting,
+  Americas 42.8% and an unqualified Ernst & Young opinion; SWIGGY returns "no provider has supplied
+  a company record for this business yet"; gold returns "no company sits behind this instrument".
+
+FILES: created apps/web/src/data/schemas/company-research.ts,
+apps/web/src/data/mock/generators/{companyProfiles.ts,companyResearch.ts};
+modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 
