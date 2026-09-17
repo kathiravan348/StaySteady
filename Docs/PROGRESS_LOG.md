@@ -18,12 +18,12 @@ PHASE:              Stage E rework; E-09a and E-03a done
 OVERALL PROGRESS:   80% (71 of 89 active tasks done; Stage F 100%; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 33;
                     Stage E 0 of 9, all 9 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T08:52:00Z  |  local: 2026-09-17 14:22 IST
-LAST AGENT:         session 63 (Claude Opus 5; E-03 part a: approval queue safeguards)
+LAST UPDATED:       2026-09-17T09:25:00Z  |  local: 2026-09-17 14:55 IST
+LAST AGENT:         session 64 (Claude Opus 5; owner answers recorded)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. Question 13 (employer policy) still gates any real automation.
+BLOCKERS:           none. Owner answered the open questions (session 64); only question 12 tooling work remains as a task.
 ```
 
 ---
@@ -54,16 +54,13 @@ WHAT IS PARTIALLY DONE:
   - L-12: no visual regression tooling (question 12).
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. E-03 part b: Orders screen shows the compliance result for working orders (split
-     OrdersView.tsx first; it is 337 lines).
-  2. E-02, E-01, E-04, E-05, E-06, E-07, E-08. M-17 data is available through useInflationHistory,
-     useLossCarryForwards, useCounterparties and useStrategyLifecycles; inflation assumptions and the
-     counterparty threshold through useInflationAssumptions and useOperatingPolicy. Tax rates stay in
-     market config and instrument type thresholds until E-09b. Replace inline styles with SCSS modules.
-  3. E-09 part b (tax rule sets per residence country and instrument type) and part c (employer policy
-     rules read by complianceStore) wait on owner answers: questions 13 and 16, and whether rule sets
-     replace the per-market tax rules.
-  4. Then M-16, L-13, L-14, P-05, P-01..P-04.
+  Owner answered questions 7-10, 12-21 in session 64; decisions 43-46 record the direction.
+  1. E-03 part b: Orders screen compliance for working orders (split OrdersView.tsx, 337 lines).
+  2. E-09 part b: tax rule sets per residence country and asset class replace per-market rates
+     (decision 45); then E-02 and E-06 read them.
+  3. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
+  4. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
+  5. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
 
 SESSION 60 (M-17) ADDED: schemas inflation.ts, tax-losses.ts, counterparties.ts,
   strategy-lifecycle.ts; generators inflationHistory, taxLossCarryForward, counterpartyProfiles,
@@ -135,6 +132,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | F-19 | Multi-timezone handling utilities | DONE | 100 | Session 9 | Market schedules, session calculation and timezone formatting in shared/marketTime |
 | F-20 | Application shell, routing, providers | DONE | 100 | Session 10 | React Router, TopBar, Sidebar, PageShell, AppShell, SystemState & MarketSchedule providers |
 | F-21 | Navigation structure per UI spec section 6 | DONE | 100 | Session 11 | Complete route map & feature shells in routes/ and features/ |
+| F-22 | Upgrade Node to 22 LTS, then ESLint 10 and Vite 7 | TODO | 0 | | Owner Q7/Q8 session 64: yes, very low priority. Do last |
  
 ### Stage M — Mock Infrastructure
  
@@ -173,7 +171,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | L-09 | Chart wrapper — price/candlestick | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — TradingView Lightweight Charts v5 wrapper for candles, bars, lines, areas & volume histogram |
 | L-10 | Chart wrapper — analytical charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — Apache ECharts v6 wrapper with presets: equity curves, drawdowns, heatmaps & donuts |
 | L-11 | Theme-change handling for charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — useChartTheme MutationObserver on root attributes (data-theme, data-gain-loss) |
-| L-12 | Visual regression test setup | PARTIAL | 20 | Antigravity (Gemini 3.8 Flash) | **REOPENED session 36.** `verify_stage_l.ts` is not in the repository and README pointed at `C:\Users\kathiravan\.gemini\antigravity-ide\...\scratch\` — another machine's path. No visual regression tooling exists (no Playwright, no baselines, no runner). The story registry is real and is the only part delivered |
+| L-12 | Visual regression test setup | PARTIAL | 20 | Antigravity (Gemini 3.8 Flash) | **REOPENED session 36.** `verify_stage_l.ts` is not in the repository and README pointed at `C:\Users\kathiravan\.gemini\antigravity-ide\...\scratch\` — another machine's path. No visual regression tooling exists (no Playwright, no baselines, no runner). The story registry is real and is the only part delivered **Owner Q12 session 64:** Playwright screenshot baselines, local only, key screens in dark and light. |
 | L-13 | Analytical chart presets — remaining spec 8.1 types | TODO | 0 | | Raised session 36. Only 5 of ~18 required types exist (equity curve, comparison curves, drawdown, donut, monthly heatmap). Missing: returns distribution histogram, allocation treemap, stacked area, correlation matrix heatmap, rolling metric lines, bar charts, waterfall, scatter. Needed by S-20 and S-21 |
 | L-14 | Partial-data state component | TODO | 0 | | Raised session 36. UI spec 10 requires a partial-data state ("some markets or providers unavailable, others fine, shown per section not globally"). No implementation anywhere; `SystemStatusState` covers only halted/degraded/offline |
  
@@ -216,6 +214,9 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-31 | Decision Journal | DONE | 100 | Session 53 | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift); verified |
 | S-32 | Continuity — succession, nominee and emergency access | DONE | 100 | Session 54 | Raised session 37. Requirements 28, UI spec 19.1. Institution register with one-click confirmation, recovery points without credentials, emergency drill playbook and log, inactivity pause countdown; verified |
 | S-33 | Compliance — employer and jurisdictional restrictions | DONE | 100 | Session 55 | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods, pre-trade eligibility checker ("May I trade this right now, and why not?"), refusals log intercepted at signal stage; verified |
+| S-34 | Screener factors from price history and fundamentals | TODO | 0 | | Owner Q19 session 64: price, RSI, SMA distance from M-04 price history; P/E, ROE, yield from fundamentals (S-04) instead of fixed seeds |
+| S-35 | Portfolio Performance links to the full performance report | TODO | 0 | | Owner Q9 session 64: small; link S-25 quick view to Reports performance with the same period |
+| S-36 | Continuity — backup nominee and drill schedule | TODO | 0 | | Owner Q17 session 64: second view-only nominee, drill due every 6 to 12 months with overdue state |
  
 ### Stage E — Requirements Part II Extensions To Existing Screens
  
@@ -224,15 +225,15 @@ not be folded silently into an unrelated task. See UI spec 19.2.
  
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
-| E-01 | Holdings — liquidity class; non-market assets in totals | PARTIAL | 50 | Session 57; audited session 59 | Bucket totals and a manual-asset toggle exist and read useNetWorth. Missing: liquidity class per position (spec asks per row); manual assets excluded from totals by default; `as ReportCurrencyDto` assertion; parseFloat on a money amount; inline styles with raw values |
+| E-01 | Holdings — liquidity class; non-market assets in totals | PARTIAL | 50 | Session 57; audited session 59 | Bucket totals and a manual-asset toggle exist and read useNetWorth. Missing: liquidity class per position (spec asks per row); manual assets excluded from totals by default; `as ReportCurrencyDto` assertion; parseFloat on a money amount; inline styles with raw values **Owner Q14 session 64:** traded portfolio only — remove the non-market asset toggle from holdings totals; remaining work is liquidity class per position from settlement and instrument data. |
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | PARTIAL | 50 | Session 57; audited session 59 | FIFO lot split with Decimal is sound. Missing: tax rates (30%/15%), the 365-day boundary and fees are hardcoded; they must come from tax rule configuration and markets.holdingPeriodTaxThresholdDays (decision 24, open question 16) |
 | E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | PARTIAL | 75 | Session 57; audited 59; part a session 63 | **Done (session 63):** approval queue shows the real compliance result beside risk checks, cooling off after approval with withdraw, stated reason required; all enforced by the server; safeguards configurable. **Remaining:** Orders screen compliance for working orders (split OrdersView.tsx, 337 lines) |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
-| E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states |
-| E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative |
-| E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer |
+| E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states **Owner Q15 session 64:** broker is the record of truth; a mismatch raises an alert and pauses automation for that account. |
+| E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative **Owner Q16 session 64:** India resident with foreign stocks — tax pack follows April-March, includes foreign assets (Schedule FA), foreign tax credit and losses carried in/out. |
+| E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
-| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 55 | Session 57; audited 59; part a session 62 | **Done (session 62):** inflation assumptions, cost budget, counterparty threshold and export settings as versioned config on /settings/assumptions; hardcoded sections removed. **Remaining:** (b) tax rule sets per country and instrument type; (c) employer policy rules read by the compliance store |
+| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 55 | Session 57; audited 59; part a session 62 | **Done (session 62):** inflation assumptions, cost budget, counterparty threshold and export settings as versioned config on /settings/assumptions; hardcoded sections removed. **Remaining:** (b) tax rule sets per country and instrument type; (c) employer policy rules read by the compliance store **Owner session 64:** part b replaces per-market tax rates with rule sets per residence country and asset class (decision 45); part c low priority, employer rules optional and off by default (decision 43). |
  
 ### Stage P — Polish
  
@@ -700,6 +701,26 @@ FILES: created generators/approvalSafeguards.ts, settings/assumptions/sections/S
   OperatingPolicyForm.tsx. No dependencies, no new decisions.
 ────────────────────────────────────────────────────────────
 ```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        64
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:20:00Z  |  local: 2026-09-17 14:50 IST (UTC+05:30)
+END:            2026-09-17T09:25:00Z  |  local: 2026-09-17 14:55 IST (UTC+05:30)
+TASK CLAIMED:   Record the owner's answers to open questions 7-10 and 12-21 (no code)
+END STATUS:     DONE
+
+COMPLETED:
+  - Answers written into section 5; questions 20 (tax rule placement) and 21 (confirming the
+    provisional choices of sessions 60-63) added with their answers.
+  - DECISIONS.md 43-46 appended. Registry: F-22, S-34, S-35, S-36 added; L-12, E-01, E-05, E-06,
+    E-07, E-09 notes extended with the owner's direction. Handoff next steps reordered.
+
+VERIFICATION RUN:
+  documentation only; no code changed.
+────────────────────────────────────────────────────────────
+```
  
 ---
  
@@ -713,21 +734,23 @@ FILES: created generators/approvalSafeguards.ts, settings/assumptions/sections/S
 | 2 | — | — | Integer minor units or a decimal library for money? | Decimal library (decimal.js chosen in F-17) — owner & session 7 (see decisions 7, 15) |
 | 3 | — | — | Library as separate repository or workspace package? | pnpm workspace package in same repo — owner, 2026-09-15 (see decision 8) |
 | 6 | Session 1 | 2026-09-15 | Framework/bundler not named in any spec | React + Vite SPA — owner, 2026-09-15 (see decision 9) |
-| 7 | Session 1 | 2026-09-15 | Node v20.11.1 installed is below Vite 7 minimum (20.19). Upgrade Node to 22 LTS? | unanswered — provisional: Vite 6 pinned |
-| 8 | Session 3 | 2026-09-15 | ESLint 9.39.5 is marked deprecated (unsupported) by npm; ESLint 10 and Stylelint 17 need Node >=20.19. Upgrade Node to unblock them? (same fix as Q7) | unanswered — provisional: ESLint 9, Stylelint 16 pinned |
+| 7 | Session 1 | 2026-09-15 | Node v20.11.1 installed is below Vite 7 minimum (20.19). Upgrade Node to 22 LTS? | **Yes, very low priority** — Owner, 2026-09-17 (session 64): upgrade to Node 22 LTS; raised as F-22 |
+| 8 | Session 3 | 2026-09-15 | ESLint 9.39.5 is marked deprecated (unsupported) by npm; ESLint 10 and Stylelint 17 need Node >=20.19. Upgrade Node to unblock them? (same fix as Q7) | **Yes, very low priority** — Owner, 2026-09-17 (session 64): same fix as Q7 (F-22) |
 | 4 | — | — | Does the 250-line limit apply to test and story files? | Moot — file length no longer lint-enforced (decision 13), 2026-09-15 |
 | 5 | — | — | Is high contrast theme needed at launch or later? | At launch — owner ("complete all until F15"), 2026-09-15 |
-| 9 | Session 36 | 2026-09-16 | Is Portfolio → Performance (`/portfolio/performance`) a distinct screen, or is it the same thing as Reports → Performance reports (S-20)? Both are in the nav map. If distinct, S-25 stands; if not, S-25 should be dropped and the route pointed at the Reports screen | unanswered — provisional: kept as separate task S-25 so it is not silently lost |
-| 10 | Session 36 | 2026-09-16 | Is Trading → Positions (`/trading/positions`) distinct from Portfolio → Holdings (S-02)? Both are in the nav map and section 7 specifies only Holdings (7.2). If it means "positions opened by automation" it is a real screen; if it is a synonym it should be dropped | unanswered — provisional: kept as separate task S-27 |
+| 9 | Session 36 | 2026-09-16 | Is Portfolio → Performance (`/portfolio/performance`) a distinct screen, or is it the same thing as Reports → Performance reports (S-20)? Both are in the nav map. If distinct, S-25 stands; if not, S-25 should be dropped and the route pointed at the Reports screen | **Distinct** — Owner, 2026-09-17 (session 64): keep S-25 as the quick view and link it to the full Reports performance report (S-35) |
+| 10 | Session 36 | 2026-09-16 | Is Trading → Positions (`/trading/positions`) distinct from Portfolio → Holdings (S-02)? Both are in the nav map and section 7 specifies only Holdings (7.2). If it means "positions opened by automation" it is a real screen; if it is a synonym it should be dropped | **Distinct** — Owner, 2026-09-17 (session 64): Positions shows only strategy-opened positions and their stops; S-27 stands |
 | 11 | Session 36 | 2026-09-16 | Markets → Screener is in the nav map (spec 6) but has no screen specification in section 7. What should it contain? | Answered by owner session 55/56: multi-factor discovery engine over US & IN equities/ETFs across 4 pillars (Quality, Valuation, Technical Momentum, and Compliance/Automation readiness) with 5 presets and direct handoffs to Workspace, Watchlist, Backtest, and CSV export (see Docs/SESSION_VERIFICATION_LOG.md) |
-| 12 | Session 36 | 2026-09-16 | L-12 asks for "visual regression test setup". Should that be real visual regression (screenshot baselines, e.g. Playwright), or is a runtime verification script enough? Either way, should the script live in the repository so it can be re-run? Decision 11 dropped CI, which may have been read as dropping this too | unanswered — provisional: L-12 reopened as PARTIAL; no tooling added |
-| 13 | Session 37 | 2026-09-16 | **Am I subject to an employer trading policy** — restricted list, blackout windows, pre-clearance, minimum holding periods, disclosure obligations? This determines whether S-33 Compliance is essential or not applicable. It is the highest-consequence open question in this document: a breach is a legal and career exposure, not a financial loss | unanswered — provisional: S-33 raised and specified; **do not enable any automation against a real broker until this is answered** |
-| 14 | Session 37 | 2026-09-16 | Which assets sit outside the brokers (provident fund, pension, deposits, gold, property, insurance-linked savings, employer equity, loans), and should the platform hold the complete picture or only the traded part? Allocation targets, goal projections and concentration limits are wrong if they exclude these | unanswered — provisional: S-30 Net Worth raised on the assumption the complete picture is wanted |
-| 15 | Session 37 | 2026-09-16 | Is this system the record of truth for my holdings, or is the broker the record of truth with this system as a view over it? This decides how hard a reconciliation mismatch should fail, and what must survive if the broker is unavailable | unanswered — provisional: treated as a view over the broker, with an independent record kept good enough to prove a position (requirements 32) |
-| 16 | Session 37 | 2026-09-16 | Which country am I tax resident in for the reporting period, which tax year does reporting follow, and do I hold assets outside that country? Determines whether the cross-border parts of requirements 26 (annual foreign-asset disclosure, outward remittance limits, relief for tax paid abroad) apply at all | unanswered — provisional: requirements written so every rate, threshold, holding period and tax-year boundary is configuration, never hardcoded |
-| 17 | Session 37 | 2026-09-16 | Who needs to reach this information if I cannot, and how would they do it today? Requirements 28 assumes at least one nominated person who needs to see but not trade | unanswered — provisional: S-32 Continuity raised; access to view is specified as separable from ability to act |
-| 18 | Session 37 | 2026-09-16 | Will there be a withdrawal phase to model, or is this accumulation only for the foreseeable future? Also: what is the emergency reserve in months of expenses, and at what portfolio value would I want automation reduced rather than expanded? | unanswered — provisional: requirements 30 written to cover accumulation, partial withdrawal and full withdrawal, so none is foreclosed |
-| 19 | Session 59 | 2026-09-17 | Question 11 (screener contents) shows an answer attributed to the owner, but it points to a design written by the agent in `SESSION_VERIFICATION_LOG.md` section 4. Do you accept that design (4 factor pillars, 5 presets, handoffs to Workspace, Watchlist, Backtest and CSV export) as the screener specification? | unanswered — provisional: S-26 kept as built |
+| 12 | Session 36 | 2026-09-16 | L-12 asks for "visual regression test setup". Should that be real visual regression (screenshot baselines, e.g. Playwright), or is a runtime verification script enough? Either way, should the script live in the repository so it can be re-run? Decision 11 dropped CI, which may have been read as dropping this too | **Real visual regression** — Owner, 2026-09-17 (session 64): Playwright screenshot baselines in the repository, run locally (no CI), one baseline per key screen in dark and light themes (L-12) |
+| 13 | Session 37 | 2026-09-16 | **Am I subject to an employer trading policy** — restricted list, blackout windows, pre-clearance, minimum holding periods, disclosure obligations? This determines whether S-33 Compliance is essential or not applicable. It is the highest-consequence open question in this document: a breach is a legal and career exposure, not a financial loss | **No, freelancer** — Owner, 2026-09-17 (session 64). Compliance screen and safety-layer checks stay (jurisdictional rules, future client conflicts); employer-specific rules become optional configuration, off by default outside the mock, and E-09 part c is low priority (decision 43) |
+| 14 | Session 37 | 2026-09-16 | Which assets sit outside the brokers (provident fund, pension, deposits, gold, property, insurance-linked savings, employer equity, loans), and should the platform hold the complete picture or only the traded part? Allocation targets, goal projections and concentration limits are wrong if they exclude these | **Traded portfolio only** — Owner, 2026-09-17 (session 64): complete net-worth tracking belongs to a separate future product. S-30 stays as built; nothing new depends on non-market assets (decision 44) |
+| 15 | Session 37 | 2026-09-16 | Is this system the record of truth for my holdings, or is the broker the record of truth with this system as a view over it? This decides how hard a reconciliation mismatch should fail, and what must survive if the broker is unavailable | **Broker is the record of truth** — Owner, 2026-09-17 (session 64): a reconciliation mismatch raises an alert and pauses automation for that account; it never overwrites the broker record (decision 45, E-05) |
+| 16 | Session 37 | 2026-09-16 | Which country am I tax resident in for the reporting period, which tax year does reporting follow, and do I hold assets outside that country? Determines whether the cross-border parts of requirements 26 (annual foreign-asset disclosure, outward remittance limits, relief for tax paid abroad) apply at all | **India resident, will hold foreign stocks** — Owner, 2026-09-17 (session 64): Indian financial year (April to March); foreign asset disclosure, remittance cap and foreign tax credit apply (decision 45, E-06, E-09b) |
+| 17 | Session 37 | 2026-09-16 | Who needs to reach this information if I cannot, and how would they do it today? Requirements 28 assumes at least one nominated person who needs to see but not trade | **One primary and one backup nominee** — Owner, 2026-09-17 (session 64): both view-only, access drill every 6 to 12 months, instructions kept outside the system (S-36) |
+| 18 | Session 37 | 2026-09-16 | Will there be a withdrawal phase to model, or is this accumulation only for the foreseeable future? Also: what is the emergency reserve in months of expenses, and at what portfolio value would I want automation reduced rather than expanded? | **All three phases modelled** — Owner, 2026-09-17 (session 64): emergency reserve 6 months of expenses; automation reduced when automated positions exceed a configurable share (default 30%) (E-07) |
+| 19 | Session 59 | 2026-09-17 | Question 11 (screener contents) shows an answer attributed to the owner, but it points to a design written by the agent in `SESSION_VERIFICATION_LOG.md` section 4. Do you accept that design (4 factor pillars, 5 presets, handoffs to Workspace, Watchlist, Backtest and CSV export) as the screener specification? | **Accepted** — Owner, 2026-09-17 (session 64): screener design stands; factor figures to be derived from price history and fundamentals rather than fixed seeds (S-34) |
+| 20 | Session 63 | 2026-09-17 | Should tax rule sets per country of residence and asset class replace the tax rates held on each market (Countries & markets), or sit beside them? | **Replace** — Owner, 2026-09-17 (session 64): rule sets per residence country and asset class hold holding periods, rates, cost-basis method and tax-year start; market config keeps only dividend withholding and transaction taxes (decision 45, E-09b) |
+| 21 | Session 63 | 2026-09-17 | Confirm the provisional choices of sessions 60-63: counterparty over-weight at 25% of net worth; cooling off 5 minutes above 5,000 USD with a stated reason required; running cost warning above 1% of portfolio value a year; screener EQUITY judged as long_term and ETF as etf; losses carried forward modelled under Indian rules | **Confirmed** — Owner, 2026-09-17 (session 64) (decision 46) |
  
 ---
  
