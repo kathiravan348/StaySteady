@@ -39,6 +39,15 @@ export const HOLDING_PROFILES: Readonly<Record<string, HoldingProfile>> = {
     brokerId: 'brk-zerodha',
     exitBelowClose: 0.18,
   },
+  // Two companies of one business group, so group exposure is a real number rather than a
+  // feature with no data behind it (R-03, decision 51).
+  'inst-in-tatamotors': {
+    brokerId: 'brk-zerodha',
+    exitBelowClose: 0.14,
+  },
+  'inst-in-tcs': {
+    brokerId: 'brk-zerodha',
+  },
   'inst-uk-azn': {
     brokerId: 'brk-hl',
   },

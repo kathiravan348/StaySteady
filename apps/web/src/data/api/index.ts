@@ -38,6 +38,7 @@ export {
   useClassificationIndex,
   useClassificationTaxonomy,
   useCorporateStructure,
+  useFundLookThrough,
   useInstrumentClassification,
   useInstrumentOwnership,
 } from './classificationQueries';

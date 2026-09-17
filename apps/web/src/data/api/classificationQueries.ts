@@ -17,6 +17,8 @@ import {
   InstrumentClassificationSchema,
   InstrumentOwnershipResponseSchema,
 } from '../schemas/classification';
+import type { FundLookThroughResponseDto } from '../schemas/fund-lookthrough';
+import { FundLookThroughResponseSchema } from '../schemas/fund-lookthrough';
 import { apiGet } from './apiClient';
 
 // Classification changes rarely: a company moves industry, or a provider mapping is added.
@@ -64,6 +66,18 @@ export function useCorporateStructure(instrumentId: string): UseQueryResult<Corp
     queryKey: ['classification', 'structure', instrumentId],
     queryFn: ({ signal }) =>
       apiGet(instrumentPath(instrumentId, 'structure'), CorporateStructureSchema, signal),
+    enabled: instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useFundLookThrough(
+  instrumentId: string,
+): UseQueryResult<FundLookThroughResponseDto> {
+  return useQuery({
+    queryKey: ['classification', 'look-through', instrumentId],
+    queryFn: ({ signal }) =>
+      apiGet(instrumentPath(instrumentId, 'look-through'), FundLookThroughResponseSchema, signal),
     enabled: instrumentId !== '',
     staleTime: SLOW_STALE_MS,
   });

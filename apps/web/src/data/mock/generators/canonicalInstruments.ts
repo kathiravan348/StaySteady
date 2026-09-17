@@ -141,6 +141,18 @@ export const CANONICAL_INSTRUMENTS_RAW: readonly InstrumentDto[] = [
     status: 'active',
   },
   {
+    id: toInstrumentId('inst-in-tcs'),
+    symbol: 'TCS',
+    name: 'Tata Consultancy Services Limited',
+    marketId: toMarketId('IN'),
+    currency: 'INR',
+    type: 'long_term',
+    lotSize: toQuantity(1),
+    tickSize: '0.05',
+    isFractionalAllowed: false,
+    status: 'active',
+  },
+  {
     id: toInstrumentId('inst-in-swiggy'),
     symbol: 'SWIGGY',
     name: 'Swiggy Limited',

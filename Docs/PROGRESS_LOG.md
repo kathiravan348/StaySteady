@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   83% (89 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 2 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T02:30:00Z  |  local: 2026-09-18 08:00 IST
-LAST AGENT:         Claude Opus 5 (session 85)
-BUILD STATE:        PASS (pnpm build, session 85)
+OVERALL PROGRESS:   84% (90 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 3 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T04:00:00Z  |  local: 2026-09-18 09:30 IST
+LAST AGENT:         Claude Opus 5 (session 86)
+BUILD STATE:        PASS (pnpm build, session 86)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-03 is next: group exposure and fund look-through.
+BLOCKERS:           none. R-04 is next: the company research record.
 ```
 
 ---
@@ -34,49 +34,46 @@ BLOCKERS:           none. R-03 is next: group exposure and fund look-through.
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R is the active
-  scope (requirements Part III, UI spec 20, decisions 48-54): R-01 built the classification data
-  layer, R-02 wired it into the screens that needed it. R-03 is next.
+  scope (requirements Part III, UI spec 20, decisions 48-54). R-01 built the classification data
+  layer, R-02 wired it into Overview, Holdings, Planning and the Screener, R-03 added fund
+  look-through and made sector and group exposure measurable. R-04 is next.
 
-WHAT R-02 ADDED (session 85):
-  - Bulk endpoint GET /api/v1/classification/instruments (one row per instrument: sector, industry,
-    asset class, group) with useClassificationIndex, because a table cannot fetch per row.
-  - apps/web/src/shared/classification/classificationIndex.ts: createClassificationLookup with
-    sectorLabel, industryLabel and groupLabel. A company shows its sector; a fund or commodity shows
-    its asset class, which says more than "Not classified"; anything ungrouped shows "No group".
-  - Overview: allocation now switches by sector and business group as well as country, currency and
-    type. Holdings: sector, industry and group columns (pickable, hidden by default), grouping by any
-    of them, and the three fields in the CSV export. Classification is a partial-data source there,
-    so the table still renders with a banner if it fails.
-  - Screener: the engine now applies criteria.sectors, which it had always accepted and ignored. The
-    filter list comes from summary.availableSectors, the distinct sector values in the universe, so
-    it can never offer a sector no row carries.
-  - Planning: the sector view uses the same labels as everything else, and the seeded plan now has a
-    full set of sector targets (they must add up to 100 per dimension, which the schema enforces).
+WHAT R-03 ADDED (session 86):
+  - data/schemas/fund-lookthrough.ts and generators/fundLookThrough.ts: sector weights, largest
+    holdings, index tracked and assets under management for SPY, VTSAX, QQQ and NIFTYBEES.
+    Endpoint GET /api/v1/instruments/:id/look-through, hook useFundLookThrough. A non-fund answers
+    with the reason rather than an error.
+  - generators/exposureBreakdown.ts: sectorExposure and groupExposure over the holdings. A company's
+    value lands on its own sector or group; a fund's value is split across its disclosed weights;
+    anything with no company behind it raises an honest uncovered share rather than being hidden.
+  - riskLimits.ts: "Maximum in any one sector" is measured at last (27.82% Information technology,
+    of which 10.18% is held through SPY) and a new "Maximum in any one business group" limit sits
+    beside it (Tata group 1.47% across TATAMOTORS and TCS, threshold 20%).
+  - Mock data: TCS added as a canonical instrument (inst-in-tcs) and both Tata companies are now
+    held through Zerodha, so group exposure has real data behind it. The portfolio is 9 holdings.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-03 group exposure and fund look-through:
-     - Risk & Safety: make the "global-sector" limit in riskLimits.ts measurable, and add a group
-       limit beside it. Use classificationForInstrument/groupSymbolsForSymbol from R-01.
-     - Fund look-through: an ETF's sector weights, so exposure held through SPY counts. This is the
-       missing piece behind Planning's "Commodity 41%" and "Broad market fund 31%" rows.
-     - Only one Tata company is held, so a second held group company is needed for group exposure to
-       show anything; adding one to the mock portfolio is part of this task.
-  2. R-04 research record, R-05 statements, R-06 ratio engine.
+  1. R-04 company research record: profile, business description, segment and geography revenue,
+     key people, auditor. Schema, generator, endpoint, hook. No screen yet (R-07 builds it).
+  2. R-05 financial statements (the largest remaining data task), R-06 the ratio engine.
   3. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
   4. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   5. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
-  - Sector and industry have one source: classificationAssignments.ts, read through the taxonomy.
-    A new symbol needs an entry there and its industry must exist in the taxonomy, or
-    placementForIndustry throws deliberately. Screens read the index through the shared lookup;
-    do not add another sector table or a second label convention.
-  - Screener symbols that are not canonical instruments (MSFT, TCS, HDFCBANK) have no instrument id,
-    so they classify by symbol through classificationLabelForSymbol, not the per-instrument endpoint.
-  - Planning allocation targets must add up to 100 per dimension (schema refine). Adding a target to
-    one dimension means rebalancing that whole dimension's set.
-  - Ownership percentages must add up to 100, and a pledge cannot exist without a promoter holding.
-    Promoter null means the market does not report one; HDFCBANK reports zero, which is different.
+  - Adding or removing a holding changes Holdings, Performance and Risk screenshots. Run pnpm visual
+    and rebaseline with pnpm visual:update only when the change was intended (R-03 rebaselined 6).
+  - Sector and industry have one source: classificationAssignments.ts read through the taxonomy. A
+    new symbol needs an entry there and its industry must exist in the taxonomy, or
+    placementForIndustry throws deliberately.
+  - Exposure counts funds by look-through (decision 51). Overview and Planning still show a fund as
+    its asset class rather than looking through, which is deliberate: allocation answers "where is
+    my money", limits answer "how concentrated am I". Do not quietly change one to match the other.
+  - Screener symbols that are not canonical instruments (MSFT, HDFCBANK, INFY) have no instrument id
+    and classify by symbol through classificationLabelForSymbol.
+  - Planning allocation targets must add up to 100 per dimension (schema refine).
+  - Ownership percentages must add up to 100; a pledge cannot exist without a promoter holding;
+    promoter null means the market does not report one, which differs from a reported zero.
   - Statements (R-05) must tie to price history (decision 19) and carry publication dates
     (decision 50): assets = liabilities + equity, EPS from net profit and shares.
   - Do not mark a task DONE because the UI renders. Every section fetches through data/api hooks and
@@ -95,17 +92,15 @@ WATCH OUT FOR:
   - A generator passing a parsed DTO back into a schema needs the z.input shape, not the output
     type. Annotate with `satisfies Omit<z.input<typeof Schema>, ...>` rather than asserting.
   - Browser pane: the first /api/* fetch after a page load can return the shell before MSW is
-    listening; repeat it rather than concluding the endpoint is broken. Typing does not reach native
-    date inputs; set values with the native setter and dispatch an input or change event. Mock
-    stores reset on a full navigation. Screenshots can come back blank; read the DOM instead.
-  - A dev server may already be running on 5173 (started outside the preview tool). Navigate to it
-    instead of starting a second one.
-  - Stale modules: restart the preview; if that fails, delete apps/web/node_modules/.vite.
-  - The Bash tool mangles heredocs containing quotes and backticks; write files with the
-    file-writing tool. Multi-line in-place edits are reliable through a small python script.
+    listening; repeat it. The risk endpoint is /api/v1/risk/panel, not /risk/limits. Mock stores
+    reset on a full navigation. Screenshots can come back blank; read the DOM instead.
+  - A dev server may already be running on 5173 outside the preview tool; navigate to it instead of
+    starting a second one.
+  - The Bash tool mangles heredocs containing quotes and backticks, and a grep pattern containing
+    box-drawing or tick characters breaks the shell. Write files with the file-writing tool and keep
+    shell patterns ASCII.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Open findings: only one Tata company is held, so group exposure needs a second held group
-    company (R-03); market cap is formatted with Number() in ResearchSections.tsx (R-14);
+  - Open findings: market cap is formatted with Number() in ResearchSections.tsx (R-14);
     configuration is not read by the rest of the app; the kill switch has no confirmation or record;
     chart theme colours hardcoded hex; single large JS chunk (P-04); Node 20.11 blocks ESLint 10
     and Vite 7 (Q7, Q8).
@@ -266,7 +261,7 @@ already built but cannot work without classification.
 |----|------|--------|---|-------|-------|
 | R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | DONE | 100 | Claude Opus 5 (session 84) | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
 | R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | DONE | 100 | Claude Opus 5 (session 85) | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
-| R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | TODO | 0 | | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
+| R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | DONE | 100 | Claude Opus 5 (session 86) | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | TODO | 0 | | Requirements 35 |
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | TODO | 0 | | Requirements 37; decision 50. Must tie to price history (decision 19) |
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | TODO | 0 | | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
@@ -1293,6 +1288,68 @@ apps/web/src/features/portfolio/holdings/{useHoldingsData.ts,useHoldingsLayout.t
 columns/holdingColumns.tsx,model/holdingTypes.ts,model/holdingRows.ts,model/holdingsExport.ts,
 sections/HoldingsTable.tsx},
 apps/web/src/features/markets/{MarketsScreenerPage.tsx,screener/sections/ScreenerFiltersPanel.tsx},
+Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 86 | Claude Opus 5
+START:          2026-09-18T02:45:00Z  |  local: 2026-09-18 08:15 IST
+END:            2026-09-18T04:00:00Z  |  local: 2026-09-18 09:30 IST
+TASK CLAIMED:   R-03 group exposure and fund look-through
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Fund look-through (requirements 36): schema data/schemas/fund-lookthrough.ts (holdings with
+    weight, sector and group; sector weights that cannot exceed 100%; index tracked; assets under
+    management; a response that carries the reason when an instrument is not a fund), generator
+    fundLookThrough.ts with seeded definitions for SPY, VTSAX, QQQ and NIFTYBEES, endpoint
+    GET /api/v1/instruments/:id/look-through and hook useFundLookThrough.
+  - Exposure engine exposureBreakdown.ts: sectorExposure and groupExposure return every slice with
+    its direct and via-fund share, the instruments behind it, the largest slice, and the uncovered
+    share with a note explaining it. A fund's value is split across its disclosed weights; the
+    residue a fund does not disclose stays uncovered rather than being rounded away.
+  - Risk limits (UI spec 7.14, 20.2): global-sector now measures real exposure instead of saying it
+    cannot, and a new global-group limit sits beside it at a 20% threshold. Both name the
+    instruments behind the number and how much of it came through funds.
+  - Mock data: TCS added as canonical instrument inst-in-tcs (Indian long-term equity), and
+    HOLDING_PROFILES now holds both TATAMOTORS and TCS through Zerodha, so group exposure is a real
+    measurement rather than a feature with no data. The portfolio is 9 holdings.
+
+DELIBERATE CHOICES (provisional, taken under decision 26):
+  - Overview and Planning still show a fund as its asset class rather than looking through, while
+    risk limits look through. Allocation answers "where is my money", a limit answers "how
+    concentrated am I". Both are honest; they are not the same question.
+  - Sector exposure excludes instruments with no company behind them and reports the excluded share
+    (46.20% of this portfolio: gold, bitcoin, the private note). Folding them into a sector would
+    invent a sector; hiding them would overstate every share.
+
+NOT COMPLETED / LIMITS:
+  - Nothing in the interface shows a fund's holdings or sector weights yet: that is R-10, and the
+    data is ready for it.
+  - Group exposure through a fund is only measurable from a fund's disclosed largest holdings, so it
+    understates by design. The note on the measure says so.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 6 expected failures
+  (holdings, performance and risk-limits in both themes, from the two new holdings and the new
+  limit), rebaselined with pnpm visual:update, then 14/14 PASS. In the browser against the dev
+  server: SPY look-through returns the S&P 500, 11 sector weights led by Information technology
+  33.4%, and nine largest holdings covering 31.5% of the fund; gold answers "not a fund, so there is
+  nothing to look through to"; /api/v1/risk/panel reports the sector limit at 27.82% of a 35%
+  threshold ("Information technology, including 10.18% held through funds, across AAPL, SPY, TCS;
+  46.20% of the portfolio carries no sector at all") and the group limit at 1.47% of 20% ("Tata
+  group, across TATAMOTORS, TCS"); the Risk screen renders both with headroom; holdings returns 9
+  positions and the performance endpoint still answers 200.
+
+FILES: created apps/web/src/data/schemas/fund-lookthrough.ts,
+apps/web/src/data/mock/generators/{fundLookThrough.ts,exposureBreakdown.ts};
+modified apps/web/src/data/schemas/index.ts,
+apps/web/src/data/mock/generators/{canonicalInstruments.ts,holdingProfiles.ts,riskLimits.ts,
+index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, visual/baselines (6 rebaselined),
 Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```

@@ -8,6 +8,7 @@ import type { z } from 'zod';
 import type { FxQuote } from '../../../shared/money';
 import type { HoldingDto, OrderDto, RiskLimitDto } from '../../schemas';
 import { RiskLimitSchema } from '../../schemas';
+import { groupExposure, sectorExposure } from './exposureBreakdown';
 import { generateCurrentFxRates } from './fxHistory';
 import { getInstrumentById } from './instruments';
 import { getMarketById } from './markets';
@@ -63,6 +64,13 @@ export function generateRiskLimits(
     getMarketById(marketOf(holding))?.country ?? 'Unknown';
 
   const topInstrument = largest(sumBy(holdings, symbolOf));
+  // Sector and group exposure count what is held through funds as well as directly (decision 51).
+  const sectors = sectorExposure(ctx, holdings, fx);
+  const groups = groupExposure(ctx, holdings, fx);
+  const topSector = sectors.largest;
+  const topGroup = groups.largest;
+  const viaFunds = (percent: number): string =>
+    percent > 0 ? ` including ${pct(percent)} held through funds,` : '';
   const topCountry = largest(sumBy(holdings, countryOf));
   const loss = losses(ctx, holdings, cash, fx);
   const weeklyLoss = isSafetyBreach ? 5.6 : loss.weekly;
@@ -92,12 +100,30 @@ export function generateRiskLimits(
       name: 'Maximum in any one sector',
       unit: 'percent',
       threshold: 35,
-      used: null,
+      used: topSector?.percent ?? null,
       currency: null,
       measuredBy:
-        'Instruments carry no sector classification yet, so sector exposure cannot be measured.',
-      consequence: 'Would block new buys in the sector once sectors are recorded.',
-      isEditable: false,
+        topSector === undefined || topSector === null
+          ? 'Nothing held carries a sector, so there is no sector exposure to measure.'
+          : `${topSector.key}, ${pct(topSector.percent)} of holdings,${viaFunds(topSector.viaFundsPercent)} across ${topSector.instruments.join(', ')}. ${pct(sectors.uncoveredPercent)} of the portfolio carries no sector at all.`,
+      consequence: 'New buys in that sector are blocked.',
+      minimum: 1,
+      maximum: 100,
+    },
+    {
+      id: 'global-group',
+      group: 'global',
+      scopeLabel: 'Whole portfolio',
+      name: 'Maximum in any one business group',
+      unit: 'percent',
+      threshold: 20,
+      used: topGroup?.percent ?? null,
+      currency: null,
+      measuredBy:
+        topGroup === undefined || topGroup === null
+          ? 'Nothing held belongs to a business group, so there is no group exposure to measure.'
+          : `${topGroup.key}, ${pct(topGroup.percent)} of holdings,${viaFunds(topGroup.viaFundsPercent)} across ${topGroup.instruments.join(', ')}. Companies of one group move together whatever their sectors say.`,
+      consequence: 'New buys in any company of that group are blocked.',
       minimum: 1,
       maximum: 100,
     },

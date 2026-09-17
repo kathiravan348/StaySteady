@@ -7,6 +7,7 @@ import {
   generateClassificationIndex,
   generateClassificationTaxonomy,
   generateCorporateStructure,
+  generateFundLookThrough,
   generateInstrumentClassification,
   generateInstrumentOwnership,
 } from '../generators';
@@ -50,6 +51,13 @@ export const classificationHandlers: readonly HttpHandler[] = [
     if (failed !== null) return failed;
     const structure = generateCorporateStructure(ctx, String(params['id']));
     return structure === null ? notFound() : HttpResponse.json(structure);
+  }),
+
+  http.get('/api/v1/instruments/:id/look-through', ({ params }) => {
+    const failed = failure('Failed to load the fund look-through');
+    if (failed !== null) return failed;
+    const lookThrough = generateFundLookThrough(ctx, String(params['id']));
+    return lookThrough === null ? notFound() : HttpResponse.json(lookThrough);
   }),
 
   http.get('/api/v1/instruments/:id/ownership', ({ params }) => {
