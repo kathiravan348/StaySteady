@@ -12,6 +12,7 @@ import {
   StrategyIdSchema,
 } from './common';
 import { OrderSideSchema, OrderStatusSchema, OrderTypeSchema } from './trading';
+import { ApprovalComplianceSchema } from './trading-queue';
 
 export const OrderEventKindSchema = z.enum([
   'signal_raised',
@@ -65,7 +66,19 @@ export const OrderHistoryEntrySchema = z.object({
   // Set when the broker never acknowledged the order: nobody knows whether it is live.
   unconfirmedSince: IsoUtcTimestampSchema.nullable(),
   timeline: z.array(OrderEventSchema),
+  // The compliance check as it stands now, for orders still working; null once an order has ended
+  // (E-03; requirements 27). An order that becomes restricted while working must be cancelled.
+  compliance: ApprovalComplianceSchema.nullable(),
+  // Set while an approved order waits out its cooling-off period (requirements 29).
+  coolingOffUntil: IsoUtcTimestampSchema.nullable(),
 });
 export type OrderHistoryEntryDto = z.infer<typeof OrderHistoryEntrySchema>;
 
 export const OrderHistoryListSchema = z.array(OrderHistoryEntrySchema);
+
+// What the generator builds; the handler adds compliance and cooling off from the stores.
+export const OrderHistoryItemSchema = OrderHistoryEntrySchema.omit({
+  compliance: true,
+  coolingOffUntil: true,
+});
+export type OrderHistoryItemDto = z.infer<typeof OrderHistoryItemSchema>;

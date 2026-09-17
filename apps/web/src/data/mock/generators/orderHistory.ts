@@ -11,10 +11,10 @@ import type {
   InstrumentDto,
   OrderDto,
   OrderEventDto,
-  OrderHistoryEntryDto,
+  OrderHistoryItemDto,
   StrategyDto,
 } from '../../schemas';
-import { OrderHistoryEntrySchema } from '../../schemas';
+import { OrderHistoryItemSchema } from '../../schemas';
 import { CANONICAL_BROKERS } from './brokers';
 import { HOLDING_PROFILES } from './holdingProfiles';
 import { getInstrumentById } from './instruments';
@@ -22,7 +22,7 @@ import type { MockGeneratorContext } from './mockContext';
 import { generateStrategies } from './trading';
 import { parseGeneratedList } from './validated';
 
-type EntryInput = z.input<typeof OrderHistoryEntrySchema>;
+type EntryInput = z.input<typeof OrderHistoryItemSchema>;
 type Currency = InstrumentDto['currency'];
 type Money = { amount: string; currency: Currency };
 
@@ -133,7 +133,7 @@ function timelineFor(inputs: TimelineInputs): OrderEventDto[] {
   const created = String(order.createdAt);
   const updated = String(order.updatedAt);
   const brokerName = broker?.name ?? 'the broker';
-  const events: z.input<typeof OrderHistoryEntrySchema>['timeline'] = [];
+  const events: z.input<typeof OrderHistoryItemSchema>['timeline'] = [];
 
   if (signalId !== null) {
     events.push({
@@ -237,7 +237,7 @@ export function generateOrderHistory(
   approvals: readonly ApprovalDto[],
   // Reasons recorded with each decision, keyed by approval id.
   decisionReasons: ReadonlyMap<string, string | null> = new Map(),
-): readonly OrderHistoryEntryDto[] {
+): readonly OrderHistoryItemDto[] {
   const strategies = generateStrategies(ctx);
 
   const entries = orders.map((order): EntryInput => {
@@ -291,5 +291,5 @@ export function generateOrderHistory(
     };
   });
 
-  return parseGeneratedList(OrderHistoryEntrySchema, entries, 'OrderHistoryEntry');
+  return parseGeneratedList(OrderHistoryItemSchema, entries, 'OrderHistoryEntry');
 }

@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage E rework; E-09a and E-03a done
-OVERALL PROGRESS:   80% (71 of 89 active tasks done; Stage F 100%; Stage M 16 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 33 of 33;
-                    Stage E 0 of 9, all 9 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T09:25:00Z  |  local: 2026-09-17 14:55 IST
-LAST AGENT:         session 64 (Claude Opus 5; owner answers recorded)
+PHASE:              Stage E rework; E-03 done, E-09a done
+OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
+                    Stage E 1 of 9, 8 partial; Stage P 0 of 5)
+LAST UPDATED:       2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST
+LAST AGENT:         session 65 (Claude Opus 5; E-03 part b: Orders screen)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -55,12 +55,11 @@ WHAT IS PARTIALLY DONE:
 
 EXACT NEXT STEP (one task per session, in this order):
   Owner answered questions 7-10, 12-21 in session 64; decisions 43-46 record the direction.
-  1. E-03 part b: Orders screen compliance for working orders (split OrdersView.tsx, 337 lines).
-  2. E-09 part b: tax rule sets per residence country and asset class replace per-market rates
+  1. E-09 part b: tax rule sets per residence country and asset class replace per-market rates
      (decision 45); then E-02 and E-06 read them.
-  3. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
-  4. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
-  5. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
+  2. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
+  3. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
+  4. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
 
 SESSION 60 (M-17) ADDED: schemas inflation.ts, tax-losses.ts, counterparties.ts,
   strategy-lifecycle.ts; generators inflationHistory, taxLossCarryForward, counterpartyProfiles,
@@ -227,7 +226,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 |----|------|--------|---|-------|-------|
 | E-01 | Holdings — liquidity class; non-market assets in totals | PARTIAL | 50 | Session 57; audited session 59 | Bucket totals and a manual-asset toggle exist and read useNetWorth. Missing: liquidity class per position (spec asks per row); manual assets excluded from totals by default; `as ReportCurrencyDto` assertion; parseFloat on a money amount; inline styles with raw values **Owner Q14 session 64:** traded portfolio only — remove the non-market asset toggle from holdings totals; remaining work is liquidity class per position from settlement and instrument data. |
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | PARTIAL | 50 | Session 57; audited session 59 | FIFO lot split with Decimal is sound. Missing: tax rates (30%/15%), the 365-day boundary and fees are hardcoded; they must come from tax rule configuration and markets.holdingPeriodTaxThresholdDays (decision 24, open question 16) |
-| E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | PARTIAL | 75 | Session 57; audited 59; part a session 63 | **Done (session 63):** approval queue shows the real compliance result beside risk checks, cooling off after approval with withdraw, stated reason required; all enforced by the server; safeguards configurable. **Remaining:** Orders screen compliance for working orders (split OrdersView.tsx, 337 lines) |
+| E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | DONE | 100 | Session 57; reworked sessions 63, 65 | Requirements 27, 29, 33; UI spec 19.2. Approval queue: real compliance result beside risk checks, cooling off after approval with withdraw, stated reason; enforced by the server; safeguards configurable. Orders: compliance for working orders, restricted alert, cooling-off badge. Verified sessions 63 and 65 |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
 | E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states **Owner Q15 session 64:** broker is the record of truth; a mismatch raises an alert and pauses automation for that account. |
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative **Owner Q16 session 64:** India resident with foreign stocks — tax pack follows April-March, includes foreign assets (Schedule FA), foreign tax credit and losses carried in/out. |
@@ -305,212 +304,9 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 59 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 61 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        60 — START ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T08:25:00Z  |  local: 2026-09-17 13:55 IST (UTC+05:30)
-TASK CLAIMED:   M-17 Mock data for Requirements Part II (UI spec 19.4)
-OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         f3e8eab (session 59); working tree clean
-  type check:  PASS, lint: PASS (repo-wide), build: PASS (session 59, no code change since)
-
-SCOPE (only what 19.4 lists and is not already seeded):
-  - Already present, verify only: non-market assets incl. stale and never verified, liability,
-    partly-vested employer equity (S-30); restricted instrument and active blackout (S-33);
-    manual trades with reasons and one poor decision (S-31); dividends with withholding (reports)
-  - Add: historical inflation for at least two countries; losses carried forward with differing
-    expiry; a strategy decayed past its review threshold and demoted; confirm a counterparty
-    holds a disproportionate share of net worth
-────────────────────────────────────────────────────────────
-```
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        60 — END ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T08:25:00Z  |  local: 2026-09-17 13:55 IST (UTC+05:30)
-END:            2026-09-17T08:50:00Z  |  local: 2026-09-17 14:20 IST (UTC+05:30)
-TASK CLAIMED:   M-17 Mock data for Requirements Part II
-END STATUS:     DONE
-REASON IF NOT DONE: —
-
-COMPLETED:
-  - Verified already seeded through the running mock API: stale asset (Public Provident Fund),
-    never-verified asset (Gold jewellery), liabilities (home loan, credit card), partly-vested RSUs,
-    5 restricted instruments with 2 active blackout windows, journal panic-sell poor decision,
-    dividends with tax withheld (income report 2024-01-01 to today: 8567.95 gross, 1738.52 withheld).
-  - Added historical inflation, US/IN/GB, yearly 2016 to the current year (current year marked as an
-    estimate) plus a monthly index from 100 — GET /api/v1/reference/inflation.
-  - Added capital losses carried forward for an India-resident owner: three losses from different
-    financial years with eight-year set-off windows placed relative to the mock clock, so one lapses at
-    the end of the current year (195 days today, isExpiringSoon) — GET /api/v1/tax/loss-carry-forwards.
-  - Added counterparty profiles (11) linked to broker ids and manual-asset institution names, with
-    protection scheme and limit, and an over-weight threshold of 25% of net worth. Interactive
-    Brokers holds 88,955 USD, about 6.5M INR = 28% of 23.2M INR net worth — GET /api/v1/counterparties.
-  - Added strategy lifecycles: retirement criteria fixed at promotion and recorded stage history for
-    all five strategies. RSI Oversold Mean Reversion was demoted fully automatic to semi-automatic
-    77 days ago with measured drawdown 17.8% > 15%, rolling Sharpe 0.21 < 0.50, underperformance
-    9.4 > 5 points — GET /api/v1/strategies/lifecycle. Matches its current stage in generateStrategies.
-  - Hooks: useInflationHistory, useLossCarryForwards, useCounterparties, useStrategyLifecycles.
-    All four endpoints return 500 in the loading-error scenario.
-
-NOT COMPLETED:
-  - Nothing in scope. Consuming this data is E-02/E-04/E-06/E-08 work.
-
-FILES CREATED:
-  - apps/web/src/data/schemas/{inflation,tax-losses,counterparties,strategy-lifecycle}.ts
-  - apps/web/src/data/mock/generators/{inflationHistory,taxLossCarryForward,counterpartyProfiles,
-    strategyLifecycle}.ts
-  - apps/web/src/data/mock/handlers/partTwoReferenceHandlers.ts
-  - apps/web/src/data/api/partTwoReferenceQueries.ts
-FILES MODIFIED:
-  - apps/web/src/data/{schemas,mock/generators,mock/handlers,api}/index.ts — exports and registration
-  - Docs/PROGRESS_LOG.md
-FILES DELETED:
-  - none
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-PROVISIONAL CHOICES (spec was silent):
-  - Counterparty over-weight threshold 25% of net worth — needs owner confirmation; E-04/E-09 should
-    make it configurable.
-  - Losses carried forward modelled for Indian tax only (owner treated as India-resident, as the tax
-    report already assumes; open question 16).
-  - Retirement criteria recorded from the observation stage onward.
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        PASS — eslint . && prettier --check . (repository-wide)
-  build:       PASS — exit 0
-  runtime:     all four endpoints fetched in the browser pane, 200, schema-valid (generators parse
-               through their schemas); figures above read from the responses
-  loading-error: not exercised in the browser (same one-line guard as continuity handlers)
-  themes:      not applicable (no UI)
-  states:      not applicable (no UI)
-
-FINDINGS (out of scope, not fixed):
-  - auditLog.ts derives promotion dates from the current stage ("promotions are not yet recorded");
-    it could now read generateStrategyLifecycles and show the demotion.
-  - Mock price history starts 2022-01-03, so reports cannot cover earlier years; inflation reaches
-    back to 2016 regardless.
-
-NEW OPEN QUESTIONS:
-  - none (question 16 still governs tax jurisdiction)
-
-NOTES FOR NEXT AGENT:
-  - Real return over a period = (1 + nominal) / (index at end month / index at start month) - 1;
-    use Decimal on the index strings.
-  - Counterparty exposure: sum holdings by brokerId (FX to report currency) and non-liability manual
-    assets by institution; divide by net worth totals.netWorth.
-────────────────────────────────────────────────────────────
-```
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        61 — START ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T08:55:00Z  |  local: 2026-09-17 14:25 IST (UTC+05:30)
-TASK CLAIMED:   S-26 Markets — Screener (reopened session 59): remaining 10%
-OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         faa2157 (session 60); working tree clean
-  type check:  PASS, lint: PASS, build: PASS (session 60 end, no change since)
-
-SCOPE:
-  - Compliance status and reason per screener row from the compliance store's eligibility check
-    (restricted, blackout, holding lock), so edits on /compliance show in the screener
-  - Automation permission per row from the saved market, instrument type and broker configurations,
-    using the same layered evaluation as /settings/automation (move that pure module to shared,
-    decision 25)
-  - Remove the fixed status fields from the seeds; drop the `as number` assertions and parseFloat on
-    price in the sort
-────────────────────────────────────────────────────────────
-```
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        61 — END ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T08:55:00Z  |  local: 2026-09-17 14:25 IST (UTC+05:30)
-END:            2026-09-17T09:20:00Z  |  local: 2026-09-17 14:50 IST (UTC+05:30)
-TASK CLAIMED:   S-26 Markets — Screener (remaining 10%)
-END STATUS:     DONE
-REASON IF NOT DONE: —
-
-COMPLETED:
-  - Screener rows no longer carry seeded complianceStatus, complianceReason or automationPermission.
-    The search handler derives them per request: compliance from complianceStore.evaluateEligibility
-    (BUY for restricted list and blackout, SELL for holding lock), automation from the saved market,
-    instrument type and broker configurations through the shared permission evaluation.
-  - Eligibility results now carry `rule` (decision 42); /api/v1/compliance/check returns it.
-  - Moved features/settings/automation/model/permissionLayers.ts to shared/automation (git mv, content
-    unchanged apart from import paths); /settings/automation imports it from there.
-  - Sort no longer uses `as number` or parseFloat on price (Decimal comparison for price).
-  - Previously contradictory seeds now agree with /compliance: INFY RESTRICTED (was ALLOWED),
-    MSFT BLACKOUT (Project Titan window; was LOCKED), RELIANCE LOCKED (was ALLOWED).
-
-NOT COMPLETED:
-  - Nothing in scope.
-
-FILES CREATED:
-  - apps/web/src/data/mock/generators/screenerStatus.ts
-FILES MODIFIED:
-  - apps/web/src/data/mock/generators/{screenerGenerator,screenerSeeds,screenerSeedsUs,screenerSeedsIn}.ts
-  - apps/web/src/data/mock/handlers/screenerHandlers.ts, mock/stores/complianceStore.ts,
-    schemas/compliance.ts (rule)
-  - apps/web/src/features/settings/{SettingsAutomationPage.tsx, automation/sections/PermissionMatrix.tsx,
-    automation/sections/StrategyPermissions.tsx} — import path only
-  - Docs/DECISIONS.md (42), Docs/PROGRESS_LOG.md, Docs/PROGRESS_ARCHIVE.md (session 57 archived)
-FILES DELETED:
-  - features/settings/automation/model/permissionLayers.ts — moved to shared/automation
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - 42 — shared permission evaluation and eligibility rule code — reversible: yes
-
-PROVISIONAL CHOICES (spec was silent):
-  - Screener EQUITY rows are judged as the long_term instrument type, ETF rows as etf; listings
-    us-nasdaq/us-nyse map to market US and in-nse to IN. Unmapped listings count as BLOCKED.
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        PASS — repository-wide
-  build:       PASS — exit 0
-  runtime:     search returned INFY/NVDA RESTRICTED, MSFT BLACKOUT, AAPL/RELIANCE LOCKED; after
-               POST /api/v1/compliance/restricted GOOGL the next search showed GOOGL RESTRICTED; after
-               saving market US in simulation mode every US row showed SIMULATION and IN rows stayed
-               LIVE; /api/v1/compliance/check AAPL SELL returned rule holding_lock
-  UI:          /markets/screener renders the Blackout badge and reason; /settings/automation renders
-               the permission grid and strategy results from the moved module
-  themes:      not re-checked (no styling change)
-
-FINDINGS (out of scope, not fixed):
-  - The blackout scope match in complianceStore.evaluateEligibility is hardcoded by symbol lists
-    (NORTHWIND; MSFT/ORCL/CRM/NOW for "Enterprise Cloud Software"). Belongs with E-09 employer policy.
-  - Screener factor figures (price, P/E, ROE) are still fixed seeds, not from price history (M-04) or
-    fundamentals; question 19 covers whether the screener spec stands.
-
-NEW OPEN QUESTIONS:
-  - none
-
-NOTES FOR NEXT AGENT:
-  - For E-03 use evaluateEligibility's HTTP twin (useCheckEligibility) and branch on `rule`.
-────────────────────────────────────────────────────────────
-```
 
 ```
 ────────────────────────────────────────────────────────────
@@ -719,6 +515,66 @@ COMPLETED:
 
 VERIFICATION RUN:
   documentation only; no code changed.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b: Orders screen compliance and cooling off
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 955a2e0; working tree clean. type check, lint, build PASS at 3fb8168 (docs-only since).
+
+SCOPE:
+  - Order history carries compliance for working orders (pending, partly filled, unconfirmed) from
+    the compliance store, and when an approved order may be placed while cooling off.
+  - Orders screen: compliance column, alert when a working order is now restricted, detail items.
+  - Split OrdersView.tsx (337 lines, P-05) into view, columns and filter bar; remove its
+    `as OrderFilters['status']` assertion.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+END:            2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b (Orders screen)
+END STATUS:     DONE (E-03 complete)
+
+COMPLETED:
+  - Order history entries carry compliance (current eligibility, working orders only; null once
+    ended) and coolingOffUntil (from the approval's cooling-off window), added by the handler;
+    the generator and audit log use the base OrderHistoryItemSchema.
+  - Orders screen: Compliance column (Clear / Restricted / Ended), "Cooling off" badge beside status,
+    alert listing working orders that are now restricted, restricted rows highlighted, detail items
+    for compliance and cooling-off end.
+  - OrdersView.tsx split (337 → 143 lines) into orderColumns.tsx and OrderFilterBar.tsx; the
+    `as OrderFilters['status']` assertion replaced by a lookup in the options.
+  - No manual actions exist on the Orders screen, so the reason prompt applies to the approval queue
+    only (done in part a).
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API: seeded working orders TSLA (partly filled) and NVDA (unconfirmed) report refused — both
+  instruments are on the seeded restricted list; after restricting AAPL its pending order turned
+  refused; after lowering the threshold to 3000 USD and approving XAUUSD (3100 USD) its order showed
+  coolingOffUntil 5 minutes ahead. UI: alert "2 working orders are now restricted", Compliance column
+  with Restricted/Clear/Ended rendered. Themes not re-checked (existing tokens only).
+
+FINDINGS:
+  - The seeded TSLA and NVDA orders exist although both instruments are restricted, which requirements
+    27 says should be refused at signal stage. The screen now shows it plainly; reseeding is a mock
+    data question left as is, since it demonstrates the alert.
+
+FILES: created orders/sections/{orderColumns.tsx, OrderFilterBar.tsx}; modified schemas/order-history.ts,
+  generators/{orderHistory,auditLog,approvalSafeguards}.ts, handlers/tradingHandlers.ts,
+  orders/sections/{OrdersView,OrderDetail}.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

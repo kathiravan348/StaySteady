@@ -7,7 +7,7 @@ import type { z } from 'zod';
 import type {
   AuditEntrySchema,
   OrderEventDto,
-  OrderHistoryEntryDto,
+  OrderHistoryItemDto,
   RiskChangeDto,
   StrategyStageDto,
   StrategyVersionDto,
@@ -40,7 +40,7 @@ export interface StrategyRecord {
 export interface AuditSources {
   readonly configAreas: readonly ConfigArea[];
   readonly riskChanges: readonly RiskChangeDto[];
-  readonly orders: readonly OrderHistoryEntryDto[];
+  readonly orders: readonly OrderHistoryItemDto[];
   readonly strategies: readonly StrategyRecord[];
   readonly nowMs: number;
 }
@@ -135,7 +135,7 @@ const ORDER_EVENT: Readonly<
   confirmation_lost: { category: 'order', trigger: 'system' },
 };
 
-function orderEntries(order: OrderHistoryEntryDto): Entry[] {
+function orderEntries(order: OrderHistoryItemDto): Entry[] {
   return order.timeline.map((event, index) => {
     const previous = order.timeline[index - 1];
     const map = ORDER_EVENT[event.kind];

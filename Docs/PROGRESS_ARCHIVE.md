@@ -5704,3 +5704,212 @@ NOTES FOR NEXT AGENT:
   - Start with M-17. See handoff note for the order after it.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Sessions 60 to 61 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        60 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:25:00Z  |  local: 2026-09-17 13:55 IST (UTC+05:30)
+END:            2026-09-17T08:50:00Z  |  local: 2026-09-17 14:20 IST (UTC+05:30)
+TASK CLAIMED:   M-17 Mock data for Requirements Part II
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - Verified already seeded through the running mock API: stale asset (Public Provident Fund),
+    never-verified asset (Gold jewellery), liabilities (home loan, credit card), partly-vested RSUs,
+    5 restricted instruments with 2 active blackout windows, journal panic-sell poor decision,
+    dividends with tax withheld (income report 2024-01-01 to today: 8567.95 gross, 1738.52 withheld).
+  - Added historical inflation, US/IN/GB, yearly 2016 to the current year (current year marked as an
+    estimate) plus a monthly index from 100 — GET /api/v1/reference/inflation.
+  - Added capital losses carried forward for an India-resident owner: three losses from different
+    financial years with eight-year set-off windows placed relative to the mock clock, so one lapses at
+    the end of the current year (195 days today, isExpiringSoon) — GET /api/v1/tax/loss-carry-forwards.
+  - Added counterparty profiles (11) linked to broker ids and manual-asset institution names, with
+    protection scheme and limit, and an over-weight threshold of 25% of net worth. Interactive
+    Brokers holds 88,955 USD, about 6.5M INR = 28% of 23.2M INR net worth — GET /api/v1/counterparties.
+  - Added strategy lifecycles: retirement criteria fixed at promotion and recorded stage history for
+    all five strategies. RSI Oversold Mean Reversion was demoted fully automatic to semi-automatic
+    77 days ago with measured drawdown 17.8% > 15%, rolling Sharpe 0.21 < 0.50, underperformance
+    9.4 > 5 points — GET /api/v1/strategies/lifecycle. Matches its current stage in generateStrategies.
+  - Hooks: useInflationHistory, useLossCarryForwards, useCounterparties, useStrategyLifecycles.
+    All four endpoints return 500 in the loading-error scenario.
+
+NOT COMPLETED:
+  - Nothing in scope. Consuming this data is E-02/E-04/E-06/E-08 work.
+
+FILES CREATED:
+  - apps/web/src/data/schemas/{inflation,tax-losses,counterparties,strategy-lifecycle}.ts
+  - apps/web/src/data/mock/generators/{inflationHistory,taxLossCarryForward,counterpartyProfiles,
+    strategyLifecycle}.ts
+  - apps/web/src/data/mock/handlers/partTwoReferenceHandlers.ts
+  - apps/web/src/data/api/partTwoReferenceQueries.ts
+FILES MODIFIED:
+  - apps/web/src/data/{schemas,mock/generators,mock/handlers,api}/index.ts — exports and registration
+  - Docs/PROGRESS_LOG.md
+FILES DELETED:
+  - none
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+PROVISIONAL CHOICES (spec was silent):
+  - Counterparty over-weight threshold 25% of net worth — needs owner confirmation; E-04/E-09 should
+    make it configurable.
+  - Losses carried forward modelled for Indian tax only (owner treated as India-resident, as the tax
+    report already assumes; open question 16).
+  - Retirement criteria recorded from the observation stage onward.
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — eslint . && prettier --check . (repository-wide)
+  build:       PASS — exit 0
+  runtime:     all four endpoints fetched in the browser pane, 200, schema-valid (generators parse
+               through their schemas); figures above read from the responses
+  loading-error: not exercised in the browser (same one-line guard as continuity handlers)
+  themes:      not applicable (no UI)
+  states:      not applicable (no UI)
+
+FINDINGS (out of scope, not fixed):
+  - auditLog.ts derives promotion dates from the current stage ("promotions are not yet recorded");
+    it could now read generateStrategyLifecycles and show the demotion.
+  - Mock price history starts 2022-01-03, so reports cannot cover earlier years; inflation reaches
+    back to 2016 regardless.
+
+NEW OPEN QUESTIONS:
+  - none (question 16 still governs tax jurisdiction)
+
+NOTES FOR NEXT AGENT:
+  - Real return over a period = (1 + nominal) / (index at end month / index at start month) - 1;
+    use Decimal on the index strings.
+  - Counterparty exposure: sum holdings by brokerId (FX to report currency) and non-liability manual
+    assets by institution; divide by net worth totals.netWorth.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        60 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:25:00Z  |  local: 2026-09-17 13:55 IST (UTC+05:30)
+TASK CLAIMED:   M-17 Mock data for Requirements Part II (UI spec 19.4)
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         f3e8eab (session 59); working tree clean
+  type check:  PASS, lint: PASS (repo-wide), build: PASS (session 59, no code change since)
+
+SCOPE (only what 19.4 lists and is not already seeded):
+  - Already present, verify only: non-market assets incl. stale and never verified, liability,
+    partly-vested employer equity (S-30); restricted instrument and active blackout (S-33);
+    manual trades with reasons and one poor decision (S-31); dividends with withholding (reports)
+  - Add: historical inflation for at least two countries; losses carried forward with differing
+    expiry; a strategy decayed past its review threshold and demoted; confirm a counterparty
+    holds a disproportionate share of net worth
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        61 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:55:00Z  |  local: 2026-09-17 14:25 IST (UTC+05:30)
+END:            2026-09-17T09:20:00Z  |  local: 2026-09-17 14:50 IST (UTC+05:30)
+TASK CLAIMED:   S-26 Markets — Screener (remaining 10%)
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - Screener rows no longer carry seeded complianceStatus, complianceReason or automationPermission.
+    The search handler derives them per request: compliance from complianceStore.evaluateEligibility
+    (BUY for restricted list and blackout, SELL for holding lock), automation from the saved market,
+    instrument type and broker configurations through the shared permission evaluation.
+  - Eligibility results now carry `rule` (decision 42); /api/v1/compliance/check returns it.
+  - Moved features/settings/automation/model/permissionLayers.ts to shared/automation (git mv, content
+    unchanged apart from import paths); /settings/automation imports it from there.
+  - Sort no longer uses `as number` or parseFloat on price (Decimal comparison for price).
+  - Previously contradictory seeds now agree with /compliance: INFY RESTRICTED (was ALLOWED),
+    MSFT BLACKOUT (Project Titan window; was LOCKED), RELIANCE LOCKED (was ALLOWED).
+
+NOT COMPLETED:
+  - Nothing in scope.
+
+FILES CREATED:
+  - apps/web/src/data/mock/generators/screenerStatus.ts
+FILES MODIFIED:
+  - apps/web/src/data/mock/generators/{screenerGenerator,screenerSeeds,screenerSeedsUs,screenerSeedsIn}.ts
+  - apps/web/src/data/mock/handlers/screenerHandlers.ts, mock/stores/complianceStore.ts,
+    schemas/compliance.ts (rule)
+  - apps/web/src/features/settings/{SettingsAutomationPage.tsx, automation/sections/PermissionMatrix.tsx,
+    automation/sections/StrategyPermissions.tsx} — import path only
+  - Docs/DECISIONS.md (42), Docs/PROGRESS_LOG.md, Docs/PROGRESS_ARCHIVE.md (session 57 archived)
+FILES DELETED:
+  - features/settings/automation/model/permissionLayers.ts — moved to shared/automation
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - 42 — shared permission evaluation and eligibility rule code — reversible: yes
+
+PROVISIONAL CHOICES (spec was silent):
+  - Screener EQUITY rows are judged as the long_term instrument type, ETF rows as etf; listings
+    us-nasdaq/us-nyse map to market US and in-nse to IN. Unmapped listings count as BLOCKED.
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        PASS — repository-wide
+  build:       PASS — exit 0
+  runtime:     search returned INFY/NVDA RESTRICTED, MSFT BLACKOUT, AAPL/RELIANCE LOCKED; after
+               POST /api/v1/compliance/restricted GOOGL the next search showed GOOGL RESTRICTED; after
+               saving market US in simulation mode every US row showed SIMULATION and IN rows stayed
+               LIVE; /api/v1/compliance/check AAPL SELL returned rule holding_lock
+  UI:          /markets/screener renders the Blackout badge and reason; /settings/automation renders
+               the permission grid and strategy results from the moved module
+  themes:      not re-checked (no styling change)
+
+FINDINGS (out of scope, not fixed):
+  - The blackout scope match in complianceStore.evaluateEligibility is hardcoded by symbol lists
+    (NORTHWIND; MSFT/ORCL/CRM/NOW for "Enterprise Cloud Software"). Belongs with E-09 employer policy.
+  - Screener factor figures (price, P/E, ROE) are still fixed seeds, not from price history (M-04) or
+    fundamentals; question 19 covers whether the screener spec stands.
+
+NEW OPEN QUESTIONS:
+  - none
+
+NOTES FOR NEXT AGENT:
+  - For E-03 use evaluateEligibility's HTTP twin (useCheckEligibility) and branch on `rule`.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        61 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:55:00Z  |  local: 2026-09-17 14:25 IST (UTC+05:30)
+TASK CLAIMED:   S-26 Markets — Screener (reopened session 59): remaining 10%
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         faa2157 (session 60); working tree clean
+  type check:  PASS, lint: PASS, build: PASS (session 60 end, no change since)
+
+SCOPE:
+  - Compliance status and reason per screener row from the compliance store's eligibility check
+    (restricted, blackout, holding lock), so edits on /compliance show in the screener
+  - Automation permission per row from the saved market, instrument type and broker configurations,
+    using the same layered evaluation as /settings/automation (move that pure module to shared,
+    decision 25)
+  - Remove the fixed status fields from the seeds; drop the `as number` assertions and parseFloat on
+    price in the sort
+────────────────────────────────────────────────────────────
+```

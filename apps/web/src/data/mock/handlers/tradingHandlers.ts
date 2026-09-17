@@ -14,7 +14,7 @@ import {
   generateStrategyLibrary,
   generateStrategyVersions,
 } from '../generators';
-import { refuseDecision, withSafeguards } from '../generators/approvalSafeguards';
+import { complianceFrom, refuseDecision, withSafeguards } from '../generators/approvalSafeguards';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentOperatingPolicy } from '../stores/assumptionsStore';
 import { evaluateEligibility } from '../stores/complianceStore';
@@ -26,7 +26,7 @@ import {
   setOrders,
   tradingContext as ctx,
 } from '../stores/tradingStore';
-import type { ApprovalRequestDto } from '../../schemas';
+import type { ApprovalRequestDto, OrderHistoryEntryDto } from '../../schemas';
 import { ApprovalDecisionSchema } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 import { toQuantity } from '../../../shared/types/quantities';
@@ -64,6 +64,30 @@ function decidedQueue(): readonly ApprovalRequestDto[] {
       decision.status === 'approved' ? { decidedAt: decision.decidedAt } : null,
     );
   });
+}
+
+const WORKING = new Set(['pending', 'partially_filled', 'unconfirmed']);
+
+// Order history with the safety layer's current view of each working order (E-03).
+function orderHistory(): readonly OrderHistoryEntryDto[] {
+  const reasons = new Map([...decisions].map(([id, record]) => [id, record.decisionReason]));
+  const cooling = new Map(
+    decidedQueue().flatMap((item) => {
+      const until = item.coolingOff?.executableAt ?? null;
+      return item.status === 'approved' && until !== null && Date.parse(until) > Date.now()
+        ? [[item.approvalId, until] as const]
+        : [];
+    }),
+  );
+  return generateOrderHistory(ctx, getOrders(), getApprovals(), reasons).map((entry) => ({
+    ...entry,
+    compliance: WORKING.has(entry.status)
+      ? complianceFrom(
+          evaluateEligibility(entry.instrumentSymbol, entry.side === 'buy' ? 'BUY' : 'SELL'),
+        )
+      : null,
+    coolingOffUntil: entry.approvalId === null ? null : (cooling.get(entry.approvalId) ?? null),
+  }));
 }
 
 export const tradingHandlers: readonly HttpHandler[] = [
@@ -131,10 +155,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load order history' }, { status: 500 });
     }
-    const reasons = new Map([...decisions].map(([id, record]) => [id, record.decisionReason]));
-    return HttpResponse.json(generateOrderHistory(ctx, getOrders(), getApprovals(), reasons), {
-      status: 200,
-    });
+    return HttpResponse.json(orderHistory(), { status: 200 });
   }),
 
   http.get('/api/v1/orders', () => {

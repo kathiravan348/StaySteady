@@ -29,6 +29,17 @@ export interface ApprovedAt {
   readonly decidedAt: IsoUtcTimestamp;
 }
 
+export function complianceFrom(check: EligibilityCheckResult): ApprovalRequestDto['compliance'] {
+  return {
+    status: check.status === 'ALLOWED' ? 'passed' : 'refused',
+    rule: check.rule,
+    summary:
+      check.status === 'ALLOWED' ? 'No restriction applies to this trade.' : check.primaryReason,
+    policyClause: check.policyClause,
+    preClearanceRequired: check.preClearanceRequired,
+  };
+}
+
 export function withSafeguards(
   request: ApprovalQueueItemDto,
   inputs: SafeguardInputs,
@@ -48,14 +59,7 @@ export function withSafeguards(
   const applies = coolingOffMinutes > 0 && costInThreshold.gte(new Decimal(coolingOffAbove.amount));
   return {
     ...request,
-    compliance: {
-      status: check.status === 'ALLOWED' ? 'passed' : 'refused',
-      rule: check.rule,
-      summary:
-        check.status === 'ALLOWED' ? 'No restriction applies to this trade.' : check.primaryReason,
-      policyClause: check.policyClause,
-      preClearanceRequired: check.preClearanceRequired,
-    },
+    compliance: complianceFrom(check),
     coolingOff: applies
       ? {
           minutes: coolingOffMinutes,

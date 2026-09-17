@@ -50,6 +50,20 @@ export function OrderDetail({ entry }: { readonly entry: OrderHistoryEntryDto })
           </span>
         </span>
         <span className={styles.detailItem}>
+          <span className={styles.detailLabel}>Compliance</span>
+          <span className={styles.detailValue}>
+            {entry.compliance === null
+              ? 'Order has ended; checked at signal stage'
+              : `${entry.compliance.summary} ${entry.compliance.policyClause}`}
+          </span>
+        </span>
+        {entry.coolingOffUntil !== null && (
+          <span className={styles.detailItem}>
+            <span className={styles.detailLabel}>Cooling off until</span>
+            <span className={styles.detailValue}>{formatDateTime(entry.coolingOffUntil)}</span>
+          </span>
+        )}
+        <span className={styles.detailItem}>
           <span className={styles.detailLabel}>Execution</span>
           <span className={styles.detailValue}>
             {entry.isSimulated
