@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:16:00Z  |  local: 2026-09-17 18:46 IST
-LAST AGENT:         session 71 (Claude Opus 5; E-04 risk panel)
+LAST UPDATED:       2026-09-17T13:25:00Z  |  local: 2026-09-17 18:55 IST
+LAST AGENT:         session 72 (Claude Opus 5; E-05 reconciliation)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -226,7 +226,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | DONE | 100 | Session 57; reworked session 67 | Requirements 26, 30; UI spec 19.2. Lot treatment and days to long term from the residence tax rule set; cost of disposing today with market fees, purchase-date FX, loss netting, carried-forward losses and exemption; verified session 67 |
 | E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | DONE | 100 | Session 57; reworked sessions 63, 65 | Requirements 27, 29, 33; UI spec 19.2. Approval queue: real compliance result beside risk checks, cooling off after approval with withdraw, stated reason; enforced by the server; safeguards configurable. Orders: compliance for working orders, restricted alert, cooling-off badge. Verified sessions 63 and 65 |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | DONE | 100 | Session 57; reworked session 71 | Requirements 27, 32; UI spec 19.2. Counterparty share of the traded portfolio from holdings with over-weight flag and protection cover; compliance limits from the compliance record; loading/error/empty states; verified session 71 |
-| E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states **Owner Q15 session 64:** broker is the record of truth; a mismatch raises an alert and pauses automation for that account. |
+| E-05 | System Health — independent depository/registrar reconciliation status | DONE | 100 | Session 57; reworked session 72 | Requirements 31, 32; UI spec 19.2; decision 45. Reconciliation against depository statements per broker with a seeded mismatch; mismatch raises a critical alert and pauses approvals for that broker until resolved with a reason; verified session 72 |
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | DONE | 100 | Session 57; reworked session 68 | Requirements 26, 30, 31; UI spec 19.2. Real return and real benchmark from recorded inflation or assumption; costs and tax as share of gross gain; tax pack for the residence country (gains by asset class, income with withholding and foreign tax credit, losses carried forward, foreign holdings, remittance cap); verified session 68 |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
@@ -621,6 +621,46 @@ FILES: created generators/counterpartyExposure.ts, risk/sections/RiskPanels.modu
   risk/sections/{CounterpartyExposureSection,ComplianceLimitsPanel}.tsx,
   settings/assumptions/{sections/OperatingPolicyForm.tsx, model/assumptionsDraft.ts},
   position/sections/PositionDisposalEstimator.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        72
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:17:00Z  |  local: 2026-09-17 18:47 IST (UTC+05:30)
+END:            2026-09-17T13:25:00Z  |  local: 2026-09-17 18:55 IST (UTC+05:30)
+TASK CLAIMED:   E-05 System Health — independent reconciliation (owner Q15)
+END STATUS:     DONE
+
+COMPLETED:
+  - schemas/reconciliation.ts; stores/reconciliationStore.ts: one account per broker holding
+    positions, masked references, statement method, last run, discrepancies against the statement
+    (seeded: CDSL shows 2 fewer RELIANCE shares than Zerodha), automationPaused while a mismatch is
+    unresolved, resolution with reason.
+  - handlers: GET /api/v1/health/reconciliation, POST …/:brokerId/run, POST …/:brokerId/resolve
+    (reason required; 409 when nothing to resolve); useReconciliation, useRunReconciliation,
+    useResolveReconciliation.
+  - Decision 45 enforced: approvals routed to a paused broker carry a failed "Broker reconciliation"
+    check and approving them is refused (409); the Alerts Centre raises one critical alert per paused
+    account (acknowledging it does not resume automation).
+  - DepositoryReconciliationSection rewritten on the hooks with loading/error/empty states, SCSS
+    module, run again, and resolve-with-reason; removed fixed accounts, unmasked account numbers and
+    the always-zero simulated audit.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: IBKR matched (4 positions), Zerodha mismatch paused
+  (RELIANCE broker 47, statement 45), HL and private placement matched; TATAMOTORS approval shows the
+  failed reconciliation check; approve → 409; alert "Positions do not match the statement: Zerodha";
+  resolve with blank reason → 400; with reason → 200 and the check disappears from the approval.
+  UI /health/status: "Automation is paused for Zerodha", masked "•••• 0412", discrepancy line, resolve
+  field and buttons render.
+
+FILES: created schemas/reconciliation.ts, stores/reconciliationStore.ts,
+  handlers/reconciliationHandlers.ts, api/reconciliationQueries.ts,
+  health/sections/Reconciliation.module.scss; modified schemas/index.ts, handlers/{index,
+  tradingHandlers,alertCentreHandlers}.ts, api/index.ts, generators/orderHistory.ts (brokerFor
+  exported), health/sections/DepositoryReconciliationSection.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

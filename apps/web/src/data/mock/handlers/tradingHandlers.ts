@@ -18,6 +18,7 @@ import { complianceFrom, refuseDecision, withSafeguards } from '../generators/ap
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentOperatingPolicy } from '../stores/assumptionsStore';
 import { evaluateEligibility } from '../stores/complianceStore';
+import { isAutomationPausedFor } from '../stores/reconciliationStore';
 import {
   decisions,
   getApprovals,
@@ -26,10 +27,32 @@ import {
   setOrders,
   tradingContext as ctx,
 } from '../stores/tradingStore';
-import type { ApprovalRequestDto, OrderHistoryEntryDto } from '../../schemas';
+import { brokerFor } from '../generators/orderHistory';
+import { getInstrumentById } from '../generators/instruments';
+import type { ApprovalQueueItemDto, ApprovalRequestDto, OrderHistoryEntryDto } from '../../schemas';
 import { ApprovalDecisionSchema } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 import { toQuantity } from '../../../shared/types/quantities';
+
+// A broker whose positions do not match the depository statement has automation paused (decision 45),
+// shown as a failed check on every approval routed to it.
+function withReconciliation(item: ApprovalQueueItemDto): ApprovalQueueItemDto {
+  const id = String(item.instrumentId);
+  const broker = brokerFor(getInstrumentById(id), id);
+  if (broker === undefined || !isAutomationPausedFor(String(broker.id))) return item;
+  return {
+    ...item,
+    riskChecks: [
+      {
+        id: 'reconciliation',
+        label: 'Broker reconciliation',
+        status: 'failed',
+        detail: `${broker.name} positions do not match the depository statement, so automation is paused until the mismatch is resolved on System health.`,
+      },
+      ...item.riskChecks,
+    ],
+  };
+}
 
 // Decisions are laid over the regenerated queue, then the safety layer's view is added: compliance
 // from the compliance store, cooling off and the reason rule from the saved safeguards (E-03).
@@ -43,7 +66,8 @@ function decidedQueue(): readonly ApprovalRequestDto[] {
       rate: new Decimal(rate.rate),
     })),
   };
-  return generateApprovalQueue(ctx, getApprovals(), getOrders()).map((item): ApprovalRequestDto => {
+  return generateApprovalQueue(ctx, getApprovals(), getOrders()).map((raw): ApprovalRequestDto => {
+    const item = withReconciliation(raw);
     const decision = decisions.get(item.approvalId);
     if (decision === undefined) return withSafeguards(item, inputs, null);
     const decided = {
@@ -204,6 +228,18 @@ export const tradingHandlers: readonly HttpHandler[] = [
     const current = decidedQueue().find((item) => item.approvalId === id);
     if (current === undefined) {
       return HttpResponse.json({ error: 'Approval not found' }, { status: 404 });
+    }
+    const reconciliationFailed = current.riskChecks.some(
+      (check) => check.id === 'reconciliation' && check.status === 'failed',
+    );
+    if (parsed.data.decision === 'approved' && reconciliationFailed) {
+      return HttpResponse.json(
+        {
+          error:
+            'Automation is paused for this broker until its reconciliation mismatch is resolved',
+        },
+        { status: 409 },
+      );
     }
     const refusal = refuseDecision(current, parsed.data, Date.now());
     if (refusal !== null) {

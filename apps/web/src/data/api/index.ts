@@ -165,6 +165,12 @@ export {
   useSaveOperatingPolicy,
 } from './assumptionsConfigQueries';
 export { useRevertTaxRuleSet, useSaveTaxRuleSet, useTaxRuleSets } from './taxRulesConfigQueries';
+export type { ResolveReconciliationVariables } from './reconciliationQueries';
+export {
+  useReconciliation,
+  useResolveReconciliation,
+  useRunReconciliation,
+} from './reconciliationQueries';
 export {
   useCounterparties,
   useCounterpartyExposure,

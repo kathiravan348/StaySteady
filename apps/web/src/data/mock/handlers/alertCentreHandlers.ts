@@ -7,6 +7,7 @@ import { parseGeneratedList, seedAlertGroups, withEscalation } from '../generato
 import type { AlertGroupInput } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentConfigs, getAlertRuleVersions } from '../stores/configStore';
+import { reconciliationAccounts } from '../stores/reconciliationStore';
 import { AlertActionRequestSchema, AlertGroupListSchema } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 
@@ -16,13 +17,41 @@ const failure = (message: string, status: number): Response =>
 // Keyed by scenario so switching scenarios shows that scenario's alerts, and edits persist within it.
 const stores = new Map<string, AlertGroupInput[]>();
 
+// A reconciliation mismatch raises one critical alert (decision 45). Acknowledging or resolving the
+// alert does not resume automation; only a resolution on System health does.
+function reconciliationAlerts(existing: readonly AlertGroupInput[]): AlertGroupInput[] {
+  return reconciliationAccounts()
+    .filter((account) => account.automationPaused)
+    .filter(
+      (account) =>
+        !existing.some((alert) => alert.id === `alert-reconciliation-${account.brokerId}`),
+    )
+    .map((account) => ({
+      id: `alert-reconciliation-${account.brokerId}`,
+      severity: 'critical',
+      category: 'critical',
+      source: 'Independent reconciliation',
+      marketId: null,
+      title: `Positions do not match the statement: ${account.brokerName}`,
+      message: `${account.discrepancies
+        .map(
+          (item) =>
+            `${item.instrumentSymbol}: broker ${String(item.brokerQuantity)}, ${account.depository} ${String(item.statementQuantity)}`,
+        )
+        .join('; ')}. Automation is paused for this account.`,
+      occurrences: [account.lastRunAt ?? nowUtc()],
+      state: 'open',
+      notes: [],
+      escalation: null,
+      link: { label: 'Open system health', to: '/health/status' },
+    }));
+}
+
 function groups(): AlertGroupInput[] {
   const scenario = getActiveDeveloperScenario();
-  let current = stores.get(scenario);
-  if (current === undefined) {
-    current = seedAlertGroups(scenario, Date.now());
-    stores.set(scenario, current);
-  }
+  const seeded = stores.get(scenario) ?? seedAlertGroups(scenario, Date.now());
+  const current = [...reconciliationAlerts(seeded), ...seeded];
+  stores.set(scenario, current);
   return current;
 }
 

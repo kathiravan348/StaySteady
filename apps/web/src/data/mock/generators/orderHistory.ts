@@ -48,7 +48,7 @@ function isSimulatedStage(strategy: StrategyDto | undefined): boolean {
 }
 
 // The broker that holds the instrument if it is held, otherwise the first broker serving its market.
-function brokerFor(
+export function brokerFor(
   instrument: InstrumentDto | undefined,
   instrumentId: string,
 ): BrokerDto | undefined {
