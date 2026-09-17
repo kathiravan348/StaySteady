@@ -1,0 +1,73 @@
+@use '../../../../styles/mixins' as mx;
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+
+  th,
+  td {
+    padding: var(--space-2);
+    text-align: start;
+    border-bottom: var(--border-width-thin) solid var(--border-subtle);
+  }
+
+  th {
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+  }
+}
+
+.numeric {
+  @include mx.numeric(end);
+}
+
+.quantityRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.input {
+  width: 8rem;
+  padding: var(--space-1) var(--space-2);
+  font: inherit;
+  color: var(--text-primary);
+  text-align: end;
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.figure {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.figureLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.figureValue {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.loss {
+  color: var(--change-loss);
+}
+
+.meta {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}

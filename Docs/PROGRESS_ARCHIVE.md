@@ -6035,3 +6035,83 @@ SCOPE:
     is part c. Tax rates in the meantime stay in Countries & markets and Instrument types.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 63 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        63 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:43:00Z  |  local: 2026-09-17 14:13 IST (see correction below)
+END:            2026-09-17T08:52:00Z  |  local: 2026-09-17 14:22 IST
+TASK CLAIMED:   E-03 part a (approval queue)
+END STATUS:     PARTIAL (part a done; part b, Orders screen, remains)
+
+CORRECTION TO SESSIONS 60-63 ENTRIES: their START/END and LAST UPDATED times were estimated, not read
+from the system clock, and run ahead of reality. Real times from git: f3e8eab 08:10Z, faa2157 08:21Z,
+c701a9f 08:28Z, 4a67de2 08:42Z; this entry's times were read from the system clock (rule 1).
+
+COMPLETED:
+  - Approval requests carry compliance (from complianceStore eligibility; decision 42), coolingOff
+    (minutes, threshold, executableAt once approved) and reasonRequired, added by the queue handler;
+    the generator builds ApprovalQueueItemSchema without them.
+  - Server refuses: a decision without a required reason (400); approving a compliance-refused trade
+    (409); re-deciding, except withdrawing (rejecting) an approval still cooling off (409).
+  - Safeguards on the operating policy: cooling-off minutes, threshold amount and currency, stated
+    reason required (seed 5 min above 5000 USD, required); SafeguardsCard on /settings/assumptions.
+  - Card: compliance shown first among the risk checks; Restricted badge; Approve/Modify disabled when
+    refused; cooling-off note while pending and countdown with Withdraw after approval; approve opens
+    the reason dialog when a reason is required; bulk approve asks for one reason and skips refused.
+    Removed the hardcoded "Passed" block, Number() on money, emoji and inline styles (the old block
+    also used --color-warning, which does not exist; --severity-high is used).
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API in the browser pane: threshold lowered to 3000 USD and TATAMOTORS restricted through their
+  endpoints; AAPL approve with blank reason → 400; with reason → 200, executableAt = decision + 5 min;
+  re-approve → 409; withdraw → 200, status rejected; decide again → 409; TATAMOTORS approve → 409
+  "Compliance refuses this trade: Restricted List Violation: Tata Motors"; journal contains the
+  withdrawal reason. UI: compliance row renders in checks; Approve opens "Approve buy AAPL" with the
+  reason field and a disabled submit. Themes not re-checked; no new colours beyond --severity-high.
+
+NOT COMPLETED:
+  - Part b: Orders screen (7.13) compliance for working orders; OrdersView.tsx is 337 lines (P-05) and
+    must be split when touched.
+  - Seeded pending approvals include none above 5000 USD and none restricted, so neither state shows
+    without changing configuration; consider seeding one when M-17-style data is next touched.
+
+FILES: created generators/approvalSafeguards.ts, settings/assumptions/sections/SafeguardsCard.tsx;
+  modified schemas/trading-queue.ts, schemas/config-assumptions.ts, generators/approvalQueue.ts,
+  generators/assumptionsConfig.ts, handlers/tradingHandlers.ts, approvalQueue/{ApprovalCard,
+  DecisionDialog,BulkApproveDialog,QueueView}.tsx, ApprovalQueue.module.scss, assumptionsDraft.ts,
+  OperatingPolicyForm.tsx. No dependencies, no new decisions.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        63 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T10:20:00Z  |  local: 2026-09-17 15:50 IST (UTC+05:30)
+TASK CLAIMED:   E-03 Orders & Approval Queue (part a: approval queue)
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         4a67de2 (session 62); working tree clean
+  type check:  PASS, lint: PASS, build: PASS (session 62 end)
+
+SCOPE:
+  - Approval request carries the real compliance result (complianceStore eligibility, decision 42),
+    a cooling-off window and whether a stated reason is required, all worked out by the server.
+  - Decision safeguards configurable on the operating policy (requirements 29): cooling-off minutes,
+    amount above which it applies, stated reason required. Server refuses approving a refused trade,
+    a decision without a required reason, and any re-decision except withdrawing during cooling off.
+  - Card shows compliance beside risk checks and the cooling-off countdown after approval; remove
+    the hardcoded "Passed" block, Number() on money and inline styles.
+  - Part b (Orders screen compliance for working orders) is a separate session.
+────────────────────────────────────────────────────────────
+```
