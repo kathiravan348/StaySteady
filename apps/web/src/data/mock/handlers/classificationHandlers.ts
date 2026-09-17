@@ -5,6 +5,7 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 import {
   createMockGeneratorContext,
   generateCompanyProfile,
+  generateFinancialStatements,
   generateClassificationIndex,
   generateClassificationTaxonomy,
   generateCorporateStructure,
@@ -52,6 +53,13 @@ export const classificationHandlers: readonly HttpHandler[] = [
     if (failed !== null) return failed;
     const profile = generateCompanyProfile(ctx, String(params['id']));
     return profile === null ? notFound() : HttpResponse.json(profile);
+  }),
+
+  http.get('/api/v1/instruments/:id/statements', ({ params }) => {
+    const failed = failure('Failed to load the financial statements');
+    if (failed !== null) return failed;
+    const statements = generateFinancialStatements(ctx, String(params['id']));
+    return statements === null ? notFound() : HttpResponse.json(statements);
   }),
 
   http.get('/api/v1/instruments/:id/structure', ({ params }) => {

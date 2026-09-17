@@ -16,6 +16,7 @@ export * from './system';
 export * from './news';
 export * from './classification';
 export * from './company-research';
+export * from './financial-statements';
 export * from './fund-lookthrough';
 export * from './research-data';
 export * from './system-health';

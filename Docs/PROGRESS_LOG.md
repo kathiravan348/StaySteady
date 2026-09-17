@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   85% (91 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 4 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T04:45:00Z  |  local: 2026-09-18 10:15 IST
-LAST AGENT:         Claude Opus 5 (session 87)
-BUILD STATE:        PASS (pnpm build, session 86; session 87 added data-layer files only)
+OVERALL PROGRESS:   86% (92 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 5 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T06:00:00Z  |  local: 2026-09-18 11:30 IST
+LAST AGENT:         Claude Opus 5 (session 88)
+BUILD STATE:        PASS (pnpm build, session 88)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-05 financial statements is next and is the largest remaining data task.
+BLOCKERS:           none. R-06, the ratio engine, is next and needs no new mock data.
 ```
 
 ---
@@ -34,33 +34,43 @@ BLOCKERS:           none. R-05 financial statements is next and is the largest r
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R is the active
-  scope (requirements Part III, UI spec 20, decisions 48-54). R-01 classification data, R-02 wired
-  into Overview/Holdings/Planning/Screener, R-03 fund look-through with sector and group exposure,
-  R-04 the company research record. R-05 financial statements is next.
+  scope (requirements Part III, UI spec 20, decisions 48-54): R-01 classification, R-02 screens
+  wired, R-03 fund look-through and exposure, R-04 the company record, R-05 financial statements.
+  R-06, the ratio engine, is next.
 
-WHAT R-04 ADDED (session 87, data layer only):
-  - data/schemas/company-research.ts: company profile (legal name, plain business description,
-    listings, headquarters, employees, reporting currency, fiscal year end as MM-DD, ISIN and local
-    code, revenue by segment and by geography, key people with whether they were appointed in the
-    last year, auditor with a qualified-opinion flag, what the business depends on) and a response
-    that carries the reason when there is no record.
-  - generators/companyProfiles.ts: six full profiles (AAPL, RELIANCE, TATAMOTORS, TCS, AZN, D05).
-    Coverage is deliberately partial so the "no provider record yet" state has real data behind it.
-  - generators/companyResearch.ts, endpoint GET /api/v1/instruments/:id/company, hook
-    useCompanyProfile.
+WHAT R-05 ADDED (session 88, data layer only):
+  - data/schemas/financial-statements.ts: balance sheet, income and cash flow per period, with
+    refines that enforce what a reader would check by hand — assets equal liabilities plus equity,
+    free cash flow equals operating cash flow less capital spending, earnings per share follows from
+    net profit and shares, a statement cannot be published before its period ended, and a restated
+    statement must say what was restated.
+  - generators/financialStatementSeeds.ts: 14 companies as a dozen parameters each (revenue, growth,
+    margins, asset intensity, shares, leverage, current ratio, capex, payout, fiscal year end).
+  - generators/financialStatementBuild.ts derives one period from those parameters;
+    generators/financialStatements.ts assembles five annual and eight quarterly periods on every
+    basis the company publishes. Endpoint GET /api/v1/instruments/:id/statements, hook
+    useFinancialStatements.
+  - Mock data now carries what UI spec 20.4 asked for: Tata Motors publishes consolidated and
+    standalone that genuinely differ (standalone is a third of revenue, because Jaguar Land Rover is
+    a subsidiary), Reliance FY2023 is restated, and Swiggy is loss-making with three years of
+    negative free cash flow.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-05 financial statements: five years annual and eight quarters interim, consolidated and
-     standalone distinct, each with reporting currency, period end, audited and restated flags and
-     the publication date (decision 50). Must tie to price history (decision 19): assets equal
-     liabilities plus equity, EPS from net profit and shares, market cap from price times shares.
-     Keep the definitions out of the generator file; six companies will not fit in 300 lines.
-  2. R-06 the ratio engine in apps/web/src/shared/fundamentals (decision 53).
-  3. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
-  4. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
-  5. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
+  1. R-06 apps/web/src/shared/fundamentals (decision 53): valuation, profitability, financial
+     health, growth and cash-quality measures as pure decimal.js functions over the statements,
+     plus industry medians from peerSymbolsForSymbol and the warning flags requirements 37 lists.
+     Market capitalisation and P/E must come from price times shares outstanding, not from the
+     marketCap field the old fundamentals generator invents; reconcile that field while you are
+     there (it is the last remaining number with no derivation behind it).
+  2. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
+  3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
+  4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
+  - Statements are generated, not stored: a change to a seed parameter moves every period. The
+    schema refines catch an incoherent sheet loudly, which is the point.
+  - A quarter inside the year now in progress is scaled on the latest reported year, so the newest
+    quarter can repeat the previous one's revenue. That is deliberate, not a bug.
   - Adding or removing a holding changes Holdings, Performance and Risk screenshots. Run pnpm visual
     and rebaseline with pnpm visual:update only when the change was intended (R-03 rebaselined 6).
   - Sector and industry have one source: classificationAssignments.ts read through the taxonomy. A
@@ -263,7 +273,7 @@ already built but cannot work without classification.
 | R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | DONE | 100 | Claude Opus 5 (session 85) | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
 | R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | DONE | 100 | Claude Opus 5 (session 86) | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | DONE | 100 | Claude Opus 5 (session 87) | Requirements 35 |
-| R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | TODO | 0 | | Requirements 37; decision 50. Must tie to price history (decision 19) |
+| R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | DONE | 100 | Claude Opus 5 (session 88) | Requirements 37; decision 50. Must tie to price history (decision 19) |
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | TODO | 0 | | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | TODO | 0 | | UI spec 20.1 |
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | TODO | 0 | | UI spec 20.1 |
@@ -1393,6 +1403,65 @@ VERIFICATION RUN:
 FILES: created apps/web/src/data/schemas/company-research.ts,
 apps/web/src/data/mock/generators/{companyProfiles.ts,companyResearch.ts};
 modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 88 | Claude Opus 5
+START:          2026-09-18T04:50:00Z  |  local: 2026-09-18 10:20 IST
+END:            2026-09-18T06:00:00Z  |  local: 2026-09-18 11:30 IST
+TASK CLAIMED:   R-05 financial statements
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Schema (data/schemas/financial-statements.ts) with five refines that enforce coherence rather
+    than trusting the generator: the balance sheet must balance, free cash flow must follow from
+    operating cash flow and capital spending, earnings per share must follow from net profit and
+    shares, publication cannot precede the period end (decision 50), and a restatement must carry
+    its note. Consolidated and standalone are distinct values, not a flag.
+  - Seeds for 14 companies as a dozen parameters each, and a builder that derives every reported
+    line from them, so a period is internally consistent by construction.
+  - Five annual and eight quarterly periods per basis, with fiscal calendars that differ properly:
+    Apple to 30 September with its December quarter the largest, the Indian companies to 31 March,
+    Toyota to 31 March, AstraZeneca and DBS to 31 December. Annual statements publish 75 days after
+    the period end, quarterly 45 days.
+  - Endpoint GET /api/v1/instruments/:id/statements and hook useFinancialStatements. An instrument
+    with no company answers with the reason, as the other research endpoints do.
+
+DEFECT FOUND AND FIXED THIS SESSION:
+  - The first quarterly implementation attributed every quarter to the wrong fiscal year and
+    repeated "Q1" four times. Rewritten around fiscalYearEndFor (the first year end on or after the
+    quarter end) and verified against two different fiscal calendars.
+
+NOT COMPLETED / LIMITS:
+  - No ratio is computed yet and nothing is displayed: R-06 and R-07 to R-09 do that.
+  - The old InstrumentFundamentals generator still invents a market capitalisation instead of
+    deriving it from shares outstanding and the price history. R-06 should reconcile the two;
+    recorded as a finding below.
+
+FINDINGS (not fixed, outside R-05 scope):
+  - data/mock/generators/researchData.ts sets marketCap from a random draw while statements now
+    carry real shares outstanding. Two numbers for one fact; R-06 should derive market cap from
+    price times shares (decision 19).
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS. pnpm visual not re-run: no
+  component, style or markup changed. In the browser against the dev server: statements generate and
+  validate for all 14 covered companies across five currencies; Tata Motors returns five annual and
+  eight quarterly periods on both bases with standalone revenue at 1,451.6bn against consolidated
+  4,398.8bn; the quarterly series reads Q2 FY2025 through Q1 FY2027 with publication dates 45 days
+  after each period end; Apple's December quarter is 139.4bn against 91.6bn in June, its year ending
+  30 September; Reliance FY2023 comes back restated with its note; Swiggy reports earnings per share
+  of -8.57 and free cash flow of -18.0bn; gold, SPY and the private note answer with the reason.
+
+FILES: created apps/web/src/data/schemas/financial-statements.ts,
+apps/web/src/data/mock/generators/{financialStatementSeeds.ts,financialStatementBuild.ts,
+financialStatements.ts}; modified apps/web/src/data/schemas/index.ts,
+apps/web/src/data/mock/generators/index.ts,
 apps/web/src/data/mock/handlers/classificationHandlers.ts,
 apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────

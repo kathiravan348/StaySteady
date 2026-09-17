@@ -19,6 +19,8 @@ import {
 } from '../schemas/classification';
 import type { CompanyProfileResponseDto } from '../schemas/company-research';
 import { CompanyProfileResponseSchema } from '../schemas/company-research';
+import type { FinancialStatementsResponseDto } from '../schemas/financial-statements';
+import { FinancialStatementsResponseSchema } from '../schemas/financial-statements';
 import type { FundLookThroughResponseDto } from '../schemas/fund-lookthrough';
 import { FundLookThroughResponseSchema } from '../schemas/fund-lookthrough';
 import { apiGet } from './apiClient';
@@ -68,6 +70,18 @@ export function useCompanyProfile(instrumentId: string): UseQueryResult<CompanyP
     queryKey: ['classification', 'company', instrumentId],
     queryFn: ({ signal }) =>
       apiGet(instrumentPath(instrumentId, 'company'), CompanyProfileResponseSchema, signal),
+    enabled: instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useFinancialStatements(
+  instrumentId: string,
+): UseQueryResult<FinancialStatementsResponseDto> {
+  return useQuery({
+    queryKey: ['classification', 'statements', instrumentId],
+    queryFn: ({ signal }) =>
+      apiGet(instrumentPath(instrumentId, 'statements'), FinancialStatementsResponseSchema, signal),
     enabled: instrumentId !== '',
     staleTime: SLOW_STALE_MS,
   });

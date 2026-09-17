@@ -39,6 +39,7 @@ export {
   useClassificationTaxonomy,
   useCompanyProfile,
   useCorporateStructure,
+  useFinancialStatements,
   useFundLookThrough,
   useInstrumentClassification,
   useInstrumentOwnership,
