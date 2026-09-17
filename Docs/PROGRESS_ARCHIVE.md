@@ -4372,3 +4372,107 @@ FINDINGS (out of scope, not fixed):
   - Quiet hours from the alert rules are not applied to the escalation times shown
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 45 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        45 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:41:04Z  |  local: 2026-09-17 04:11 IST (UTC+05:30)
+TASK CLAIMED:   S-23 Audit Log
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-22 committed as eacc895; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-22 commit)
+
+SCOPE (UI spec 7.20):
+  - Complete record of configuration changes, approvals, orders, limit changes and stage
+    promotions; each with what changed (before and after), time and trigger; filterable and
+    searchable; trace one decision chain end to end (signal -> approval -> order -> fill)
+  - Built from records that already exist, not a separate seed, so an edit made on another screen
+    appears here: configuration versions (all seven areas), risk limit and emergency changes, the
+    order history timelines (which carry signal, approval and fill events and decision reasons),
+    strategy definition versions
+  - PROVISIONAL: stage promotions are held in the browser session on the Strategy Library screen,
+    not on the server, so the audit log records each strategy's promotions up to its current stage
+    at dates derived from the library, and says so. A server-side promotion record is a finding
+  - The decision chain is the order history timeline for that order, reached from any entry in it
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        45 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:49:00Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
+TASK:           S-23 Audit Log — DONE
+
+WHAT WAS BUILT (UI spec 7.20):
+  - /audit: every entry newest first in a table (when, type, what happened, what it is about,
+    triggered by, number of changes); opening a row shows the reason and a before/after table
+  - Types: configuration, approval, order, signal, risk limit, emergency control, stage promotion,
+    strategy definition; triggers: you, a strategy, the system, the broker
+  - Search across title, subject, reason and every before/after value; filters by type, trigger
+    and date range; no-results state
+  - "Trace the decision chain" on any entry belonging to an order shows the order's lifecycle as
+    numbered steps from signal to fill, with the entry's own step marked, and the signal, approval
+    and order ids
+
+MOCK DATA:
+  - GET /api/v1/audit, rebuilt on every request from: all seven configuration version stores
+    (field-level before/after from the snapshots), the risk change log, order history timelines
+    (with approval decision reasons), strategy definition versions and strategy library stages
+  - PROVISIONAL (see start entry): stage promotions are not recorded on the server, so each step up
+    to a strategy's current stage is dated 45 days apart and says so in its reason
+
+FILES CREATED:
+  - data/schemas/audit.ts; data/api/auditQueries.ts
+  - data/mock/generators/auditLog.ts; data/mock/handlers/auditHandlers.ts
+  - features/audit/{Audit.module.scss, model/auditFilters.ts, sections/AuditView.tsx,
+    sections/DecisionChain.tsx}
+FILES MODIFIED:
+  - features/audit/AuditLogPage.tsx — rewritten from a placeholder
+  - data/schemas/index.ts; data/api/index.ts; data/mock/generators/index.ts; data/mock/handlers/index.ts
+  - Docs: session 42 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  endpoint:    80 entries (configuration 48, order 11, strategy stage 10, approval 5, signal 5,
+               strategy definition 1)
+  search:      "settlement" -> 1 entry, "Market US changed (version 2)", opened to "US equities
+               moved to T+1 settlement" and "Settlement days 2 -> 1"
+  chain:       "ord-0001" -> Filled entry -> Trace: six steps (signal raised, approval requested,
+               approved, submitted, acknowledged, filled "(this entry)") with signal
+               sig-01-spy-buy, approval appr-002-approved
+  live record: changed INR conversion cost to 35 bps through the API, moved to Overview and back
+               in the app: 81 entries, "Currency INR changed (version 3)", reason "Bank raised its
+               FX margin.", "Conversion cost bps 30 -> 35"
+  states:      loading-error -> "Audit log unavailable"; reset to healthy. Stale: the log is a
+               record rebuilt on each visit, with no live stream to go stale
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Diff field names first came through as raw paths ("settlementDays"); they are now labelled
+    ("Settlement days", "Fees › commission bps")
+
+FINDINGS (out of scope, not fixed):
+  - The order history timeline for ord-0001 has "Signal raised" at 14:28 after "Approval
+    requested" at 14:15, so the decision chain shows the signal after its approval request. The
+    times come from the S-13 order history generator
+  - Stage promotions should be recorded on the server (the library keeps them in session storage)
+  - Watchlist edits, goal and allocation target changes, report schedules and alert
+    acknowledgements are not in the audit log yet
+  - Risk changes carry title and detail text rather than structured before/after values
+────────────────────────────────────────────────────────────
+```

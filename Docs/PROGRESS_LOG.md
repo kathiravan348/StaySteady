@@ -14,11 +14,11 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 done)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 done; S-26 blocked)
 OVERALL PROGRESS:   70% (62 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 25 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T02:54:00Z  |  local: 2026-09-17 08:24 IST
-LAST AGENT:         session 47 (S-25 Portfolio — Performance)
+LAST UPDATED:       2026-09-17T03:00:00Z  |  local: 2026-09-17 08:30 IST
+LAST AGENT:         session 48 (S-26 Markets — Screener, blocked)
 BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,356 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
@@ -36,27 +36,27 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 done.
-  The owner asked for the remaining S tasks one by one, each committed (no push), taking the
-  recommended option whenever a choice comes up (decision 26). typecheck, ESLint and Prettier pass.
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 done,
+  S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by one, each
+  committed (no push), taking the recommended option whenever a choice comes up (decision 26).
+  typecheck, ESLint and Prettier pass.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 47: S-25 Portfolio — Performance. See session 47 end entry.
-  - Session 46: S-24 Portfolio — Transactions. Session 45: S-23 Audit Log.
+  - Session 48: S-26 Screener marked BLOCKED (no specification). See session 48 end entry.
+  - Session 47: S-25 Portfolio — Performance. Session 46: S-24 Portfolio — Transactions.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  S-26 Screener: no specification (open question 11) — mark it BLOCKED with the reason, do not
-  invent it. Then S-27 Trading — Positions (open question 10): recommended reading is positions
-  opened by automation (strategy, entry signal, stop and target, exit rules), distinct from S-02
-  Holdings. Then S-28..S-33.
+  Claim S-27 Trading — Positions (open question 10). Recommended reading (decision 26): positions
+  opened by automation — strategy, entry signal, stop and target, exit rules and open P&L — distinct
+  from S-02 Holdings, which lists everything owned. Then S-28..S-33.
 
-FILES TOUCHED (session 47): see session 47 end entry.
+FILES TOUCHED (session 48): see session 48 end entry.
 
 WATCH OUT FOR:
  
@@ -197,7 +197,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-23 | Audit Log | DONE | 100 | Session 45 | Audit log rebuilt from real records (configuration versions with field-level before/after, risk changes, order lifecycles with decision reasons, strategy versions and stages); search, type/trigger/date filters; decision chain trace from signal to fill; stage promotion dates provisional |
 | S-24 | Portfolio — Transactions | DONE | 100 | Session 46 | Transaction history with fees, signed cash effect and base-currency amounts at each transaction date's rate; conversion charges linked to their purchases; totals by type; filters by type, instrument, broker, currency and date; CSV export; all states verified |
 | S-25 | Portfolio — Performance | DONE | 100 | Session 47 | Open question 9 answered provisionally (decision 26): at-a-glance view, the report keeps chosen periods, comparisons, export and schedules. Returns and gain for 1M/3M/YTD/1Y/since first purchase from the report builder, value curve, monthly heatmap, contribution by holding; all states incl. stale verified |
-| S-26 | Markets — Screener | TODO | 0 | | Raised session 36. In nav map and routed at `/markets/screener`; 29-line placeholder, no task. Note: the nav map lists it but section 7 has no screen specification for it — **see open question 11** |
+| S-26 | Markets — Screener | BLOCKED | 0 | Session 48 | Raised session 36. Only the nav map (spec 6) names it; section 7 and the requirements specify nothing. Blocked on **open question 11** — unblocks when the owner says what it filters on, over which instruments, and where a result leads. `/markets/screener` keeps its placeholder |
 | S-27 | Trading — Positions | TODO | 0 | | Raised session 36. In nav map and routed at `/trading/positions`; 29-line placeholder, no task. **See open question 10** — overlap with S-02 Holdings is undefined |
 | S-28 | Configuration — credentials | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires stored references only, never displayed, with expiry tracking and warnings. `/settings/credentials` currently renders the providers placeholder. Zero credential-reference handling in the app |
 | S-29 | Automation permission summary | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires a screen showing the layered result of market + broker + instrument type + strategy "so it is obvious what can actually trade". No route, no page, no task existed |
@@ -292,107 +292,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 44 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 45 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        45 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T22:41:04Z  |  local: 2026-09-17 04:11 IST (UTC+05:30)
-TASK CLAIMED:   S-23 Audit Log
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-22 committed as eacc895; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-22 commit)
-
-SCOPE (UI spec 7.20):
-  - Complete record of configuration changes, approvals, orders, limit changes and stage
-    promotions; each with what changed (before and after), time and trigger; filterable and
-    searchable; trace one decision chain end to end (signal -> approval -> order -> fill)
-  - Built from records that already exist, not a separate seed, so an edit made on another screen
-    appears here: configuration versions (all seven areas), risk limit and emergency changes, the
-    order history timelines (which carry signal, approval and fill events and decision reasons),
-    strategy definition versions
-  - PROVISIONAL: stage promotions are held in the browser session on the Strategy Library screen,
-    not on the server, so the audit log records each strategy's promotions up to its current stage
-    at dates derived from the library, and says so. A server-side promotion record is a finding
-  - The decision chain is the order history timeline for that order, reached from any entry in it
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        45 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T22:49:00Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
-TASK:           S-23 Audit Log — DONE
-
-WHAT WAS BUILT (UI spec 7.20):
-  - /audit: every entry newest first in a table (when, type, what happened, what it is about,
-    triggered by, number of changes); opening a row shows the reason and a before/after table
-  - Types: configuration, approval, order, signal, risk limit, emergency control, stage promotion,
-    strategy definition; triggers: you, a strategy, the system, the broker
-  - Search across title, subject, reason and every before/after value; filters by type, trigger
-    and date range; no-results state
-  - "Trace the decision chain" on any entry belonging to an order shows the order's lifecycle as
-    numbered steps from signal to fill, with the entry's own step marked, and the signal, approval
-    and order ids
-
-MOCK DATA:
-  - GET /api/v1/audit, rebuilt on every request from: all seven configuration version stores
-    (field-level before/after from the snapshots), the risk change log, order history timelines
-    (with approval decision reasons), strategy definition versions and strategy library stages
-  - PROVISIONAL (see start entry): stage promotions are not recorded on the server, so each step up
-    to a strategy's current stage is dated 45 days apart and says so in its reason
-
-FILES CREATED:
-  - data/schemas/audit.ts; data/api/auditQueries.ts
-  - data/mock/generators/auditLog.ts; data/mock/handlers/auditHandlers.ts
-  - features/audit/{Audit.module.scss, model/auditFilters.ts, sections/AuditView.tsx,
-    sections/DecisionChain.tsx}
-FILES MODIFIED:
-  - features/audit/AuditLogPage.tsx — rewritten from a placeholder
-  - data/schemas/index.ts; data/api/index.ts; data/mock/generators/index.ts; data/mock/handlers/index.ts
-  - Docs: session 42 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  endpoint:    80 entries (configuration 48, order 11, strategy stage 10, approval 5, signal 5,
-               strategy definition 1)
-  search:      "settlement" -> 1 entry, "Market US changed (version 2)", opened to "US equities
-               moved to T+1 settlement" and "Settlement days 2 -> 1"
-  chain:       "ord-0001" -> Filled entry -> Trace: six steps (signal raised, approval requested,
-               approved, submitted, acknowledged, filled "(this entry)") with signal
-               sig-01-spy-buy, approval appr-002-approved
-  live record: changed INR conversion cost to 35 bps through the API, moved to Overview and back
-               in the app: 81 entries, "Currency INR changed (version 3)", reason "Bank raised its
-               FX margin.", "Conversion cost bps 30 -> 35"
-  states:      loading-error -> "Audit log unavailable"; reset to healthy. Stale: the log is a
-               record rebuilt on each visit, with no live stream to go stale
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - Diff field names first came through as raw paths ("settlementDays"); they are now labelled
-    ("Settlement days", "Fees › commission bps")
-
-FINDINGS (out of scope, not fixed):
-  - The order history timeline for ord-0001 has "Signal raised" at 14:28 after "Approval
-    requested" at 14:15, so the decision chain shows the signal after its approval request. The
-    times come from the S-13 order history generator
-  - Stage promotions should be recorded on the server (the library keeps them in session storage)
-  - Watchlist edits, goal and allocation target changes, report schedules and alert
-    acknowledgements are not in the audit log yet
-  - Risk changes carry title and detail text rather than structured before/after values
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        46 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -559,6 +463,62 @@ FINDINGS (out of scope, not fixed):
   - Transactions (S-24) and Reports (S-20) have no stale state; the S-24 entry argues a record needs
     none, but CLAUDE.md requires one on every screen
   - The base currency here follows the top bar switch, not the configured base currency (S-18)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        48 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T02:58:00Z  |  local: 2026-09-17 08:28 IST (UTC+05:30)
+TASK CLAIMED:   S-26 Markets — Screener
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-25 committed as 8bec469; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit)
+
+SCOPE:
+  - Check whether any specification exists for the screener; if none, mark the task BLOCKED on open
+    question 11 rather than invent a screen (the question's provisional answer says do not build
+    until specified)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        48 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:00:00Z  |  local: 2026-09-17 08:30 IST (UTC+05:30)
+TASK:           S-26 Markets — Screener — BLOCKED
+
+WHAT WAS FOUND:
+  - The only mention of a screener in the requirements, UI specification and engineering standards
+    is the nav map line under Markets (UI spec section 6). Section 7 has no screen for it, and the
+    requirements name no screening criteria, universe or actions
+  - Open question 11 is unanswered and its provisional answer is "do not build until specified".
+    Decision 26 takes recommended options when a choice arises; it does not cover inventing a screen
+    with no requirement behind it, so the task is blocked rather than guessed
+  - /markets/screener keeps its placeholder page
+
+UNBLOCKS WHEN:
+  - The owner answers open question 11 (what the screener filters on, over which instruments, and
+    what a result leads to — watchlist, instrument detail or a strategy)
+
+FILES MODIFIED:
+  - Docs only: registry row, status, handoff; session 45 moved verbatim to PROGRESS_ARCHIVE.md
+    (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  - No code changed; checks from the S-25 commit stand
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - none
+
+FINDINGS (out of scope, not fixed):
+  - none new
 ────────────────────────────────────────────────────────────
 ```
  
