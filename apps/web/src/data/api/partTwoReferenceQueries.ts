@@ -4,8 +4,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 
-import type { CounterpartiesDto } from '../schemas/counterparties';
-import { CounterpartiesSchema } from '../schemas/counterparties';
+import type { CounterpartiesDto, CounterpartyExposureDto } from '../schemas/counterparties';
+import { CounterpartiesSchema, CounterpartyExposureSchema } from '../schemas/counterparties';
 import type { InflationHistoryDto } from '../schemas/inflation';
 import { InflationHistorySchema } from '../schemas/inflation';
 import type { StrategyLifecycleListDto } from '../schemas/strategy-lifecycle';
@@ -33,6 +33,14 @@ export function useCounterparties(): UseQueryResult<CounterpartiesDto> {
   return useQuery({
     queryKey: ['counterparties'],
     queryFn: ({ signal }) => apiGet('/api/v1/counterparties', CounterpartiesSchema, signal),
+  });
+}
+
+export function useCounterpartyExposure(): UseQueryResult<CounterpartyExposureDto> {
+  return useQuery({
+    queryKey: ['risk', 'counterparty-exposure'],
+    queryFn: ({ signal }) =>
+      apiGet('/api/v1/risk/counterparty-exposure', CounterpartyExposureSchema, signal),
   });
 }
 

@@ -4,8 +4,13 @@
 
 import { http, HttpResponse, type HttpHandler, type JsonBodyType } from 'msw';
 
+import { Decimal } from 'decimal.js';
+
 import {
+  buildCounterpartyExposure,
   generateCounterparties,
+  generateCurrentFxRates,
+  generatePortfolioData,
   generateInflationHistory,
   generateLossCarryForwards,
   generateStrategyLifecycles,
@@ -13,6 +18,7 @@ import {
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentOperatingPolicy } from '../stores/assumptionsStore';
 import { currentTaxRuleSets } from '../stores/taxRulesStore';
+import { tradingContext } from '../stores/tradingStore';
 import { residenceRules } from '../../../shared/tax/taxRules';
 import { failure } from './versionedConfigHandlers';
 
@@ -43,6 +49,23 @@ export const partTwoReferenceHandlers: readonly HttpHandler[] = [
     respond('counterparties', () =>
       generateCounterparties(currentOperatingPolicy().counterpartyMaxSharePercent),
     ),
+  ),
+  http.get('/api/v1/risk/counterparty-exposure', () =>
+    respond('counterparty exposure', () => {
+      const { holdings, summary } = generatePortfolioData(tradingContext);
+      return buildCounterpartyExposure({
+        holdings,
+        counterparties: generateCounterparties(
+          currentOperatingPolicy().counterpartyMaxSharePercent,
+        ),
+        fxTable: generateCurrentFxRates(tradingContext).map((rate) => ({
+          from: rate.from,
+          to: rate.to,
+          rate: new Decimal(rate.rate),
+        })),
+        currency: summary.totalValue.currency,
+      });
+    }),
   ),
   http.get('/api/v1/strategies/lifecycle', () =>
     respond('strategy lifecycles', () => generateStrategyLifecycles(today())),

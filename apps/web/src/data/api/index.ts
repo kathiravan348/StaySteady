@@ -167,6 +167,7 @@ export {
 export { useRevertTaxRuleSet, useSaveTaxRuleSet, useTaxRuleSets } from './taxRulesConfigQueries';
 export {
   useCounterparties,
+  useCounterpartyExposure,
   useInflationHistory,
   useLossCarryForwards,
   useStrategyLifecycles,

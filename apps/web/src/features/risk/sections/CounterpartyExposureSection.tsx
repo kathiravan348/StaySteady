@@ -1,156 +1,106 @@
-// Counterparty and custodian risk exposure breakdown (E-04; requirements 32; UI spec 19.2).
+// How much of the portfolio each broker or custodian holds, against the over-weight share and the
+// protection scheme's cover (E-04; requirements 32; UI spec 19.2; decision 44).
 
-import type { FC } from 'react';
-import { Badge, Card } from '@staysteady/ui';
-import styles from '../Risk.module.scss';
+import { Badge, Card, EmptyState, ErrorState, LoadingState, cx } from '@staysteady/ui';
+import type { ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 
-export interface CounterpartyInfo {
-  readonly id: string;
-  readonly name: string;
-  readonly role: 'broker' | 'custodian' | 'bank' | 'employer';
-  readonly sharePercent: number;
-  readonly amountFormatted: string;
-  readonly protectionScheme: string;
-  readonly protectionLimit: string;
-  readonly isConcentrated: boolean;
+import { moneyFromDto, useCounterpartyExposure } from '../../../data/api';
+import type { CounterpartyExposureRowDto } from '../../../data/schemas';
+import { ROUTES } from '../../../routes/routes';
+import { formatMoney, humanizeToken } from '../../../shared/format';
+import riskStyles from '../Risk.module.scss';
+import styles from './RiskPanels.module.scss';
+
+function CounterpartyFact({
+  row,
+  maxSharePercent,
+}: {
+  readonly row: CounterpartyExposureRowDto;
+  readonly maxSharePercent: number;
+}): ReactElement {
+  const uncovered = row.uncovered === null ? null : moneyFromDto(row.uncovered);
+  return (
+    <div className={cx(styles.fact, row.isOverWeight ? styles.alert : undefined)}>
+      <div className={styles.head}>
+        <span className={styles.name}>{row.name}</span>
+        {row.isOverWeight ? (
+          <Badge variant="warning">Over {String(maxSharePercent)}%</Badge>
+        ) : (
+          <Badge variant="neutral">{humanizeToken(row.kind)}</Badge>
+        )}
+      </div>
+      <span className={styles.value}>{row.sharePercent.toFixed(1)}%</span>
+      <p className={styles.text}>
+        {formatMoney(moneyFromDto(row.value))} in {String(row.positions)}{' '}
+        {row.positions === 1 ? 'position' : 'positions'} · {row.jurisdiction}
+      </p>
+      <p className={styles.meta}>
+        {row.protectionScheme === null
+          ? 'No protection scheme.'
+          : row.protectionLimit === null
+            ? `${row.protectionScheme}: no fixed limit.`
+            : `${row.protectionScheme} covers up to ${formatMoney(moneyFromDto(row.protectionLimit))}${uncovered !== null && uncovered.amount.gt(0) ? `; ${formatMoney(uncovered)} is above it` : ''}.`}{' '}
+        {row.protectionNote}
+      </p>
+    </div>
+  );
 }
 
-const COUNTERPARTIES: readonly CounterpartyInfo[] = [
-  {
-    id: 'cp-ibkr',
-    name: 'Interactive Brokers LLC',
-    role: 'broker',
-    sharePercent: 52.4,
-    amountFormatted: '$142,500.00',
-    protectionScheme: 'SIPC / Lloyd’s Policy',
-    protectionLimit: '$500,000 ($250k cash) + $30M excess',
-    isConcentrated: true,
-  },
-  {
-    id: 'cp-zerodha',
-    name: 'Zerodha Broking & CDSL',
-    role: 'broker',
-    sharePercent: 18.8,
-    amountFormatted: '₹42,50,000 ($51,200)',
-    protectionScheme: 'SEBI IPF (Depository Direct)',
-    protectionLimit: '₹25,00,000 per investor',
-    isConcentrated: false,
-  },
-  {
-    id: 'cp-hdfc',
-    name: 'HDFC Bank Ltd.',
-    role: 'bank',
-    sharePercent: 11.1,
-    amountFormatted: '₹25,00,000 ($30,100)',
-    protectionScheme: 'DICGC Statutory Guarantee',
-    protectionLimit: '₹5,00,000 principal + interest',
-    isConcentrated: false,
-  },
-  {
-    id: 'cp-chase',
-    name: 'JPMorgan Chase Bank',
-    role: 'bank',
-    sharePercent: 6.8,
-    amountFormatted: '$18,400.00',
-    protectionScheme: 'FDIC Federal Insurance',
-    protectionLimit: '$250,000 per depositor',
-    isConcentrated: false,
-  },
-  {
-    id: 'cp-etrade',
-    name: 'Morgan Stanley / E*TRADE',
-    role: 'employer',
-    sharePercent: 10.9,
-    amountFormatted: '$29,800.00',
-    protectionScheme: 'SIPC (Employer Equity Custody)',
-    protectionLimit: '$500,000 total',
-    isConcentrated: false,
-  },
-];
+export function CounterpartyExposureSection(): ReactElement {
+  const exposure = useCounterpartyExposure();
 
-export const CounterpartyExposureSection: FC = () => {
+  const body = ((): ReactElement => {
+    if (exposure.isError) {
+      return (
+        <ErrorState
+          title="Counterparty exposure unavailable"
+          message={exposure.error.message}
+          onRetry={() => {
+            void exposure.refetch();
+          }}
+        />
+      );
+    }
+    if (exposure.data === undefined) return <LoadingState layout="cards" count={3} />;
+    if (exposure.data.rows.length === 0) {
+      return (
+        <EmptyState
+          title="Nothing held"
+          description="Counterparty exposure appears once a broker holds a position."
+        />
+      );
+    }
+    const { rows, maxSharePercent } = exposure.data;
+    return (
+      <div className={styles.grid}>
+        {rows.map((row) => (
+          <CounterpartyFact key={row.id} row={row} maxSharePercent={maxSharePercent} />
+        ))}
+      </div>
+    );
+  })();
+
+  const overWeight = exposure.data?.rows.filter((row) => row.isOverWeight) ?? [];
   return (
     <Card
-      title="Counterparty & Custodian Exposure (Requirements 32)"
-      extra={<Badge variant="warning">Concentration Alert: 1 counterparty &gt; 50%</Badge>}
+      title="Counterparty exposure"
+      extra={
+        <Link to={ROUTES.SETTINGS_ASSUMPTIONS} className={riskStyles.link}>
+          Change the over-weight share
+        </Link>
+      }
     >
       <div className={styles.stack}>
-        <p className={styles.meta} style={{ margin: 0 }}>
-          Distribution of net worth across brokers, banks, and custodians. Monitors institutional
-          solvency risk and statutory protection scheme thresholds.
+        <p className={styles.meta}>
+          {exposure.data === undefined
+            ? 'Share of the portfolio held by each broker or custodian.'
+            : overWeight.length > 0
+              ? `${overWeight.map((row) => row.name).join(', ')} ${overWeight.length === 1 ? 'holds' : 'hold'} more than ${String(exposure.data.maxSharePercent)}% of the ${formatMoney(moneyFromDto(exposure.data.portfolioValue))} portfolio. A failure there would affect that share at once.`
+              : `No counterparty holds more than ${String(exposure.data.maxSharePercent)}% of the portfolio.`}
         </p>
-
-        <div className={styles.limitGrid}>
-          {COUNTERPARTIES.map((cp) => (
-            <div
-              key={cp.id}
-              style={{
-                padding: 'var(--space-3) var(--space-4)',
-                background: 'var(--surface-raised)',
-                border: `var(--border-width-thin) solid ${
-                  cp.isConcentrated ? 'var(--color-warning)' : 'var(--border-subtle)'
-                }`,
-                borderRadius: 'var(--radius-md)',
-                display: 'grid',
-                gap: 'var(--space-2)',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontWeight: 'var(--font-weight-semibold)',
-                    fontSize: 'var(--font-size-sm)',
-                  }}
-                >
-                  {cp.name}
-                </span>
-                <Badge variant={cp.isConcentrated ? 'warning' : 'neutral'}>
-                  {cp.sharePercent}% of wealth
-                </Badge>
-              </div>
-
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}
-              >
-                <span
-                  style={{
-                    fontSize: 'var(--font-size-md)',
-                    fontWeight: 'var(--font-weight-semibold)',
-                  }}
-                >
-                  {cp.amountFormatted}
-                </span>
-                <span
-                  style={{
-                    fontSize: 'var(--font-size-xs)',
-                    color: 'var(--text-secondary)',
-                    textTransform: 'capitalize',
-                  }}
-                >
-                  Role: {cp.role}
-                </span>
-              </div>
-
-              <div
-                style={{
-                  fontSize: 'var(--font-size-xs)',
-                  color: 'var(--text-secondary)',
-                  borderTop: 'var(--border-width-thin) solid var(--border-subtle)',
-                  paddingTop: 'var(--space-2)',
-                }}
-              >
-                <span>
-                  Scheme: <strong>{cp.protectionScheme}</strong>
-                </span>
-                <br />
-                <span>Limit: {cp.protectionLimit}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {body}
       </div>
     </Card>
   );
-};
+}

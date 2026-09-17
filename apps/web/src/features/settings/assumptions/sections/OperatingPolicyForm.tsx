@@ -42,7 +42,7 @@ export function OperatingPolicyForm({
         <div className={styles.stack}>
           <div className={styles.fieldGrid}>
             <NumberField
-              label="Over-weight above (% of net worth)"
+              label="Over-weight above (% of portfolio)"
               step="1"
               value={draft.counterpartyMaxSharePercent}
               error={error('counterpartyMaxSharePercent')}
@@ -55,7 +55,7 @@ export function OperatingPolicyForm({
             />
           </div>
           <p className={styles.meta}>
-            A broker, bank or custodian holding more than this share of net worth is flagged on the
+            A broker or custodian holding more than this share of the portfolio is flagged on the
             Risk and Safety panel.
           </p>
         </div>

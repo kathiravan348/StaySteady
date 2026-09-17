@@ -1,6 +1,6 @@
 // Counterparties holding assets for the owner (M-17; requirements 32; UI spec 19.4). Linked to the
 // canonical brokers and to the institutions in the manual asset register. With the seeded holdings,
-// Interactive Brokers holds more than the over-weight share of net worth. Protection limits are mock
+// Interactive Brokers holds more than the over-weight share of the traded portfolio. Protection limits are mock
 // figures summarising public schemes, not advice.
 
 import type { z } from 'zod';

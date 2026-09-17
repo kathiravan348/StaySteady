@@ -1,10 +1,10 @@
 // Counterparties that hold assets on the owner's behalf (requirements 32; UI spec 19.2 and 19.4).
-// Profiles only: the share of net worth each holds is derived from holdings and the manual asset
-// register, linked through brokerIds and institutionNames.
+// Profiles link to brokers through brokerIds; the share of the traded portfolio each holds is
+// derived from holdings (decision 44). institutionNames stays for a future complete-picture product.
 
 import { z } from 'zod';
 
-import { BrokerIdSchema, MoneySchema } from './common';
+import { BrokerIdSchema, CurrencyCodeSchema, MoneySchema } from './common';
 
 export const CounterpartyKindSchema = z.enum([
   'broker',
@@ -31,8 +31,33 @@ export const CounterpartyProfileSchema = z.object({
 export type CounterpartyProfileDto = z.infer<typeof CounterpartyProfileSchema>;
 
 export const CounterpartiesSchema = z.object({
-  // Share of total net worth above which one counterparty counts as over-weight.
+  // Share of the traded portfolio above which one counterparty counts as over-weight.
   maxSharePercent: z.number().positive().max(100),
   profiles: z.array(CounterpartyProfileSchema).min(1),
 });
 export type CounterpartiesDto = z.infer<typeof CounterpartiesSchema>;
+
+export const CounterpartyExposureRowSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  kind: CounterpartyKindSchema,
+  jurisdiction: z.string().min(2),
+  positions: z.number().int().positive(),
+  value: MoneySchema,
+  sharePercent: z.number().min(0).max(100),
+  isOverWeight: z.boolean(),
+  protectionScheme: z.string().nullable(),
+  protectionLimit: MoneySchema.nullable(),
+  // Value above the protection limit; null when there is no fixed limit.
+  uncovered: MoneySchema.nullable(),
+  protectionNote: z.string().min(1),
+});
+export type CounterpartyExposureRowDto = z.infer<typeof CounterpartyExposureRowSchema>;
+
+export const CounterpartyExposureSchema = z.object({
+  currency: CurrencyCodeSchema,
+  portfolioValue: MoneySchema,
+  maxSharePercent: z.number().positive().max(100),
+  rows: z.array(CounterpartyExposureRowSchema),
+});
+export type CounterpartyExposureDto = z.infer<typeof CounterpartyExposureSchema>;

@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:11:00Z  |  local: 2026-09-17 18:41 IST
-LAST AGENT:         session 70 (Claude Opus 5; E-01 holdings liquidity)
+LAST UPDATED:       2026-09-17T13:16:00Z  |  local: 2026-09-17 18:46 IST
+LAST AGENT:         session 71 (Claude Opus 5; E-04 risk panel)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -225,7 +225,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-01 | Holdings — liquidity class; non-market assets in totals | DONE | 100 | Session 57; reworked session 70 | Requirements 25, 30; UI spec 19.2. Liquidity class per position (days, weeks, months or longer) from settlement and manual-only types, column and summary; non-market assets excluded (decision 44); verified session 70 |
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | DONE | 100 | Session 57; reworked session 67 | Requirements 26, 30; UI spec 19.2. Lot treatment and days to long term from the residence tax rule set; cost of disposing today with market fees, purchase-date FX, loss netting, carried-forward losses and exemption; verified session 67 |
 | E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | DONE | 100 | Session 57; reworked sessions 63, 65 | Requirements 27, 29, 33; UI spec 19.2. Approval queue: real compliance result beside risk checks, cooling off after approval with withdraw, stated reason; enforced by the server; safeguards configurable. Orders: compliance for working orders, restricted alert, cooling-off badge. Verified sessions 63 and 65 |
-| E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
+| E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | DONE | 100 | Session 57; reworked session 71 | Requirements 27, 32; UI spec 19.2. Counterparty share of the traded portfolio from holdings with over-weight flag and protection cover; compliance limits from the compliance record; loading/error/empty states; verified session 71 |
 | E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states **Owner Q15 session 64:** broker is the record of truth; a mismatch raises an alert and pauses automation for that account. |
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | DONE | 100 | Session 57; reworked session 68 | Requirements 26, 30, 31; UI spec 19.2. Real return and real benchmark from recorded inflation or assumption; costs and tax as share of gross gain; tax pack for the residence country (gains by asset class, income with withholding and foreign tax credit, losses carried forward, foreign holdings, remittance cap); verified session 68 |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
@@ -583,6 +583,44 @@ FILES: created shared/liquidity/liquidityClass.ts, holdings/columns/columnHelper
   holdings/{columns/holdingColumns.tsx, model/holdingTypes.ts, model/holdingRows.ts,
   model/holdingsExport.ts, useHoldingsData.ts, sections/HoldingsLiquiditySummary.tsx,
   HoldingsPage.module.scss}.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        71
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:12:00Z  |  local: 2026-09-17 18:42 IST (UTC+05:30)
+END:            2026-09-17T13:16:00Z  |  local: 2026-09-17 18:46 IST (UTC+05:30)
+TASK CLAIMED:   E-04 Risk & Safety — counterparty exposure; compliance limits beside risk limits
+END STATUS:     DONE
+
+COMPLETED:
+  - GET /api/v1/risk/counterparty-exposure (generators/counterpartyExposure.ts): holdings summed by
+    broker into counterparty profiles, converted to the portfolio currency, share of the traded
+    portfolio (decision 44), over-weight flag against the saved threshold, protection cover and the
+    value above it. useCounterpartyExposure; saving the operating policy refreshes it.
+  - CounterpartyExposureSection and ComplianceLimitsPanel rewritten on data hooks with loading,
+    error and empty states and an SCSS module (Risk.module.scss is at 299 lines); removed fixed
+    arrays (including counterparties not in the data: Chase, E*TRADE), inline styles, the undefined
+    --color-warning token and the link to the wrong settings page.
+  - Wording of the threshold changed from "net worth" to "portfolio" in schema comments, the
+    operating policy form and its version description (decision 44).
+  - Fixed a zero check in the E-02 estimator: decimal.js isPositive() is true for zero.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser /risk/limits: compliance "2 active" blackouts with
+  days left, 5 restricted, 3 locks (AAPL, MSFT, RELIANCE), 4 refusals; counterparty exposure
+  "Interactive Brokers LLC holds more than 25% of the $98,449.44 portfolio", IBKR 90.3% flagged,
+  Hargreaves Lansdown 4.6% with FSCS cover $94,018.50, Private Placement Agent 4.5% no scheme,
+  Zerodha 0.6%. After the fix no "$0.00 is above it" text.
+
+FILES: created generators/counterpartyExposure.ts, risk/sections/RiskPanels.module.scss; modified
+  schemas/counterparties.ts, schemas/config-assumptions.ts, generators/{index,counterpartyProfiles}.ts,
+  handlers/partTwoReferenceHandlers.ts, api/{partTwoReferenceQueries,assumptionsConfigQueries,index}.ts,
+  risk/sections/{CounterpartyExposureSection,ComplianceLimitsPanel}.tsx,
+  settings/assumptions/{sections/OperatingPolicyForm.tsx, model/assumptionsDraft.ts},
+  position/sections/PositionDisposalEstimator.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

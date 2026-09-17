@@ -80,7 +80,7 @@ function EstimateFigures({
         <Figure
           label="Estimated tax"
           value={`- ${inTax(estimate.tax)}`}
-          isLoss={estimate.tax.isPositive()}
+          isLoss={estimate.tax.gt(0)}
         />
         <Figure
           label="Cash after costs"

@@ -216,6 +216,7 @@ export { SCREENER_PRESETS, SCREENER_UNIVERSE, executeScreenerSearch } from './sc
 
 // Session 60: Requirements Part II reference data (M-17; UI spec 19.4)
 export { COUNTERPARTY_MAX_SHARE_PERCENT, generateCounterparties } from './counterpartyProfiles';
+export { buildCounterpartyExposure } from './counterpartyExposure';
 export { generateInflationHistory } from './inflationHistory';
 export { generateStrategyLifecycles } from './strategyLifecycle';
 export { generateLossCarryForwards } from './taxLossCarryForward';

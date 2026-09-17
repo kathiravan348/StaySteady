@@ -1,5 +1,5 @@
 // Planning assumptions and operating policy (E-09; requirements 30, 32, 34; UI spec 7.18 and 19.2):
-// inflation assumed per country, the monthly running-cost budget, the share of net worth one
+// inflation assumed per country, the monthly running-cost budget, the share of the portfolio one
 // counterparty may hold, and what is exported and how often.
 
 import { z } from 'zod';

@@ -75,7 +75,7 @@ export function describeOperatingPolicy(
     'Warn at': `${String(costBudget.warnAtPercent)}% of budget`,
     'Largest yearly cost share': percentFromBps(costBudget.maxShareOfPortfolioBps),
     ...items,
-    'Counterparty over-weight above': `${String(config.counterpartyMaxSharePercent)}% of net worth`,
+    'Counterparty over-weight above': `${String(config.counterpartyMaxSharePercent)}% of portfolio`,
     'Cooling-off period':
       config.safeguards.coolingOffMinutes === 0
         ? 'Off'
