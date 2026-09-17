@@ -9,12 +9,13 @@ import type {
   StatementBasis,
 } from '../../schemas';
 import { FinancialStatementsResponseSchema, FinancialStatementsSchema } from '../../schemas';
-import { getInstrumentById } from './canonicalInstruments';
+import { CANONICAL_INSTRUMENTS, getInstrumentById } from './canonicalInstruments';
 import { INDUSTRY_BY_SYMBOL } from './classificationAssignments';
 import { buildStatement } from './financialStatementBuild';
 import type { StatementSeed } from './financialStatementSeeds';
 import { STATEMENT_SEEDS } from './financialStatementSeeds';
 import type { MockGeneratorContext } from './mockContext';
+import { toInstrumentId } from '../../../shared/types/identifiers';
 import { parseGenerated } from './validated';
 
 const ANNUAL_PERIODS = 5;
@@ -101,6 +102,7 @@ function annualStatements(
         ? 'Reissued after publication: subsidiary results were reclassified between segments, changing reported revenue and profit for this year.'
         : null,
       forceNegativeFreeCashFlow: index < (seed.negativeFreeCashFlowYears ?? 0),
+      periodIndex: index,
     });
   });
 }
@@ -124,8 +126,9 @@ function quarterlyStatements(
   return Array.from({ length: QUARTER_PERIODS }, (_unused, index) => {
     const periodEnd = shiftMonths(latestQuarterEnd, -3 * index);
     const fiscalYearOfQuarter = fiscalYearEndFor(periodEnd, fiscalEnd);
-    // A quarter inside the year now in progress is scaled on the latest reported year.
-    const yearsAgo = Math.max(0, (monthIndex(fiscalEnd) - monthIndex(fiscalYearOfQuarter)) / 12);
+    // Negative for the year now in progress: it grows on from the last reported year rather than
+    // repeating it, so a quarter can be compared with the same quarter a year earlier.
+    const yearsAgo = (monthIndex(fiscalEnd) - monthIndex(fiscalYearOfQuarter)) / 12;
     const annualRevenue = revenueForYearsAgo(seed, yearsAgo);
     const quarter = quarterOfFiscalYear(periodEnd, fiscalYearOfQuarter);
     return buildStatement({
@@ -142,6 +145,7 @@ function quarterlyStatements(
       isRestated: false,
       restatementNote: null,
       forceNegativeFreeCashFlow: (seed.negativeFreeCashFlowYears ?? 0) > 0,
+      periodIndex: Math.max(0, yearsAgo),
     });
   });
 }
@@ -177,6 +181,34 @@ export function statementsFor(
     },
     'financial statements',
   );
+}
+
+export interface SymbolStatements {
+  readonly instrument: InstrumentDto;
+  readonly statements: FinancialStatementsDto;
+}
+
+// Statements by symbol, for peer comparison (R-06): a peer in the same industry may be covered by
+// the statement seeds without being an instrument this platform prices, and a synthetic instrument
+// keeps the generator honest about that rather than inventing a tradable one.
+export function statementsForSymbol(
+  ctx: MockGeneratorContext,
+  symbol: string,
+): SymbolStatements | null {
+  const seed = STATEMENT_SEEDS[symbol];
+  if (seed === undefined) return null;
+  const canonical = CANONICAL_INSTRUMENTS.find((item) => item.symbol === symbol);
+  const instrument: InstrumentDto =
+    canonical ??
+    ({
+      ...(CANONICAL_INSTRUMENTS[0] as InstrumentDto),
+      id: toInstrumentId(`inst-peer-${symbol.toLowerCase().replace(/[^a-z0-9]/g, '')}`),
+      symbol,
+      name: symbol,
+      currency: seed.currency,
+    } satisfies InstrumentDto);
+  const statements = statementsFor(ctx, instrument);
+  return statements === null ? null : { instrument, statements };
 }
 
 export function generateFinancialStatements(

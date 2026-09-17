@@ -40,6 +40,7 @@ export {
   useCompanyProfile,
   useCorporateStructure,
   useFinancialStatements,
+  useFundamentalMeasures,
   useFundLookThrough,
   useInstrumentClassification,
   useInstrumentOwnership,

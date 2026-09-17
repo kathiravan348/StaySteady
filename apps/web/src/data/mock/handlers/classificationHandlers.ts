@@ -6,6 +6,7 @@ import {
   createMockGeneratorContext,
   generateCompanyProfile,
   generateFinancialStatements,
+  generateFundamentalMeasures,
   generateClassificationIndex,
   generateClassificationTaxonomy,
   generateCorporateStructure,
@@ -60,6 +61,17 @@ export const classificationHandlers: readonly HttpHandler[] = [
     if (failed !== null) return failed;
     const statements = generateFinancialStatements(ctx, String(params['id']));
     return statements === null ? notFound() : HttpResponse.json(statements);
+  }),
+
+  http.get('/api/v1/instruments/:id/measures', ({ params, request }) => {
+    const failed = failure('Failed to load the derived measures');
+    if (failed !== null) return failed;
+    const basis =
+      new URL(request.url).searchParams.get('basis') === 'standalone'
+        ? 'standalone'
+        : 'consolidated';
+    const measures = generateFundamentalMeasures(ctx, String(params['id']), basis);
+    return measures === null ? notFound() : HttpResponse.json(measures);
   }),
 
   http.get('/api/v1/instruments/:id/structure', ({ params }) => {

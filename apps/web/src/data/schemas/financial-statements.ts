@@ -35,6 +35,8 @@ export const IncomeStatementSchema = z.object({
   operatingProfit: MoneySchema,
   ebitda: MoneySchema,
   netProfit: MoneySchema,
+  // Interest paid on borrowings: what operating profit has to cover before anything reaches equity.
+  interestExpense: MoneySchema,
   taxExpense: MoneySchema,
   earningsPerShare: z.number(),
 });

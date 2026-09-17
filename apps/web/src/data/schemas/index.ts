@@ -17,6 +17,7 @@ export * from './news';
 export * from './classification';
 export * from './company-research';
 export * from './financial-statements';
+export * from './fundamental-measures';
 export * from './fund-lookthrough';
 export * from './research-data';
 export * from './system-health';

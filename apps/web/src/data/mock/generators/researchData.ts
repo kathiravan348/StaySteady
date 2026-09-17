@@ -7,6 +7,8 @@ import type { InstrumentDto, InstrumentFundamentalsDto, WatchlistDto } from '../
 import { InstrumentFundamentalsSchema, WatchlistSchema } from '../../schemas';
 import { sectorNameForSymbol } from './classification';
 import { INDUSTRY_BY_SYMBOL } from './classificationAssignments';
+import { statementsForSymbol } from './financialStatements';
+import { generatePriceHistoryForInstrument } from './priceHistory';
 import { CANONICAL_INSTRUMENTS, getInstrumentById } from './instruments';
 import type { MockGeneratorContext } from './mockContext';
 import { parseGenerated, parseGeneratedList } from './validated';
@@ -44,18 +46,48 @@ function fundamentalsFor(ctx: MockGeneratorContext, instrument: InstrumentDto): 
   const stream = ctx.random.fork(`fundamentals:${instrument.id}`);
   const base = { ...EMPTY, instrumentId: instrument.id };
   if (EQUITY_TYPES.has(instrument.type)) {
-    const capital = new Decimal(stream.float(5, 3000)).times('1e9');
+    // Market value and price to earnings follow from reported statements and the price history
+    // (decisions 19, 50) wherever the company is covered; only beta, which no statement reports,
+    // is still drawn from the seeded stream.
+    const reported = statementsForSymbol(ctx, instrument.symbol);
+    const latest = reported?.statements.annual.find((item) => item.basis === 'consolidated');
+    const bars = generatePriceHistoryForInstrument(ctx, instrument);
+    const close = bars[bars.length - 1]?.close ?? null;
+    const shares = latest?.balanceSheet.sharesOutstanding ?? null;
+    const eps = latest?.income.earningsPerShare ?? null;
+    const dividendYield =
+      latest === undefined || close === null
+        ? null
+        : round(
+            new Decimal(latest.cashFlow.dividendsPaid.amount)
+              .dividedBy(latest.balanceSheet.sharesOutstanding)
+              .dividedBy(close)
+              .times(100)
+              .toNumber(),
+            2,
+          );
     return {
       ...base,
       sector: sectorNameForSymbol(instrument.symbol),
-      marketCap: {
-        amount: capital.toFixed(currencyDecimals(instrument.currency)),
-        currency: instrument.currency,
-      },
-      priceToEarnings: round(stream.float(8, 45), 1),
-      dividendYieldPercent: round(stream.float(0, 3.5), 2),
+      marketCap:
+        close === null || shares === null
+          ? null
+          : {
+              amount: new Decimal(close)
+                .times(shares)
+                .toFixed(currencyDecimals(instrument.currency)),
+              currency: instrument.currency,
+            },
+      priceToEarnings:
+        close === null || eps === null || eps <= 0
+          ? null
+          : round(new Decimal(close).dividedBy(eps).toNumber(), 1),
+      dividendYieldPercent: dividendYield,
       beta: round(stream.float(0.6, 1.6), 2),
-      note: 'Company figures are trailing twelve months. Mock data.',
+      note:
+        latest === undefined
+          ? 'No statements are collected for this company, so only market figures are shown. Mock data.'
+          : `Market value and price to earnings derive from ${latest.fiscalPeriod} statements and the latest close. Mock data.`,
     };
   }
   if (FUND_TYPES.has(instrument.type)) {

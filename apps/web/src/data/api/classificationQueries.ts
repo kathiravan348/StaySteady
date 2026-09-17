@@ -21,6 +21,8 @@ import type { CompanyProfileResponseDto } from '../schemas/company-research';
 import { CompanyProfileResponseSchema } from '../schemas/company-research';
 import type { FinancialStatementsResponseDto } from '../schemas/financial-statements';
 import { FinancialStatementsResponseSchema } from '../schemas/financial-statements';
+import type { FundamentalMeasuresResponseDto } from '../schemas/fundamental-measures';
+import { FundamentalMeasuresResponseSchema } from '../schemas/fundamental-measures';
 import type { FundLookThroughResponseDto } from '../schemas/fund-lookthrough';
 import { FundLookThroughResponseSchema } from '../schemas/fund-lookthrough';
 import { apiGet } from './apiClient';
@@ -82,6 +84,23 @@ export function useFinancialStatements(
     queryKey: ['classification', 'statements', instrumentId],
     queryFn: ({ signal }) =>
       apiGet(instrumentPath(instrumentId, 'statements'), FinancialStatementsResponseSchema, signal),
+    enabled: instrumentId !== '',
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useFundamentalMeasures(
+  instrumentId: string,
+  basis: 'consolidated' | 'standalone' = 'consolidated',
+): UseQueryResult<FundamentalMeasuresResponseDto> {
+  return useQuery({
+    queryKey: ['classification', 'measures', instrumentId, basis],
+    queryFn: ({ signal }) =>
+      apiGet(
+        `${instrumentPath(instrumentId, 'measures')}?basis=${basis}`,
+        FundamentalMeasuresResponseSchema,
+        signal,
+      ),
     enabled: instrumentId !== '',
     staleTime: SLOW_STALE_MS,
   });

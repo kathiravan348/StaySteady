@@ -103,7 +103,12 @@ export {
 } from './classification';
 export { ASSET_CLASSES, TAXONOMY_SECTORS } from './classificationTaxonomy';
 export { companyProfileFor, generateCompanyProfile } from './companyResearch';
-export { generateFinancialStatements, statementsFor } from './financialStatements';
+export {
+  generateFinancialStatements,
+  statementsFor,
+  statementsForSymbol,
+} from './financialStatements';
+export { generateFundamentalMeasures, measuresFor } from './fundamentalMeasures';
 export { STATEMENT_SEEDS } from './financialStatementSeeds';
 export type { ExposureBreakdown, ExposureSlice } from './exposureBreakdown';
 export { groupExposure, sectorExposure } from './exposureBreakdown';

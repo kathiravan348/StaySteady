@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   86% (92 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 5 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T06:00:00Z  |  local: 2026-09-18 11:30 IST
-LAST AGENT:         Claude Opus 5 (session 88)
-BUILD STATE:        PASS (pnpm build, session 88)
+OVERALL PROGRESS:   87% (93 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 6 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T07:30:00Z  |  local: 2026-09-18 13:00 IST
+LAST AGENT:         Claude Opus 5 (session 89)
+BUILD STATE:        PASS (pnpm build, session 89)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-06, the ratio engine, is next and needs no new mock data.
+BLOCKERS:           none. The data layer for Stage R is complete; R-07 starts the screen.
 ```
 
 ---
@@ -33,40 +33,42 @@ BLOCKERS:           none. R-06, the ratio engine, is next and needs no new mock 
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R is the active
-  scope (requirements Part III, UI spec 20, decisions 48-54): R-01 classification, R-02 screens
-  wired, R-03 fund look-through and exposure, R-04 the company record, R-05 financial statements.
-  R-06, the ratio engine, is next.
+  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R (requirements
+  Part III, UI spec 20, decisions 48-54) has its whole data layer built: R-01 classification,
+  R-02 screens wired, R-03 fund look-through and exposure, R-04 the company record, R-05 statements,
+  R-06 derived measures, medians and warning flags. R-07 starts the Company Research screen.
 
-WHAT R-05 ADDED (session 88, data layer only):
-  - data/schemas/financial-statements.ts: balance sheet, income and cash flow per period, with
-    refines that enforce what a reader would check by hand — assets equal liabilities plus equity,
-    free cash flow equals operating cash flow less capital spending, earnings per share follows from
-    net profit and shares, a statement cannot be published before its period ended, and a restated
-    statement must say what was restated.
-  - generators/financialStatementSeeds.ts: 14 companies as a dozen parameters each (revenue, growth,
-    margins, asset intensity, shares, leverage, current ratio, capex, payout, fiscal year end).
-  - generators/financialStatementBuild.ts derives one period from those parameters;
-    generators/financialStatements.ts assembles five annual and eight quarterly periods on every
-    basis the company publishes. Endpoint GET /api/v1/instruments/:id/statements, hook
-    useFinancialStatements.
-  - Mock data now carries what UI spec 20.4 asked for: Tata Motors publishes consolidated and
-    standalone that genuinely differ (standalone is a third of revenue, because Jaguar Land Rover is
-    a subsidiary), Reliance FY2023 is restated, and Swiggy is loss-making with three years of
-    negative free cash flow.
+WHAT R-06 ADDED (session 89):
+  - apps/web/src/shared/fundamentals: measureTypes, measureContext, valuationMeasures,
+    healthMeasures, measures (assembler) and flags. Eighteen measures across valuation,
+    profitability, health, growth and cash quality, each carrying the inputs it was computed from;
+    a measure whose inputs were not reported is null with a note, never zero.
+  - data/mock/generators/fundamentalMeasures.ts: supplies statements, price and peer group, computes
+    industry medians over peers in the same industry and the company's own three-year history.
+    Endpoint GET /api/v1/instruments/:id/measures?basis=, hook useFundamentalMeasures.
+  - Market capitalisation and price to earnings in the old fundamentals endpoint now derive from
+    shares outstanding and the price history instead of a random draw (the finding from session 88).
+    Only beta, which no statement reports, is still seeded.
+  - Statement margins, capital spending and leverage now vary year to year, so a ratio has a history
+    worth reading; a quarter in the year now in progress grows on from the last reported year, so
+    quarter-on-quarter growth is a real number.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-06 apps/web/src/shared/fundamentals (decision 53): valuation, profitability, financial
-     health, growth and cash-quality measures as pure decimal.js functions over the statements,
-     plus industry medians from peerSymbolsForSymbol and the warning flags requirements 37 lists.
-     Market capitalisation and P/E must come from price times shares outstanding, not from the
-     marketCap field the old fundamentals generator invents; reconcile that field while you are
-     there (it is the last remaining number with no derivation behind it).
-  2. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
+  1. R-07 Company Research screen shell and Overview tab (UI spec 20.1). Everything it needs is
+     served: useCompanyProfile, useInstrumentClassification, useCorporateStructure,
+     useFundamentalMeasures, useFundLookThrough, useInstrumentOwnership, useFinancialStatements.
+     Add the route, and reach it from the workspace, the screener, Holdings and Position Detail
+     (that last part is R-12).
+  2. R-08 Financials tab, R-09 Ratios tab with peer comparison, R-10 Ownership tab, R-11 news and
+     events tab, R-12 surfacing, R-13 screener factors.
   3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
+  - Every ratio comes from shared/fundamentals through the measures endpoint. Do not compute one in
+    a component; a ratio that means two things in two places is the failure this avoids.
+  - A valuation measure needs the price and the statements in the same currency, or it is null with
+    a note saying so. Do not convert at a rate the company never reported in.
   - Statements are generated, not stored: a change to a seed parameter moves every period. The
     schema refines catch an incoherent sheet loudly, which is the point.
   - A quarter inside the year now in progress is scaled on the latest reported year, so the newest
@@ -274,7 +276,7 @@ already built but cannot work without classification.
 | R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | DONE | 100 | Claude Opus 5 (session 86) | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | DONE | 100 | Claude Opus 5 (session 87) | Requirements 35 |
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | DONE | 100 | Claude Opus 5 (session 88) | Requirements 37; decision 50. Must tie to price history (decision 19) |
-| R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | TODO | 0 | | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
+| R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | DONE | 100 | Claude Opus 5 (session 89) | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | TODO | 0 | | UI spec 20.1 |
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | TODO | 0 | | UI spec 20.1 |
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | TODO | 0 | | UI spec 20.1 |
@@ -1463,6 +1465,70 @@ apps/web/src/data/mock/generators/{financialStatementSeeds.ts,financialStatement
 financialStatements.ts}; modified apps/web/src/data/schemas/index.ts,
 apps/web/src/data/mock/generators/index.ts,
 apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 89 | Claude Opus 5
+START:          2026-09-18T06:05:00Z  |  local: 2026-09-18 11:35 IST
+END:            2026-09-18T07:30:00Z  |  local: 2026-09-18 13:00 IST
+TASK CLAIMED:   R-06 derived measures, industry medians and warning flags
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - shared/fundamentals (decision 53), split across five files to stay inside the 300-line limit:
+    valuation (price to earnings, price to book, enterprise value to EBITDA, price to sales,
+    dividend payout), profitability (return on equity, return on capital employed, operating and net
+    margin), health (debt to equity, net debt to EBITDA, current ratio, interest cover), growth
+    (revenue over three and five years, earnings per share over three, latest quarter against the
+    same quarter a year earlier) and cash quality (free cash flow against net profit).
+  - Every measure carries the inputs it was computed from, so a reader can check it. A ratio on a
+    loss, or with a missing input, comes back null with a note rather than a misleading number.
+  - fundamentalFlags: debt rising while profit falls, several years of negative free cash flow, a
+    payout above earnings, thin interest cover, a loss-making year, a restated year, an unaudited
+    annual statement, and a rising promoter pledge. Each carries its evidence, never advice
+    (decision 52).
+  - Endpoint GET /api/v1/instruments/:id/measures with a basis parameter, returning measures with
+    industry medians and three years of the company's own history, the flags, the peer symbols and
+    market capitalisation derived from price times shares.
+  - Interest expense added to the income statement, since interest cover needs it; tax now follows
+    operating profit less interest.
+
+DEFECTS FOUND AND FIXED THIS SESSION:
+  - Ratio history was a flat line because every seeded year shared one margin. Margins, capital
+    spending and leverage now vary deterministically by period, so history means something.
+  - Quarter-on-quarter growth read 0% because the year in progress repeated the last reported year.
+    It now grows on from it.
+  - The thin-interest-cover flag fired on a loss, reporting "-50.6 times cover". It now requires a
+    positive operating profit; the loss-making flag covers that case.
+
+NOT COMPLETED / LIMITS:
+  - Valuation measures have no history: computing them at today's price against older statements
+    would be misleading, so they are null in the history series by design.
+  - Peer groups are small (Tata Motors has two peers, AstraZeneca one) because the peer set is the
+    covered universe, not a market. The response carries peerCount so a median cannot be read as
+    more than it is.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS.
+  In the browser against the dev server: Tata Motors returns price to earnings 18.85 against an
+  industry median of 30.37 over two peers (Toyota and Tesla), return on equity 17.55% against 10.81%
+  with a three-year history of 19.46, 18.88 and 17.05, debt to equity 1.18 against 0.61, interest
+  cover 3.78 times, quarter growth 9.2%, and the rising-pledge flag; Swiggy returns four flags with
+  evidence including free cash flow negative in five of five years and a loss of 21.3bn on revenue
+  of 187.1bn, and no price to earnings because the year was a loss; AstraZeneca prices in GBP
+  against GBP statements and compares with Johnson & Johnson.
+
+FILES: created apps/web/src/shared/fundamentals/{measureTypes.ts,measureContext.ts,
+valuationMeasures.ts,healthMeasures.ts,measures.ts,flags.ts},
+apps/web/src/data/schemas/fundamental-measures.ts,
+apps/web/src/data/mock/generators/fundamentalMeasures.ts;
+modified apps/web/src/data/schemas/{index.ts,financial-statements.ts},
+apps/web/src/data/mock/generators/{financialStatementBuild.ts,financialStatements.ts,
+researchData.ts,index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
 apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```

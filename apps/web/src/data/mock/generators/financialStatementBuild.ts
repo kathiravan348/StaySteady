@@ -18,6 +18,8 @@ const CURRENT_ASSET_SHARE = 0.35;
 const CASH_SHARE_OF_CURRENT = 0.3;
 const DEPRECIATION_TO_CAPEX = 0.9;
 const TAX_RATE = 0.22;
+// Blended cost of borrowing applied to total debt, prorated for an interim period.
+const INTEREST_RATE = 0.06;
 
 export interface PeriodParams {
   readonly instrumentId: string;
@@ -35,6 +37,14 @@ export interface PeriodParams {
   readonly isRestated: boolean;
   readonly restatementNote: string | null;
   readonly forceNegativeFreeCashFlow: boolean;
+  // 0 for the latest reported year, 1 for the year before it, and so on. Margins, capital spending
+  // and leverage vary with it, so a ratio has a history worth looking at instead of a flat line.
+  readonly periodIndex: number;
+}
+
+// Deterministic, smooth and small: the same period always produces the same figures.
+function variation(periodIndex: number, amplitude: number, phase: number): number {
+  return 1 + amplitude * Math.sin(periodIndex * 1.7 + phase);
 }
 
 const MILLION = new Decimal(1_000_000);
@@ -55,7 +65,9 @@ export function buildStatement(params: PeriodParams): StatementInput {
   // Balance sheet: assets scale with the annual revenue, then the sheet is split so that it balances
   // by construction rather than by adjustment.
   const totalAssets = annualRevenue.times(seed.assetsToRevenue);
-  const shareholdersEquity = totalAssets.times(seed.equityToAssets);
+  const shareholdersEquity = totalAssets.times(
+    seed.equityToAssets * variation(params.periodIndex, 0.05, 1.1),
+  );
   const totalLiabilities = totalAssets.minus(shareholdersEquity);
   const totalDebt = Decimal.min(shareholdersEquity.times(seed.debtToEquity), totalLiabilities);
   const currentAssets = totalAssets.times(CURRENT_ASSET_SHARE);
@@ -66,15 +78,19 @@ export function buildStatement(params: PeriodParams): StatementInput {
   const cash = currentAssets.times(CASH_SHARE_OF_CURRENT);
   const shares = new Decimal(seed.sharesMillions).times(scale).times(MILLION);
 
-  const grossProfit = revenue.times(seed.grossMargin);
-  const operatingProfit = revenue.times(seed.operatingMargin);
-  const netProfit = revenue.times(seed.netMargin);
-  const capitalExpenditure = revenue.times(seed.capexToRevenue);
+  const marginFactor = variation(params.periodIndex, 0.08, 0);
+  const grossProfit = revenue.times(seed.grossMargin * variation(params.periodIndex, 0.04, 0.4));
+  const operatingProfit = revenue.times(seed.operatingMargin * marginFactor);
+  const netProfit = revenue.times(seed.netMargin * marginFactor);
+  const capitalExpenditure = revenue.times(
+    seed.capexToRevenue * variation(params.periodIndex, 0.18, 2.2),
+  );
   const depreciation = capitalExpenditure.times(DEPRECIATION_TO_CAPEX);
   const ebitda = operatingProfit.plus(depreciation);
-  const taxExpense = operatingProfit.isPositive()
-    ? operatingProfit.times(TAX_RATE)
-    : new Decimal(0);
+  const periodShare = params.periodType === 'annual' ? 1 : 0.25;
+  const interestExpense = totalDebt.times(INTEREST_RATE).times(periodShare);
+  const preTaxProfit = operatingProfit.minus(interestExpense);
+  const taxExpense = preTaxProfit.isPositive() ? preTaxProfit.times(TAX_RATE) : new Decimal(0);
 
   const operatingCashFlow = params.forceNegativeFreeCashFlow
     ? // Burning cash: operations consume more than they bring in, whatever the reported profit.
@@ -120,6 +136,7 @@ export function buildStatement(params: PeriodParams): StatementInput {
       operatingProfit: money(operatingProfit),
       ebitda: money(ebitda),
       netProfit: money(roundedNet),
+      interestExpense: money(interestExpense),
       taxExpense: money(taxExpense),
       earningsPerShare,
     },
