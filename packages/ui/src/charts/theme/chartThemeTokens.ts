@@ -1,6 +1,8 @@
 export interface ChartThemeColors {
   readonly background: string;
   readonly textColor: string;
+  // High-contrast text for labels drawn on coloured cells and tiles.
+  readonly strongTextColor: string;
   readonly gridColor: string;
   readonly borderColor: string;
   readonly crosshairColor: string;
@@ -25,6 +27,7 @@ export function resolveChartThemeColors(): ChartThemeColors {
     return {
       background: '#0f172a',
       textColor: '#94a3b8',
+      strongTextColor: '#f8fafc',
       gridColor: '#1e293b',
       borderColor: '#334155',
       crosshairColor: '#475569',
@@ -60,6 +63,7 @@ export function resolveChartThemeColors(): ChartThemeColors {
   return {
     background,
     textColor,
+    strongTextColor: isDark ? '#f8fafc' : '#0f172a',
     gridColor,
     borderColor,
     crosshairColor,

@@ -1,3 +1,4 @@
+import { analyticalPresetStories } from './stories/analyticalPresetStories';
 import { chartStories } from './stories/chartStories';
 import { compositesStories } from './stories/compositesStories';
 import { dataDisplayStories } from './stories/dataDisplayStories';
@@ -17,6 +18,7 @@ export const ALL_STORIES: readonly ComponentStory[] = [
   ...stateStories,
   ...tableStories,
   ...chartStories,
+  ...analyticalPresetStories,
 ];
 
 export const CATEGORIES: readonly ComponentCategory[] = [

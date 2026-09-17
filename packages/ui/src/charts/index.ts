@@ -4,6 +4,8 @@ export * from './trading/TradingChart';
 export * from './trading/types';
 export * from './analytical/AnalyticalChart';
 export * from './analytical/analyticalPresets';
+export * from './analytical/compositionPresets';
+export * from './analytical/distributionPresets';
 export * from './analytical/types';
 export * from './theme/useChartTheme';
 export * from './theme/chartThemeTokens';

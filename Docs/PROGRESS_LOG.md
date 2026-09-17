@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T14:03:00Z  |  local: 2026-09-17 19:33 IST
-LAST AGENT:         Claude Opus 5 (session 79)
+LAST UPDATED:       2026-09-17T14:16:00Z  |  local: 2026-09-17 19:46 IST
+LAST AGENT:         Claude Opus 5 (session 80)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -169,7 +169,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | L-10 | Chart wrapper — analytical charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — Apache ECharts v6 wrapper with presets: equity curves, drawdowns, heatmaps & donuts |
 | L-11 | Theme-change handling for charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — useChartTheme MutationObserver on root attributes (data-theme, data-gain-loss) |
 | L-12 | Visual regression test setup | PARTIAL | 20 | Antigravity (Gemini 3.8 Flash) | **REOPENED session 36.** `verify_stage_l.ts` is not in the repository and README pointed at `C:\Users\kathiravan\.gemini\antigravity-ide\...\scratch\` — another machine's path. No visual regression tooling exists (no Playwright, no baselines, no runner). The story registry is real and is the only part delivered **Owner Q12 session 64:** Playwright screenshot baselines, local only, key screens in dark and light. |
-| L-13 | Analytical chart presets — remaining spec 8.1 types | TODO | 0 | | Raised session 36. Only 5 of ~18 required types exist (equity curve, comparison curves, drawdown, donut, monthly heatmap). Missing: returns distribution histogram, allocation treemap, stacked area, correlation matrix heatmap, rolling metric lines, bar charts, waterfall, scatter. Needed by S-20 and S-21 |
+| L-13 | Analytical chart presets — remaining spec 8.1 types | DONE | 100 | Claude Opus 5 | Session 80: eight presets (distribution, treemap, stacked area, correlation, rolling, bar, waterfall, scatter) with stories; props are a preset/data union |
 | L-14 | Partial-data state component | DONE | 100 | Claude Opus 5 | Session 79: PartialDataState in packages/ui with story; used by holdings and position detail |
  
 ### Stage S — Screens
@@ -884,6 +884,48 @@ FILES: created packages/ui/src/state/PartialDataState/{PartialDataState.tsx,.mod
 modified state/index.ts, stateStories.tsx, holdings useHoldingsData.ts, HoldingsView.tsx,
 HoldingsPage.module.scss, PortfolioHoldingsPage.tsx, position usePositionData.ts, PositionView.tsx,
 PositionDetailPage.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        80
+AGENT:          Claude Opus 5
+START:          2026-09-17T14:04:00Z  |  local: 2026-09-17 19:34 IST (UTC+05:30)
+END:            2026-09-17T14:16:00Z  |  local: 2026-09-17 19:46 IST (UTC+05:30)
+TASK CLAIMED:   L-13 Analytical chart presets — remaining spec 8.1 types
+END STATUS:     DONE
+
+COMPLETED:
+  - Eight new AnalyticalChart presets (UI spec 8.1): returns-distribution (equal-width bins with a
+    normal curve scaled to expected counts), allocation-treemap (sized by value, coloured from loss
+    through neutral to gain), stacked-area (allocation drift, optional percent scale),
+    correlation-matrix (-1..1 diverging heatmap), rolling-metric (gaps where the window is not full,
+    optional threshold), bar (multi-series, signed colouring, horizontal), waterfall (contribution
+    steps and a closing total, sign-independent stacking) and scatter (risk against return, bubble
+    size by weight).
+  - AnalyticalChartProps is now a discriminated union of preset and data, so the component and
+    buildAnalyticalOption need no type assertions (the old component cast data per preset).
+    returns-distribution and correlation-matrix were declared before but never implemented.
+  - Chart instance created once; options replaced on data or theme change. Shared axis, tooltip,
+    legend and diverging-colour helpers in presetParts.ts. New theme role strongTextColor for labels
+    on coloured cells. AnalyticalChartOptions type exported for the custom preset.
+  - Two workbench stories: distribution and contribution; composition and relationships.
+
+NOT COMPLETED / LIMITS:
+  - Presets are available but no screen uses the new ones yet; wiring them into performance,
+    risk and research screens belongs to the owning screens. Gauge meters and sparklines already
+    exist as UsageMeter and Sparkline; volume profile is optional/later in the spec.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Workbench: all eight presets render in dark, treemap and
+  stacked area checked in light after switching theme. Performance page equity and heatmap charts
+  unchanged, no console errors.
+
+FILES: created charts/analytical/{buildAnalyticalOption,presetParts,distributionPresets,
+compositionPresets}.ts, workbench/stories/analyticalPresetStories.tsx; modified
+charts/analytical/{types.ts,AnalyticalChart.tsx}, charts/index.ts, theme/chartThemeTokens.ts,
+workbench/storyRegistry.ts, apps/web overview/model/valueChartOptions.ts.
 ────────────────────────────────────────────────────────────
 ```
  

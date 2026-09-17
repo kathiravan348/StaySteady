@@ -1,12 +1,12 @@
 // Portfolio value line chart options (UI spec 8.1). Numbers convert to floats only here, at the edge.
 
-import type { AnalyticalChartProps, ChartThemeColors } from '@staysteady/ui';
+import type { AnalyticalChartOptions, ChartThemeColors } from '@staysteady/ui';
 
 import { formatMoney } from '../../../shared/format';
 import { createMoney } from '../../../shared/money';
 import type { ValueSeries } from './valueHistory';
 
-type ChartOptions = NonNullable<AnalyticalChartProps['options']>;
+type ChartOptions = AnalyticalChartOptions;
 
 export function buildValueChartOptions(series: ValueSeries, theme: ChartThemeColors): ChartOptions {
   const compact = (value: number): string =>
