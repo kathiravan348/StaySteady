@@ -747,4 +747,96 @@
 - A counterparty holding a disproportionate share of net worth
 - A strategy that has decayed past its review threshold and been demoted
 - Historical inflation figures for at least two countries, so real returns differ visibly from nominal
-- Losses carried forward with differing expiry dates, and dividends with tax withheld at source
+- Losses carried forward with differing expiry dates, and dividends with tax withheld at source 
+---
+ 
+## 20. Screens Implied By Requirements Part III (Added Session 83)
+ 
+> Sections 35–38 of `Personal_Investment_Platform_Requirements.md` were added at the owner's request
+> in session 83: the end-to-end picture of a company before investing in it. Section 7.4 mentions
+> "key fundamentals where relevant" and nothing more, so no existing screen covers them. This
+> section maps the new requirements to one new screen plus extensions to screens already built.
+ 
+### 20.1 New screen — Company Research
+ 
+The pre-investment view: what am I buying, who controls it, what does it earn and owe, and what is
+happening around it. Reached from the Instrument Workspace, the Screener, Holdings, Position Detail
+and global search. Organised as tabs so each part loads and fails on its own.
+ 
+- **Overview tab** — answers "what am I buying" without scrolling:
+  - Profile: business description, country, listings, employees, reporting currency, fiscal year end
+  - Revenue split by segment and by geography where reported
+  - Classification and group: sector, industry, parent with the share held, business group, listed siblings
+  - Size: market capitalisation, shares outstanding, free float
+  - Headline measures against the industry median, each with its period
+  - Open warning flags, at most a handful, each with the evidence that raised it
+  - Next scheduled event and whether it falls inside an automation restriction window
+- **Financials tab**:
+  - Balance sheet, income statement and cash flow as tables, five periods side by side with the change per line
+  - Annual and quarterly toggle; consolidated and standalone toggle where both are published
+  - Source, period end and publication date shown per column
+  - Trend charts from the existing analytical presets: revenue and profit bars, debt against equity,
+    free cash flow waterfall
+- **Ratios tab**:
+  - Valuation, profitability, financial health, growth and cash quality, grouped
+  - Each measure with its own trend and the industry median beside it
+  - The inputs and periods behind a measure available on request, not hidden
+  - Compare with at least two peers on the same measures
+- **Ownership tab**:
+  - Ownership pattern over time as a stacked area — promoter, foreign institutional, domestic institutional, public
+  - Promoter pledge trend, emphasised when rising
+  - Insider and promoter transactions where published
+  - Group structure as an indented list: parent, this company, material listed subsidiaries, with the share held
+    and a mark against any the owner already holds
+- **News & events tab**:
+  - The instrument's feed, reusing the 7.6 item rendering, with items reaching it through the parent,
+    group or peer group visibly marked as indirect
+  - Filings and exchange announcements
+  - Corporate actions, effective and announced-but-not-yet-effective separated
+  - A forward strip of scheduled events with restriction windows marked
+  - Each item openable against the price chart at its time
+- Actions from the screen, so research leads somewhere: add to watchlist, open in the workspace,
+  backtest this instrument, write a decision-journal note
+- Nothing on this screen is advice; every estimate or sentiment score is labelled as an estimate
+### 20.2 Existing screens that must be extended
+ 
+- **Instrument Workspace (7.4)** — the right-panel fundamentals block becomes a summary of the research
+  record with a link to the full screen; classification, parent and group shown; the specified event
+  markers gain earnings dates and filings
+- **Overview (7.1)** — the allocation breakdown gains the sector view it already lists but cannot show,
+  and a group exposure view beside it
+- **Holdings (7.2)** — sector, industry and group columns; grouping by any of them
+- **Position Detail (7.3)** — a company card: classification, parent and group, next scheduled event,
+  and any open warning flag on the company held
+- **News & Events (7.6)** — filters by sector, industry and group; emphasis for a story that reaches a
+  holding through its parent or group rather than directly
+- **Risk & Safety (7.14)** — the "maximum in any one sector" limit becomes measurable; a group exposure
+  limit beside it; both counting exposure held through funds
+- **Planning (7.17)** — sector targets use the shared classification; group concentration shown against targets
+- **Screener (8.3)** — filters for the statement-derived factors (debt to equity, return on capital
+  employed, growth, cash quality) and one shared sector and industry list instead of its own
+### 20.3 States these screens need beyond the usual set
+ 
+- **As reported** — the latest published statement is months old because the company has not reported
+  since; normal, shown with its period, never styled as a failure
+- **Restated** — a figure changed after publication: both values with the restatement date
+- **Not applicable to this instrument type** — with the reason, and clearly distinct from missing data
+- **Sources disagree** — two configured providers give different values; both shown with their sources
+- **Unclassified** — a tradable instrument with no classification yet, shown honestly because limits depend on it
+- **Unconfirmed** — a rumoured story or an announced but not yet effective corporate action
+### 20.4 Mock data these screens need
+ 
+- Full statements for at least one company per market — five years annual, eight quarters interim —
+  internally consistent: assets equal liabilities plus equity, earnings per share ties to net profit
+  and shares, market capitalisation ties to the price history and shares outstanding
+- One Indian company with consolidated and standalone statements that genuinely differ
+- One business group: a parent and at least two listed subsidiaries the owner holds, so group exposure
+  is visibly larger than any single sector line suggests
+- One company with a rising promoter pledge, and one with three years of negative free cash flow,
+  so the warning flags have something real to fire on
+- One restated figure, one instrument where two providers disagree, one unclassified instrument
+- An exchange-traded fund whose holdings overlap the directly held stocks, so look-through changes the
+  sector exposure number
+- Scheduled events ahead: an earnings date within two weeks, an ex-dividend date, and one event
+  falling inside an automation restriction window
+- A news story that reaches a holding only through its parent, and one that is peer-group wide

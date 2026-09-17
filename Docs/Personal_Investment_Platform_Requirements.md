@@ -794,4 +794,125 @@ intended to run for decades.
   - Track running cost per month against a configured budget, including data, hosting and broker charges
   - Report cost as a share of portfolio value, since a fixed cost becomes significant on a small portfolio
   - Warn when cost per month exceeds a configured threshold or grows unexpectedly
+  
+---
  
+# Part III — Pre-Investment Research Requirements (Added In The Session 83 Review)
+ 
+> Owner instruction, session 83: before committing money to an instrument I need the end-to-end
+> picture of the company behind it — what it does, who owns and controls it, which group and parent
+> it belongs to, how it earns, what it owes, and what is happening around it right now. Sections 12
+> and 13 collect fundamentals and news at the data layer; nothing before this said what must be held
+> and shown about the company itself. Sections 35–38 close that gap and are in scope.
+ 
+## 35. Company & Instrument Research Record
+ 
+One record per instrument, gathering everything known about the issuer behind it. Refreshed per
+source on its own schedule, and every field carries its source, as-of date and staleness.
+ 
+- Identity:
+  - Legal name, trading symbol on each market where it is listed, ISIN and local identifiers
+  - Country of incorporation, primary listing and any secondary listings, listing date
+  - Headquarters, website, employee count, reporting currency, fiscal year end
+- What the business does:
+  - Plain description of the business, not a marketing summary
+  - Revenue split by segment and by geography wherever the company reports it
+  - Where relevant, the handful of customers, suppliers or products the business depends on
+- Who runs it:
+  - Chief executive and chair, with tenure, and any change in the last twelve months
+  - Auditor, the date of the last opinion, and whether that opinion was qualified
+- Applicability:
+  - An instrument with no company behind it (commodity, currency pair, index fund, digital asset)
+    says so explicitly; it never shows blank company fields as though data were missing
+## 36. Classification, Corporate Structure & Ownership
+ 
+Classification is not a label on a screen. Concentration limits, allocation targets, peer comparison
+and strategy universes are all wrong or unavailable without it.
+ 
+- Classification:
+  - Two levels, sector then industry, in one scheme applied across every market
+  - Where a provider supplies its own scheme, the mapping to it is retained rather than discarded
+  - Instruments that cannot carry a company classification carry an asset-class classification instead
+  - One classification serves every consumer: allocation, limits, screening, peer groups and reporting
+- Corporate structure — the parent and the group:
+  - Parent or holding company where the instrument is a subsidiary, with the share held
+  - Business group or promoter group where one exists, since group identity crosses sectors
+  - Material listed subsidiaries and associates, so the same underlying business is not counted once
+    when it is really held twice
+  - Cross-holdings between group companies, where a group event would hit several holdings at once
+  - Group exposure measured and limited alongside sector exposure: four companies of one group is one bet
+- Ownership:
+  - Ownership pattern over time — promoter or founder, foreign institutional, domestic institutional, public
+  - Shares pledged by the promoter, with the trend, since a rising pledge is a warning and not a statistic
+  - Insider and promoter transactions where they are published
+- Funds:
+  - Exchange-traded and mutual funds look through to what they hold — top holdings, sector weights,
+    the index tracked and assets under management
+  - Exposure held through a fund counts towards sector and group exposure, not only the fund's own line
+- Changes to classification, parent, group or ownership are recorded with the date they changed and
+  never overwritten silently
+## 37. Financial Statements & Derived Measures
+ 
+- Statements as reported, not summarised into a handful of numbers:
+  - Balance sheet, income statement and cash flow statement
+  - At least five years of annual statements and eight quarters of interim statements
+  - Balance sheet: total and current assets, cash and equivalents, total and current liabilities,
+    total debt, shareholders' equity, shares outstanding
+  - Income: revenue, gross profit, operating profit, EBITDA, net profit, earnings per share, tax
+  - Cash flow: operating cash flow, capital expenditure, free cash flow, dividends paid, debt raised and repaid
+  - Consolidated and standalone statements kept distinct where both are published; mixing them
+    silently produces a wrong answer
+- Every statement carries its reporting currency, fiscal period, period end date, whether it was
+  audited, whether it restates an earlier figure, and **the date it was published**
+  - The publication date is required, not optional. A backtest may only use figures that had been
+    published by the simulated date. Without it, every rule built on fundamentals looks better than it was
+- Derived measures, computed from the stored statements and never stored as an unexplained number:
+  - Valuation: price to earnings, price to book, enterprise value to EBITDA, price to sales,
+    dividend yield, payout ratio
+  - Profitability: return on equity, return on capital employed, operating and net margin
+  - Financial health: debt to equity, net debt to EBITDA, current ratio, interest coverage
+  - Growth: revenue, profit and earnings per share over three and five years, and the latest quarter
+    against the same quarter a year earlier
+  - Cash quality: free cash flow against reported net profit
+  - Each measure can show the inputs and the periods it was computed from
+- Comparison is part of the requirement, not an extra:
+  - Every measure shown against the instrument's own history
+  - Every measure shown against the median of its industry peer group
+  - A ratio with nothing to compare it against does not support a decision
+- Warning flags, stated as observations with the evidence attached, never as advice:
+  - Debt rising while profit falls; several years of negative free cash flow; payout above earnings
+  - Promoter pledge rising; auditor qualification; repeated restatements
+  - Receivables or inventory growing materially faster than revenue
+- Out of scope, deliberately: analyst price targets, buy and sell ratings, and consensus estimates.
+  Those are opinions, and this platform deals in reported facts. Revisit only if earnings-surprise
+  tracking is added later, and then only as clearly labelled third-party estimates
+- Where a measure does not apply to an instrument type, say so and why; never show zero or a blank
+## 38. News, Events & Filings For One Instrument
+ 
+Section 13 covers collection across the system. This section states what must reach the research
+record of a single instrument, because news is decision context and not a separate hobby.
+ 
+- Everything known to affect this instrument, on its record:
+  - News linked to the instrument, newest first, with source, time, category, importance, and
+    sentiment always shown with its confidence
+  - News about the parent, the group and material listed subsidiaries, marked as reaching the
+    instrument indirectly — a group event is still the owner's risk
+  - News about the industry peer group, so a sector-wide move is not mistaken for a company event
+  - Regulatory filings and exchange announcements
+  - Corporate actions — dividends, splits, bonus issues, buybacks, rights issues, mergers, name
+    changes — with those already effective separated from those announced but not yet effective
+  - Management, auditor and credit-rating changes where published
+- Scheduled ahead of time, not only after the fact:
+  - Next earnings or results date, board meetings, ex-dividend and record dates
+  - Index inclusion and exclusion, lock-in and offer expiry dates
+  - Which of these fall inside a configured automation restriction window, and when the next
+    restriction window for this instrument begins
+- Every item links to the price chart at its time, so the reaction to it can be seen
+- Anything rumoured or unconfirmed is labelled as such and never counted as a fact
+ 
+### Data discipline for sections 35–38
+ 
+- Every value carries its source and as-of date, and shows plainly when it is stale
+- Where two configured providers disagree on a figure, both are shown with their sources rather than
+  one being silently chosen
+- Nothing in the research record is presented as advice, a recommendation or a target price

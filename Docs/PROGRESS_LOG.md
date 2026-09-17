@@ -14,15 +14,15 @@
 ## 1. Current Status
 
 ```
-PHASE:              Polish (Stage P) and F-22 remain; all build stages done
-OVERALL PROGRESS:   94% (87 of 93 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
-LAST AGENT:         Antigravity (session 82)
-BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
-TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
-LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. Owner answered the open questions (session 64); only question 12 tooling work remains as a task.
+PHASE:              Research (Stage R, new) is the active scope; Polish (Stage P) and F-22 remain
+OVERALL PROGRESS:   81% (87 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 0 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-17T18:30:00Z  |  local: 2026-09-18 00:00 IST
+LAST AGENT:         Claude Opus 5 (session 83)
+BUILD STATE:        PASS (unchanged; session 83 was documentation only)
+TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces; re-run session 83)
+LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository; re-run session 83)
+BLOCKERS:           none. Stage R is specified and ready to claim, starting at R-01.
 ```
 
 ---
@@ -33,43 +33,50 @@ BLOCKERS:           none. Owner answered the open questions (session 64); only q
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages M, L, S and E are all DONE (sessions 60-81).
-  UI Aesthetics, Spacing, and Centralized Theme/Font Engine completed (session 82).
-  Remaining: P-01..P-05 (polish) and F-22 (Node 22 upgrade, very low priority, owner Q7/Q8).
-  Session history older than the recent entries is in PROGRESS_ARCHIVE.md (not session-start reading).
+  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE (sessions 60-81); the
+  design system pass finished in session 82. Session 83 added scope rather than code: the owner
+  asked for end-to-end company research before investing, so Requirements Part III (sections 35-38)
+  and UI spec section 20 were written, decisions 48-53 recorded, and Stage R (R-01..R-14) added to
+  the registry. No application code changed in session 83.
 
-WHAT SESSIONS 80-82 COMPLETED:
-  - Session 82: Centralized design system (_theme-tokens.scss), dynamic font switching (data-font),
-    new themes ('midnight', 'emerald'), luminous pill badges, gradient card surfaces with top highlight
-    lines, relaxed typographical line-heights/spacing, and rebaselined 14 visual tests (pnpm visual:update).
-  - L-14 (Session 80): PartialDataState in packages/ui (per-section unavailable sources + retry); holdings
-    and position detail use it.
-  - L-13 (Session 80): eight more AnalyticalChart presets; AnalyticalChartProps is a preset/data union.
-  - L-12 (Session 81): Playwright 1.49.1 screenshot baselines in visual/ (pnpm visual, pnpm visual:update).
+WHAT SESSION 83 ADDED (read before claiming R-anything):
+  - Requirements 35 research record, 36 classification/parent/group/ownership/fund look-through,
+    37 statements and derived measures, 38 instrument news, events and filings.
+  - UI spec 20.1 the new Company Research screen (five tabs), 20.2 the screens it extends,
+    20.3 its extra states, 20.4 the mock data it needs.
+  - Decisions 48-53. 49-53 are provisional agent choices taken under decision 26 and are flagged
+    as such in DECISIONS.md and Open Questions 22-27; the owner can still overrule any of them.
 
 WHAT IS PARTIALLY DONE:
-  - Nothing. F-22 needs Node 22 installed on the machine by the owner first (system change).
+  - Nothing. Stage R has not been started. F-22 still needs Node 22 installed by the owner.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. P-05, P-01..P-04 when the owner asks for polish.
-  2. F-22 after the owner installs Node 22 LTS: then ESLint 10 / Vite 7 upgrades.
+  1. R-01 classification and corporate structure data. It unblocks three features that are already
+     built but cannot work: the risk limit "Maximum in any one sector" (riskLimits.ts says the data
+     does not exist), the Overview sector allocation (AllocationSection.tsx says the same), and the
+     Screener, whose sector names do not match Planning's.
+  2. R-02, then R-03; then the data tasks R-04..R-06; then the screen tasks R-07..R-13.
+  3. R-14 is a one-line fix and can ride along with any Stage R task that touches that file.
+  4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
   After any UI change run pnpm visual; rebaseline with pnpm visual:update only for intended changes.
 
 WATCH OUT FOR:
-  - Do not mark a task DONE because the UI renders. Stage E was marked DONE with no data layer.
-    Every Stage E section must fetch through data/api hooks and render loading/error/empty states.
+  - Sector today has two sources that disagree: the SECTORS map in data/mock/generators/researchData.ts
+    (7 symbols) and free-text sector strings in the screener seeds. R-01 replaces both with one source.
+    Do not add a third.
+  - Statements must be internally consistent and tie to the existing price history (decision 19):
+    assets = liabilities + equity, EPS from net profit and shares, market cap from price x shares.
+  - Every statement needs its publication date (decision 50). A fundamental rule without it makes
+    backtests look better than reality.
+  - Do not mark a task DONE because the UI renders. Every section fetches through data/api hooks and
+    renders loading, empty, error and stale states.
   - Run the full `pnpm lint` (repo-wide), not prettier on a hand-picked list of files.
-  - Strict 300 lines limit per file (decision 18). Always split components/generators before 300 lines.
+  - Strict 300 lines limit per file (decision 18). Always split components/generators before 300.
   - Library component props: check packages/ui/src/index.ts. Badge variants include positive,
     negative, neutral, critical, info. LoadingState: table, cards, chart, detail. DataTable page
     sizes 10/20/50/100. Toggle is a React Aria Switch (isSelected, onChange, isDisabled, aria-label).
-  - A validation rule must describe something truly invalid. Check it against real-world data
-    before making it an error; a note on the form is often the right answer.
-  - Anything that should reset a component when a selection changes must be in its key.
   - Money in a DTO is a string amount; formatMoney needs moneyFromDto. Convert currencies through
     convertMoneyWithTable before comparing. Never Number()/parseFloat a money amount.
-  - One story across screens: derive from existing generators instead of seeding new numbers.
-  - Prettier expands objects one field per line; check line counts and split before 300.
   - Screens fetch only through data/api hooks (decision 22); writes return the full set
     (decision 33); shared mock state lives in data/mock/stores (decision 37).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
@@ -82,11 +89,11 @@ WATCH OUT FOR:
   - The Bash tool mangles heredocs containing quotes and backticks; write files with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Two files differing only in case (configFields.ts / ConfigFields.tsx) break the build on
-    Windows. Pick a distinct name.
-  - Open findings: configuration is not yet read by the rest of the app; the top bar kill switch has
-    no confirmation or record; chart theme colours hardcoded hex; single large JS chunk (P-04);
-    Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
+  - Two files differing only in case break the build on Windows. Pick a distinct name.
+  - Open findings: market cap is formatted with Number() in features/markets/workspace/sections/
+    ResearchSections.tsx, breaking decision 4 (R-14); configuration is not yet read by the rest of
+    the app; the top bar kill switch has no confirmation or record; chart theme colours hardcoded
+    hex; single large JS chunk (P-04); Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -233,6 +240,29 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | P-03 | Full state review across all screens | TODO | 0 | | |
 | P-04 | Performance and bundle budget | TODO | 0 | | |
 | P-05 | Split the files over 300 lines (decision 18) | TODO | 0 | | Raised session 59: strategyEditor/sections/SettingsSections.tsx 386, trading/orders/sections/OrdersView.tsx 337, shell/TopBar.module.scss 337, health/Health.module.scss 307, markets/watchlists/sections/WatchlistsView.tsx 301, markets/workspace/WorkspacePage.module.scss 301 |
+
+
+### Stage R — Company Research (Requirements Part III, added session 83)
+
+Requirements 35-38 and UI spec section 20. R-01 to R-03 come first: they unblock features that are
+already built but cannot work without classification.
+
+| ID | Task | Status | % | Agent | Notes |
+|----|------|--------|---|-------|-------|
+| R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | TODO | 0 | | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
+| R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | TODO | 0 | | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
+| R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | TODO | 0 | | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
+| R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | TODO | 0 | | Requirements 35 |
+| R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | TODO | 0 | | Requirements 37; decision 50. Must tie to price history (decision 19) |
+| R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | TODO | 0 | | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
+| R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | TODO | 0 | | UI spec 20.1 |
+| R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | TODO | 0 | | UI spec 20.1 |
+| R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | TODO | 0 | | UI spec 20.1 |
+| R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | TODO | 0 | | UI spec 20.1; requirements 36 |
+| R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | TODO | 0 | | Requirements 38; UI spec 20.1 |
+| R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | TODO | 0 | | UI spec 20.2 |
+| R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
+| R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | TODO | 0 | | Finding session 83; breaks decision 4 (money is never a plain number) |
  
 ---
  
@@ -1048,6 +1078,62 @@ visual/{playwright.config.ts,baselines/*.png}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
  
+```
+────────────────────────────────────────────────────────────
+SESSION 83 | Claude Opus 5
+START:          2026-09-17T17:45:00Z  |  local: 2026-09-17 23:15 IST
+END:            2026-09-17T18:30:00Z  |  local: 2026-09-18 00:00 IST
+TASK CLAIMED:   Scope task (no registry task): specify end-to-end company research at owner request
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+WHY THIS SESSION EXISTS:
+  The owner asked what stock and company information the platform shows before an investment
+  decision (balance sheet was the example), and asked for the analysis and plan. The audit found
+  one fundamentals endpoint with eight snapshot fields shown only in the Instrument Workspace right
+  panel, no statements of any kind, and sector classification held in two sources that disagree.
+  The owner then put the whole area in scope, naming the company, its parent and the related news
+  and events. Specification documents were changed on that instruction (AGENT_RULES rule 12).
+
+AUDIT FINDINGS THAT DROVE THE SCOPE:
+  - data/schemas/research-data.ts holds 8 snapshot fields (sector, market cap, P/E, dividend yield,
+    beta, expense ratio, coupon, maturity). No statements, no history, no peer comparison.
+  - Two sector sources disagree: SECTORS in data/mock/generators/researchData.ts covers 7 symbols
+    ("Information technology"); the screener seeds use free text ("Technology", "Broad Market Blend").
+  - riskLimits.ts global-sector limit is unmeasurable for want of classification, and says so.
+  - features/overview/sections/AllocationSection.tsx: sector allocation "not in the data yet".
+  - planningAllocation.ts falls back to "Not classified" for everything except seven stocks.
+  - ResearchSections.tsx converts a money amount with Number() — breaks decision 4 (raised as R-14).
+
+COMPLETED:
+  - Requirements Part III appended: 35 company and instrument research record; 36 classification,
+    corporate structure and ownership (parent, business group, listed siblings, promoter pledge,
+    fund look-through); 37 financial statements and derived measures (five years annual, eight
+    quarters, consolidated vs standalone, publication dates, ratios, peer medians, warning flags,
+    analyst opinion explicitly out of scope); 38 news, events and filings for one instrument.
+  - UI spec section 20 appended: 20.1 the Company Research screen (Overview, Financials, Ratios,
+    Ownership, News & events tabs); 20.2 eight existing screens to extend; 20.3 six states beyond
+    the usual set; 20.4 the mock data needed.
+  - DECISIONS.md: 48 (scope accepted, owner) and 49-53 (provisional agent choices under decision 26).
+  - Stage R added to the task registry: R-01..R-14, ordered so the three broken features are fixed first.
+  - Open Questions 22-27 raised, each with the provisional answer taken, for the owner to confirm.
+
+NOT COMPLETED / LIMITS:
+  - No application code was written; Stage R is entirely TODO.
+  - Decisions 49-53 are agent choices, not owner answers. Question 22 (taxonomy) is the one worth
+    the owner's attention: an own two-level scheme was chosen because GICS is licensed and the NSE
+    scheme covers India only.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web: 0 errors); pnpm lint PASS (eslint . and prettier
+  --check .: 0 errors). Build and visual not re-run: no code, style or markup changed this session.
+
+FILES: modified Docs/Personal_Investment_Platform_Requirements.md (Part III, sections 35-38),
+Docs/UI_Specification_Mock_Phase.md (section 20), Docs/DECISIONS.md (48-53),
+Docs/PROGRESS_LOG.md (status, handoff, Stage R registry, this entry, questions 22-27).
+────────────────────────────────────────────────────────────
+```
+
 ---
  
 ## 5. Open Questions For The Owner (Append Only)
@@ -1077,6 +1163,12 @@ visual/{playwright.config.ts,baselines/*.png}, Docs/PROGRESS_LOG.md.
 | 19 | Session 59 | 2026-09-17 | Question 11 (screener contents) shows an answer attributed to the owner, but it points to a design written by the agent in `SESSION_VERIFICATION_LOG.md` section 4. Do you accept that design (4 factor pillars, 5 presets, handoffs to Workspace, Watchlist, Backtest and CSV export) as the screener specification? | **Accepted** — Owner, 2026-09-17 (session 64): screener design stands; factor figures to be derived from price history and fundamentals rather than fixed seeds (S-34) |
 | 20 | Session 63 | 2026-09-17 | Should tax rule sets per country of residence and asset class replace the tax rates held on each market (Countries & markets), or sit beside them? | **Replace** — Owner, 2026-09-17 (session 64): rule sets per residence country and asset class hold holding periods, rates, cost-basis method and tax-year start; market config keeps only dividend withholding and transaction taxes (decision 45, E-09b) |
 | 21 | Session 63 | 2026-09-17 | Confirm the provisional choices of sessions 60-63: counterparty over-weight at 25% of net worth; cooling off 5 minutes above 5,000 USD with a stated reason required; running cost warning above 1% of portfolio value a year; screener EQUITY judged as long_term and ETF as etf; losses carried forward modelled under Indian rules | **Confirmed** — Owner, 2026-09-17 (session 64) (decision 46) |
+| 22 | Session 83 | 2026-09-17 | Which classification scheme should sector and industry follow? GICS is licensed by MSCI and S&P; the NSE scheme covers India only; an own two-level scheme needs maintaining but works across markets | **Provisional (decision 49, taken under decision 26): own two-level scheme**, sector then industry, across every market, keeping the provider's scheme as a mapping. Confirm or overrule |
+| 23 | Session 83 | 2026-09-17 | How much statement history should the platform hold, and should consolidated and standalone both be kept? | **Provisional (decision 50): five years annual, eight quarters interim, both consolidated and standalone where published**, each with its publication date so backtests stay point-in-time |
+| 24 | Session 83 | 2026-09-17 | Should exposure held through an ETF or mutual fund count towards sector and group limits, and should business-group exposure be limited at all? | **Provisional (decision 51): yes to both.** Fund holdings look through into sector and group exposure; a group limit sits beside the sector limit on Risk & Safety |
+| 25 | Session 83 | 2026-09-17 | Should analyst estimates, price targets and consensus ratings be collected and shown? | **Provisional (decision 52): no.** Reported facts only; warning flags are observations with evidence, never advice. Revisit only for earnings-surprise tracking, clearly labelled as third-party estimates |
+| 26 | Session 83 | 2026-09-17 | Should strategy rules be able to test fundamentals (for example "price to earnings below 20"), or is this research-only for now? Rule operands today are price, indicator and number only | **Open — not answered.** Stage R stores publication dates so it becomes possible; no Stage R task builds it. Raise a new task if the answer is yes |
+| 27 | Session 83 | 2026-09-17 | Is ownership data — promoter holding, pledge trend, insider transactions — wanted now, given it matters mainly for Indian stocks and needs a provider that publishes it? | **Provisional: yes, in scope** as R-10 (requirements 36). Say if it should be deferred until after the statements work |
  
 ---
  
