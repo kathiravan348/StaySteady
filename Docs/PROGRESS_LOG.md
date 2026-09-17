@@ -14,10 +14,9 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
-OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
-                    Stage E 1 of 9, 8 partial; Stage P 0 of 5)
+PHASE:              Polish (Stage P) and F-22 remain; all build stages done
+OVERALL PROGRESS:   94% (87 of 93 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage P 0 of 5)
 LAST UPDATED:       2026-09-17T14:30:00Z  |  local: 2026-09-17 20:00 IST
 LAST AGENT:         Claude Opus 5 (session 81)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
@@ -34,34 +33,25 @@ BLOCKERS:           none. Owner answered the open questions (session 64); only q
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F and S are done except S-26 (screener, 90%).
-  Session 59 audited sessions 53-58 and found Stage E (E-01..E-09) was mostly hardcoded display:
-  fixed arrays and component state inside features, no mock endpoints, no data/api hooks, no
-  loading/error states, and one fake result (every approval card says compliance "Passed").
-  All nine are now PARTIAL with the precise gap written in each registry row.
-  Session history older than sessions 57, 58, 59 is in PROGRESS_ARCHIVE.md (not session-start reading).
+  pnpm workspace monorepo, git branch main. Stages M, L, S and E are all DONE (sessions 60-81).
+  Remaining: P-01..P-05 (polish) and F-22 (Node 22 upgrade, very low priority, owner Q7/Q8).
+  Session history older than the recent entries is in PROGRESS_ARCHIVE.md (not session-start reading).
 
-WHAT SESSION 59 COMPLETED:
-  - Verified typecheck, ESLint and build pass. Found pnpm lint failing (Prettier): two files from
-    sessions 56/57 unformatted, plus CRLF working copies. Fixed both; added .gitattributes
-    (eol=lf) so Windows checkouts match .prettierrc endOfLine "lf". pnpm lint now passes repo-wide.
-  - Reopened E-01..E-09 and S-26 as PARTIAL; added P-05 (six older files over 300 lines);
-    added open question 19 (question 11 was answered by an agent, not the owner).
-  - Archived sessions 55-56 verbatim (rule 11; log was 595 lines).
+WHAT SESSIONS 79-81 COMPLETED:
+  - L-14: PartialDataState in packages/ui (per-section unavailable sources + retry); holdings and
+    position detail use it.
+  - L-13: eight more AnalyticalChart presets; AnalyticalChartProps is a preset/data union (no casts).
+    New presets are not yet used by any screen.
+  - L-12: Playwright 1.49.1 screenshot baselines in visual/ (pnpm visual, pnpm visual:update),
+    7 key screens in dark and light, Windows baselines, local only.
 
 WHAT IS PARTIALLY DONE:
-  - E-01..E-09: see each registry row for what exists and what is missing.
-  - L-12: no visual regression tooling (question 12).
+  - Nothing. F-22 needs Node 22 installed on the machine by the owner first (system change).
 
 EXACT NEXT STEP (one task per session, in this order):
-  Owner answered questions 7-10, 12-21 in session 64; decisions 43-46 record the direction.
-  1. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
-  2. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
-  3. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
-
-SESSION 60 (M-17) ADDED: schemas inflation.ts, tax-losses.ts, counterparties.ts,
-  strategy-lifecycle.ts; generators inflationHistory, taxLossCarryForward, counterpartyProfiles,
-  strategyLifecycle; handlers/partTwoReferenceHandlers.ts; api/partTwoReferenceQueries.ts.
+  1. P-05, P-01..P-04 when the owner asks for polish.
+  2. F-22 after the owner installs Node 22 LTS: then ESLint 10 / Vite 7 upgrades.
+  After any UI change run pnpm visual; rebaseline with pnpm visual:update only for intended changes.
 
 WATCH OUT FOR:
   - Do not mark a task DONE because the UI renders. Stage E was marked DONE with no data layer.
