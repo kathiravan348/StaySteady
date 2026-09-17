@@ -41,3 +41,7 @@ export * from './audit';
 export * from './portfolio-performance';
 export * from './compliance';
 export * from './screener';
+export * from './counterparties';
+export * from './inflation';
+export * from './strategy-lifecycle';
+export * from './tax-losses';

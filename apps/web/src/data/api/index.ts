@@ -156,3 +156,9 @@ export {
   useScreenerPresets,
   useScreenerSearch,
 } from './screenerQueries';
+export {
+  useCounterparties,
+  useInflationHistory,
+  useLossCarryForwards,
+  useStrategyLifecycles,
+} from './partTwoReferenceQueries';
