@@ -23,8 +23,10 @@ function download(fileName: string, content: string): void {
   URL.revokeObjectURL(url);
 }
 
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+
 // UI spec 7.16 — one screen for every report type. The route picks the starting type; ?type= in the
-// URL picks any other, so a report can be linked to.
+// URL picks any other, and ?from=&to= open a chosen period, so a report can be linked to.
 export function ReportScreen({
   defaultType,
 }: {
@@ -37,10 +39,16 @@ export function ReportScreen({
   const type = parsedType.success ? parsedType.data : defaultType;
 
   const initial = presetPeriod('ytd', new Date());
+  const linkedFrom = params.get('from');
+  const linkedTo = params.get('to');
+  const linked =
+    linkedFrom !== null && linkedTo !== null && DATE.test(linkedFrom) && DATE.test(linkedTo)
+      ? { from: linkedFrom, to: linkedTo }
+      : null;
   const [settings, setSettings] = useState<Omit<ReportSettings, 'type'>>({
-    preset: 'ytd',
-    from: initial.from,
-    to: initial.to,
+    preset: linked === null ? 'ytd' : 'custom',
+    from: linked?.from ?? initial.from,
+    to: linked?.to ?? initial.to,
     currency: 'USD',
     comparison: 'previous',
   });

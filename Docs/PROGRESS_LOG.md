@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:44:00Z  |  local: 2026-09-17 19:14 IST
-LAST AGENT:         session 75 (Claude Opus 5; E-09 part c employer policy)
+LAST UPDATED:       2026-09-17T13:47:00Z  |  local: 2026-09-17 19:17 IST
+LAST AGENT:         session 76 (Claude Opus 5; S-35 performance links)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -212,7 +212,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-32 | Continuity — succession, nominee and emergency access | DONE | 100 | Session 54 | Raised session 37. Requirements 28, UI spec 19.1. Institution register with one-click confirmation, recovery points without credentials, emergency drill playbook and log, inactivity pause countdown; verified |
 | S-33 | Compliance — employer and jurisdictional restrictions | DONE | 100 | Session 55 | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods, pre-trade eligibility checker ("May I trade this right now, and why not?"), refusals log intercepted at signal stage; verified |
 | S-34 | Screener factors from price history and fundamentals | TODO | 0 | | Owner Q19 session 64: price, RSI, SMA distance from M-04 price history; P/E, ROE, yield from fundamentals (S-04) instead of fixed seeds |
-| S-35 | Portfolio Performance links to the full performance report | TODO | 0 | | Owner Q9 session 64: small; link S-25 quick view to Reports performance with the same period |
+| S-35 | Portfolio Performance links to the full performance report | DONE | 100 | Session 76 | Owner Q9 session 64. Each period links to the performance report opened on the same dates; verified session 76 |
 | S-36 | Continuity — backup nominee and drill schedule | TODO | 0 | | Owner Q17 session 64: second view-only nominee, drill due every 6 to 12 months with overdue state |
  
 ### Stage E — Requirements Part II Extensions To Existing Screens
@@ -774,6 +774,28 @@ VERIFICATION RUN:
 FILES: modified schemas/compliance.ts, generators/{complianceSeeds,complianceBuilder}.ts,
   stores/complianceStore.ts, handlers/complianceHandlers.ts, api/{complianceQueries,index}.ts,
   compliance/CompliancePage.tsx; created compliance/sections/EmployerPolicyCard.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        76
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:45:00Z  |  local: 2026-09-17 19:15 IST (UTC+05:30)
+END:            2026-09-17T13:47:00Z  |  local: 2026-09-17 19:17 IST (UTC+05:30)
+TASK CLAIMED:   S-35 Portfolio Performance links to the full performance report (owner Q9)
+END STATUS:     DONE
+
+COMPLETED:
+  - Each period on /portfolio/performance links to the performance report with its dates.
+  - The report screen opens a linked period from ?from=&to= (custom preset) when both are dates.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser: the 1-month period link goes to
+  /reports/performance?from=2026-08-17&to=2026-09-16 and the report's date fields show those dates.
+
+FILES: features/portfolio/performance/sections/PerformanceView.tsx,
+  features/reports/sections/ReportScreen.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

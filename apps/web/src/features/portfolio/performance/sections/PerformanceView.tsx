@@ -49,9 +49,12 @@ export function PerformanceView({
             <span className={cx(styles.meta, tone(Number(period.gain.amount)))}>
               {formatMoney(moneyFromDto(period.gain), { signed: true })} gain or loss
             </span>
-            <span className={styles.meta}>
-              {period.from} to {period.to}
-            </span>
+            <Link
+              to={`${ROUTES.REPORTS_PERFORMANCE}?from=${period.from}&to=${period.to}`}
+              className={styles.meta}
+            >
+              {period.from} to {period.to}: full report
+            </Link>
           </li>
         ))}
       </ul>
