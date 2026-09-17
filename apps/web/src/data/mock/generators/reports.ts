@@ -13,9 +13,11 @@ import type {
 } from '../../schemas';
 import { attributionReport } from './reportAttribution';
 import { costsReport, incomeReport } from './reportCashBuilders';
-import type { BuildInput, ReportParts } from './reportParts';
+import type { BuildInput, ReportParts, ReportReferences } from './reportParts';
+import { realReturnMetrics } from './reportRealReturns';
 import { BENCHMARK_NAME, allocationReport, performanceReport } from './reportPortfolioBuilders';
 import { taxReport } from './reportTaxBuilder';
+import { taxPack } from './reportTaxPack';
 import type { ValuationContext } from './reportValuation';
 import { addDays, daysBetween } from './reportValuation';
 
@@ -27,6 +29,23 @@ const BUILDERS: Readonly<Record<ReportTypeDto, (input: BuildInput) => ReportPart
   tax: taxReport,
   attribution: attributionReport,
 };
+
+// Real returns and cost drag on performance; the year-end pack on tax (E-06).
+function withReferences(type: ReportTypeDto, input: BuildInput, parts: ReportParts): ReportParts {
+  if (type === 'performance') {
+    return { ...parts, metrics: [...parts.metrics, ...realReturnMetrics(input, parts)] };
+  }
+  if (type === 'tax') {
+    const pack = taxPack(input);
+    return {
+      ...parts,
+      metrics: [...parts.metrics, ...pack.metrics],
+      tables: [...parts.tables, ...pack.tables],
+      notes: [...parts.notes, ...pack.notes],
+    };
+  }
+  return parts;
+}
 
 export interface ReportRequest {
   readonly type: ReportTypeDto;
@@ -40,10 +59,12 @@ export function buildReport(
   request: ReportRequest,
   v: ValuationContext,
   generatedAt: string,
+  refs: ReportReferences,
 ): z.input<typeof ReportSchema> {
   const { type, from, to, currency, comparison } = request;
   const withBenchmark = comparison === 'benchmark' && type === 'performance';
-  const parts = BUILDERS[type]({ v, from, to, currency, withBenchmark });
+  const input = { v, refs, from, to, currency, withBenchmark };
+  const parts = withReferences(type, input, BUILDERS[type](input));
 
   const length = daysBetween(from, to) + 1;
   const previousPeriod =
@@ -53,6 +74,7 @@ export function buildReport(
       ? null
       : BUILDERS[type]({
           v,
+          refs,
           from: previousPeriod.from,
           to: previousPeriod.to,
           currency,

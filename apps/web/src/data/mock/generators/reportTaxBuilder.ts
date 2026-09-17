@@ -4,7 +4,7 @@
 
 import { Decimal } from 'decimal.js';
 
-import type { HoldingDto } from '../../schemas';
+import type { HoldingDto, TaxAssetClassDto } from '../../schemas';
 import { TAX_ASSET_CLASS_LABEL, taxAssetClassOf, taxRuleFor } from '../../../shared/tax/taxRules';
 import { dividends } from './reportCashBuilders';
 import type { BuildInput, ReportParts } from './reportParts';
@@ -22,6 +22,7 @@ export function taxReport(input: BuildInput): ReportParts {
   let approaching = 0;
   // Long-term gains per asset class, so each class's yearly exemption is applied once.
   const longByClass = new Map<string, { gain: Decimal; rate: number; exemption: Decimal }>();
+  const byClass = new Map<TaxAssetClassDto, { short: Decimal; long: Decimal }>();
   const rules = v.taxRules;
   const rows = v.holdings.flatMap((holding: HoldingDto) => {
     const id = String(holding.instrumentId);
@@ -42,9 +43,23 @@ export function taxReport(input: BuildInput): ReportParts {
         const threshold = rule?.longTermAfterDays ?? null;
         const isLong = threshold !== null && held >= threshold;
         if (threshold !== null && !isLong && threshold - held <= APPROACHING_DAYS) approaching += 1;
-        const gain = new Decimal(lot.quantity)
-          .times(price.minus(lot.costPerUnit.amount))
-          .times(v.fx(instrument.currency, currency, to));
+        // Value at today's rate less cost at the rate on the purchase date.
+        const units = new Decimal(lot.quantity);
+        const gain = units
+          .times(price)
+          .times(v.fx(instrument.currency, currency, to))
+          .minus(
+            units
+              .times(lot.costPerUnit.amount)
+              .times(v.fx(instrument.currency, currency, lot.purchaseDate)),
+          );
+        const classTotals = byClass.get(assetClass) ?? { short: ZERO, long: ZERO };
+        byClass.set(
+          assetClass,
+          isLong
+            ? { ...classTotals, long: classTotals.long.plus(gain) }
+            : { ...classTotals, short: classTotals.short.plus(gain) },
+        );
         const rate = isLong ? (rule?.longTermRatePercent ?? 0) : (rule?.shortTermRatePercent ?? 0);
         const tax = gain.isPositive() ? gain.times(rate).dividedBy(100) : ZERO;
         if (isLong) {
@@ -124,6 +139,24 @@ export function taxReport(input: BuildInput): ReportParts {
     chart: null,
     tables: [
       {
+        id: 'classes',
+        title: 'Unrealised gains by asset class',
+        columns: [
+          column('assetClass', 'Asset class', 'start'),
+          column('short', 'Short term'),
+          column('long', 'Long term'),
+        ],
+        rows: [...byClass.entries()].map(([assetClass, totals]) => ({
+          id: assetClass,
+          cells: {
+            assetClass: textCell(TAX_ASSET_CLASS_LABEL[assetClass]),
+            short: moneyCell(totals.short, currency),
+            long: moneyCell(totals.long, currency),
+          },
+        })),
+        total: null,
+      },
+      {
         id: 'lots',
         title: `Open lots at ${to}`,
         columns: [
@@ -143,7 +176,7 @@ export function taxReport(input: BuildInput): ReportParts {
       rules === null
         ? 'No residence tax rule set is configured, so no tax is estimated.'
         : `Holding periods, rates and exemptions follow the ${rules.country} residence rules in Settings > Tax rules.`,
-      'Losses are shown but not offset against gains; carried-forward losses are not tracked yet.',
+      'The estimate does not offset losses carried forward; they are listed below with their expiry.',
       'This is an estimate to plan with, not tax advice or a filing.',
     ],
   };

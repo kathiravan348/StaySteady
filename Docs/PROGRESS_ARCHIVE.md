@@ -6115,3 +6115,29 @@ SCOPE:
   - Part b (Orders screen compliance for working orders) is a separate session.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 64 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        64
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:20:00Z  |  local: 2026-09-17 14:50 IST (UTC+05:30)
+END:            2026-09-17T09:25:00Z  |  local: 2026-09-17 14:55 IST (UTC+05:30)
+TASK CLAIMED:   Record the owner's answers to open questions 7-10 and 12-21 (no code)
+END STATUS:     DONE
+
+COMPLETED:
+  - Answers written into section 5; questions 20 (tax rule placement) and 21 (confirming the
+    provisional choices of sessions 60-63) added with their answers.
+  - DECISIONS.md 43-46 appended. Registry: F-22, S-34, S-35, S-36 added; L-12, E-01, E-05, E-06,
+    E-07, E-09 notes extended with the owner's direction. Handoff next steps reordered.
+
+VERIFICATION RUN:
+  documentation only; no code changed.
+────────────────────────────────────────────────────────────
+```

@@ -5,6 +5,9 @@ import type { Decimal } from 'decimal.js';
 import type { z } from 'zod';
 
 import type {
+  InflationAssumptionConfigInput,
+  InflationHistoryDto,
+  LossCarryForwardDto,
   ReportChartSchema,
   ReportCurrencyDto,
   ReportMetricSchema,
@@ -26,8 +29,23 @@ export interface ReportParts {
   readonly notes: string[];
 }
 
+// Reference data a report reads besides the portfolio: inflation and losses carried forward (E-06).
+export interface ReportReferences {
+  readonly inflation: InflationHistoryDto;
+  readonly inflationAssumptions: readonly InflationAssumptionConfigInput[];
+  readonly losses: readonly LossCarryForwardDto[];
+}
+
+// For builders that read no reference data, such as the performance-at-a-glance periods.
+export const NO_REFERENCES: ReportReferences = {
+  inflation: [],
+  inflationAssumptions: [],
+  losses: [],
+};
+
 export interface BuildInput {
   readonly v: ValuationContext;
+  readonly refs: ReportReferences;
   readonly from: string;
   readonly to: string;
   readonly currency: ReportCurrencyDto;

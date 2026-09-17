@@ -6,6 +6,7 @@ import type { z } from 'zod';
 
 import type { PortfolioPerformanceSchema, ReportCurrencyDto } from '../../schemas';
 import type { ReportParts, ValueInput } from './reportParts';
+import { NO_REFERENCES } from './reportParts';
 import { performanceReport } from './reportPortfolioBuilders';
 import type { ValuationContext } from './reportValuation';
 import { addDays } from './reportValuation';
@@ -39,6 +40,7 @@ export function buildPortfolioPerformance(
   const run = (from: string, to: string): ReportParts =>
     performanceReport({
       v,
+      refs: NO_REFERENCES,
       from: from < inception ? inception : from,
       to,
       currency,

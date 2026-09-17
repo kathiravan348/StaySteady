@@ -6,6 +6,8 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 import {
   PRICE_HISTORY_ORIGIN_DATE,
   buildReport,
+  generateInflationHistory,
+  generateLossCarryForwards,
   lastCompletePeriod,
   nextRunDate,
   parseGenerated,
@@ -13,7 +15,11 @@ import {
 } from '../generators';
 import { ALERT_CHANNELS, TEST_OUTCOMES } from '../generators/healthHistoryData';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
+import { getInflationAssumptionVersions } from '../stores/assumptionsStore';
+import { currentConfigs } from '../stores/configStore';
 import { addRun, getRuns, getSchedules, setSchedules } from '../stores/reportStore';
+import { currentTaxRuleSets } from '../stores/taxRulesStore';
+import { residenceRules } from '../../../shared/tax/taxRules';
 import {
   CreateScheduledReportSchema,
   ReportComparisonSchema,
@@ -67,6 +73,14 @@ export const reportHandlers: readonly HttpHandler[] = [
       { type: type.data, from, to, currency: currency.data, comparison: comparison.data },
       portfolioValuation(),
       nowUtc(),
+      {
+        inflation: generateInflationHistory(today()),
+        inflationAssumptions: currentConfigs(getInflationAssumptionVersions()),
+        losses: generateLossCarryForwards(
+          today(),
+          residenceRules(currentTaxRuleSets())?.lossCarryForwardYears ?? undefined,
+        ),
+      },
     );
     return HttpResponse.json(parseGenerated(ReportSchema, report, 'report'), { status: 200 });
   }),

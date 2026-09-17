@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST
-LAST AGENT:         session 67 (Claude Opus 5; E-02 tax and disposal)
+LAST UPDATED:       2026-09-17T10:00:00Z  |  local: 2026-09-17 15:30 IST
+LAST AGENT:         session 68 (Claude Opus 5; E-06 reports)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -55,10 +55,9 @@ WHAT IS PARTIALLY DONE:
 
 EXACT NEXT STEP (one task per session, in this order):
   Owner answered questions 7-10, 12-21 in session 64; decisions 43-46 record the direction.
-  1. E-06 using the tax rule sets, losses carried forward and inflation (the tax pack).
-  2. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
-  3. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
-  4. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
+  1. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
+  2. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
+  3. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
 
 SESSION 60 (M-17) ADDED: schemas inflation.ts, tax-losses.ts, counterparties.ts,
   strategy-lifecycle.ts; generators inflationHistory, taxLossCarryForward, counterpartyProfiles,
@@ -228,7 +227,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | DONE | 100 | Session 57; reworked sessions 63, 65 | Requirements 27, 29, 33; UI spec 19.2. Approval queue: real compliance result beside risk checks, cooling off after approval with withdraw, stated reason; enforced by the server; safeguards configurable. Orders: compliance for working orders, restricted alert, cooling-off badge. Verified sessions 63 and 65 |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
 | E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states **Owner Q15 session 64:** broker is the record of truth; a mismatch raises an alert and pauses automation for that account. |
-| E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative **Owner Q16 session 64:** India resident with foreign stocks — tax pack follows April-March, includes foreign assets (Schedule FA), foreign tax credit and losses carried in/out. |
+| E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | DONE | 100 | Session 57; reworked session 68 | Requirements 26, 30, 31; UI spec 19.2. Real return and real benchmark from recorded inflation or assumption; costs and tax as share of gross gain; tax pack for the residence country (gains by asset class, income with withholding and foreign tax credit, losses carried forward, foreign holdings, remittance cap); verified session 68 |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
 | E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 85 | Session 57; audited 59; parts a/b sessions 62, 66 | Requirements 26, 27, 30, 34; UI spec 19.2. **Done:** inflation assumptions, cost budget, counterparty threshold, decision safeguards and export settings (/settings/assumptions); tax rule sets per residence country and asset class replacing per-market rates (/settings/tax-rules, decision 45). **Remaining (low priority, decision 43):** employer policy rules as configuration read by the compliance store |
@@ -303,29 +302,9 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 63 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 64 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        64
-AGENT:          Claude Opus 5
-START:          2026-09-17T09:20:00Z  |  local: 2026-09-17 14:50 IST (UTC+05:30)
-END:            2026-09-17T09:25:00Z  |  local: 2026-09-17 14:55 IST (UTC+05:30)
-TASK CLAIMED:   Record the owner's answers to open questions 7-10 and 12-21 (no code)
-END STATUS:     DONE
-
-COMPLETED:
-  - Answers written into section 5; questions 20 (tax rule placement) and 21 (confirming the
-    provisional choices of sessions 60-63) added with their answers.
-  - DECISIONS.md 43-46 appended. Registry: F-22, S-34, S-35, S-36 added; L-12, E-01, E-05, E-06,
-    E-07, E-09 notes extended with the owner's direction. Handoff next steps reordered.
-
-VERIFICATION RUN:
-  documentation only; no code changed.
-────────────────────────────────────────────────────────────
-```
 
 ```
 ────────────────────────────────────────────────────────────
@@ -520,6 +499,72 @@ NOTES:
 
 FILES: created position/model/disposalEstimate.ts, position/sections/DisposalEstimator.module.scss;
   rewritten position/sections/PositionDisposalEstimator.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        68 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST (UTC+05:30)
+TASK CLAIMED:   E-06 Reports — real returns, tax pack, cost and tax as share of gross return
+OWNER INPUT:    session 64 answer to question 16 (India resident, foreign stocks)
+
+PRE-WORK VERIFICATION:
+  git: f466fa8; working tree clean; type check, lint, build PASS at session 67 end.
+
+SCOPE:
+  - Performance report (server): real time-weighted return from recorded inflation or the saved
+    assumption for the report currency's country, real benchmark return when comparing, and costs
+    plus estimated tax as a share of gross gain.
+  - Tax report (server): gains by asset class, dividends by country with withholding and foreign tax
+    credit, losses carried forward with expiry, foreign holdings for annual disclosure, remittance
+    used against the yearly cap; gains measured at purchase-date FX.
+  - Remove the hardcoded RealReturnsComparisonSection and JurisdictionTaxPackSection; the existing
+    report tables and CSV export carry the pack.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        68 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST (UTC+05:30)
+END:            2026-09-17T10:00:00Z  |  local: 2026-09-17 15:30 IST (UTC+05:30)
+TASK CLAIMED:   E-06 Reports
+END STATUS:     DONE
+
+COMPLETED:
+  - Reports receive reference data (ReportReferences: inflation history, inflation assumptions,
+    losses carried forward) from the handler.
+  - Performance report: "Real return (after inflation)" deflating the time-weighted return by the
+    recorded monthly index for the report currency's country (US/IN/GB) or the saved assumption, with
+    the benchmark deflated the same way when comparing ("benchmark alternative comparison"); "Costs
+    and tax as share of gross gain".
+  - Tax report: gains now use purchase-date FX for cost; new "Unrealised gains by asset class" table;
+    tax pack (reportTaxPack.ts) adds dividends by source country with withholding and foreign tax
+    credit, losses carried forward with expiry, foreign holdings for the annual disclosure, and money
+    sent abroad this tax year against the remittance cap; notes on tax year and disclosure.
+  - Deleted the hardcoded RealReturnsComparisonSection and JurisdictionTaxPackSection; the report's
+    own tables and CSV export carry the figures.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API (INR, 2025-09-17 to today, benchmark): TWR -2.80% vs benchmark -3.56%; real -6.18% vs -6.91%
+  "less 3.60% inflation … recorded IN inflation"; drag "No gross gain in the period" (gain negative).
+  EUR report: real return "No inflation figures". Tax report (FY from 2026-04-01): classes table
+  foreign +443,903.66 LT, gold -1,240,247.83 LT, domestic -18,728.56 LT, summing to the long-term
+  metric -815,072.73; losses table 3 rows (FY 2018-19 expiring soon); foreign holdings 6 rows;
+  remitted 8,432.64 USD, 3.4% of 250,000 USD. /reports/tax page renders every new table.
+
+FINDINGS:
+  - Seeded gold (XAUUSD) shows a -1.24M INR long-term loss; mock price history, left as is.
+  - Realised gains remain zero: the mock transaction record has no sales.
+
+FILES: created generators/reportRealReturns.ts, generators/reportTaxPack.ts; modified reportParts.ts,
+  reports.ts, reportTaxBuilder.ts, reportCashBuilders.ts (exports), portfolioPerformance.ts,
+  handlers/reportHandlers.ts, features/reports/sections/ReportBody.tsx; deleted
+  features/reports/sections/{RealReturnsComparisonSection,JurisdictionTaxPackSection}.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

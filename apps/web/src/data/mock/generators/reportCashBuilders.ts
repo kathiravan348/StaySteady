@@ -10,10 +10,10 @@ import { column, countCell, dayOf, metric, moneyCell, percentCell, textCell } fr
 
 const ZERO = new Decimal(0);
 
-const inPeriod = (input: BuildInput, tx: TransactionDto): boolean =>
+export const inPeriod = (input: BuildInput, tx: TransactionDto): boolean =>
   dayOf(tx.timestamp) >= input.from && dayOf(tx.timestamp) <= input.to;
 
-const converted = (
+export const converted = (
   input: BuildInput,
   amount: { amount: string; currency: string },
   date: string,
