@@ -4,3 +4,4 @@ export * from './NoResultsState/NoResultsState';
 export * from './ErrorState/ErrorState';
 export * from './StaleState/StaleState';
 export * from './SystemStatusState/SystemStatusState';
+export * from './PartialDataState/PartialDataState';

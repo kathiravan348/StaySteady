@@ -1,5 +1,5 @@
-import { Badge } from '@staysteady/ui';
-import type { RowSelectionState } from '@staysteady/ui';
+import { PartialDataState } from '@staysteady/ui';
+import type { PartialDataSource, RowSelectionState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 
@@ -25,7 +25,8 @@ export interface HoldingsViewProps {
   readonly baseCurrency: BaseCurrencyCode;
   readonly heldMarketIds: ReadonlySet<string>;
   readonly oldestQuoteTimestamp: IsoUtcTimestamp | null;
-  readonly warnings: readonly string[];
+  readonly unavailable: readonly PartialDataSource[];
+  readonly onRetry: () => void;
 }
 
 function downloadText(fileName: string, content: string, type: string): void {
@@ -42,7 +43,8 @@ export function HoldingsView({
   baseCurrency,
   heldMarketIds,
   oldestQuoteTimestamp,
-  warnings,
+  unavailable,
+  onRetry,
 }: HoldingsViewProps): ReactElement {
   const layout = useHoldingsLayout(DEFAULT_COLUMN_VISIBILITY);
   const [search, setSearch] = useState('');
@@ -70,15 +72,7 @@ export function HoldingsView({
         oldestQuoteTimestamp={oldestQuoteTimestamp}
         heldMarketIds={heldMarketIds}
       />
-      {warnings.length > 0 && (
-        <div className={styles.warnings}>
-          {warnings.map((warning) => (
-            <Badge key={warning} variant="warning">
-              {warning}
-            </Badge>
-          ))}
-        </div>
-      )}
+      {unavailable.length > 0 && <PartialDataState unavailable={unavailable} onRetry={onRetry} />}
       <HoldingsLiquiditySummary rows={rows} baseCurrency={baseCurrency} />
       <HoldingsToolbar
         search={search}

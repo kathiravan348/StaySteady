@@ -1,5 +1,7 @@
 // Position Detail data: the holding row (shared with Holdings) or why there is none (UI spec 7.3, 10).
 
+import type { PartialDataSource } from '@staysteady/ui';
+
 import { useInstruments } from '../../../data/api';
 import type { InstrumentDto } from '../../../data/schemas';
 import type { BaseCurrencyCode } from '../../../shared/types/currency';
@@ -18,7 +20,8 @@ export type PositionState =
       readonly baseCurrency: BaseCurrencyCode;
       readonly heldMarketIds: ReadonlySet<string>;
       readonly oldestQuoteTimestamp: IsoUtcTimestamp | null;
-      readonly warnings: readonly string[];
+      readonly unavailable: readonly PartialDataSource[];
+      readonly retry: () => void;
     };
 
 export function usePositionData(instrumentId: string): PositionState {
@@ -40,7 +43,8 @@ export function usePositionData(instrumentId: string): PositionState {
         baseCurrency: holdings.baseCurrency,
         heldMarketIds: new Set([row.instrument.marketId]),
         oldestQuoteTimestamp: row.quoteTimestamp,
-        warnings: holdings.warnings,
+        unavailable: holdings.unavailable,
+        retry: holdings.retry,
       };
     }
   }

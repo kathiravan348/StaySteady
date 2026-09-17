@@ -1,6 +1,7 @@
 // Holdings data: every query the table needs, gathered into one state (UI spec 7.2, 10).
 // News and strategy names are optional: if they fail, the table still shows with a warning.
 
+import type { PartialDataSource } from '@staysteady/ui';
 import { useMemo } from 'react';
 
 import {
@@ -35,7 +36,8 @@ export type HoldingsState =
       readonly baseCurrency: BaseCurrencyCode;
       readonly heldMarketIds: ReadonlySet<string>;
       readonly oldestQuoteTimestamp: IsoUtcTimestamp | null;
-      readonly warnings: readonly string[];
+      readonly unavailable: readonly PartialDataSource[];
+      readonly retry: () => void;
     };
 
 function oldestQuote(rows: readonly HoldingRow[]): IsoUtcTimestamp | null {
@@ -155,9 +157,11 @@ export function useHoldingsData(): HoldingsState {
     return { status: 'loading' };
   }
 
-  const warnings = [
-    ...(strategies.isError ? ['Strategy names are unavailable, so strategy ids are shown.'] : []),
-    ...(news.isError ? ['News is unavailable, so news flags are hidden.'] : []),
+  const unavailable: PartialDataSource[] = [
+    ...(strategies.isError
+      ? [{ name: 'Strategies', impact: 'strategy ids are shown instead of names' }]
+      : []),
+    ...(news.isError ? [{ name: 'News', impact: 'news flags are hidden' }] : []),
   ];
   return {
     status: 'ready',
@@ -165,6 +169,10 @@ export function useHoldingsData(): HoldingsState {
     baseCurrency,
     heldMarketIds: new Set(rows.map((row) => row.instrument.marketId)),
     oldestQuoteTimestamp: oldestQuote(rows),
-    warnings,
+    unavailable,
+    retry: () => {
+      void strategies.refetch();
+      void news.refetch();
+    },
   };
 }

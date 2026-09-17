@@ -50,7 +50,8 @@ function renderPosition(state: PositionState): ReactElement {
           baseCurrency={state.baseCurrency}
           heldMarketIds={state.heldMarketIds}
           oldestQuoteTimestamp={state.oldestQuoteTimestamp}
-          warnings={state.warnings}
+          unavailable={state.unavailable}
+          onRetry={state.retry}
         />
       );
   }

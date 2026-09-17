@@ -1,4 +1,5 @@
-import { Badge, Card, Tabs } from '@staysteady/ui';
+import { Badge, Card, PartialDataState, Tabs } from '@staysteady/ui';
+import type { PartialDataSource } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
@@ -27,7 +28,8 @@ export interface PositionViewProps {
   readonly baseCurrency: BaseCurrencyCode;
   readonly heldMarketIds: ReadonlySet<string>;
   readonly oldestQuoteTimestamp: IsoUtcTimestamp | null;
-  readonly warnings: readonly string[];
+  readonly unavailable: readonly PartialDataSource[];
+  readonly onRetry: () => void;
 }
 
 export function PositionView({
@@ -35,7 +37,8 @@ export function PositionView({
   baseCurrency,
   heldMarketIds,
   oldestQuoteTimestamp,
-  warnings,
+  unavailable,
+  onRetry,
 }: PositionViewProps): ReactElement {
   const { instrument } = row;
   const { edits, actions } = usePositionEdits(instrument.id);
@@ -109,15 +112,7 @@ export function PositionView({
         oldestQuoteTimestamp={oldestQuoteTimestamp}
         heldMarketIds={heldMarketIds}
       />
-      {warnings.length > 0 && (
-        <div className={styles.badges}>
-          {warnings.map((warning) => (
-            <Badge key={warning} variant="warning">
-              {warning}
-            </Badge>
-          ))}
-        </div>
-      )}
+      {unavailable.length > 0 && <PartialDataState unavailable={unavailable} onRetry={onRetry} />}
       <PositionActions
         row={row}
         exit={exit}

@@ -2,6 +2,7 @@ import { EmptyState } from '../../state/EmptyState/EmptyState';
 import { ErrorState } from '../../state/ErrorState/ErrorState';
 import { LoadingState } from '../../state/LoadingState/LoadingState';
 import { NoResultsState } from '../../state/NoResultsState/NoResultsState';
+import { PartialDataState } from '../../state/PartialDataState/PartialDataState';
 import { StaleState } from '../../state/StaleState/StaleState';
 import { SystemStatusState } from '../../state/SystemStatusState/SystemStatusState';
 import { Button } from '../../primitives/Button/Button';
@@ -81,6 +82,23 @@ export const stateStories: readonly ComponentStory[] = [
         <StaleState ageText="45m old" />
         <StaleState isBanner ageText="45m old" lastUpdated="14:32 EST" onRefresh={() => {}} />
       </div>
+    ),
+  },
+  {
+    id: 'partial-data-state',
+    name: 'PartialDataState',
+    category: 'State Components',
+    description: 'Per-section notice naming the sources that failed while the rest still shows.',
+    render: () => (
+      <PartialDataState
+        unavailable={[
+          { name: 'News feed', impact: 'news flags are hidden' },
+          { name: 'NSE quotes', impact: 'Indian prices are the last close' },
+        ]}
+        onRetry={() => {}}
+      >
+        <EmptyState title="Section content" description="The data that did load renders here." />
+      </PartialDataState>
     ),
   },
   {

@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:56:00Z  |  local: 2026-09-17 19:26 IST
-LAST AGENT:         session 78 (Claude Opus 5; S-34 screener factors)
+LAST UPDATED:       2026-09-17T14:03:00Z  |  local: 2026-09-17 19:33 IST
+LAST AGENT:         Claude Opus 5 (session 79)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -170,7 +170,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | L-11 | Theme-change handling for charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — useChartTheme MutationObserver on root attributes (data-theme, data-gain-loss) |
 | L-12 | Visual regression test setup | PARTIAL | 20 | Antigravity (Gemini 3.8 Flash) | **REOPENED session 36.** `verify_stage_l.ts` is not in the repository and README pointed at `C:\Users\kathiravan\.gemini\antigravity-ide\...\scratch\` — another machine's path. No visual regression tooling exists (no Playwright, no baselines, no runner). The story registry is real and is the only part delivered **Owner Q12 session 64:** Playwright screenshot baselines, local only, key screens in dark and light. |
 | L-13 | Analytical chart presets — remaining spec 8.1 types | TODO | 0 | | Raised session 36. Only 5 of ~18 required types exist (equity curve, comparison curves, drawdown, donut, monthly heatmap). Missing: returns distribution histogram, allocation treemap, stacked area, correlation matrix heatmap, rolling metric lines, bar charts, waterfall, scatter. Needed by S-20 and S-21 |
-| L-14 | Partial-data state component | TODO | 0 | | Raised session 36. UI spec 10 requires a partial-data state ("some markets or providers unavailable, others fine, shown per section not globally"). No implementation anywhere; `SystemStatusState` covers only halted/degraded/offline |
+| L-14 | Partial-data state component | DONE | 100 | Claude Opus 5 | Session 79: PartialDataState in packages/ui with story; used by holdings and position detail |
  
 ### Stage S — Screens
  
@@ -853,6 +853,37 @@ VERIFICATION RUN:
   RSI and SMA distance vary by symbol; medians recomputed (P/E 26.2).
 
 FILES: created generators/screenerFactors.ts; modified handlers/screenerHandlers.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        79
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:57:00Z  |  local: 2026-09-17 19:27 IST (UTC+05:30)
+END:            2026-09-17T14:03:00Z  |  local: 2026-09-17 19:33 IST (UTC+05:30)
+TASK CLAIMED:   L-14 Partial-data state component
+END STATUS:     DONE
+
+COMPLETED:
+  - packages/ui PartialDataState (UI spec 10): per-section notice naming each unavailable source
+    and what the reader loses, optional "Try again", then the part of the section that loaded.
+    Decoupled from domain types. Workbench story "partial-data-state".
+  - Holdings and position detail replace loose warning badges with structured sources
+    (Strategies, News) and a retry that refetches both. Unused .warnings style removed.
+
+NOT COMPLETED / LIMITS:
+  - No developer scenario fails a single source, so the holdings notice was not shown live;
+    the detection logic is unchanged from before, only its shape.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; workbench story renders (dark); holdings page loads with no
+  console errors and no notice when all sources are available.
+
+FILES: created packages/ui/src/state/PartialDataState/{PartialDataState.tsx,.module.scss};
+modified state/index.ts, stateStories.tsx, holdings useHoldingsData.ts, HoldingsView.tsx,
+HoldingsPage.module.scss, PortfolioHoldingsPage.tsx, position usePositionData.ts, PositionView.tsx,
+PositionDetailPage.tsx.
 ────────────────────────────────────────────────────────────
 ```
  
