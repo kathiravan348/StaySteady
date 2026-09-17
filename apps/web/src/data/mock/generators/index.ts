@@ -145,6 +145,14 @@ export {
   seedAlertRules,
   testAlertRule,
 } from './alertRuleConfig';
+// Session 50: credential references (UI spec 7.18)
+export {
+  credentialConfigHealth,
+  credentialUsers,
+  daysBetweenIso,
+  seedCredentialConfigs,
+  seedCredentialHistory,
+} from './credentialConfig';
 
 // Session 42: reports (UI spec 7.16)
 export type { ValuationContext } from './reportValuation';

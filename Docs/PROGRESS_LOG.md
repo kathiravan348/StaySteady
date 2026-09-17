@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 done; S-26 blocked)
-OVERALL PROGRESS:   72% (63 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 26 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T03:08:00Z  |  local: 2026-09-17 08:38 IST
-LAST AGENT:         session 49 (S-27 Trading — Positions)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,371 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25, S-27 and S-28 done; S-26 blocked)
+OVERALL PROGRESS:   73% (64 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 27 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T03:19:00Z  |  local: 2026-09-17 08:49 IST
+LAST AGENT:         session 50 (S-28 Configuration — credentials)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,386 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,29 +36,29 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
-  done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by one, each
-  committed (no push), taking the recommended option whenever a choice comes up (decision 26).
-  typecheck, ESLint and Prettier pass.
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25, S-27 and
+  S-28 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
+  one, each committed (no push), taking the recommended option whenever a choice comes up
+  (decision 26). typecheck, ESLint and Prettier pass.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 49: S-27 Trading — Positions. See session 49 end entry.
-  - Session 48: S-26 Screener blocked. Session 47: S-25 Portfolio — Performance.
+  - Session 50: S-28 Configuration — credentials. See session 50 end entry.
+  - Session 49: S-27 Trading — Positions. Session 48: S-26 Screener blocked.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-28 Configuration — credentials (/settings/credentials, currently a placeholder). Spec
-  7.18: stored references only, never displayed, with expiry tracking and warnings. Hard
-  constraint: never add credentials — the screen handles references (name, where the secret lives,
-  what uses it, expiry), never a secret value. Follow the configuration pattern (decision 38,
-  shared/config). Then S-29..S-33.
+  Claim S-29 Automation permission summary (UI spec 7.18 last bullet): the layered result of
+  market + broker + instrument type + strategy together, so it is obvious what can actually trade.
+  Everything it needs is in the saved configurations (markets automationPermitted, brokers
+  automationTypes, instrument types automationPermitted/manualOnly) and strategy stages. Then
+  S-30..S-33.
 
-FILES TOUCHED (session 49): see session 49 end entry.
+FILES TOUCHED (session 50): see session 50 end entry.
 
 WATCH OUT FOR:
  
@@ -201,7 +201,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-25 | Portfolio — Performance | DONE | 100 | Session 47 | Open question 9 answered provisionally (decision 26): at-a-glance view, the report keeps chosen periods, comparisons, export and schedules. Returns and gain for 1M/3M/YTD/1Y/since first purchase from the report builder, value curve, monthly heatmap, contribution by holding; all states incl. stale verified |
 | S-26 | Markets — Screener | BLOCKED | 0 | Session 48 | Raised session 36. Only the nav map (spec 6) names it; section 7 and the requirements specify nothing. Blocked on **open question 11** — unblocks when the owner says what it filters on, over which instruments, and where a result leads. `/markets/screener` keeps its placeholder |
 | S-27 | Trading — Positions | DONE | 100 | Session 49 | Open question 10 answered provisionally (decision 26): distinct from Holdings — only strategy-opened positions, with what the strategy stage does at the stop, distance and value lost to the stop, rules, working orders and an attention banner; all states verified |
-| S-28 | Configuration — credentials | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires stored references only, never displayed, with expiry tracking and warnings. `/settings/credentials` currently renders the providers placeholder. Zero credential-reference handling in the app |
+| S-28 | Configuration — credentials | DONE | 100 | Session 50 | Register of credential references on the configuration pattern: no secret field, key-as-reference rejected, /simulation/ segment separates simulation from live, read-only or trading access, expiry with warnings, revoke, usage from provider and broker configs, unregistered references called out, audit log; verified |
 | S-29 | Automation permission summary | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires a screen showing the layered result of market + broker + instrument type + strategy "so it is obvious what can actually trade". No route, no page, no task existed |
 | S-30 | Net Worth — complete picture incl. non-market assets | TODO | 0 | | Raised session 37. Requirements 25, UI spec 19.1. Manual asset register (provident fund, deposits, gold, property, employer equity, liabilities), liquidity class, concentration against **total** net worth. Without this, allocation targets and goal projections are computed on a minority of actual wealth |
 | S-31 | Decision Journal | TODO | 0 | | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift) |
@@ -294,93 +294,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 46 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 47 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        47 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T22:57:12Z  |  local: 2026-09-17 04:27 IST (UTC+05:30)
-TASK CLAIMED:   S-25 Portfolio — Performance
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-24 committed as 0cefb99; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-24 commit)
-
-SCOPE:
-  - Open question 9 (is Portfolio -> Performance the same as Reports -> Performance?) is still
-    unanswered. Recommended option taken (decision 26), keeping both and making them different
-    rather than duplicates: this screen is the at-a-glance portfolio view (value since the first
-    purchase, returns for standard periods, a monthly returns heatmap, contribution by holding);
-    the report stays the place for chosen periods, comparisons, export and schedules, and is linked
-  - Computed on the mock side with the report valuation and the performance builder (S-20), so a
-    period's return here equals the performance report for the same dates
-  - New endpoint GET /api/v1/portfolio/performance?currency=
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        47 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T02:54:00Z  |  local: 2026-09-17 08:24 IST (UTC+05:30)
-TASK:           S-25 Portfolio — Performance — DONE
-
-WHAT WAS BUILT (nav map 6; open question 9, recommended option per decision 26):
-  - /portfolio/performance: time-weighted returns and money gain or loss for 1 month, 3 months,
-    year to date, 1 year and since the first purchase, each with its dates
-  - Value since the first purchase (weekly equity curve), with a note that rises include money
-    added; monthly returns heatmap; contribution by holding with each holding's share of the total
-  - A note explains why a return and a money gain can point in different directions, and links to
-    the performance report for chosen periods, benchmark comparison and export (not duplicated)
-  - Loading, error, empty (empty-portfolio) and stale states. Stale: the page expects valuations at
-    the previous day's close and shows a banner with how many days behind they are
-
-MOCK DATA:
-  - GET /api/v1/portfolio/performance?currency= built from the shared portfolio valuation and the
-    performance report builder (S-20), so a period here equals the report for the same dates
-  - loading-error returns 500; stale-data holds valuations back three days
-
-FILES CREATED:
-  - data/schemas/portfolio-performance.ts, data/mock/generators/portfolioPerformance.ts,
-    data/mock/handlers/performanceHandlers.ts, data/api/performanceQueries.ts
-  - features/portfolio/performance/{Performance.module.scss, sections/PerformanceView.tsx}
-FILES MODIFIED:
-  - features/portfolio/PortfolioPerformancePage.tsx — rewritten from a placeholder
-  - schemas, generators, handlers and api index files (exports and handler registration)
-  - Docs: session 44 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none (open question 9 answered provisionally with the recommended option, as the start entry
-    records)
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
-  build:       PASS — exit 0
-  periods:     1 month +4.76% (+$4,458.16), 3 months +8.89%, year to date -2.81% (-$1,864.82),
-               1 year -4.90%, since 2022-01-14 +1.39% with -$13,817.22; value $98,047.11 at the
-               2026-09-16 close; 57 months in the heatmap; both charts render
-  contribution: 7 holdings, shares add to -99.9% (rounding) of a loss; XAUUSD -$17,471.16 (-126.4%)
-  states:      stale-data -> banner "valued at the 2026-09-13 close, 3 days behind the last close";
-               loading-error -> "Performance unavailable"; empty-portfolio -> "No performance yet";
-               reset to healthy
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The note under the contribution table said only a losing holding shows a negative share; every
-    share keeps its holding's sign. Corrected during browser verification
-  - The page was first written without a stale state; added before completion
-
-FINDINGS (out of scope, not fixed):
-  - Transactions (S-24) and Reports (S-20) have no stale state; the S-24 entry argues a record needs
-    none, but CLAUDE.md requires one on every screen
-  - The base currency here follows the top bar switch, not the configured base currency (S-18)
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        48 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -537,6 +455,118 @@ FINDINGS (out of scope, not fixed):
     has a working sell order; either the positions predate a demotion or the seed is inconsistent
   - The SPY buy of 25 filled on 2026-09-14 (ord-0001) is not among SPY's purchase lots
   - No lint rule enforces the 300-line file limit
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        50 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:14:00Z  |  local: 2026-09-17 08:44 IST (UTC+05:30)
+TASK CLAIMED:   S-28 Configuration — credentials
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-27 committed as 7766cb3; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-27 commit)
+
+SCOPE (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
+  - A register of credential references, following the configuration pattern (decision 38): list
+    with health and enabled switch, detail form, inline validation, version history with diff and
+    revert, new entries starting in simulation
+  - Each entry holds the reference, a label, simulation or live, read-only or trading access, where
+    the secret is kept (described), issue and expiry dates and the warning window. There is no field
+    for a secret value anywhere, and a value typed into the reference is rejected
+  - Health: expired, expiring within the warning window, revoked while in use, a live credential
+    used by a simulation entry or the reverse, trading access nothing needs, read-only access for a
+    broker that places orders, unused
+  - "Used by" is worked out from the saved provider and broker configurations; references those
+    configurations use that are not registered are called out
+  - Credential changes appear in the audit log with the other configuration areas
+  - Hard constraint kept: no credentials are added; mock references only
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        50 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:19:00Z  |  local: 2026-09-17 08:49 IST (UTC+05:30)
+TASK:           S-28 Configuration — credentials — DONE
+
+WHAT WAS BUILT (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
+  - /settings/credentials on the configuration pattern (decision 38): list with health, mode and an
+    enabled (revoke) switch; detail form; inline validation; version history with diff and revert;
+    new entries start in simulation, read-only
+  - An entry holds the reference, what it is for, where the secret is kept (in words), simulation or
+    live, read-only or trading access, issue and expiry dates and the warning window. No field for a
+    secret exists; a key typed as the reference is rejected
+  - Simulation references must carry a /simulation/ segment and live ones must not, so the two sets
+    cannot be confused from the reference alone (requirement 474)
+  - Health: expired (critical), expiring inside the warning window, revoked while in use
+    (critical), used by a provider or broker in the other mode (critical), trading access nothing
+    needs, read-only access for a broker that places orders, unused
+  - "Used by" from the saved provider and broker configurations; a banner lists references those
+    configurations name that are not registered
+  - Credential changes appear in the audit log; provider and broker saves and reverts refresh the
+    credential list so usage never lags
+  - Shared: DateField added to shared/config form fields
+  - States: loading, error, empty (no references and none named); no stale state, as with the other
+    configuration screens — the entries are settings, not a feed
+
+MOCK DATA:
+  - GET/POST /api/v1/config/credentials, PUT /:reference, POST /:reference/revert (versioned
+    configuration factory). Six seeded references: the five the provider and broker configurations
+    already name plus an unused IBKR paper-account reference; dates relative to today, the primary
+    market data key 14 days from expiry. Mock references only; no credential exists anywhere
+
+FILES CREATED:
+  - data/schemas/config-credentials.ts, data/mock/generators/credentialConfig.ts
+  - features/settings/credentials/{model/credentialDraft.ts, sections/CredentialsView.tsx,
+    sections/CredentialForm.tsx}
+FILES MODIFIED:
+  - features/settings/SettingsCredentialsPage.tsx — rewritten from a placeholder
+  - data/mock/stores/configStore.ts, data/mock/handlers/settingsConfigHandlers.ts and
+    auditHandlers.ts, data/api/settingsConfigQueries.ts and configQueries.ts (credential cache
+    refresh), schemas, generators and api index files, shared/config/FormFields.tsx and index.ts
+  - Docs: session 47 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (the /simulation/ segment rule applies requirement 474 within this screen's schema)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  list:        6 references; primary market data key "Expires in 14 days on 2026-10-01" (needs
+               attention); IBKR paper account "Nothing uses this reference"; others healthy with users
+  validation:  "sk_live_51HxYzAbC" as the reference -> "This looks like a key, not a reference";
+               vault://brokers/zerodha-paper in simulation -> needs a /simulation/ segment; simulation
+               notice shown on a new entry
+  add:         vault://simulation/brokers/zerodha-paper saved with a reason -> 7 references, flagged
+               unused; audit log "Credential vault://simulation/brokers/zerodha-paper configured"
+  revoke:      Zerodha switched off -> v2, "Revoked, but Zerodha still uses it and cannot connect."
+  usage:       IBKR broker form reference changed to vault://brokers/interactive-brokers-2026 and
+               saved -> credentials page at once shows "1 reference in use is not registered" and the
+               old IBKR reference "Nothing uses this reference"
+  revert:      primary key to version 1 -> "Expired 351 days ago on 2025-10-01; Primary market data
+               provider cannot connect."
+  states:      loading-error -> "Credential references unavailable"; reset to healthy
+  not exercised: the empty state (every scenario seeds references)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The session 50 start time (03:14:00Z) was estimated ahead of the clock again; the claim ran at
+    03:10Z. Times are now read from the clock before writing an entry
+  - A wiring script stopped part-way because an anchor appeared twice; nothing was half-written in
+    the file it stopped on, and the rest was finished with direct edits
+  - The first build refreshed the credential list only on its own saves, so a broker saved through
+    its form left usage out of date for up to 30 seconds; provider and broker saves now refresh it
+
+FINDINGS (out of scope, not fixed):
+  - Provider and broker connection tests still check references against their own seed lists, not
+    this register, so a revoked or expired credential still tests as resolving
+  - A broker configuration has one credential reference; requirement 200 asks for separate
+    simulation and live entries per broker
+  - No configuration screen has a stale state
 ────────────────────────────────────────────────────────────
 ```
  

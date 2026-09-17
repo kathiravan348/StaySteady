@@ -40,6 +40,34 @@ export function TextField({
   );
 }
 
+// A calendar date as YYYY-MM-DD; a cleared box is an empty string, which fails validation.
+export function DateField({
+  label,
+  value,
+  onChange,
+  error,
+  isDisabled = false,
+  hint,
+}: BaseFieldProps & { value: string; onChange: (value: string) => void }): ReactElement {
+  return (
+    <label className={styles.field}>
+      <span className={styles.fieldLabel}>{label}</span>
+      <input
+        type="date"
+        className={cx(styles.input, error === undefined ? undefined : styles.invalid)}
+        value={value}
+        disabled={isDisabled}
+        aria-invalid={error !== undefined}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
+      />
+      {hint !== undefined && <span className={styles.meta}>{hint}</span>}
+      <FieldError message={error} />
+    </label>
+  );
+}
+
 // An empty box is kept as NaN rather than zero, so it fails validation instead of silently saving 0.
 export function NumberField({
   label,

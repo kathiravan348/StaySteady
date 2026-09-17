@@ -16,6 +16,7 @@ import {
   getAlertRuleVersions,
   getBaseCurrencyVersions,
   getBrokerVersions,
+  getCredentialVersions,
   getCurrencyVersions,
   getInstrumentTypeVersions,
   getMarketVersions,
@@ -39,6 +40,7 @@ export const auditHandlers: readonly HttpHandler[] = [
       { noun: 'Currency', entries: getCurrencyVersions() },
       { noun: 'Base currency', entries: getBaseCurrencyVersions() },
       { noun: 'Alert rule', entries: getAlertRuleVersions() },
+      { noun: 'Credential', entries: getCredentialVersions() },
     ];
     const reasons = new Map([...decisions].map(([id, record]) => [id, record.decisionReason]));
     const strategies = generateStrategyLibrary(ctx, scenario === 'empty-portfolio').map(

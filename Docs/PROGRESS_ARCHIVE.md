@@ -4570,3 +4570,93 @@ FINDINGS (out of scope, not fixed):
   - No sells, withdrawals or splits exist in the mock data, so those filters are empty
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 47 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        47 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:57:12Z  |  local: 2026-09-17 04:27 IST (UTC+05:30)
+TASK CLAIMED:   S-25 Portfolio — Performance
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-24 committed as 0cefb99; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-24 commit)
+
+SCOPE:
+  - Open question 9 (is Portfolio -> Performance the same as Reports -> Performance?) is still
+    unanswered. Recommended option taken (decision 26), keeping both and making them different
+    rather than duplicates: this screen is the at-a-glance portfolio view (value since the first
+    purchase, returns for standard periods, a monthly returns heatmap, contribution by holding);
+    the report stays the place for chosen periods, comparisons, export and schedules, and is linked
+  - Computed on the mock side with the report valuation and the performance builder (S-20), so a
+    period's return here equals the performance report for the same dates
+  - New endpoint GET /api/v1/portfolio/performance?currency=
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        47 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T02:54:00Z  |  local: 2026-09-17 08:24 IST (UTC+05:30)
+TASK:           S-25 Portfolio — Performance — DONE
+
+WHAT WAS BUILT (nav map 6; open question 9, recommended option per decision 26):
+  - /portfolio/performance: time-weighted returns and money gain or loss for 1 month, 3 months,
+    year to date, 1 year and since the first purchase, each with its dates
+  - Value since the first purchase (weekly equity curve), with a note that rises include money
+    added; monthly returns heatmap; contribution by holding with each holding's share of the total
+  - A note explains why a return and a money gain can point in different directions, and links to
+    the performance report for chosen periods, benchmark comparison and export (not duplicated)
+  - Loading, error, empty (empty-portfolio) and stale states. Stale: the page expects valuations at
+    the previous day's close and shows a banner with how many days behind they are
+
+MOCK DATA:
+  - GET /api/v1/portfolio/performance?currency= built from the shared portfolio valuation and the
+    performance report builder (S-20), so a period here equals the report for the same dates
+  - loading-error returns 500; stale-data holds valuations back three days
+
+FILES CREATED:
+  - data/schemas/portfolio-performance.ts, data/mock/generators/portfolioPerformance.ts,
+    data/mock/handlers/performanceHandlers.ts, data/api/performanceQueries.ts
+  - features/portfolio/performance/{Performance.module.scss, sections/PerformanceView.tsx}
+FILES MODIFIED:
+  - features/portfolio/PortfolioPerformancePage.tsx — rewritten from a placeholder
+  - schemas, generators, handlers and api index files (exports and handler registration)
+  - Docs: session 44 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (open question 9 answered provisionally with the recommended option, as the start entry
+    records)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  periods:     1 month +4.76% (+$4,458.16), 3 months +8.89%, year to date -2.81% (-$1,864.82),
+               1 year -4.90%, since 2022-01-14 +1.39% with -$13,817.22; value $98,047.11 at the
+               2026-09-16 close; 57 months in the heatmap; both charts render
+  contribution: 7 holdings, shares add to -99.9% (rounding) of a loss; XAUUSD -$17,471.16 (-126.4%)
+  states:      stale-data -> banner "valued at the 2026-09-13 close, 3 days behind the last close";
+               loading-error -> "Performance unavailable"; empty-portfolio -> "No performance yet";
+               reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The note under the contribution table said only a losing holding shows a negative share; every
+    share keeps its holding's sign. Corrected during browser verification
+  - The page was first written without a stale state; added before completion
+
+FINDINGS (out of scope, not fixed):
+  - Transactions (S-24) and Reports (S-20) have no stale state; the S-24 entry argues a record needs
+    none, but CLAUDE.md requires one on every screen
+  - The base currency here follows the top bar switch, not the configured base currency (S-18)
+────────────────────────────────────────────────────────────
+```

@@ -12,6 +12,8 @@ import type {
   BaseCurrencyConfigInput,
   BaseCurrencyEntryDto,
   ConnectionTestResultDto,
+  CredentialConfigEntryDto,
+  CredentialConfigInput,
   CurrencyConfigEntryDto,
   CurrencyConfigInput,
   InstrumentTypeConfigEntryDto,
@@ -21,6 +23,7 @@ import {
   AlertRuleConfigListSchema,
   BaseCurrencyEntrySchema,
   ConnectionTestResultSchema,
+  CredentialConfigListSchema,
   CurrencyConfigListSchema,
   InstrumentTypeConfigListSchema,
 } from '../schemas';
@@ -82,6 +85,7 @@ function useConfigRevert<S extends z.ZodType>(
 const INSTRUMENTS = { key: ['config', 'instruments'], path: '/api/v1/config/instruments' } as const;
 const CURRENCIES = { key: ['config', 'currencies'], path: '/api/v1/config/currencies' } as const;
 const BASE = { key: ['config', 'base-currency'], path: '/api/v1/config/base-currency' } as const;
+const CREDENTIALS = { key: ['config', 'credentials'], path: '/api/v1/config/credentials' } as const;
 const ALERTS = { key: ['config', 'alerts'], path: '/api/v1/config/alerts' } as const;
 
 export function useInstrumentTypeConfigs(): UseQueryResult<InstrumentTypeConfigEntryDto[]> {
@@ -181,6 +185,26 @@ export function useRevertAlertRuleConfig(): UseMutationResult<
   RevertConfigVariables
 > {
   return useConfigRevert(ALERTS.key, ALERTS.path, AlertRuleConfigListSchema);
+}
+
+export function useCredentialConfigs(): UseQueryResult<CredentialConfigEntryDto[]> {
+  return useConfigList(CREDENTIALS.key, CREDENTIALS.path, CredentialConfigListSchema);
+}
+
+export function useSaveCredentialConfig(): UseMutationResult<
+  CredentialConfigEntryDto[],
+  Error,
+  SaveConfigVariables<CredentialConfigInput>
+> {
+  return useConfigSave(CREDENTIALS.key, CREDENTIALS.path, CredentialConfigListSchema);
+}
+
+export function useRevertCredentialConfig(): UseMutationResult<
+  CredentialConfigEntryDto[],
+  Error,
+  RevertConfigVariables
+> {
+  return useConfigRevert(CREDENTIALS.key, CREDENTIALS.path, CredentialConfigListSchema);
 }
 
 // Sends nothing: the mock reports what each channel would do with a test alert.

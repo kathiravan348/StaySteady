@@ -5,6 +5,9 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 
 import {
   alertRuleConfigHealth,
+  credentialConfigHealth,
+  credentialUsers,
+  daysBetweenIso,
   currencyConfigHealth,
   instrumentTypeConfigHealth,
   parseGenerated,
@@ -18,6 +21,7 @@ import {
   getAlertRuleVersions,
   getBaseCurrencyVersions,
   getBrokerVersions,
+  getCredentialVersions,
   getCurrencyVersions,
   getInstrumentTypeVersions,
   getMarketVersions,
@@ -26,6 +30,7 @@ import {
 import type {
   AlertRuleConfigInput,
   BaseCurrencyConfigInput,
+  CredentialConfigInput,
   CurrencyConfigInput,
   InstrumentTypeConfigInput,
 } from '../../schemas';
@@ -33,11 +38,13 @@ import {
   AlertRuleConfigListSchema,
   BaseCurrencyEntrySchema,
   ConnectionTestResultSchema,
+  CredentialConfigListSchema,
   CurrencyConfigListSchema,
   InstrumentTypeConfigListSchema,
   RevertRequestSchema,
   SaveAlertRuleConfigRequestSchema,
   SaveBaseCurrencyRequestSchema,
+  SaveCredentialConfigRequestSchema,
   SaveCurrencyConfigRequestSchema,
   SaveInstrumentTypeConfigRequestSchema,
   TestAlertRuleRequestSchema,
@@ -123,6 +130,37 @@ const alertHandlers = versionedConfigHandlers<AlertRuleConfigInput>({
   },
 });
 
+// Usage comes from the saved provider and broker configurations, so changing a reference there moves
+// it here. Expiry is counted from today on every request.
+const credentialHandlers = versionedConfigHandlers<CredentialConfigInput>({
+  path: '/api/v1/config/credentials',
+  noun: 'Credential',
+  idOf: (config) => config.reference,
+  store: getCredentialVersions,
+  listSchema: CredentialConfigListSchema,
+  saveSchema: SaveCredentialConfigRequestSchema,
+  allowCreate: true,
+  entries: () => {
+    const providers = currentConfigs(getProviderVersions());
+    const brokers = currentConfigs(getBrokerVersions());
+    const today = new Date().toISOString().slice(0, 10);
+    return [...getCredentialVersions().values()].flatMap((versions) => {
+      const config = versions[0]?.snapshot;
+      if (config === undefined) return [];
+      const usedBy = credentialUsers(config.reference, providers, brokers);
+      return [
+        {
+          config,
+          health: credentialConfigHealth(config, usedBy, today),
+          usedBy,
+          daysToExpiry: config.expiresOn === null ? null : daysBetweenIso(today, config.expiresOn),
+          versions,
+        },
+      ];
+    });
+  },
+});
+
 function baseEntry(): Response {
   const versions = getBaseCurrencyVersions().get('base') ?? [];
   const config = versions[0]?.snapshot;
@@ -200,4 +238,5 @@ export const settingsConfigHandlers: readonly HttpHandler[] = [
   ...baseCurrencyHandlers,
   alertTestHandler,
   ...alertHandlers,
+  ...credentialHandlers,
 ];

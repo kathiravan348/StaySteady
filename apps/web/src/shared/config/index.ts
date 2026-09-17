@@ -7,7 +7,14 @@ export { ConfigEntryList } from './ConfigEntryList';
 export type { CapabilitySwitchProps } from './ConfigControls';
 export { CapabilitySwitch, FieldError, SimulationNotice } from './ConfigControls';
 export type { TimeOfDay } from './FormFields';
-export { CheckboxGroup, NumberField, SelectField, TextField, TimeField } from './FormFields';
+export {
+  CheckboxGroup,
+  DateField,
+  NumberField,
+  SelectField,
+  TextField,
+  TimeField,
+} from './FormFields';
 export type { ConfigSaveCardProps } from './ConfigSaveCard';
 export { ConfigSaveCard } from './ConfigSaveCard';
 export type { ConnectionTestProps } from './ConnectionTest';

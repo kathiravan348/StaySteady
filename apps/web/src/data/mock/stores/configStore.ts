@@ -5,6 +5,7 @@ import type {
   AlertRuleConfigInput,
   BaseCurrencyConfigInput,
   BrokerConfigInput,
+  CredentialConfigInput,
   CurrencyConfigInput,
   InstrumentTypeConfigInput,
   MarketConfigInput,
@@ -14,6 +15,8 @@ import {
   seedAlertRuleHistory,
   seedAlertRules,
   seedBaseCurrency,
+  seedCredentialConfigs,
+  seedCredentialHistory,
   seedCurrencyConfigs,
   seedCurrencyHistory,
   seedInstrumentTypeConfigs,
@@ -137,6 +140,19 @@ export function getAlertRuleVersions(): VersionStore<AlertRuleConfigInput> {
     seedAlertRules().map((config) => [config.ruleId, [...seedAlertRuleHistory(config)]]),
   );
   return alertRules;
+}
+
+let credentials: VersionStore<CredentialConfigInput> | null = null;
+
+// Keyed by the reference itself, which is what provider and broker configurations name.
+export function getCredentialVersions(): VersionStore<CredentialConfigInput> {
+  credentials ??= new Map(
+    seedCredentialConfigs(new Date().toISOString().slice(0, 10)).map((config) => [
+      config.reference,
+      [...seedCredentialHistory(config)],
+    ]),
+  );
+  return credentials;
 }
 
 export function currentConfigs<T>(store: VersionStore<T>): T[] {

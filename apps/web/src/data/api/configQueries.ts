@@ -117,6 +117,8 @@ export function useSaveProviderConfig(): UseMutationResult<
           ),
     onSuccess: (entries) => {
       client.setQueryData(PROVIDERS_KEY, entries);
+      // Credential usage is worked out from these references.
+      void client.invalidateQueries({ queryKey: CREDENTIALS_KEY });
     },
   });
 }
@@ -143,6 +145,8 @@ export function useRevertProviderConfig(): UseMutationResult<
       ),
     onSuccess: (entries) => {
       client.setQueryData(PROVIDERS_KEY, entries);
+      // Credential usage is worked out from these references.
+      void client.invalidateQueries({ queryKey: CREDENTIALS_KEY });
     },
   });
 }
@@ -161,6 +165,8 @@ export function useTestProviderConnection(): UseMutationResult<
 }
 
 const BROKERS_KEY = ['config', 'brokers'] as const;
+// Kept in step with settingsConfigQueries, which owns the credentials list.
+const CREDENTIALS_KEY = ['config', 'credentials'] as const;
 
 export function useBrokerConfigs(): UseQueryResult<BrokerConfigEntryDto[]> {
   return useQuery({
@@ -193,6 +199,8 @@ export function useSaveBrokerConfig(): UseMutationResult<
           ),
     onSuccess: (entries) => {
       client.setQueryData(BROKERS_KEY, entries);
+      // Credential usage is worked out from these references.
+      void client.invalidateQueries({ queryKey: CREDENTIALS_KEY });
     },
   });
 }
@@ -219,6 +227,8 @@ export function useRevertBrokerConfig(): UseMutationResult<
       ),
     onSuccess: (entries) => {
       client.setQueryData(BROKERS_KEY, entries);
+      // Credential usage is worked out from these references.
+      void client.invalidateQueries({ queryKey: CREDENTIALS_KEY });
     },
   });
 }
