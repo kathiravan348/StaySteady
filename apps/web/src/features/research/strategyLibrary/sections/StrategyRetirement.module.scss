@@ -1,0 +1,60 @@
+@use '../../../../styles/mixins' as mx;
+
+.stack {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-2);
+    text-align: start;
+    vertical-align: top;
+    border-bottom: var(--border-width-thin) solid var(--border-subtle);
+  }
+
+  th {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+  }
+}
+
+.numeric {
+  @include mx.numeric(end);
+}
+
+.high {
+  font-weight: var(--font-weight-semibold);
+  color: var(--severity-high);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.meta {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

@@ -178,4 +178,5 @@ export {
   useInflationHistory,
   useLossCarryForwards,
   useStrategyLifecycles,
+  useStrategyStanding,
 } from './partTwoReferenceQueries';

@@ -9,6 +9,8 @@ import { CounterpartiesSchema, CounterpartyExposureSchema } from '../schemas/cou
 import type { InflationHistoryDto } from '../schemas/inflation';
 import { InflationHistorySchema } from '../schemas/inflation';
 import type { StrategyLifecycleListDto } from '../schemas/strategy-lifecycle';
+import type { StrategyStandingViewDto } from '../schemas/strategy-standing';
+import { StrategyStandingViewSchema } from '../schemas/strategy-standing';
 import { StrategyLifecycleListSchema } from '../schemas/strategy-lifecycle';
 import type { LossCarryForwardListDto } from '../schemas/tax-losses';
 import { LossCarryForwardListSchema } from '../schemas/tax-losses';
@@ -49,5 +51,13 @@ export function useStrategyLifecycles(): UseQueryResult<StrategyLifecycleListDto
     queryKey: ['strategies', 'lifecycle'],
     queryFn: ({ signal }) =>
       apiGet('/api/v1/strategies/lifecycle', StrategyLifecycleListSchema, signal),
+  });
+}
+
+export function useStrategyStanding(): UseQueryResult<StrategyStandingViewDto> {
+  return useQuery({
+    queryKey: ['strategies', 'standing'],
+    queryFn: ({ signal }) =>
+      apiGet('/api/v1/strategies/standing', StrategyStandingViewSchema, signal),
   });
 }

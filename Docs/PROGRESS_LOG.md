@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:34:00Z  |  local: 2026-09-17 19:04 IST
-LAST AGENT:         session 73 (Claude Opus 5; E-07 planning liquidity)
+LAST UPDATED:       2026-09-17T13:39:00Z  |  local: 2026-09-17 19:09 IST
+LAST AGENT:         session 74 (Claude Opus 5; E-08 strategy standing)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -229,7 +229,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-05 | System Health — independent depository/registrar reconciliation status | DONE | 100 | Session 57; reworked session 72 | Requirements 31, 32; UI spec 19.2; decision 45. Reconciliation against depository statements per broker with a seeded mismatch; mismatch raises a critical alert and pauses approvals for that broker until resolved with a reason; verified session 72 |
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | DONE | 100 | Session 57; reworked session 68 | Requirements 26, 30, 31; UI spec 19.2. Real return and real benchmark from recorded inflation or assumption; costs and tax as share of gross gain; tax pack for the residence country (gains by asset class, income with withholding and foreign tax credit, losses carried forward, foreign holdings, remittance cap); verified session 68 |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | DONE | 100 | Session 57; reworked session 73 | Requirements 29, 30, 31; UI spec 19.2; owner Q18. Emergency reserve apart from trading cash, liquidity ladder, commitments against reachable liquidity, withdrawal phase, automation ceiling; ranged projections offer the saved inflation assumption; verified session 73 |
-| E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
+| E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | DONE | 100 | Session 57; reworked session 74 | Requirements 28, 33; UI spec 19.2. Criteria set at promotion, standing measured from each strategy's positions (or at demotion), review due dates, demotion history, correlation of daily returns; verified session 74 |
 | E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 85 | Session 57; audited 59; parts a/b sessions 62, 66 | Requirements 26, 27, 30, 34; UI spec 19.2. **Done:** inflation assumptions, cost budget, counterparty threshold, decision safeguards and export settings (/settings/assumptions); tax rule sets per residence country and asset class replacing per-market rates (/settings/tax-rules, decision 45). **Remaining (low priority, decision 43):** employer policy rules as configuration read by the compliance store |
  
 ### Stage P — Polish
@@ -701,6 +701,46 @@ FILES: created schemas/planning-liquidity.ts, generators/planningLiquidity.ts,
   planning/sections/LiquidityPlanForm.tsx; rewritten planning/sections/{EmergencyReserveCard,
   LiquidityLadderSection}.tsx; modified planning/sections/ProjectionPanel.tsx, schemas/index.ts,
   handlers/index.ts, api/index.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        74
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:35:00Z  |  local: 2026-09-17 19:05 IST (UTC+05:30)
+END:            2026-09-17T13:39:00Z  |  local: 2026-09-17 19:09 IST (UTC+05:30)
+TASK CLAIMED:   E-08 Strategy Library — retirement criteria, standing, demotion history, correlation
+END STATUS:     DONE
+
+COMPLETED:
+  - GET /api/v1/strategies/standing (generators/strategyStanding.ts; useStrategyStanding): each
+    strategy's value series is the sum of its own positions on business days of its criteria
+    window, valued as reports value them; drawdown and annualised rolling Sharpe from the series,
+    underperformance from the library's live-versus-backtest divergence; strategies without positions
+    keep the measurement recorded at demotion; breaches in words; next review from the last review
+    and review interval, overdue flag. Correlation of daily returns over a common 90-day window with
+    a 0.70 warning.
+  - StrategyRetirementSection rewritten on the standing and lifecycle hooks with loading and error
+    states and an SCSS module; strategyRetirementData.ts (fixed demotion log and matrix) deleted.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser /research/strategies: Dual Moving Average
+  Momentum (fully automatic) drawdown 4.8%, Sharpe 0.01, trails 18.1 points → two breaches; RSI
+  Oversold Mean Reversion recorded at demotion, three breaches, review 2026-08-31 overdue; Donchian
+  within criteria; draft and backtested "None until promoted"; demotion history lists the RSI
+  demotion with its reason; correlation matrix momentum vs breakout -0.24. Found and fixed during
+  verification: correlation compared series of different windows (90 and 120 days) from their
+  starts; both now use the same 90-day dates.
+
+FINDINGS:
+  - Dual Moving Average Momentum breaks its criteria while still fully automatic; the platform shows
+    it but nothing demotes automatically (not specified).
+
+FILES: created schemas/strategy-standing.ts, generators/strategyStanding.ts,
+  strategyLibrary/sections/StrategyRetirement.module.scss; modified schemas/index.ts,
+  handlers/partTwoReferenceHandlers.ts, api/{partTwoReferenceQueries,index}.ts,
+  strategyLibrary/sections/StrategyRetirementSection.tsx; deleted sections/strategyRetirementData.ts.
 ────────────────────────────────────────────────────────────
 ```
  

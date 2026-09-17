@@ -1,270 +1,212 @@
-// Strategy retirement criteria, demotion audit log & correlation matrix (E-08; requirements 28; UI spec 19.2).
+// Retirement criteria set at promotion, each strategy's standing against them, demotion history and
+// correlation between strategies (E-08; requirements 28, 33; UI spec 19.2).
 
-import { useState } from 'react';
-import type { FC } from 'react';
-import { Badge, Button, Card } from '@staysteady/ui';
+import { Badge, Card, ErrorState, LoadingState, cx } from '@staysteady/ui';
+import type { ReactElement } from 'react';
 
-import { CORRELATION_MATRIX, DEMOTION_LOG } from './strategyRetirementData';
+import { useStrategyLifecycles, useStrategyStanding } from '../../../../data/api';
+import type {
+  StrategyLifecycleDto,
+  StrategyStandingDto,
+  StrategyStandingViewDto,
+} from '../../../../data/schemas';
+import { formatDateTime, humanizeToken } from '../../../../shared/format';
+import styles from './StrategyRetirement.module.scss';
 
-export const StrategyRetirementSection: FC = () => {
-  const [activeTab, setActiveTab] = useState<'matrix' | 'rules' | 'log'>('matrix');
-
+function Criteria({
+  lifecycle,
+}: {
+  readonly lifecycle: StrategyLifecycleDto | undefined;
+}): ReactElement {
+  const criteria = lifecycle?.criteria ?? null;
+  if (criteria === null) return <span className={styles.meta}>None until promoted</span>;
   return (
-    <Card
-      title="Strategy Lifecycle Governance & Cross-Strategy Correlation (Requirements 28)"
-      extra={
-        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-          <Button
-            variant={activeTab === 'matrix' ? 'primary' : 'secondary'}
-            size="sm"
-            onPress={() => {
-              setActiveTab('matrix');
-            }}
-          >
-            Correlation Matrix
-          </Button>
-          <Button
-            variant={activeTab === 'rules' ? 'primary' : 'secondary'}
-            size="sm"
-            onPress={() => {
-              setActiveTab('rules');
-            }}
-          >
-            Retirement Rules
-          </Button>
-          <Button
-            variant={activeTab === 'log' ? 'primary' : 'secondary'}
-            size="sm"
-            onPress={() => {
-              setActiveTab('log');
-            }}
-          >
-            Demotion History ({DEMOTION_LOG.length})
-          </Button>
-        </div>
-      }
-    >
-      <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
-        <p style={{ margin: 0, fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-          Systematic demotion criteria protect capital when strategies decay. Cross-strategy
-          correlation monitors true portfolio diversification.
-        </p>
-
-        {activeTab === 'matrix' && (
-          <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table
-                style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
-                  fontSize: 'var(--font-size-xs)',
-                }}
-              >
-                <thead>
-                  <tr
-                    style={{
-                      borderBottom: 'var(--border-width-thin) solid var(--border-subtle)',
-                      textAlign: 'left',
-                    }}
-                  >
-                    <th style={{ padding: 'var(--space-2)' }}>Strategy</th>
-                    <th style={{ padding: 'var(--space-2)', textAlign: 'center' }}>MFA</th>
-                    <th style={{ padding: 'var(--space-2)', textAlign: 'center' }}>ST</th>
-                    <th style={{ padding: 'var(--space-2)', textAlign: 'center' }}>VA</th>
-                    <th style={{ padding: 'var(--space-2)', textAlign: 'center' }}>DC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {CORRELATION_MATRIX.map((row) => (
-                    <tr
-                      key={row.short}
-                      style={{
-                        borderBottom: 'var(--border-width-thin) solid var(--border-subtle)',
-                      }}
-                    >
-                      <td
-                        style={{
-                          padding: 'var(--space-2)',
-                          fontWeight: 'var(--font-weight-medium)',
-                        }}
-                      >
-                        {row.name} ({row.short})
-                      </td>
-                      {[row.s1, row.s2, row.s3, row.s4].map((val, idx) => {
-                        const isHigh = val > 0.7 && val < 1.0;
-                        const isNeg = val < 0;
-                        return (
-                          <td
-                            key={idx}
-                            style={{
-                              padding: 'var(--space-2)',
-                              textAlign: 'center',
-                              fontWeight: isHigh ? 'var(--font-weight-bold)' : 'normal',
-                              color: isHigh
-                                ? 'var(--color-warning, #e6a700)'
-                                : isNeg
-                                  ? 'var(--change-profit)'
-                                  : 'inherit',
-                              backgroundColor: isHigh ? 'var(--surface-sunken)' : 'transparent',
-                            }}
-                          >
-                            {val.toFixed(2)}
-                            {isHigh && ' ⚠'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div
-              style={{
-                fontSize: 'var(--font-size-xs)',
-                color: 'var(--text-secondary)',
-                padding: 'var(--space-2)',
-                backgroundColor: 'var(--surface-sunken)',
-                borderRadius: 'var(--radius-sm)',
-              }}
-            >
-              ⚠ High Correlation Alert: <strong>MFA</strong> and <strong>DC</strong> exhibit 0.74
-              correlation. Holding both increases combined drawdowns in cyclical pullbacks.
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'rules' && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 'var(--space-3)',
-            }}
-          >
-            <div
-              style={{
-                padding: 'var(--space-3)',
-                backgroundColor: 'var(--surface-raised)',
-                border: 'var(--border-width-thin) solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                display: 'grid',
-                gap: 'var(--space-1)',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontWeight: 'var(--font-weight-semibold)',
-                    fontSize: 'var(--font-size-xs)',
-                  }}
-                >
-                  Drawdown Breaker
-                </span>
-                <Badge variant="negative">Max 15.0%</Badge>
-              </div>
-              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                Demotes Live strategy directly to Quarantined Paper stage if peak-to-trough drawdown
-                exceeds 15%.
-              </span>
-            </div>
-
-            <div
-              style={{
-                padding: 'var(--space-3)',
-                backgroundColor: 'var(--surface-raised)',
-                border: 'var(--border-width-thin) solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                display: 'grid',
-                gap: 'var(--space-1)',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontWeight: 'var(--font-weight-semibold)',
-                    fontSize: 'var(--font-size-xs)',
-                  }}
-                >
-                  Alpha Decay Breaker
-                </span>
-                <Badge variant="warning">&gt; 5.0% Lag</Badge>
-              </div>
-              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                Triggers review and size reduction if rolling 90-day return lags benchmark by over
-                500 basis points.
-              </span>
-            </div>
-
-            <div
-              style={{
-                padding: 'var(--space-3)',
-                backgroundColor: 'var(--surface-raised)',
-                border: 'var(--border-width-thin) solid var(--border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                display: 'grid',
-                gap: 'var(--space-1)',
-              }}
-            >
-              <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <span
-                  style={{
-                    fontWeight: 'var(--font-weight-semibold)',
-                    fontSize: 'var(--font-size-xs)',
-                  }}
-                >
-                  Sharpe Floor
-                </span>
-                <Badge variant="neutral">&lt; 0.50 SR</Badge>
-              </div>
-              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-secondary)' }}>
-                Mandates retirement if 6-month realized Sharpe ratio falls below 0.50 risk-adjusted
-                efficiency.
-              </span>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'log' && (
-          <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
-            {DEMOTION_LOG.map((entry) => (
-              <div
-                key={entry.id}
-                style={{
-                  padding: 'var(--space-3)',
-                  backgroundColor: 'var(--surface-raised)',
-                  border: 'var(--border-width-thin) solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-md)',
-                  display: 'grid',
-                  gap: 'var(--space-1)',
-                  fontSize: 'var(--font-size-xs)',
-                }}
-              >
-                <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                >
-                  <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
-                    {entry.strategyName}
-                  </span>
-                  <Badge variant="warning">
-                    {entry.fromStage} &rarr; {entry.toStage}
-                  </Badge>
-                </div>
-                <div style={{ color: 'var(--change-loss)' }}>Trigger: {entry.triggerReason}</div>
-                <div style={{ color: 'var(--text-secondary)' }}>
-                  Action: {entry.capitalAction} • {entry.date}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </Card>
+    <span className={styles.meta}>
+      Drawdown ≤ {String(criteria.maxDrawdownPercent)}%, {String(criteria.rollingWindowDays)}-day
+      Sharpe ≥ {criteria.minRollingSharpe.toFixed(2)}, trails backtest ≤{' '}
+      {String(criteria.maxUnderperformancePoints)} points; set at{' '}
+      {humanizeToken(criteria.definedAtStage).toLowerCase()}
+    </span>
   );
-};
+}
+
+function Standing({ standing }: { readonly standing: StrategyStandingDto }): ReactElement {
+  if (standing.measured === null) return <span className={styles.meta}>Not measured</span>;
+  const { measured } = standing;
+  return (
+    <span className={styles.stack}>
+      <span>
+        Drawdown {measured.drawdownPercent.toFixed(1)}%, Sharpe {measured.rollingSharpe.toFixed(2)},
+        trails by {measured.underperformancePoints.toFixed(1)} points
+      </span>
+      <span className={styles.meta}>
+        {standing.source === 'live'
+          ? 'From open positions'
+          : 'Recorded at demotion; no positions since'}
+      </span>
+      {standing.breaches.length === 0 ? (
+        <Badge variant="positive">Within criteria</Badge>
+      ) : (
+        <span className={styles.high}>{standing.breaches.join('; ')}</span>
+      )}
+    </span>
+  );
+}
+
+function CorrelationTable({ view }: { readonly view: StrategyStandingViewDto }): ReactElement {
+  const { correlation, correlationWarning } = view;
+  if (correlation.strategyIds.length < 2) {
+    return (
+      <p className={styles.meta}>
+        Fewer than two strategies hold positions, so there is nothing to compare.
+      </p>
+    );
+  }
+  return (
+    <div className={styles.tableScroll}>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th scope="col">{correlation.windowDays}-day daily returns</th>
+            {correlation.names.map((name) => (
+              <th key={name} scope="col" className={styles.numeric}>
+                {name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {correlation.matrix.map((row, i) => (
+            <tr key={correlation.strategyIds[i]}>
+              <th scope="row">{correlation.names[i]}</th>
+              {row.map((value, j) => (
+                <td
+                  key={correlation.strategyIds[j]}
+                  className={cx(
+                    styles.numeric,
+                    i !== j && Math.abs(value) > correlationWarning ? styles.high : undefined,
+                  )}
+                >
+                  {value.toFixed(2)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function StrategyRetirementSection(): ReactElement {
+  const standing = useStrategyStanding();
+  const lifecycles = useStrategyLifecycles();
+
+  const body = ((): ReactElement => {
+    const failed = [standing, lifecycles].find((query) => query.isError);
+    if (failed !== undefined) {
+      return (
+        <ErrorState
+          title="Strategy standing unavailable"
+          message={failed.error?.message ?? 'The request failed.'}
+          onRetry={() => {
+            void standing.refetch();
+            void lifecycles.refetch();
+          }}
+        />
+      );
+    }
+    if (standing.data === undefined || lifecycles.data === undefined) {
+      return <LoadingState layout="table" count={4} />;
+    }
+    const view = standing.data;
+    const demotions = lifecycles.data.flatMap((lifecycle) =>
+      lifecycle.history
+        .filter((change) => change.kind === 'demotion')
+        .map((change) => ({ lifecycle, change })),
+    );
+    const correlated = view.correlation.matrix.some((row, i) =>
+      row.some((value, j) => i < j && Math.abs(value) > view.correlationWarning),
+    );
+    return (
+      <div className={styles.stack}>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th scope="col">Strategy</th>
+                <th scope="col">Retirement criteria</th>
+                <th scope="col">Standing</th>
+                <th scope="col">Next review</th>
+              </tr>
+            </thead>
+            <tbody>
+              {view.standings.map((item) => (
+                <tr key={String(item.strategyId)}>
+                  <th scope="row">
+                    {item.name}
+                    <br />
+                    <span className={styles.meta}>{humanizeToken(item.stage)}</span>
+                  </th>
+                  <td>
+                    <Criteria
+                      lifecycle={lifecycles.data.find(
+                        (lifecycle) => String(lifecycle.strategyId) === String(item.strategyId),
+                      )}
+                    />
+                  </td>
+                  <td>
+                    <Standing standing={item} />
+                  </td>
+                  <td>
+                    {item.nextReviewOn === null ? (
+                      <span className={styles.meta}>—</span>
+                    ) : (
+                      <span className={item.isReviewOverdue ? styles.high : undefined}>
+                        {String(item.nextReviewOn)}
+                        {item.isReviewOverdue ? ' (overdue)' : ''}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h3 className={styles.heading}>Demotion history</h3>
+        {demotions.length === 0 ? (
+          <p className={styles.meta}>No strategy has been demoted.</p>
+        ) : (
+          <ul className={styles.list}>
+            {demotions.map(({ lifecycle, change }) => (
+              <li key={`${String(lifecycle.strategyId)}-${String(change.at)}`}>
+                <span className={styles.heading}>
+                  {
+                    view.standings.find(
+                      (item) => String(item.strategyId) === String(lifecycle.strategyId),
+                    )?.name
+                  }
+                </span>{' '}
+                {humanizeToken(change.from ?? 'draft')} → {humanizeToken(change.to)},{' '}
+                {formatDateTime(change.at)}
+                <p className={styles.meta}>{change.reason}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <h3 className={styles.heading}>Correlation between strategies</h3>
+        {correlated && (
+          <p className={styles.high}>
+            Some strategies move together above {view.correlationWarning.toFixed(2)}, so they are
+            not as independent as their separate limits assume.
+          </p>
+        )}
+        <CorrelationTable view={view} />
+      </div>
+    );
+  })();
+
+  return <Card title="Retirement criteria, standing and correlation">{body}</Card>;
+}

@@ -48,4 +48,5 @@ export * from './reconciliation';
 export * from './planning-liquidity';
 export * from './inflation';
 export * from './strategy-lifecycle';
+export * from './strategy-standing';
 export * from './tax-losses';
