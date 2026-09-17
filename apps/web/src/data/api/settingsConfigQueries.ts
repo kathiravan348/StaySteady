@@ -42,7 +42,7 @@ export interface RevertConfigVariables {
   readonly reason: string;
 }
 
-function useConfigList<S extends z.ZodType>(
+export function useConfigList<S extends z.ZodType>(
   key: readonly string[],
   path: string,
   schema: S,
@@ -50,7 +50,7 @@ function useConfigList<S extends z.ZodType>(
   return useQuery({ queryKey: key, queryFn: ({ signal }) => apiGet(path, schema, signal) });
 }
 
-function useConfigSave<S extends z.ZodType, T>(
+export function useConfigSave<S extends z.ZodType, T>(
   key: readonly string[],
   path: string,
   schema: S,
@@ -67,7 +67,7 @@ function useConfigSave<S extends z.ZodType, T>(
   });
 }
 
-function useConfigRevert<S extends z.ZodType>(
+export function useConfigRevert<S extends z.ZodType>(
   key: readonly string[],
   path: string,
   schema: S,

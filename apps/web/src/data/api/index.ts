@@ -157,6 +157,14 @@ export {
   useScreenerSearch,
 } from './screenerQueries';
 export {
+  useInflationAssumptions,
+  useOperatingPolicy,
+  useRevertInflationAssumption,
+  useRevertOperatingPolicy,
+  useSaveInflationAssumption,
+  useSaveOperatingPolicy,
+} from './assumptionsConfigQueries';
+export {
   useCounterparties,
   useInflationHistory,
   useLossCarryForwards,

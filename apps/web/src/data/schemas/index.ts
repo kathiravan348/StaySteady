@@ -41,6 +41,7 @@ export * from './audit';
 export * from './portfolio-performance';
 export * from './compliance';
 export * from './screener';
+export * from './config-assumptions';
 export * from './counterparties';
 export * from './inflation';
 export * from './strategy-lifecycle';

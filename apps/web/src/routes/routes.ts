@@ -70,6 +70,7 @@ export const ROUTES = {
   SETTINGS_CREDENTIALS: '/settings/credentials',
   SETTINGS_AUTOMATION: '/settings/automation',
   SETTINGS_DISPLAY: '/settings/display',
+  SETTINGS_ASSUMPTIONS: '/settings/assumptions',
 
   // Developer Component Workbench (UI Spec 4.4 / Stage L)
   WORKBENCH: '/workbench',

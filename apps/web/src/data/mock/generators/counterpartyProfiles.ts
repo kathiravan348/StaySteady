@@ -140,10 +140,13 @@ const PROFILES: readonly ProfileInput[] = [
   },
 ];
 
-export function generateCounterparties(): CounterpartiesDto {
+// The threshold comes from the saved operating policy (E-09); the constant seeds it.
+export function generateCounterparties(
+  maxSharePercent: number = COUNTERPARTY_MAX_SHARE_PERCENT,
+): CounterpartiesDto {
   return parseGenerated(
     CounterpartiesSchema,
-    { maxSharePercent: COUNTERPARTY_MAX_SHARE_PERCENT, profiles: [...PROFILES] },
+    { maxSharePercent, profiles: [...PROFILES] },
     'counterparties',
   );
 }

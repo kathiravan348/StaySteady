@@ -55,6 +55,7 @@ import { PlanningScenariosPage } from '../features/planning/PlanningScenariosPag
 import { SettingsMarketsPage } from '../features/settings/SettingsMarketsPage';
 import { SettingsAlertsPage } from '../features/settings/SettingsAlertsPage';
 import { SettingsBrokersPage } from '../features/settings/SettingsBrokersPage';
+import { SettingsAssumptionsPage } from '../features/settings/SettingsAssumptionsPage';
 import { SettingsCurrenciesPage } from '../features/settings/SettingsCurrenciesPage';
 import { SettingsInstrumentsPage } from '../features/settings/SettingsInstrumentsPage';
 import { SettingsCredentialsPage } from '../features/settings/SettingsCredentialsPage';
@@ -141,6 +142,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.SETTINGS_CREDENTIALS} element={<SettingsCredentialsPage />} />
         <Route path={ROUTES.SETTINGS_AUTOMATION} element={<SettingsAutomationPage />} />
         <Route path={ROUTES.SETTINGS_DISPLAY} element={<SettingsDisplayPage />} />
+        <Route path={ROUTES.SETTINGS_ASSUMPTIONS} element={<SettingsAssumptionsPage />} />
 
         {/* Catch-all 404 */}
         <Route path="*" element={<NotFoundPage />} />

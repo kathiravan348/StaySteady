@@ -11,6 +11,7 @@ import {
   generateStrategyLifecycles,
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
+import { currentOperatingPolicy } from '../stores/assumptionsStore';
 import { failure } from './versionedConfigHandlers';
 
 function today(): string {
@@ -32,7 +33,9 @@ export const partTwoReferenceHandlers: readonly HttpHandler[] = [
     respond('losses carried forward', () => generateLossCarryForwards(today())),
   ),
   http.get('/api/v1/counterparties', () =>
-    respond('counterparties', () => generateCounterparties()),
+    respond('counterparties', () =>
+      generateCounterparties(currentOperatingPolicy().counterpartyMaxSharePercent),
+    ),
   ),
   http.get('/api/v1/strategies/lifecycle', () =>
     respond('strategy lifecycles', () => generateStrategyLifecycles(today())),

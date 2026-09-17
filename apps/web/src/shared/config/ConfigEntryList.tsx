@@ -21,7 +21,8 @@ export interface ConfigEntryListProps {
   readonly selectedId: string | null;
   readonly isBusy: boolean;
   readonly onSelect: (id: string) => void;
-  readonly onToggleEnabled: (id: string, enabled: boolean) => void;
+  // Areas whose entries cannot be switched off leave it out, and no toggle is shown.
+  readonly onToggleEnabled?: (id: string, enabled: boolean) => void;
 }
 
 const HEALTH: Readonly<
@@ -71,14 +72,16 @@ export function ConfigEntryList({
                 {!entry.enabled && <Badge variant="neutral">Disabled</Badge>}
               </span>
             </button>
-            <Toggle
-              isSelected={entry.enabled}
-              isDisabled={isBusy}
-              aria-label={`${entry.enabled ? 'Disable' : 'Enable'} ${entry.title}`}
-              onChange={(enabled) => {
-                onToggleEnabled(entry.id, enabled);
-              }}
-            />
+            {onToggleEnabled !== undefined && (
+              <Toggle
+                isSelected={entry.enabled}
+                isDisabled={isBusy}
+                aria-label={`${entry.enabled ? 'Disable' : 'Enable'} ${entry.title}`}
+                onChange={(enabled) => {
+                  onToggleEnabled(entry.id, enabled);
+                }}
+              />
+            )}
             <span className={styles.health}>{entry.health.summary}</span>
           </li>
         );

@@ -7,10 +7,8 @@ import type { ReactElement } from 'react';
 import { useBaseCurrencyConfig, useCurrencyConfigs, useProviderConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
-import { OperatingCostBudgetSection } from './budget/OperatingCostBudgetSection';
 import { CurrenciesView } from './currencies/sections/CurrenciesView';
 import { SettingsNav } from './sections/SettingsNav';
-import { TaxRulesAndInflationSection } from './tax/TaxRulesAndInflationSection';
 
 function CurrenciesBody(): ReactElement {
   const currencies = useCurrencyConfigs();
@@ -49,8 +47,8 @@ function CurrenciesBody(): ReactElement {
 export function SettingsCurrenciesPage(): ReactElement {
   return (
     <PageShell
-      title="Currencies & Economic Assumptions"
-      description="The currency totals are reported in, exchange rate sources, statutory tax rules, inflation rates, and algorithmic operating budgets."
+      title="Currencies"
+      description="The currency totals are reported in, where exchange rates come from and what conversion costs."
       breadcrumbs={[
         { label: 'Overview', to: ROUTES.OVERVIEW },
         { label: 'Settings' },
@@ -59,10 +57,6 @@ export function SettingsCurrenciesPage(): ReactElement {
     >
       <SettingsNav />
       <CurrenciesBody />
-      <div style={{ marginTop: 'var(--space-5)', display: 'grid', gap: 'var(--space-4)' }}>
-        <TaxRulesAndInflationSection />
-        <OperatingCostBudgetSection />
-      </div>
     </PageShell>
   );
 }
