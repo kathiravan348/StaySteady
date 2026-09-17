@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   87% (93 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 6 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T07:30:00Z  |  local: 2026-09-18 13:00 IST
-LAST AGENT:         Claude Opus 5 (session 89)
-BUILD STATE:        PASS (pnpm build, session 89)
+OVERALL PROGRESS:   88% (94 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 7 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T09:00:00Z  |  local: 2026-09-18 14:30 IST
+LAST AGENT:         Claude Opus 5 (session 90)
+BUILD STATE:        PASS (pnpm build, session 90)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. The data layer for Stage R is complete; R-07 starts the screen.
+BLOCKERS:           none. R-08, the Financials tab, is next and adds to the screen built in R-07.
 ```
 
 ---
@@ -34,37 +34,33 @@ BLOCKERS:           none. The data layer for Stage R is complete; R-07 starts th
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R (requirements
-  Part III, UI spec 20, decisions 48-54) has its whole data layer built: R-01 classification,
-  R-02 screens wired, R-03 fund look-through and exposure, R-04 the company record, R-05 statements,
-  R-06 derived measures, medians and warning flags. R-07 starts the Company Research screen.
+  Part III, UI spec 20, decisions 48-54) has its data layer complete (R-01 to R-06) and its screen
+  started: R-07 added /markets/company/:instrumentId with the Overview tab. R-08 adds the Financials
+  tab to the same screen.
 
-WHAT R-06 ADDED (session 89):
-  - apps/web/src/shared/fundamentals: measureTypes, measureContext, valuationMeasures,
-    healthMeasures, measures (assembler) and flags. Eighteen measures across valuation,
-    profitability, health, growth and cash quality, each carrying the inputs it was computed from;
-    a measure whose inputs were not reported is null with a note, never zero.
-  - data/mock/generators/fundamentalMeasures.ts: supplies statements, price and peer group, computes
-    industry medians over peers in the same industry and the company's own three-year history.
-    Endpoint GET /api/v1/instruments/:id/measures?basis=, hook useFundamentalMeasures.
-  - Market capitalisation and price to earnings in the old fundamentals endpoint now derive from
-    shares outstanding and the price history instead of a random draw (the finding from session 88).
-    Only beta, which no statement reports, is still seeded.
-  - Statement margins, capital spending and leverage now vary year to year, so a ratio has a history
-    worth reading; a quarter in the year now in progress grows on from the last reported year, so
-    quarter-on-quarter growth is a real number.
+WHAT R-07 ADDED (session 90):
+  - Route MARKETS_COMPANY (/markets/company/:instrumentId) with companyResearchPath, and
+    features/markets/company: CompanyResearchPage plus ProfileSection, StandingSection and
+    FlagsSection, each loading and failing on its own.
+  - Overview answers "what am I buying": the business description, revenue by segment and geography
+    with the share each covers, listings, employees, reporting currency and year end, executives
+    with a recent appointment called out, the auditor, what the business depends on, sector and
+    industry, group and parent with listed relatives, market value, five headline measures each
+    beside its industry median, and the warning flags with their evidence.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-07 Company Research screen shell and Overview tab (UI spec 20.1). Everything it needs is
-     served: useCompanyProfile, useInstrumentClassification, useCorporateStructure,
-     useFundamentalMeasures, useFundLookThrough, useInstrumentOwnership, useFinancialStatements.
-     Add the route, and reach it from the workspace, the screener, Holdings and Position Detail
-     (that last part is R-12).
-  2. R-08 Financials tab, R-09 Ratios tab with peer comparison, R-10 Ownership tab, R-11 news and
-     events tab, R-12 surfacing, R-13 screener factors.
+  1. R-08 Financials tab: the three statements as tables, annual and quarterly toggle, consolidated
+     and standalone toggle where both exist (basesAvailable says so), five periods side by side with
+     the change per line, publication date per column, and trend charts from the existing
+     AnalyticalChart presets. Add it to the tabs array in CompanyResearchPage.
+  2. R-09 Ratios tab with peer comparison, R-10 Ownership tab (the look-through data from R-03 is
+     ready for the fund case), R-11 news and events tab, R-12 surfacing, R-13 screener factors.
   3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
+  - The developer scenario switcher is the footer select in the browser pane; set it with the native
+    value setter and a change event, and set it back to healthy afterwards.
   - Every ratio comes from shared/fundamentals through the measures endpoint. Do not compute one in
     a component; a ratio that means two things in two places is the failure this avoids.
   - A valuation measure needs the price and the statements in the same currency, or it is null with
@@ -277,7 +273,7 @@ already built but cannot work without classification.
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | DONE | 100 | Claude Opus 5 (session 87) | Requirements 35 |
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | DONE | 100 | Claude Opus 5 (session 88) | Requirements 37; decision 50. Must tie to price history (decision 19) |
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | DONE | 100 | Claude Opus 5 (session 89) | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
-| R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | TODO | 0 | | UI spec 20.1 |
+| R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | DONE | 100 | Claude Opus 5 (session 90) | UI spec 20.1 |
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | TODO | 0 | | UI spec 20.1 |
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | TODO | 0 | | UI spec 20.1 |
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | TODO | 0 | | UI spec 20.1; requirements 36 |
@@ -1530,6 +1526,54 @@ modified apps/web/src/data/schemas/{index.ts,financial-statements.ts},
 apps/web/src/data/mock/generators/{financialStatementBuild.ts,financialStatements.ts,
 researchData.ts,index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
 apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 90 | Claude Opus 5
+START:          2026-09-18T07:40:00Z  |  local: 2026-09-18 13:10 IST
+END:            2026-09-18T09:00:00Z  |  local: 2026-09-18 14:30 IST
+TASK CLAIMED:   R-07 Company Research screen shell and Overview tab
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Route /markets/company/:instrumentId (ROUTES.MARKETS_COMPANY, companyResearchPath) wired into
+    AppRoutes, with a Tabs shell so later tabs drop in beside Overview.
+  - ProfileSection: business description, listings, headquarters, employees, reporting currency and
+    fiscal year end, ISIN, executives with an appointment in the last year called out, the auditor
+    with a qualified opinion shown as critical, revenue by segment and by geography as labelled
+    bars that say how much of revenue the reported lines cover, and what the business depends on.
+  - StandingSection: sector and industry, business group, parent with the share held, listed
+    relatives linking to their own research page, market value, and five headline measures each
+    beside its industry median and peer count.
+  - FlagsSection: warning flags with their evidence, an empty state that says nothing was flagged
+    and that this is not a recommendation, and a line stating that no flag is advice (decision 52).
+  - Each section owns its loading, error (with retry), unavailable and empty states.
+
+NOT COMPLETED / LIMITS:
+  - Only the Overview tab exists; Financials, Ratios, Ownership and News are R-08 to R-11.
+  - Nothing links to the screen yet except by URL; R-12 adds the entry points from the workspace,
+    the screener, Holdings and Position Detail.
+  - The "next scheduled event" the spec lists for Overview waits for R-11, where the events data is
+    brought in.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS (the new
+  screen has no baseline yet; that belongs with the finished tab set).
+  In the browser against the dev server: Tata Motors renders the full Overview with its Jaguar Land
+  Rover segment at 66.8%, the Tata group and Tata Sons at 42.6%, market value 5.06LCr, price to
+  earnings 18.9x against an industry median of 30.4x over two peers, and the rising promoter pledge
+  flag with its evidence; Swiggy shows "no provider has supplied a company record yet" while still
+  showing classification and measures; gold answers that no company sits behind it; an unknown
+  instrument shows the empty state with a link to the screener; under the loading-error scenario
+  each of the three sections shows its own error with a retry rather than blanking the page.
+
+FILES: created apps/web/src/features/markets/company/{CompanyResearchPage.tsx,
+CompanyResearch.module.scss,sections/ProfileSection.tsx,sections/StandingSection.tsx,
+sections/FlagsSection.tsx}; modified apps/web/src/routes/{routes.ts,AppRoutes.tsx},
+Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 

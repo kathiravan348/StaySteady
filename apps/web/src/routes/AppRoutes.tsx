@@ -22,6 +22,7 @@ import { PositionDetailPage } from '../features/portfolio/PositionDetailPage';
 import { MarketsWatchlistsPage } from '../features/markets/MarketsWatchlistsPage';
 import { MarketsWorkspacePage } from '../features/markets/MarketsWorkspacePage';
 import { MarketsScreenerPage } from '../features/markets/MarketsScreenerPage';
+import { CompanyResearchPage } from '../features/markets/company/CompanyResearchPage';
 
 import { NewsFeedPage } from '../features/news/NewsFeedPage';
 import { NewsCalendarPage } from '../features/news/NewsCalendarPage';
@@ -94,6 +95,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.MARKETS_WORKSPACE} element={<MarketsWorkspacePage />} />
         <Route path={ROUTES.MARKETS_WORKSPACE_TICKER} element={<MarketsWorkspacePage />} />
         <Route path={ROUTES.MARKETS_SCREENER} element={<MarketsScreenerPage />} />
+        <Route path={ROUTES.MARKETS_COMPANY} element={<CompanyResearchPage />} />
 
         {/* News & Events */}
         <Route path={ROUTES.NEWS_FEED} element={<NewsFeedPage />} />

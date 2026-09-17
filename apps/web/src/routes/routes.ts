@@ -21,6 +21,7 @@ export const ROUTES = {
   MARKETS_WORKSPACE: '/markets/workspace',
   MARKETS_WORKSPACE_TICKER: '/markets/workspace/:ticker',
   MARKETS_SCREENER: '/markets/screener',
+  MARKETS_COMPANY: '/markets/company/:instrumentId',
 
   // News & Events
   NEWS_FEED: '/news/feed',
@@ -85,6 +86,10 @@ export function positionDetailPath(id: string): string {
 
 export function workspaceTickerPath(ticker: string): string {
   return `/markets/workspace/${encodeURIComponent(ticker)}`;
+}
+
+export function companyResearchPath(instrumentId: string): string {
+  return `/markets/company/${encodeURIComponent(instrumentId)}`;
 }
 
 export function strategyEditorPath(id: string): string {
