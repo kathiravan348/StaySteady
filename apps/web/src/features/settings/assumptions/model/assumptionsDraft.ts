@@ -76,6 +76,11 @@ export function describeOperatingPolicy(
     'Largest yearly cost share': percentFromBps(costBudget.maxShareOfPortfolioBps),
     ...items,
     'Counterparty over-weight above': `${String(config.counterpartyMaxSharePercent)}% of net worth`,
+    'Cooling-off period':
+      config.safeguards.coolingOffMinutes === 0
+        ? 'Off'
+        : `${String(config.safeguards.coolingOffMinutes)} min above ${config.safeguards.coolingOffAbove.amount} ${config.safeguards.coolingOffAbove.currency}`,
+    'Stated reason': config.safeguards.requireStatedReason ? 'Required' : 'Optional',
     'Export formats': exports.formats.map((value) => labelOf(FORMAT_OPTIONS, value)).join(', '),
     'Export schedule': labelOf(SCHEDULE_OPTIONS, exports.schedule),
     'Exported data': exports.datasets.map((value) => labelOf(DATASET_OPTIONS, value)).join(', '),

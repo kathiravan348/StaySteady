@@ -10,7 +10,7 @@ import { convertMoneyWithTable, createMoney } from '../../../shared/money';
 import { generateCurrentFxRates } from './fxHistory';
 import type {
   ApprovalDto,
-  ApprovalRequestDto,
+  ApprovalQueueItemDto,
   HoldingDto,
   MarketQuoteDto,
   OrderDto,
@@ -18,7 +18,7 @@ import type {
   StrategyDraftDto,
   StrategyDto,
 } from '../../schemas';
-import { ApprovalRequestSchema } from '../../schemas';
+import { ApprovalQueueItemSchema } from '../../schemas';
 import { generateInitialQuotes, getInstrumentById } from './instruments';
 import type { MockGeneratorContext } from './mockContext';
 import { generatePortfolioData } from './portfolio';
@@ -26,7 +26,7 @@ import { generateStrategyDraft } from './strategyDrafts';
 import { generateApprovals, generateOrders, generateStrategies } from './trading';
 import { parseGeneratedList } from './validated';
 
-type RequestInput = z.input<typeof ApprovalRequestSchema>;
+type RequestInput = z.input<typeof ApprovalQueueItemSchema>;
 type CurrencyCode = PortfolioSummaryDto['totalValue']['currency'];
 type Money = { amount: string; currency: CurrencyCode };
 
@@ -251,7 +251,7 @@ export function generateApprovalQueue(
   ctx: MockGeneratorContext,
   approvals: readonly ApprovalDto[] = generateApprovals(ctx),
   orders: readonly OrderDto[] = generateOrders(ctx),
-): readonly ApprovalRequestDto[] {
+): readonly ApprovalQueueItemDto[] {
   const strategies = generateStrategies(ctx);
   const quotes = generateInitialQuotes(ctx);
   const portfolio = generatePortfolioData(ctx);
@@ -279,5 +279,5 @@ export function generateApprovalQueue(
         ];
   });
 
-  return parseGeneratedList(ApprovalRequestSchema, requests, 'ApprovalRequest');
+  return parseGeneratedList(ApprovalQueueItemSchema, requests, 'ApprovalRequest');
 }

@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage E rework; E-09 part a done (parts b and c next)
+PHASE:              Stage E rework; E-09a and E-03a done
 OVERALL PROGRESS:   80% (71 of 89 active tasks done; Stage F 100%; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 33;
                     Stage E 0 of 9, all 9 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T10:15:00Z  |  local: 2026-09-17 15:45 IST
-LAST AGENT:         session 62 (Claude Opus 5; E-09 part a: assumptions and operating policy)
+LAST UPDATED:       2026-09-17T08:52:00Z  |  local: 2026-09-17 14:22 IST
+LAST AGENT:         session 63 (Claude Opus 5; E-03 part a: approval queue safeguards)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -57,7 +57,7 @@ EXACT NEXT STEP (one task per session, in this order):
   1. E-09 part b (tax rule sets per country and instrument type) and part c (employer policy rules
      read by complianceStore). Part a (inflation, cost budget, counterparty threshold, export) is on
      /settings/assumptions (session 62).
-  2. E-03 (call the real compliance check, branch on `rule` (decision 42); Money not Number), then E-02, E-01, E-04, E-05,
+  2. E-03 part b (Orders screen), then Money not Number), then E-02, E-01, E-04, E-05,
      E-06, E-07, E-08. M-17 data is available through useInflationHistory, useLossCarryForwards,
      useCounterparties and useStrategyLifecycles. Replace inline styles with SCSS modules.
   3. Then M-16, L-13, L-14, P-05, P-01..P-04.
@@ -223,7 +223,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 |----|------|--------|---|-------|-------|
 | E-01 | Holdings — liquidity class; non-market assets in totals | PARTIAL | 50 | Session 57; audited session 59 | Bucket totals and a manual-asset toggle exist and read useNetWorth. Missing: liquidity class per position (spec asks per row); manual assets excluded from totals by default; `as ReportCurrencyDto` assertion; parseFloat on a money amount; inline styles with raw values |
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | PARTIAL | 50 | Session 57; audited session 59 | FIFO lot split with Decimal is sound. Missing: tax rates (30%/15%), the 365-day boundary and fees are hardcoded; they must come from tax rule configuration and markets.holdingPeriodTaxThresholdDays (decision 24, open question 16) |
-| E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | PARTIAL | 40 | Session 57; audited session 59 | Cooling-off countdown exists but uses Number() on money. Compliance result is the literal text "Passed" on every card; no compliance check is called. Orders screen not extended. Reason prompt only relabelled (the journal already reads decision reasons) |
+| E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | PARTIAL | 75 | Session 57; audited 59; part a session 63 | **Done (session 63):** approval queue shows the real compliance result beside risk checks, cooling off after approval with withdraw, stated reason required; all enforced by the server; safeguards configurable. **Remaining:** Orders screen compliance for working orders (split OrdersView.tsx, 337 lines) |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
 | E-05 | System Health — independent depository/registrar reconciliation status | PARTIAL | 15 | Session 57; audited session 59 | UI only: hardcoded accounts with unmasked account numbers; "Reconcile now" is a 1.2s timer that always reports 0 discrepancies. Needs a mock endpoint, a seeded discrepancy and states |
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative |
@@ -301,82 +301,9 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 58 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 59 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        59
-AGENT:          Claude Opus 5
-START:          2026-09-17T07:50:00Z  |  local: 2026-09-17 13:20 IST (UTC+05:30)
-END:            2026-09-17T08:20:00Z  |  local: 2026-09-17 13:50 IST (UTC+05:30)
-TASK CLAIMED:   Owner request: verify the work recorded in SESSION_VERIFICATION_LOG.md (sessions
-                53-58), fix what fails, correct the log. No registry task claimed; no feature code.
-END STATUS:     DONE
-REASON IF NOT DONE: —
-
-COMPLETED:
-  - Ran pnpm typecheck (PASS), pnpm lint (FAIL: Prettier), pnpm build (PASS).
-  - Correction to session 56/57/58 entries: "Prettier PASS" was checked only on hand-picked files.
-    Repository-wide, data/mock/generators/index.ts (768474a) and
-    features/portfolio/holdings/HoldingsPage.module.scss (661e8ee) were unformatted; ten scss files
-    and CLAUDE.md failed only because Windows checkouts had CRLF (core.autocrlf=true) while
-    .prettierrc requires lf; README.md had whitespace-only lines.
-  - Correction to session 57 entry ("ALL 9 DONE"): code review of every Stage E file found fixed
-    arrays and component state in features, no mock endpoints or hooks, no loading/error states,
-    raw inline values, Number()/parseFloat on money, a type assertion, and a hardcoded compliance
-    "Passed" on every approval card. E-01..E-09 set to PARTIAL with gaps listed per row.
-  - Correction to session 56 entry: screener compliance/automation flags are static seeds that
-    contradict /compliance (INFY). S-26 set to PARTIAL 90.
-  - Session 58 (navigation) verified: every route in routes.ts is reachable from the sidebar or a
-    sub-nav. Its entry has no start entry and did not update sections 1-2; recorded here.
-  - Sessions 53-55 screens (journal, continuity, compliance) follow the data-layer pattern; not
-    re-verified in the browser this session.
-
-NOT COMPLETED:
-  - Nothing in scope. Stage E rework is future registry work.
-
-FILES CREATED:
-  - .gitattributes — `* text=auto eol=lf` plus binary types
-FILES MODIFIED:
-  - apps/web/src/data/mock/generators/index.ts, features/portfolio/holdings/HoldingsPage.module.scss,
-    README.md, CLAUDE.md — Prettier formatting only
-  - apps/web/src/shell/{AppShell,PageShell,Sidebar,SubNav,TopBar}.module.scss,
-    apps/web/src/styles/{_base,global}.scss, styles/mixins/_surface.scss, styles/themes/_dark.scss,
-    styles/tokens/_primitives.scss — working-copy CRLF to LF only (no content change in git)
-  - Docs/PROGRESS_LOG.md — sections 1-3 rewritten/updated, question 19, this entry
-  - Docs/PROGRESS_ARCHIVE.md — sessions 55-56 appended verbatim
-FILES DELETED:
-  - none
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-PROVISIONAL CHOICES (spec was silent):
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        PASS — eslint . and prettier --check . ("All matched files use Prettier code style!")
-  build:       PASS — exit 0
-  themes:      not applicable (no UI change)
-  states:      not applicable
-
-FINDINGS (out of scope, not fixed):
-  - Six pre-existing files over 300 lines, raised as P-05.
-  - SESSION_VERIFICATION_LOG.md overstates Stage E and progress; this log is authoritative.
-
-NEW OPEN QUESTIONS:
-  - 19 (screener specification answered by an agent)
-
-NOTES FOR NEXT AGENT:
-  - Start with M-17. See handoff note for the order after it.
-────────────────────────────────────────────────────────────
-```
 
 ```
 ────────────────────────────────────────────────────────────
@@ -694,6 +621,80 @@ NOTES FOR NEXT AGENT:
   - E-04 must flag counterparties above useCounterparties().maxSharePercent (the form says the Risk
     and Safety panel flags them).
   - E-06/E-07 read inflation from useInflationAssumptions + useInflationHistory.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        63 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T10:20:00Z  |  local: 2026-09-17 15:50 IST (UTC+05:30)
+TASK CLAIMED:   E-03 Orders & Approval Queue (part a: approval queue)
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         4a67de2 (session 62); working tree clean
+  type check:  PASS, lint: PASS, build: PASS (session 62 end)
+
+SCOPE:
+  - Approval request carries the real compliance result (complianceStore eligibility, decision 42),
+    a cooling-off window and whether a stated reason is required, all worked out by the server.
+  - Decision safeguards configurable on the operating policy (requirements 29): cooling-off minutes,
+    amount above which it applies, stated reason required. Server refuses approving a refused trade,
+    a decision without a required reason, and any re-decision except withdrawing during cooling off.
+  - Card shows compliance beside risk checks and the cooling-off countdown after approval; remove
+    the hardcoded "Passed" block, Number() on money and inline styles.
+  - Part b (Orders screen compliance for working orders) is a separate session.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        63 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T08:43:00Z  |  local: 2026-09-17 14:13 IST (see correction below)
+END:            2026-09-17T08:52:00Z  |  local: 2026-09-17 14:22 IST
+TASK CLAIMED:   E-03 part a (approval queue)
+END STATUS:     PARTIAL (part a done; part b, Orders screen, remains)
+
+CORRECTION TO SESSIONS 60-63 ENTRIES: their START/END and LAST UPDATED times were estimated, not read
+from the system clock, and run ahead of reality. Real times from git: f3e8eab 08:10Z, faa2157 08:21Z,
+c701a9f 08:28Z, 4a67de2 08:42Z; this entry's times were read from the system clock (rule 1).
+
+COMPLETED:
+  - Approval requests carry compliance (from complianceStore eligibility; decision 42), coolingOff
+    (minutes, threshold, executableAt once approved) and reasonRequired, added by the queue handler;
+    the generator builds ApprovalQueueItemSchema without them.
+  - Server refuses: a decision without a required reason (400); approving a compliance-refused trade
+    (409); re-deciding, except withdrawing (rejecting) an approval still cooling off (409).
+  - Safeguards on the operating policy: cooling-off minutes, threshold amount and currency, stated
+    reason required (seed 5 min above 5000 USD, required); SafeguardsCard on /settings/assumptions.
+  - Card: compliance shown first among the risk checks; Restricted badge; Approve/Modify disabled when
+    refused; cooling-off note while pending and countdown with Withdraw after approval; approve opens
+    the reason dialog when a reason is required; bulk approve asks for one reason and skips refused.
+    Removed the hardcoded "Passed" block, Number() on money, emoji and inline styles (the old block
+    also used --color-warning, which does not exist; --severity-high is used).
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API in the browser pane: threshold lowered to 3000 USD and TATAMOTORS restricted through their
+  endpoints; AAPL approve with blank reason → 400; with reason → 200, executableAt = decision + 5 min;
+  re-approve → 409; withdraw → 200, status rejected; decide again → 409; TATAMOTORS approve → 409
+  "Compliance refuses this trade: Restricted List Violation: Tata Motors"; journal contains the
+  withdrawal reason. UI: compliance row renders in checks; Approve opens "Approve buy AAPL" with the
+  reason field and a disabled submit. Themes not re-checked; no new colours beyond --severity-high.
+
+NOT COMPLETED:
+  - Part b: Orders screen (7.13) compliance for working orders; OrdersView.tsx is 337 lines (P-05) and
+    must be split when touched.
+  - Seeded pending approvals include none above 5000 USD and none restricted, so neither state shows
+    without changing configuration; consider seeding one when M-17-style data is next touched.
+
+FILES: created generators/approvalSafeguards.ts, settings/assumptions/sections/SafeguardsCard.tsx;
+  modified schemas/trading-queue.ts, schemas/config-assumptions.ts, generators/approvalQueue.ts,
+  generators/assumptionsConfig.ts, handlers/tradingHandlers.ts, approvalQueue/{ApprovalCard,
+  DecisionDialog,BulkApproveDialog,QueueView}.tsx, ApprovalQueue.module.scss, assumptionsDraft.ts,
+  OperatingPolicyForm.tsx. No dependencies, no new decisions.
 ────────────────────────────────────────────────────────────
 ```
  

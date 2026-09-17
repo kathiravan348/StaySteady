@@ -8,6 +8,7 @@ import { ConfigSaveCard, NumberField, useConfigDraft } from '../../../../shared/
 import styles from '../../Settings.module.scss';
 import { CostBudgetCard } from './CostBudgetCard';
 import { ExportSettingsCard } from './ExportSettingsCard';
+import { SafeguardsCard } from './SafeguardsCard';
 
 export interface OperatingPolicyFormProps {
   readonly initial: OperatingPolicyConfigInput;
@@ -15,7 +16,8 @@ export interface OperatingPolicyFormProps {
   readonly onCancel: () => void;
 }
 
-// E-09 — cost budget, counterparty threshold and export settings, saved together as one version.
+// E-09 — cost budget, counterparty threshold, decision safeguards and export settings, saved together
+// as one version.
 export function OperatingPolicyForm({
   initial,
   costs,
@@ -58,6 +60,8 @@ export function OperatingPolicyForm({
           </p>
         </div>
       </Card>
+
+      <SafeguardsCard form={form} />
 
       <ExportSettingsCard form={form} />
 

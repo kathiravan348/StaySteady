@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { ApprovalDecisionDto, ApprovalRequestDto } from '../../../../data/schemas';
 import styles from '../ApprovalQueue.module.scss';
 
-export type DecisionMode = 'modify' | 'reject';
+export type DecisionMode = 'approve' | 'modify' | 'reject';
 
 export interface DecisionDialogProps {
   readonly request: ApprovalRequestDto;
@@ -15,8 +15,9 @@ export interface DecisionDialogProps {
   readonly onSubmit: (decision: ApprovalDecisionDto) => void;
 }
 
-// Modifying is approving a changed order, so the change and the decision travel together. Rejecting
-// asks for a reason, because a rejection with no reason teaches nothing later (UI spec 7.12).
+// Modifying is approving a changed order, so the change and the decision travel together. A reason is
+// always asked for, and required when rejecting or when the safeguards require one (requirements 29):
+// it goes into the decision journal beside the outcome.
 export function DecisionDialog({
   request,
   mode,
@@ -31,8 +32,10 @@ export function DecisionDialog({
   const parsedQuantity = Number(quantity);
   const isQuantityValid = Number.isFinite(parsedQuantity) && parsedQuantity > 0;
   const isPriceValid = limitPrice === '' || Number(limitPrice) > 0;
+  const needsReason = mode === 'reject' || request.reasonRequired;
+  const hasReason = !needsReason || reason.trim() !== '';
   const canSubmit =
-    mode === 'reject' ? reason.trim() !== '' : isQuantityValid && isPriceValid && !isBusy;
+    !isBusy && hasReason && (mode !== 'modify' || (isQuantityValid && isPriceValid));
 
   const submit = (): void => {
     if (mode === 'reject') {
@@ -44,12 +47,16 @@ export function DecisionDialog({
       });
       return;
     }
+    const isModify = mode === 'modify';
     onSubmit({
       decision: 'approved',
       reason: reason.trim() === '' ? null : reason.trim(),
-      modifiedQuantity: parsedQuantity === Number(request.quantity) ? null : parsedQuantity,
+      modifiedQuantity:
+        !isModify || parsedQuantity === Number(request.quantity) ? null : parsedQuantity,
       modifiedLimitPrice:
-        limitPrice === '' || limitPrice === request.limitPrice?.amount ? null : limitPrice,
+        !isModify || limitPrice === '' || limitPrice === request.limitPrice?.amount
+          ? null
+          : limitPrice,
     });
   };
 
@@ -61,8 +68,10 @@ export function DecisionDialog({
       }}
       title={
         mode === 'reject'
-          ? `Reject ${request.side} ${request.instrumentSymbol}`
-          : `Modify and approve ${request.side} ${request.instrumentSymbol}`
+          ? `${request.status === 'approved' ? 'Withdraw' : 'Reject'} ${request.side} ${request.instrumentSymbol}`
+          : mode === 'approve'
+            ? `Approve ${request.side} ${request.instrumentSymbol}`
+            : `Modify and approve ${request.side} ${request.instrumentSymbol}`
       }
       footer={
         <div className={styles.dialogActions}>
@@ -75,7 +84,11 @@ export function DecisionDialog({
             isLoading={isBusy}
             onPress={submit}
           >
-            {mode === 'reject' ? 'Reject with reason' : 'Approve with changes'}
+            {mode === 'reject'
+              ? 'Reject with reason'
+              : mode === 'approve'
+                ? 'Approve'
+                : 'Approve with changes'}
           </Button>
         </div>
       }
@@ -122,18 +135,24 @@ export function DecisionDialog({
               <p className={styles.note}>Quantity must be a number greater than zero.</p>
             )}
           </>
-        ) : (
+        ) : mode === 'reject' ? (
           <p className={styles.note}>
             This order will not be placed. The reason is kept with the decision so the same proposal
             can be judged against it later.
+          </p>
+        ) : (
+          <p className={styles.note}>
+            {String(request.quantity)} units as proposed
+            {request.coolingOff === null
+              ? '.'
+              : `; it then waits ${String(request.coolingOff.minutes)} minutes before it may be placed.`}
           </p>
         )}
 
         <label className={styles.field}>
           <span className={styles.fieldLabel}>
-            {mode === 'reject'
-              ? 'Reason for rejecting (logged to S-31 Decision Journal):'
-              : 'Stated Rationale / Reason (logged to S-31 Decision Journal):'}
+            {mode === 'reject' ? 'Why reject it' : 'Why approve it'}
+            {needsReason ? '' : ' (optional)'}
           </span>
           <textarea
             className={styles.textarea}
@@ -141,8 +160,10 @@ export function DecisionDialog({
             onChange={(event) => {
               setReason(event.target.value);
             }}
-            placeholder="Document your hypothesis, market context, or rationale to evaluate in your 30-day decision journal..."
           />
+          <span className={styles.meta}>
+            Kept in the decision journal and shown beside the outcome later.
+          </span>
         </label>
       </div>
     </Modal>

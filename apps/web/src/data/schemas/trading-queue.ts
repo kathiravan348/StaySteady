@@ -11,6 +11,7 @@ import {
   QuantitySchema,
   StrategyIdSchema,
 } from './common';
+import { EligibilityRuleSchema } from './compliance';
 import {
   ApprovalStatusSchema,
   OrderSideSchema,
@@ -90,6 +91,25 @@ export const ApprovalImpactSchema = z.object({
 });
 export type ApprovalImpactDto = z.infer<typeof ApprovalImpactSchema>;
 
+// The compliance check the safety layer runs on this trade (requirements 27; decision 42).
+export const ApprovalComplianceSchema = z.object({
+  status: z.enum(['passed', 'refused']),
+  rule: EligibilityRuleSchema.nullable(),
+  summary: z.string().min(1),
+  policyClause: z.string().min(1),
+  preClearanceRequired: z.boolean(),
+});
+export type ApprovalComplianceDto = z.infer<typeof ApprovalComplianceSchema>;
+
+// Requirements 29 — a decided trade above the configured size waits before it may be placed.
+export const CoolingOffSchema = z.object({
+  minutes: z.number().int().positive(),
+  appliesAbove: MoneySchema,
+  // Set once approved; the order may be placed from then. Null while still undecided.
+  executableAt: IsoUtcTimestampSchema.nullable(),
+});
+export type CoolingOffDto = z.infer<typeof CoolingOffSchema>;
+
 export const ApprovalRequestSchema = z.object({
   approvalId: z.string().min(1),
   orderId: z.string().min(1),
@@ -114,10 +134,23 @@ export const ApprovalRequestSchema = z.object({
   isSimulated: z.boolean(),
   riskChecks: z.array(RiskCheckSchema),
   impact: ApprovalImpactSchema,
+  compliance: ApprovalComplianceSchema,
+  coolingOff: CoolingOffSchema.nullable(),
+  // A decision without a stated reason is refused (requirements 29, on by default).
+  reasonRequired: z.boolean(),
 });
 export type ApprovalRequestDto = z.infer<typeof ApprovalRequestSchema>;
 
 export const ApprovalQueueListSchema = z.array(ApprovalRequestSchema);
+
+// What the queue generator builds; the safety layer's fields are added by the handler, which has the
+// compliance store and the saved safeguards.
+export const ApprovalQueueItemSchema = ApprovalRequestSchema.omit({
+  compliance: true,
+  coolingOff: true,
+  reasonRequired: true,
+});
+export type ApprovalQueueItemDto = z.infer<typeof ApprovalQueueItemSchema>;
 
 // Modifying is approving a changed order, so the change travels with the decision.
 export const ApprovalDecisionSchema = z.object({

@@ -87,6 +87,11 @@ export function seedOperatingPolicy(): OperatingPolicyConfigInput {
       ],
     },
     counterpartyMaxSharePercent: COUNTERPARTY_MAX_SHARE_PERCENT,
+    safeguards: {
+      coolingOffMinutes: 5,
+      coolingOffAbove: { currency: 'USD', amount: '5000.00' },
+      requireStatedReason: true,
+    },
     export: {
       formats: ['csv', 'json'],
       schedule: 'monthly',

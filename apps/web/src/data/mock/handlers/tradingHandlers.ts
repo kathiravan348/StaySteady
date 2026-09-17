@@ -1,8 +1,11 @@
 // MSW request handlers for strategies, signals, orders, and approvals (M-14).
 
+import { Decimal } from 'decimal.js';
 import { http, HttpResponse, type HttpHandler } from 'msw';
+
 import {
   generateApprovalQueue,
+  generateCurrentFxRates,
   generateOrderHistory,
   generateSignalFeed,
   generateSignals,
@@ -11,7 +14,10 @@ import {
   generateStrategyLibrary,
   generateStrategyVersions,
 } from '../generators';
+import { refuseDecision, withSafeguards } from '../generators/approvalSafeguards';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
+import { currentOperatingPolicy } from '../stores/assumptionsStore';
+import { evaluateEligibility } from '../stores/complianceStore';
 import {
   decisions,
   getApprovals,
@@ -25,11 +31,22 @@ import { ApprovalDecisionSchema } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 import { toQuantity } from '../../../shared/types/quantities';
 
+// Decisions are laid over the regenerated queue, then the safety layer's view is added: compliance
+// from the compliance store, cooling off and the reason rule from the saved safeguards (E-03).
 function decidedQueue(): readonly ApprovalRequestDto[] {
+  const inputs = {
+    checkEligibility: evaluateEligibility,
+    safeguards: currentOperatingPolicy().safeguards,
+    fxTable: generateCurrentFxRates(ctx).map((rate) => ({
+      from: rate.from,
+      to: rate.to,
+      rate: new Decimal(rate.rate),
+    })),
+  };
   return generateApprovalQueue(ctx, getApprovals(), getOrders()).map((item): ApprovalRequestDto => {
     const decision = decisions.get(item.approvalId);
-    if (decision === undefined) return item;
-    return {
+    if (decision === undefined) return withSafeguards(item, inputs, null);
+    const decided = {
       ...item,
       status: decision.status,
       decidedAt: decision.decidedAt,
@@ -41,6 +58,11 @@ function decidedQueue(): readonly ApprovalRequestDto[] {
           ? item.limitPrice
           : { ...item.limitPrice, amount: decision.limitPrice },
     };
+    return withSafeguards(
+      decided,
+      inputs,
+      decision.status === 'approved' ? { decidedAt: decision.decidedAt } : null,
+    );
   });
 }
 
@@ -158,8 +180,13 @@ export const tradingHandlers: readonly HttpHandler[] = [
         { status: 400 },
       );
     }
-    if (!getApprovals().some((approval) => approval.id === id)) {
+    const current = decidedQueue().find((item) => item.approvalId === id);
+    if (current === undefined) {
       return HttpResponse.json({ error: 'Approval not found' }, { status: 404 });
+    }
+    const refusal = refuseDecision(current, parsed.data, Date.now());
+    if (refusal !== null) {
+      return HttpResponse.json({ error: refusal.message }, { status: refusal.status });
     }
 
     const decidedAt = nowUtc();

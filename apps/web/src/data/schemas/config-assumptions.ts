@@ -97,6 +97,20 @@ export const OperatingPolicyConfigSchema = z
       .number()
       .min(5, 'Below 5% would flag almost every institution')
       .max(100, 'Cannot be above 100%'),
+    // Requirements 29 — friction proportional to consequence on manual decisions.
+    safeguards: z.object({
+      // 0 turns the cooling-off period off.
+      coolingOffMinutes: z
+        .number()
+        .int('Whole minutes only')
+        .min(0, 'Cannot be negative')
+        .max(1440, 'At most a day'),
+      coolingOffAbove: z.object({
+        currency: CurrencyCodeSchema,
+        amount: amount.refine((value) => /[1-9]/.test(value), 'Must be above zero'),
+      }),
+      requireStatedReason: z.boolean(),
+    }),
     export: z.object({
       formats: z.array(ExportFormatSchema).min(1, 'Choose at least one format'),
       schedule: ExportScheduleSchema,

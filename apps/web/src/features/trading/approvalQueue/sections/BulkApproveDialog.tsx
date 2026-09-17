@@ -11,7 +11,7 @@ export interface BulkApproveDialogProps {
   readonly requests: readonly ApprovalRequestDto[];
   readonly isBusy: boolean;
   readonly onClose: () => void;
-  readonly onConfirm: () => void;
+  readonly onConfirm: (reason: string | null) => void;
 }
 
 const CONFIRM_WORD = 'APPROVE';
@@ -25,11 +25,16 @@ export function BulkApproveDialog({
   onConfirm,
 }: BulkApproveDialogProps): ReactElement {
   const [typed, setTyped] = useState('');
+  const [reason, setReason] = useState('');
+  const needsReason = requests.some((request) => request.reasonRequired);
   const failing = requests.filter((request) =>
     request.riskChecks.some((check) => check.status === 'failed'),
   );
   const simulated = requests.filter((request) => request.isSimulated);
-  const canConfirm = typed.trim().toUpperCase() === CONFIRM_WORD && !isBusy;
+  const canConfirm =
+    typed.trim().toUpperCase() === CONFIRM_WORD &&
+    !isBusy &&
+    (!needsReason || reason.trim() !== '');
 
   return (
     <Modal
@@ -43,7 +48,14 @@ export function BulkApproveDialog({
           <Button variant="secondary" onPress={onClose}>
             Cancel
           </Button>
-          <Button variant="danger" isDisabled={!canConfirm} isLoading={isBusy} onPress={onConfirm}>
+          <Button
+            variant="danger"
+            isDisabled={!canConfirm}
+            isLoading={isBusy}
+            onPress={() => {
+              onConfirm(reason.trim() === '' ? null : reason.trim());
+            }}
+          >
             Approve all {String(requests.length)}
           </Button>
         </div>
@@ -88,6 +100,19 @@ export function BulkApproveDialog({
               : `${String(simulated.length)} of these ${simulated.length === 1 ? 'is' : 'are'} simulated and will not reach a broker.`}
           </p>
         )}
+
+        <label className={styles.field}>
+          <span className={styles.fieldLabel}>
+            Why approve these{needsReason ? '' : ' (optional)'}
+          </span>
+          <textarea
+            className={styles.textarea}
+            value={reason}
+            onChange={(event) => {
+              setReason(event.target.value);
+            }}
+          />
+        </label>
 
         <label className={styles.field}>
           <span className={styles.fieldLabel}>Type {CONFIRM_WORD} to confirm</span>

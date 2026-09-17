@@ -44,9 +44,9 @@ export function QueueView({ requests }: QueueViewProps): ReactElement {
     );
   };
 
-  const approveAll = (): void => {
+  const approveAll = (reason: string | null): void => {
     selectedRequests.forEach((request) => {
-      submit(request.approvalId, APPROVE_AS_PROPOSED);
+      submit(request.approvalId, { ...APPROVE_AS_PROPOSED, reason });
     });
     setBulkOpen(false);
     setSelected([]);
@@ -105,7 +105,11 @@ export function QueueView({ requests }: QueueViewProps): ReactElement {
                 );
               }}
               onApprove={() => {
-                submit(request.approvalId, APPROVE_AS_PROPOSED);
+                if (request.reasonRequired) {
+                  setDialog({ id: request.approvalId, mode: 'approve' });
+                } else {
+                  submit(request.approvalId, APPROVE_AS_PROPOSED);
+                }
               }}
               onModify={() => {
                 setDialog({ id: request.approvalId, mode: 'modify' });
@@ -132,7 +136,9 @@ export function QueueView({ requests }: QueueViewProps): ReactElement {
                 onSelect={() => undefined}
                 onApprove={() => undefined}
                 onModify={() => undefined}
-                onReject={() => undefined}
+                onReject={() => {
+                  setDialog({ id: request.approvalId, mode: 'reject' });
+                }}
               />
             ))}
           </ul>
