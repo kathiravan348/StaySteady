@@ -232,7 +232,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative **Owner Q16 session 64:** India resident with foreign stocks — tax pack follows April-March, includes foreign assets (Schedule FA), foreign tax credit and losses carried in/out. |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
-| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 55 | Session 57; audited 59; part a session 62 | **Done (session 62):** inflation assumptions, cost budget, counterparty threshold and export settings as versioned config on /settings/assumptions; hardcoded sections removed. **Remaining:** (b) tax rule sets per country and instrument type; (c) employer policy rules read by the compliance store **Owner session 64:** part b replaces per-market tax rates with rule sets per residence country and asset class (decision 45); part c low priority, employer rules optional and off by default (decision 43). |
+| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | CLAIMED | 55 | Session 57; audited 59; part a session 62 | **Done (session 62):** inflation assumptions, cost budget, counterparty threshold and export settings as versioned config on /settings/assumptions; hardcoded sections removed. **Remaining:** (b) tax rule sets per country and instrument type; (c) employer policy rules read by the compliance store **Owner session 64:** part b replaces per-market tax rates with rule sets per residence country and asset class (decision 45); part c low priority, employer rules optional and off by default (decision 43). |
  
 ### Stage P — Polish
  
@@ -304,125 +304,9 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 61 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 62 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        62 — START ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T09:30:00Z  |  local: 2026-09-17 15:00 IST (UTC+05:30)
-TASK CLAIMED:   E-09 Configuration (part a of three): inflation assumptions, monthly cost budget,
-                counterparty over-weight threshold, export settings
-OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         a805ede (session 61); working tree clean
-  type check:  PASS, lint: PASS, build: PASS (session 61 end)
-
-SCOPE:
-  - Two versioned configuration areas on the shared pattern (decisions 38, 41): inflation
-    assumptions per country; operating policy (cost budget with manual items, counterparty
-    threshold, export settings). Server-side health from inflation history, provider costs and
-    portfolio value. /api/v1/counterparties reads the configured threshold.
-  - New /settings/assumptions page with list, forms, version history; linked from SettingsNav.
-  - Remove the hardcoded TaxRulesAndInflationSection, InflationAssumptionsSubcard and
-    OperatingCostBudgetSection from the currencies page. Tax rule sets are part b; employer policy
-    is part c. Tax rates in the meantime stay in Countries & markets and Instrument types.
-────────────────────────────────────────────────────────────
-```
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        62 — END ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T09:30:00Z  |  local: 2026-09-17 15:00 IST (UTC+05:30)
-END:            2026-09-17T10:15:00Z  |  local: 2026-09-17 15:45 IST (UTC+05:30)
-TASK CLAIMED:   E-09 Configuration, part a
-END STATUS:     PARTIAL (part a done; parts b and c remain, as planned at claim)
-REASON IF NOT DONE: task split deliberately; not a context limit
-
-COMPLETED:
-  - Two versioned configuration areas on the shared pattern (decisions 38, 41), no create:
-    /api/v1/config/inflation-assumptions (US, IN, GB) and /api/v1/config/operating-policy (one entry:
-    cost budget with manual items, counterparty over-weight threshold, export settings).
-  - Server-side health: inflation assumption against the recorded 3-year average (warning beyond
-    1.5 points — GB 2.0% vs 4.4% seeded as a warning); running cost = enabled providers' monthly
-    budgets converted to the budget currency + manual items, against budget and against holdings +
-    cash (seed: 704 USD/month, 88% of 800, 7.62% of portfolio a year vs 1.00% → warning).
-  - /api/v1/counterparties now reports the saved threshold (verified: 25 → 30 after a save).
-  - /settings/assumptions page: entry list with health, operating policy form (cost budget with
-    add/remove items and saved cost lines, counterparty threshold, export datasets/formats/
-    schedule/retention/field descriptions), inflation form beside recorded years, version history
-    with diff and revert, loading/error/empty states. Linked in SettingsNav.
-  - Removed the hardcoded TaxRulesAndInflationSection, InflationAssumptionsSubcard and
-    OperatingCostBudgetSection and their mount on the currencies page (title back to "Currencies").
-  - ConfigEntryList's enabled toggle is optional (areas that cannot be switched off omit it).
-
-NOT COMPLETED (E-09 parts b and c):
-  - b: tax rule sets per country of residence and instrument type (rates, holding periods, cost basis
-    method, tax year start). Today rates live in market config and thresholds in instrument types.
-  - c: employer policy rules as configuration read by complianceStore (pre-clearance, minimum holding
-    days, blackout scope rules — the scope match is currently hardcoded symbol lists).
-
-FILES CREATED:
-  - apps/web/src/data/schemas/config-assumptions.ts
-  - apps/web/src/data/mock/{generators/assumptionsConfig.ts, stores/assumptionsStore.ts,
-    handlers/assumptionsConfigHandlers.ts}
-  - apps/web/src/data/api/assumptionsConfigQueries.ts
-  - apps/web/src/features/settings/SettingsAssumptionsPage.tsx
-  - apps/web/src/features/settings/assumptions/{model/assumptionsDraft.ts, sections/AssumptionsView.tsx,
-    sections/InflationAssumptionForm.tsx, sections/OperatingPolicyForm.tsx, sections/CostBudgetCard.tsx,
-    sections/ExportSettingsCard.tsx}
-FILES MODIFIED:
-  - data/api/settingsConfigQueries.ts — useConfigList/useConfigSave/useConfigRevert exported
-  - data/api/index.ts, data/schemas/index.ts, data/mock/handlers/index.ts — exports/registration
-  - data/mock/generators/counterpartyProfiles.ts, handlers/partTwoReferenceHandlers.ts — threshold
-  - shared/config/ConfigEntryList.tsx — optional toggle
-  - routes/routes.ts, routes/AppRoutes.tsx, features/settings/sections/SettingsNav.tsx,
-    features/settings/SettingsCurrenciesPage.tsx
-FILES DELETED:
-  - features/settings/tax/TaxRulesAndInflationSection.tsx, tax/InflationAssumptionsSubcard.tsx,
-    budget/OperatingCostBudgetSection.tsx — hardcoded component state with no data layer (session 59)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none new; follows 38 and 41
-
-PROVISIONAL CHOICES (spec was silent):
-  - Running cost counts each enabled data provider's configured monthly budget as its cost; broker
-    charges are not yet included (would come from order fees).
-  - "Grows unexpectedly" (requirements 34) not implemented: no month-by-month cost history exists.
-  - Mock phase: export settings are stored but no file is written (stated on the card).
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        PASS — repository-wide
-  build:       PASS — exit 0
-  browser:     page renders list with Healthy/Needs attention; changed GB assumption 2.0 → 4.0 with a
-               reason, saved → v2, health became Healthy, history lists both versions; added an empty
-               cost item and pressed save → "Name the cost" inline and in the error summary, save
-               blocked; loading-error scenario → "Assumptions unavailable" error state; scenario
-               reset to healthy
-  themes:      dark and light checked by screenshot; high contrast not checked
-  states:      loading, error, empty built; error verified
-
-FINDINGS (out of scope, not fixed):
-  - Seeded data provider budgets (670 USD/month) are large against a ~110k USD portfolio, so the cost
-    share warning is permanent in the mock; left as is since it is the requirement working.
-
-NEW OPEN QUESTIONS:
-  - none
-
-NOTES FOR NEXT AGENT:
-  - E-04 must flag counterparties above useCounterparties().maxSharePercent (the form says the Risk
-    and Safety panel flags them).
-  - E-06/E-07 read inflation from useInflationAssumptions + useInflationHistory.
-────────────────────────────────────────────────────────────
-```
 
 ```
 ────────────────────────────────────────────────────────────
@@ -575,6 +459,29 @@ FINDINGS:
 FILES: created orders/sections/{orderColumns.tsx, OrderFilterBar.tsx}; modified schemas/order-history.ts,
   generators/{orderHistory,auditLog,approvalSafeguards}.ts, handlers/tradingHandlers.ts,
   orders/sections/{OrdersView,OrderDetail}.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        66 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:34:00Z  |  local: 2026-09-17 15:04 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part b: tax rule sets per residence country and asset class (decision 45)
+OWNER INPUT:    session 64 answers to questions 16 and 20
+
+PRE-WORK VERIFICATION:
+  git: 74df89f; working tree clean; type check, lint, build PASS at session 65 end.
+
+SCOPE:
+  - Versioned config area /api/v1/config/tax-rules: per residence country (India seeded): tax year
+    start, cost-basis method, loss carry-forward years, per asset class holding period, short and
+    long rates and long-term exemption, historical cost-basis protections, foreign asset obligations.
+  - shared/tax: classify an instrument into a tax asset class for the residence country; rule lookup.
+  - Remove the gains rates and holding periods from market config (keep dividend withholding),
+    instrument type config (taxThresholdDays) and MarketDto (holdingPeriodTaxThresholdDays).
+  - Holdings tax status, the tax report and the loss carry-forward window read the rule set.
+  - /settings/tax-rules page with form, health and version history.
 ────────────────────────────────────────────────────────────
 ```
  

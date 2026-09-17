@@ -55,14 +55,17 @@ function financialYear(startYear: number): string {
   return `FY ${String(startYear)}-${String((startYear + 1) % 100).padStart(2, '0')}`;
 }
 
-export function generateLossCarryForwards(today: string): LossCarryForwardListDto {
+export function generateLossCarryForwards(
+  today: string,
+  carryYears: number = CARRY_YEARS,
+): LossCarryForwardListDto {
   const year = Number(today.slice(0, 4));
   const month = Number(today.slice(5, 7));
   const currentFyStart = month >= 4 ? year : year - 1;
   const todayMs = Date.parse(`${today}T00:00:00Z`);
   const losses = SEEDS.map((seed) => {
     const lossFyStart = currentFyStart - seed.yearsAgo;
-    const lastFyStart = lossFyStart + CARRY_YEARS;
+    const lastFyStart = lossFyStart + carryYears;
     const expiresOn = `${String(lastFyStart + 1)}-03-31`;
     const daysToExpiry = Math.round((Date.parse(`${expiresOn}T00:00:00Z`) - todayMs) / DAY_MS);
     const remaining = new Decimal(seed.original).minus(seed.setOff);

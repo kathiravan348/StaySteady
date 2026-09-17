@@ -12,20 +12,16 @@ const CALENDAR_WARNING_DAYS = 60;
 interface MarketSeed {
   readonly exchangeFeeBps: number;
   readonly transactionTaxBps: number;
-  readonly shortTermRatePercent: number;
-  readonly longTermRatePercent: number;
   readonly dividendWithholdingPercent: number;
   // Only dates after the canonical calendar's last entry: earlier ones would change price history.
   readonly upcomingHolidays: readonly { date: string; name: string }[];
 }
 
-// Tax rates are assumptions for an owner resident in India, stated as such on the screen.
+// Withholding rates are what each market deducts at source from dividends paid to a non-resident.
 const SEEDS: Readonly<Record<string, MarketSeed>> = {
   US: {
     exchangeFeeBps: 0.3,
     transactionTaxBps: 0,
-    shortTermRatePercent: 30,
-    longTermRatePercent: 12.5,
     dividendWithholdingPercent: 25,
     upcomingHolidays: [
       { date: '2026-11-26', name: 'Thanksgiving Day' },
@@ -35,8 +31,6 @@ const SEEDS: Readonly<Record<string, MarketSeed>> = {
   IN: {
     exchangeFeeBps: 0.35,
     transactionTaxBps: 10,
-    shortTermRatePercent: 20,
-    longTermRatePercent: 12.5,
     dividendWithholdingPercent: 10,
     upcomingHolidays: [
       { date: '2026-10-02', name: 'Gandhi Jayanti' },
@@ -46,24 +40,18 @@ const SEEDS: Readonly<Record<string, MarketSeed>> = {
   UK: {
     exchangeFeeBps: 0.45,
     transactionTaxBps: 50,
-    shortTermRatePercent: 30,
-    longTermRatePercent: 30,
     dividendWithholdingPercent: 0,
     upcomingHolidays: [],
   },
   JP: {
     exchangeFeeBps: 0.2,
     transactionTaxBps: 0,
-    shortTermRatePercent: 30,
-    longTermRatePercent: 30,
     dividendWithholdingPercent: 15.315,
     upcomingHolidays: [],
   },
   SG: {
     exchangeFeeBps: 0.75,
     transactionTaxBps: 0,
-    shortTermRatePercent: 30,
-    longTermRatePercent: 30,
     dividendWithholdingPercent: 0,
     upcomingHolidays: [],
   },
@@ -83,7 +71,6 @@ export function seedMarketConfigs(): readonly MarketConfigInput[] {
       })),
       ...(seed?.upcomingHolidays ?? []).map((holiday) => ({ ...holiday, isHalfDay: false })),
     ];
-    const hasThreshold = market.holdingPeriodTaxThresholdDays !== null;
     return {
       marketId: id,
       name: market.name,
@@ -103,14 +90,7 @@ export function seedMarketConfigs(): readonly MarketConfigInput[] {
         exchangeFeeBps: seed?.exchangeFeeBps ?? 0,
         transactionTaxBps: seed?.transactionTaxBps ?? 0,
       },
-      tax: {
-        longTermThresholdDays: market.holdingPeriodTaxThresholdDays,
-        shortTermRatePercent: seed?.shortTermRatePercent ?? 30,
-        longTermRatePercent: hasThreshold
-          ? (seed?.longTermRatePercent ?? 30)
-          : (seed?.shortTermRatePercent ?? 30),
-        dividendWithholdingPercent: seed?.dividendWithholdingPercent ?? 0,
-      },
+      tax: { dividendWithholdingPercent: seed?.dividendWithholdingPercent ?? 0 },
       permittedInstrumentTypes: [...market.permittedInstrumentTypes],
       automationPermitted: market.automationPermitted,
       enabled: true,
@@ -120,7 +100,7 @@ export function seedMarketConfigs(): readonly MarketConfigInput[] {
 }
 
 // Earlier versions whose differences are real events, so diff and revert have something true to
-// show: the US move to T+1 settlement, and India's 2024 capital gains changes.
+// show: the US move to T+1 settlement, and the treaty rate on US dividends.
 export function seedMarketHistory(
   current: MarketConfigInput,
 ): readonly { version: number; savedAt: string; reason: string; snapshot: MarketConfigInput }[] {
@@ -145,7 +125,7 @@ export function seedMarketHistory(
       {
         version: 2,
         savedAt: '2024-07-23T00:00:00.000Z',
-        reason: 'Budget 2024 raised short-term gains tax to 20% and long-term to 12.5%.',
+        reason: 'Treaty rate applied: Indian dividends to non-residents withheld at 10%, was 20%.',
         snapshot: current,
       },
       {
@@ -154,7 +134,7 @@ export function seedMarketHistory(
         reason: 'Initial configuration.',
         snapshot: {
           ...current,
-          tax: { ...current.tax, shortTermRatePercent: 15, longTermRatePercent: 10 },
+          tax: { dividendWithholdingPercent: 20 },
         },
       },
     ];

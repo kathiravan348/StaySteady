@@ -9,6 +9,7 @@ const SETTINGS_SECTIONS: readonly SubNavItem[] = [
   { to: ROUTES.SETTINGS_BROKERS, label: 'Brokers' },
   { to: ROUTES.SETTINGS_INSTRUMENTS, label: 'Instrument types' },
   { to: ROUTES.SETTINGS_CURRENCIES, label: 'Currencies' },
+  { to: ROUTES.SETTINGS_TAX_RULES, label: 'Tax rules' },
   { to: ROUTES.SETTINGS_ASSUMPTIONS, label: 'Assumptions & budget' },
   { to: ROUTES.SETTINGS_ALERTS, label: 'Alert rules' },
   { to: ROUTES.SETTINGS_CREDENTIALS, label: 'Credentials' },

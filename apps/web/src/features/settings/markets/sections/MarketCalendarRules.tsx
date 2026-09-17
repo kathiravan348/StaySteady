@@ -106,10 +106,6 @@ export function MarketRulesSection({ draft, isNew, update, error }: SectionProps
   const fee = (key: keyof SectionProps['draft']['fees'], value: number | string): void => {
     update(`fees.${key}`, (current) => ({ ...current, fees: { ...current.fees, [key]: value } }));
   };
-  const tax = (key: keyof SectionProps['draft']['tax'], value: number | null): void => {
-    update(`tax.${key}`, (current) => ({ ...current, tax: { ...current.tax, [key]: value } }));
-  };
-  const hasThreshold = draft.tax.longTermThresholdDays !== null;
 
   return (
     <>
@@ -151,62 +147,20 @@ export function MarketRulesSection({ draft, isNew, update, error }: SectionProps
       </Card>
 
       <Card
-        title="Tax rules"
-        extra={<span className={styles.meta}>Assumed rates for an India-resident owner</span>}
+        title="Tax at source"
+        extra={<span className={styles.meta}>Gains tax: Settings, Tax rules</span>}
       >
-        <label className={styles.checkOption}>
-          <input
-            type="checkbox"
-            checked={hasThreshold}
-            onChange={(event) => {
-              update('tax', (current) => ({
-                ...current,
-                tax: event.target.checked
-                  ? { ...current.tax, longTermThresholdDays: 365 }
-                  : {
-                      ...current.tax,
-                      longTermThresholdDays: null,
-                      longTermRatePercent: current.tax.shortTermRatePercent,
-                    },
-              }));
-            }}
-          />
-          Long-term gains are taxed differently after a holding period
-        </label>
         <div className={styles.fieldGrid}>
-          {hasThreshold && (
-            <NumberField
-              label="Holding period (days)"
-              step="1"
-              value={draft.tax.longTermThresholdDays ?? Number.NaN}
-              error={error('tax.longTermThresholdDays')}
-              onChange={(value) => {
-                tax('longTermThresholdDays', value);
-              }}
-            />
-          )}
-          <NumberField
-            label="Short-term gains tax (%)"
-            value={draft.tax.shortTermRatePercent}
-            error={error('tax.shortTermRatePercent')}
-            onChange={(value) => {
-              tax('shortTermRatePercent', value);
-            }}
-          />
-          <NumberField
-            label="Long-term gains tax (%)"
-            value={draft.tax.longTermRatePercent}
-            error={error('tax.longTermRatePercent')}
-            onChange={(value) => {
-              tax('longTermRatePercent', value);
-            }}
-          />
           <NumberField
             label="Dividend withholding (%)"
             value={draft.tax.dividendWithholdingPercent}
+            hint="Deducted by this market before a dividend is paid."
             error={error('tax.dividendWithholdingPercent')}
             onChange={(value) => {
-              tax('dividendWithholdingPercent', value);
+              update('tax.dividendWithholdingPercent', (current) => ({
+                ...current,
+                tax: { dividendWithholdingPercent: value },
+              }));
             }}
           />
         </div>

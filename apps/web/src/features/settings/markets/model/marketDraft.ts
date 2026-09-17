@@ -39,12 +39,7 @@ export function blankMarket(): MarketConfigInput {
     holidays: [],
     settlementDays: 2,
     fees: { commissionBps: 5, minimumCommission: '0.00', exchangeFeeBps: 0, transactionTaxBps: 0 },
-    tax: {
-      longTermThresholdDays: null,
-      shortTermRatePercent: 30,
-      longTermRatePercent: 30,
-      dividendWithholdingPercent: 0,
-    },
+    tax: { dividendWithholdingPercent: 0 },
     permittedInstrumentTypes: ['long_term'],
     automationPermitted: false,
     enabled: true,
@@ -70,12 +65,6 @@ export function describeMarket(config: MarketConfigInput): Record<string, string
     Commission: `${String(config.fees.commissionBps)} bps, minimum ${config.fees.minimumCommission} ${config.currency}`,
     'Exchange fee': `${String(config.fees.exchangeFeeBps)} bps`,
     'Transaction tax': `${String(config.fees.transactionTaxBps)} bps`,
-    'Long-term holding period':
-      config.tax.longTermThresholdDays === null
-        ? 'No distinction'
-        : `${String(config.tax.longTermThresholdDays)} days`,
-    'Short-term gains tax': `${String(config.tax.shortTermRatePercent)}%`,
-    'Long-term gains tax': `${String(config.tax.longTermRatePercent)}%`,
     'Dividend withholding': `${String(config.tax.dividendWithholdingPercent)}%`,
     'Permitted instrument types': config.permittedInstrumentTypes.map(humanizeToken).join(', '),
     'Automation permitted': config.automationPermitted ? 'Yes' : 'No',

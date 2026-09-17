@@ -37,9 +37,5 @@ export function describeInstrumentType(config: InstrumentTypeConfigInput): Recor
     'Minimum order value': config.minimumOrderValue,
     Settlement:
       config.settlementDays === null ? 'Follows the market' : `T+${String(config.settlementDays)}`,
-    'Tax holding period':
-      config.taxThresholdDays === null
-        ? 'Follows the market'
-        : `${String(config.taxThresholdDays)} days`,
   };
 }

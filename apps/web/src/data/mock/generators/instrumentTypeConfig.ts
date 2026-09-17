@@ -77,7 +77,6 @@ export function seedInstrumentTypeConfigs(
       minimumQuantity: seed.minimumQuantity,
       minimumOrderValue: seed.minimumOrderValue,
       settlementDays: seed.settlementDays,
-      taxThresholdDays: null,
     };
   });
 }

@@ -164,6 +164,7 @@ export {
   useSaveInflationAssumption,
   useSaveOperatingPolicy,
 } from './assumptionsConfigQueries';
+export { useRevertTaxRuleSet, useSaveTaxRuleSet, useTaxRuleSets } from './taxRulesConfigQueries';
 export {
   useCounterparties,
   useInflationHistory,

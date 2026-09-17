@@ -71,6 +71,7 @@ export const ROUTES = {
   SETTINGS_AUTOMATION: '/settings/automation',
   SETTINGS_DISPLAY: '/settings/display',
   SETTINGS_ASSUMPTIONS: '/settings/assumptions',
+  SETTINGS_TAX_RULES: '/settings/tax-rules',
 
   // Developer Component Workbench (UI Spec 4.4 / Stage L)
   WORKBENCH: '/workbench',

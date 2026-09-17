@@ -22,7 +22,7 @@ export interface InstrumentTypeFormProps {
   readonly onCancel: () => void;
 }
 
-type OverrideKey = 'settlementDays' | 'taxThresholdDays';
+type OverrideKey = 'settlementDays';
 
 // UI spec 7.18 — the detail form for one instrument type. Types are a fixed list, so this only edits.
 export function InstrumentTypeForm({
@@ -35,7 +35,7 @@ export function InstrumentTypeForm({
   const { draft, update, error } = form;
   const label = instrumentTypeLabel(draft.type);
 
-  // Settlement and the tax holding period either follow each market or override it for this type.
+  // Settlement either follows each market or is overridden for this type.
   const override = (key: OverrideKey, fallback: number, fieldLabel: string): ReactElement => (
     <div className={styles.stack}>
       <label className={styles.checkOption}>
@@ -53,9 +53,7 @@ export function InstrumentTypeForm({
       </label>
       {draft[key] !== null && (
         <NumberField
-          label={
-            key === 'settlementDays' ? 'Settlement (days after trade)' : 'Tax holding period (days)'
-          }
+          label="Settlement (days after trade)"
           step="1"
           value={draft[key]}
           error={error(key)}
@@ -160,11 +158,8 @@ export function InstrumentTypeForm({
         </div>
       </Card>
 
-      <Card title="Settlement and tax">
-        <div className={styles.fieldGrid}>
-          {override('settlementDays', 2, 'Settlement')}
-          {override('taxThresholdDays', 365, 'Long-term tax holding period')}
-        </div>
+      <Card title="Settlement">
+        <div className={styles.fieldGrid}>{override('settlementDays', 2, 'Settlement')}</div>
       </Card>
 
       <ConfigSaveCard

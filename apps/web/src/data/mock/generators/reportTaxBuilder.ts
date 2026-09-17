@@ -1,11 +1,12 @@
 // Tax summary report (UI spec 7.16): realised and unrealised gains by holding period with an estimated
-// tax, using the market configuration's rates and holding periods. An estimate for an India-resident
-// owner, never advice.
+// tax, using the residence tax rule set's holding periods, rates and long-term exemptions per asset
+// class (decision 45). An estimate, never advice.
 
 import { Decimal } from 'decimal.js';
 
 import type { HoldingDto } from '../../schemas';
-import { dividends, marketFor } from './reportCashBuilders';
+import { TAX_ASSET_CLASS_LABEL, taxAssetClassOf, taxRuleFor } from '../../../shared/tax/taxRules';
+import { dividends } from './reportCashBuilders';
 import type { BuildInput, ReportParts } from './reportParts';
 import { column, countCell, metric, moneyCell, percentCell, textCell } from './reportParts';
 import { daysBetween } from './reportValuation';
@@ -19,33 +20,55 @@ export function taxReport(input: BuildInput): ReportParts {
   let longGain = ZERO;
   let estimated = ZERO;
   let approaching = 0;
+  // Long-term gains per asset class, so each class's yearly exemption is applied once.
+  const longByClass = new Map<string, { gain: Decimal; rate: number; exemption: Decimal }>();
+  const rules = v.taxRules;
   const rows = v.holdings.flatMap((holding: HoldingDto) => {
     const id = String(holding.instrumentId);
     const instrument = v.instrument(id);
     const price = v.close(id, to);
-    const market = marketFor(input, id);
     if (instrument === undefined || price === null) return [];
+    const taxable = {
+      type: instrument.type,
+      marketId: String(instrument.marketId),
+      symbol: instrument.symbol,
+    };
+    const rule = taxRuleFor(rules, taxable);
+    const assetClass = rules === null ? 'other' : taxAssetClassOf(taxable, rules.country);
     return holding.lots
       .filter((lot) => lot.purchaseDate <= to)
       .map((lot) => {
         const held = daysBetween(lot.purchaseDate, to);
-        const threshold = market?.tax.longTermThresholdDays ?? null;
+        const threshold = rule?.longTermAfterDays ?? null;
         const isLong = threshold !== null && held >= threshold;
         if (threshold !== null && !isLong && threshold - held <= APPROACHING_DAYS) approaching += 1;
         const gain = new Decimal(lot.quantity)
           .times(price.minus(lot.costPerUnit.amount))
           .times(v.fx(instrument.currency, currency, to));
-        const rate = isLong
-          ? (market?.tax.longTermRatePercent ?? 0)
-          : (market?.tax.shortTermRatePercent ?? 0);
+        const rate = isLong ? (rule?.longTermRatePercent ?? 0) : (rule?.shortTermRatePercent ?? 0);
         const tax = gain.isPositive() ? gain.times(rate).dividedBy(100) : ZERO;
-        if (isLong) longGain = longGain.plus(gain);
-        else shortGain = shortGain.plus(gain);
+        if (isLong) {
+          longGain = longGain.plus(gain);
+          const exemption =
+            rules === null
+              ? ZERO
+              : new Decimal(rule?.longTermExemption ?? '0').times(
+                  v.fx(rules.currency, currency, to),
+                );
+          const current = longByClass.get(assetClass);
+          longByClass.set(assetClass, {
+            gain: (current?.gain ?? ZERO).plus(gain),
+            rate,
+            exemption,
+          });
+        } else {
+          shortGain = shortGain.plus(gain);
+        }
         estimated = estimated.plus(tax);
         return {
           id: lot.id,
           cells: {
-            instrument: textCell(instrument.symbol),
+            instrument: textCell(`${instrument.symbol} (${TAX_ASSET_CLASS_LABEL[assetClass]})`),
             bought: textCell(lot.purchaseDate),
             held: countCell(held),
             term: textCell(
@@ -62,6 +85,15 @@ export function taxReport(input: BuildInput): ReportParts {
         };
       });
   });
+  // The yearly long-term exemption lowers the estimate once per class, up to that class's gains.
+  const relief = [...longByClass.values()].reduce(
+    (sum, item) =>
+      sum.plus(
+        Decimal.min(item.exemption, Decimal.max(item.gain, ZERO)).times(item.rate).dividedBy(100),
+      ),
+    ZERO,
+  );
+  estimated = Decimal.max(estimated.minus(relief), ZERO);
   const withheld = dividends(input).reduce((sum, row) => sum.plus(row.withheld), ZERO);
 
   return {
@@ -79,7 +111,7 @@ export function taxReport(input: BuildInput): ReportParts {
         'estimate',
         'Estimated tax if everything were sold',
         moneyCell(estimated, currency),
-        `At ${to} prices, using each market’s configured rates. An estimate, not advice.`,
+        `At ${to} prices, using the residence tax rules after long-term exemptions. An estimate, not advice.`,
       ),
       metric('withheld', 'Dividend tax withheld (estimated)', moneyCell(withheld, currency)),
       metric(
@@ -108,7 +140,9 @@ export function taxReport(input: BuildInput): ReportParts {
       },
     ],
     notes: [
-      'Rates and holding periods are the assumptions in Settings > Countries & markets for an India-resident owner.',
+      rules === null
+        ? 'No residence tax rule set is configured, so no tax is estimated.'
+        : `Holding periods, rates and exemptions follow the ${rules.country} residence rules in Settings > Tax rules.`,
       'Losses are shown but not offset against gains; carried-forward losses are not tracked yet.',
       'This is an estimate to plan with, not tax advice or a filing.',
     ],

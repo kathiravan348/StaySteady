@@ -13,11 +13,13 @@ import {
   usePortfolioHoldings,
   useQuotes,
   useStrategies,
+  useTaxRuleSets,
 } from '../../../data/api';
 import { useMarketSchedule } from '../../../providers/MarketScheduleProvider';
 import { useSystemState } from '../../../providers/SystemStateProvider';
 import type { MarketSessionState } from '../../../shared/marketTime';
 import type { BaseCurrencyCode } from '../../../shared/types/currency';
+import { residenceRules } from '../../../shared/tax/taxRules';
 import type { IsoUtcTimestamp } from '../../../shared/types/dateTime';
 import { buildHoldingRows } from './model/holdingRows';
 import type { HoldingRow } from './model/holdingTypes';
@@ -56,6 +58,7 @@ export function useHoldingsData(): HoldingsState {
   const fxHistories = useFxHistories();
   const strategies = useStrategies();
   const news = useNewsItems();
+  const taxRules = useTaxRuleSets();
   const heldIds = useMemo(
     () => holdings.data?.map((holding) => holding.instrumentId) ?? [],
     [holdings.data],
@@ -72,7 +75,12 @@ export function useHoldingsData(): HoldingsState {
 
   const rows = useMemo(() => {
     const coreReady =
-      holdings.data && instruments.data && markets.data && brokers.data && fxRates.data;
+      holdings.data &&
+      instruments.data &&
+      markets.data &&
+      brokers.data &&
+      fxRates.data &&
+      taxRules.data;
     if (!coreReady || !fxHistories.data || strategies.isPending || news.isPending) {
       return null;
     }
@@ -91,6 +99,7 @@ export function useHoldingsData(): HoldingsState {
       news: news.data ?? [],
       marketStates,
       baseCurrency,
+      taxRules: residenceRules(taxRules.data.map((entry) => entry.config)),
       today,
     });
   }, [
@@ -100,6 +109,7 @@ export function useHoldingsData(): HoldingsState {
     brokers.data,
     fxRates.data,
     fxHistories.data,
+    taxRules.data,
     strategies.isPending,
     strategies.data,
     news.isPending,
@@ -111,7 +121,7 @@ export function useHoldingsData(): HoldingsState {
     today,
   ]);
 
-  const core = [holdings, instruments, markets, brokers, fxRates, fxHistories];
+  const core = [holdings, instruments, markets, brokers, fxRates, fxHistories, taxRules];
   const failed = [...core, ...(heldIds.length > 0 ? [quotes] : [])].find((query) => query.isError);
   if (failed !== undefined) {
     return {

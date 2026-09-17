@@ -57,6 +57,7 @@ import { SettingsAlertsPage } from '../features/settings/SettingsAlertsPage';
 import { SettingsBrokersPage } from '../features/settings/SettingsBrokersPage';
 import { SettingsAssumptionsPage } from '../features/settings/SettingsAssumptionsPage';
 import { SettingsCurrenciesPage } from '../features/settings/SettingsCurrenciesPage';
+import { SettingsTaxRulesPage } from '../features/settings/SettingsTaxRulesPage';
 import { SettingsInstrumentsPage } from '../features/settings/SettingsInstrumentsPage';
 import { SettingsCredentialsPage } from '../features/settings/SettingsCredentialsPage';
 import { SettingsAutomationPage } from '../features/settings/SettingsAutomationPage';
@@ -143,6 +144,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.SETTINGS_AUTOMATION} element={<SettingsAutomationPage />} />
         <Route path={ROUTES.SETTINGS_DISPLAY} element={<SettingsDisplayPage />} />
         <Route path={ROUTES.SETTINGS_ASSUMPTIONS} element={<SettingsAssumptionsPage />} />
+        <Route path={ROUTES.SETTINGS_TAX_RULES} element={<SettingsTaxRulesPage />} />
 
         {/* Catch-all 404 */}
         <Route path="*" element={<NotFoundPage />} />

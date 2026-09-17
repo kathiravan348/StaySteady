@@ -12,6 +12,8 @@ import {
 } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentOperatingPolicy } from '../stores/assumptionsStore';
+import { currentTaxRuleSets } from '../stores/taxRulesStore';
+import { residenceRules } from '../../../shared/tax/taxRules';
 import { failure } from './versionedConfigHandlers';
 
 function today(): string {
@@ -30,7 +32,12 @@ export const partTwoReferenceHandlers: readonly HttpHandler[] = [
     respond('inflation history', () => generateInflationHistory(today())),
   ),
   http.get('/api/v1/tax/loss-carry-forwards', () =>
-    respond('losses carried forward', () => generateLossCarryForwards(today())),
+    respond('losses carried forward', () =>
+      generateLossCarryForwards(
+        today(),
+        residenceRules(currentTaxRuleSets())?.lossCarryForwardYears ?? undefined,
+      ),
+    ),
   ),
   http.get('/api/v1/counterparties', () =>
     respond('counterparties', () =>

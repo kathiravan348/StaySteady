@@ -32,11 +32,6 @@ export const InstrumentTypeConfigSchema = z
       .min(0, 'Cannot be negative')
       .max(10, 'Above 10 days is not a settlement cycle')
       .nullable(),
-    taxThresholdDays: z
-      .number()
-      .int('Whole days only')
-      .positive('Must be at least one day')
-      .nullable(),
   })
   .superRefine((config, ctx) => {
     const issue = (path: string[], message: string): void => {

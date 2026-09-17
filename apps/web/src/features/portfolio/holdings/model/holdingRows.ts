@@ -21,6 +21,8 @@ import type { MarketSessionState } from '../../../../shared/marketTime';
 import type { FxQuote, Money } from '../../../../shared/money';
 import { createMoney, findFxRate } from '../../../../shared/money';
 import type { BaseCurrencyCode } from '../../../../shared/types/currency';
+import type { TaxRuleSetConfigInput } from '../../../../data/schemas';
+import { taxRuleFor } from '../../../../shared/tax/taxRules';
 import type { FxHistoryIndex } from './fxOnDate';
 import { fxTableOn, indexFxHistories } from './fxOnDate';
 import { holdingTaxStatus, lotTaxStatus } from './holdingTax';
@@ -38,6 +40,8 @@ export interface HoldingRowInputs {
   readonly news: readonly NewsItemDto[];
   readonly marketStates: ReadonlyMap<string, MarketSessionState>;
   readonly baseCurrency: BaseCurrencyCode;
+  // The residence tax rule set; null when none is configured (no long-term distinction shown).
+  readonly taxRules: TaxRuleSetConfigInput | null;
   // Today's calendar date (YYYY-MM-DD), passed in to keep this function pure.
   readonly today: string;
 }
@@ -95,7 +99,7 @@ function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext
     throw new RangeError(`No FX rate path from ${currency} to ${inputs.baseCurrency}`);
   }
 
-  const threshold = market?.holdingPeriodTaxThresholdDays ?? null;
+  const threshold = taxRuleFor(inputs.taxRules, instrument)?.longTermAfterDays ?? null;
   let costBase = new Decimal(0);
   let currencyEffect = new Decimal(0);
   const lots: LotView[] = holding.lots.map((lot) => {

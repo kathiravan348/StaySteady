@@ -19,11 +19,8 @@ export type MarketFeesDto = z.infer<typeof MarketFeesSchema>;
 
 const percent = z.number().min(0, 'Cannot be negative').max(100, 'Cannot be above 100%');
 
+// Tax the market itself takes at source. Gains tax follows the residence rule set (decision 45).
 export const MarketTaxRulesSchema = z.object({
-  // Days a holding must be held for long-term treatment; null when the market makes no distinction.
-  longTermThresholdDays: z.number().int().positive('Must be at least one day').nullable(),
-  shortTermRatePercent: percent,
-  longTermRatePercent: percent,
   dividendWithholdingPercent: percent,
 });
 export type MarketTaxRulesDto = z.infer<typeof MarketTaxRulesSchema>;
@@ -103,16 +100,6 @@ export const MarketConfigSchema = z
       }
       seen.add(holiday.date);
     });
-
-    if (
-      config.tax.longTermThresholdDays === null &&
-      config.tax.longTermRatePercent !== config.tax.shortTermRatePercent
-    ) {
-      issue(
-        ['tax', 'longTermRatePercent'],
-        'No long-term holding period is set, so a separate long-term rate can never apply',
-      );
-    }
   });
 export type MarketConfigDto = z.infer<typeof MarketConfigSchema>;
 export type MarketConfigInput = z.input<typeof MarketConfigSchema>;

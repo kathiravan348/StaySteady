@@ -11,6 +11,8 @@ import {
 import type { ValuationContext } from '../generators';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentConfigs, getMarketVersions } from '../stores/configStore';
+import { currentTaxRuleSets } from '../stores/taxRulesStore';
+import { residenceRules } from '../../../shared/tax/taxRules';
 
 const ctx = createMockGeneratorContext();
 
@@ -28,5 +30,6 @@ export function portfolioValuation(): ValuationContext {
     bundle.transactions,
     currentConfigs(getMarketVersions()),
     strategies,
+    residenceRules(currentTaxRuleSets()),
   );
 }

@@ -8,6 +8,7 @@ import type {
   InstrumentDto,
   MarketConfigInput,
   ReportCurrencyDto,
+  TaxRuleSetConfigInput,
   TransactionDto,
 } from '../../schemas';
 import type { MockGeneratorContext } from './mockContext';
@@ -53,6 +54,8 @@ export interface ValuationContext {
   readonly holdings: readonly HoldingDto[];
   readonly transactions: readonly TransactionDto[];
   readonly markets: readonly MarketConfigInput[];
+  // The residence tax rule set (decision 45); null when none is configured.
+  readonly taxRules: TaxRuleSetConfigInput | null;
   readonly strategyNames: ReadonlyMap<string, string>;
   readonly instrument: (id: string) => InstrumentDto | undefined;
   // Closing price on or before the date, in the instrument's currency.
@@ -74,6 +77,7 @@ export function createValuationContext(
   transactions: readonly TransactionDto[],
   markets: readonly MarketConfigInput[],
   strategyNames: ReadonlyMap<string, string>,
+  taxRules: TaxRuleSetConfigInput | null = null,
 ): ValuationContext {
   const prices = new Map<string, DatedValue[]>();
   const closeSeries = (instrumentId: string): readonly DatedValue[] => {
@@ -121,6 +125,7 @@ export function createValuationContext(
     holdings,
     transactions,
     markets,
+    taxRules,
     strategyNames,
     instrument: getInstrumentById,
     close,
