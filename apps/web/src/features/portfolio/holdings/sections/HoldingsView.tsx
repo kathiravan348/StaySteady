@@ -16,6 +16,7 @@ import {
 } from '../model/holdingsExport';
 import type { HoldingRow } from '../model/holdingTypes';
 import { useHoldingsLayout } from '../useHoldingsLayout';
+import { HoldingsLiquiditySummary } from './HoldingsLiquiditySummary';
 import { HoldingsTable } from './HoldingsTable';
 import { HoldingsToolbar } from './HoldingsToolbar';
 
@@ -78,6 +79,7 @@ export function HoldingsView({
           ))}
         </div>
       )}
+      <HoldingsLiquiditySummary rows={rows} baseCurrency={baseCurrency} />
       <HoldingsToolbar
         search={search}
         onSearchChange={setSearch}

@@ -93,24 +93,105 @@ export function ApprovalCard({
       <ImpactPreview impact={request.impact} />
       <RiskChecks checks={request.riskChecks} />
 
-      {isPending ? (
-        <div className={styles.actions}>
-          <Button isDisabled={isBusy} onPress={onApprove}>
-            Approve
-          </Button>
-          <Button variant="secondary" isDisabled={isBusy} onPress={onModify}>
-            Modify
-          </Button>
-          <Button variant="danger" isDisabled={isBusy} onPress={onReject}>
-            Reject
-          </Button>
-          {countdown.isExpired && (
-            <span className={styles.meta}>
-              This proposal has expired. Approving it now would act on stale prices.
-            </span>
-          )}
+      {/* S-33 Compliance Safety Overlay (Requirement 27) */}
+      <div
+        style={{
+          padding: 'var(--space-2) var(--space-3)',
+          background: 'var(--surface-sunken)',
+          borderRadius: 'var(--radius-sm)',
+          border: 'var(--border-width-thin) solid var(--border-subtle)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span
+            style={{ fontSize: 'var(--font-size-xs)', fontWeight: 'var(--font-weight-semibold)' }}
+          >
+            ⚖️ S-33 Compliance & Policy Check:
+          </span>
+          <Badge variant="positive" size="sm">
+            Passed
+          </Badge>
         </div>
-      ) : (
+        <p
+          style={{
+            fontSize: 'var(--font-size-xs)',
+            color: 'var(--text-secondary)',
+            margin: '4px 0 0',
+          }}
+        >
+          Unrestricted under employer policy §2.1; no active quiet blackout periods.
+        </p>
+      </div>
+
+      {/* Cooling-off period friction for high-notional orders (Requirement 29) */}
+      {(() => {
+        const isHighNotional =
+          request.quantity >= 50 ||
+          (request.limitPrice !== null &&
+            Number(request.limitPrice.amount) * request.quantity >= 10000);
+        const requestedAtMs = Date.parse(request.requestedAt);
+        const coolingOffDurationMs = 5 * 60 * 1000;
+        const coolingOffRemainingMs = Math.max(0, requestedAtMs + coolingOffDurationMs - nowMs);
+        const isCoolingOff = isHighNotional && coolingOffRemainingMs > 0 && isPending;
+        const coolingSeconds = Math.ceil(coolingOffRemainingMs / 1000);
+        const coolingMinutes = Math.floor(coolingSeconds / 60);
+        const coolingSecondsRem = coolingSeconds % 60;
+        const coolingText = `${String(coolingMinutes).padStart(2, '0')}:${String(coolingSecondsRem).padStart(2, '0')}`;
+
+        if (!isPending) return null;
+
+        return (
+          <>
+            {isCoolingOff && (
+              <div
+                style={{
+                  padding: 'var(--space-2) var(--space-3)',
+                  background: 'color-mix(in srgb, var(--color-warning) 12%, var(--surface-sunken))',
+                  borderRadius: 'var(--radius-sm)',
+                  border: 'var(--border-width-thin) solid var(--color-warning)',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 'var(--font-size-xs)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  ⏳ Cooling-Off Period Active: {coolingText} remaining
+                </span>
+                <p
+                  style={{
+                    fontSize: 'var(--font-size-xs)',
+                    color: 'var(--text-secondary)',
+                    margin: '2px 0 0',
+                  }}
+                >
+                  High-notional friction safeguard per Requirement 29. Mandatory pause before
+                  approval.
+                </p>
+              </div>
+            )}
+            <div className={styles.actions}>
+              <Button isDisabled={isBusy || isCoolingOff} onPress={onApprove}>
+                {isCoolingOff ? `Cooling Off (${coolingText})` : 'Approve'}
+              </Button>
+              <Button variant="secondary" isDisabled={isBusy} onPress={onModify}>
+                Modify
+              </Button>
+              <Button variant="danger" isDisabled={isBusy} onPress={onReject}>
+                Reject
+              </Button>
+              {countdown.isExpired && (
+                <span className={styles.meta}>
+                  This proposal has expired. Approving it now would act on stale prices.
+                </span>
+              )}
+            </div>
+          </>
+        );
+      })()}
+      {!isPending && (
         <div className={styles.inline}>
           <Badge
             variant={

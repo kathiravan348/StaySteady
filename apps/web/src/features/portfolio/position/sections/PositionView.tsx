@@ -17,6 +17,7 @@ import { EventsPanel } from './EventsPanel';
 import { NewsPanel } from './NewsPanel';
 import { PositionActions } from './PositionActions';
 import { PositionChartCard } from './PositionChartCard';
+import { PositionDisposalEstimator } from './PositionDisposalEstimator';
 import { PositionHeader } from './PositionHeader';
 import { StrategyNotesPanel } from './StrategyNotesPanel';
 import { TransactionsPanel } from './TransactionsPanel';
@@ -54,6 +55,12 @@ export function PositionView({
       label: 'Lots',
       badge: <Badge variant="neutral">{row.lots.length}</Badge>,
       content: <LotsTable lots={row.lots} symbol={instrument.symbol} />,
+    },
+    {
+      id: 'tax-disposal',
+      label: 'Tax & Disposal',
+      badge: <Badge variant="neutral">Est.</Badge>,
+      content: <PositionDisposalEstimator row={row} />,
     },
     {
       id: 'transactions',

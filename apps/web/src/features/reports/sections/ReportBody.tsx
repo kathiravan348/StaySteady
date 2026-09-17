@@ -4,6 +4,8 @@ import type { ReactElement } from 'react';
 import type { ReportDto, ReportTableDto } from '../../../data/schemas';
 import { formatChange, formatReportValue } from '../model/reportModel';
 import styles from '../Reports.module.scss';
+import { JurisdictionTaxPackSection } from './JurisdictionTaxPackSection';
+import { RealReturnsComparisonSection } from './RealReturnsComparisonSection';
 
 function ReportTable({ table }: { readonly table: ReportTableDto }): ReactElement {
   const cell = (record: ReportTableDto['total'], key: string): string => {
@@ -105,6 +107,9 @@ export function ReportBody({ report }: { readonly report: ReportDto }): ReactEle
           )}
         </Card>
       )}
+
+      {report.type === 'performance' && <RealReturnsComparisonSection />}
+      {report.type === 'tax' && <JurisdictionTaxPackSection />}
 
       {report.tables.map((table) => (
         <ReportTable key={table.id} table={table} />

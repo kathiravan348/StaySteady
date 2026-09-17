@@ -7,6 +7,7 @@ import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import styles from './Health.module.scss';
 import { AlertChannelsPanel } from './sections/AlertChannelsPanel';
+import { DepositoryReconciliationSection } from './sections/DepositoryReconciliationSection';
 import { FreshnessPanel } from './sections/FreshnessPanel';
 import { HealthNav } from './sections/HealthNav';
 import { StatusBoard } from './sections/StatusBoard';
@@ -21,6 +22,7 @@ export function HealthStatusPage(): ReactElement {
       <div className={styles.page}>
         <HealthNav />
         <StatusBoard />
+        <DepositoryReconciliationSection />
         <div className={styles.twoColumn}>
           <FreshnessPanel />
           <AlertChannelsPanel />

@@ -239,7 +239,114 @@ Get-ChildItem -Path apps/web/src/features/compliance, apps/web/src/features/cont
 - [x] **S-33 (Compliance & Restrictions)**: Completed, verified, and committed (`e0d04b4`).
 - [x] **S-26 (Markets Screener)**: 100% completed, verified, and committed across 4 factor pillars, 5 presets, CSV export, and handoffs.
 - [x] **Stage S Screens Milestone**: **100% DELIVERED** (all 33 screens from S-01 to S-33 complete; platform at 70/88 = 79.5%).
-- [x] **Decision 18 (< 300 lines)**: Strictly satisfied across all files. Refactored `RestrictedListSection.tsx` with `AddRestrictedModal.tsx`.
+- [x] **Stage E Extensions Milestone**: **100% DELIVERED** (all 9 tasks E-01 to E-09 complete; platform at 79/88 = 89.8%).
+- [x] **Decision 18 (< 300 lines)**: Strictly satisfied across all files.
 - [x] **Progress Log Hygiene**: Section 4 updated with only the last 3 sessions (54, 55, 56); Section 1 & 2 updated; older sessions archived in `PROGRESS_ARCHIVE.md`.
 - [x] **Personal Agent Verification Log**: Fully documented in `Docs/SESSION_VERIFICATION_LOG.md`.
+
+---
+
+## 7. Stage E: Extensions to Existing Screens (E-01 through E-09)
+
+### Overview
+Stage E completes all 9 screen extensions specified in **Requirements Part II (Requirements 25–34)** and **UI Specification §19.2**. These extensions enrich the existing 33 Stage S screens with real-world institutional-grade capabilities: tax disposal calculation, depository cross-reconciliation, pre-trade compliance gates, real returns inflation adjustment, emergency fund segregation, cross-strategy correlation matrices, and operating cost drag trackers.
+
+### Detailed Task Implementations
+
+#### E-01: Holdings Liquidity & Non-Market Assets
+* **Requirements & Spec**: Requirement 25, 30; UI Spec §19.2.
+* **Component Created**: `apps/web/src/features/portfolio/holdings/sections/HoldingsLiquiditySummary.tsx` (199 lines).
+* **Mounted In**: `HoldingsView.tsx`.
+* **Features**:
+  - Classifies portfolio wealth into 3 liquidity horizons: T+1 (Liquid Markets), Short-Term (Weeks), and Illiquid (Months/Years).
+  - Wealth share percentage metrics for each horizon bucket.
+  - Interactive toggle to incorporate manual non-market assets from Net Worth (`useNetWorth`), rendering distinct non-market cards with `STALE`, `UNVERIFIED`, and non-automated asset class badges.
+
+#### E-02: Position Detail Tax & Disposal Calculator
+* **Requirements & Spec**: Requirement 30; UI Spec §19.2.
+* **Component Created**: `apps/web/src/features/portfolio/position/sections/PositionDisposalEstimator.tsx` (243 lines).
+* **Mounted In**: `PositionView.tsx` (New 'Tax & Disposal' tab).
+* **Features**:
+  - Breakdown of open tax lots into Short-Term Capital Gains (< 365 days) vs Long-Term Capital Gains (>= 365 days).
+  - Countdown clock indicating exact days remaining until nearest STCG lot qualifies for preferential LTCG treatment.
+  - Live interactive "Cost of Disposing Today" simulation: Gross proceeds, estimated commissions, regulatory fees (SEC/STT), statutory tax liability, and Net Cash Realized.
+
+#### E-03: Orders & Approval Queue Compliance & Cooling-Off
+* **Requirements & Spec**: Requirements 27, 33; UI Spec §19.2.
+* **Components Modified**: `ApprovalCard.tsx` (219 lines), `DecisionDialog.tsx` (151 lines).
+* **Features**:
+  - Displays S-33 pre-trade compliance check status (Blackout Window, Restricted Security, Holding Lock).
+  - Active cooling-off countdown timer for large orders (>50 shares / >$10k), disabling the Approve button until the 5-minute safety cooldown finishes.
+  - Required stated rationale prompt on approve/reject, linking directly into S-31 Decision Journal.
+
+#### E-04: Risk Counterparty Exposure & Compliance Panel
+* **Requirements & Spec**: Requirements 27, 32; UI Spec §19.2.
+* **Components Created**:
+  - `apps/web/src/features/risk/sections/CounterpartyExposureSection.tsx` (157 lines)
+  - `apps/web/src/features/risk/sections/ComplianceLimitsPanel.tsx` (172 lines)
+* **Mounted In**: `RiskPanelView.tsx`.
+* **Features**:
+  - Counterparty institutional exposure across brokers, custodians, and banks (IBKR, Zerodha, CDSL, HDFC, Chase), displaying wealth share and statutory protection limits (SIPC $500k, DICGC ₹5L). Highlights concentration > 50%.
+  - Central compliance overlay showing active blackout windows, restricted securities counts, minimum holding locks, and signal-stage intercepted orders.
+
+#### E-05: System Health Depository Reconciler
+* **Requirements & Spec**: Requirement 31; UI Spec §19.2.
+* **Component Created**: `apps/web/src/features/health/sections/DepositoryReconciliationSection.tsx` (200 lines).
+* **Mounted In**: `HealthStatusPage.tsx`.
+* **Features**:
+  - Independent depository reconciliation status against central registries: DTCC / Apex Clearing (US), CDSL / NSDL CAS (India).
+  - Last reconciled timestamp and 0 discrepancy badge.
+  - Interactive "Reconcile Statement Now" button providing instant simulated audit feedback.
+
+#### E-06: Reports Real Returns, Tax Packs & Cost Drag
+* **Requirements & Spec**: Requirement 30; UI Spec §19.2.
+* **Components Created**:
+  - `apps/web/src/features/reports/sections/RealReturnsComparisonSection.tsx` (284 lines)
+  - `apps/web/src/features/reports/sections/JurisdictionTaxPackSection.tsx` (279 lines)
+* **Mounted In**: `ReportBody.tsx` (rendered on Performance and Tax reports).
+* **Features**:
+  - Real vs. Nominal returns comparison cards (Nominal CAGR +14.2% vs Net Real Purchasing Power +9.4% against 4.8% CPI benchmark).
+  - Performance Drag Waterfall table (Gross Return -> Commissions/Slippage -> Regulatory/Exchange fees -> Realized Taxes -> Net Nominal -> CPI Inflation -> Net Real Alpha).
+  - Dual-jurisdiction statutory tax pack generator: US IRS Form 8949 / 1099-B and India ITR-2 Schedule CG & Schedule FA with one-click CSV export.
+
+#### E-07: Planning Emergency Reserve & Liquidity Ladder
+* **Requirements & Spec**: Requirement 29; UI Spec §19.2.
+* **Components Created**:
+  - `apps/web/src/features/planning/sections/EmergencyReserveCard.tsx` (191 lines)
+  - `apps/web/src/features/planning/sections/LiquidityLadderSection.tsx` (225 lines)
+* **Mounted In**: `PlanningGoalsPage.tsx` and `PlanningScenariosPage.tsx`.
+* **Features**:
+  - Life emergency reserve fund gauge measuring survival runway in months of living expenses (8.2 months funded vs 6.0 month target), strictly segregated from broker trading margin.
+  - Liquidity ladder mapping 4 graduated maturity tiers (<7d, 8-30d, 1-12m, >1y) against upcoming committed liabilities.
+  - Decumulation withdrawal phase simulator calculating sustainable annual cash flow and non-equity bear market runway years.
+
+#### E-08: Strategy Retirement & Correlation Matrix
+* **Requirements & Spec**: Requirement 28; UI Spec §19.2.
+* **Components Created**:
+  - `apps/web/src/features/research/strategyLibrary/sections/StrategyRetirementSection.tsx` (271 lines)
+  - `apps/web/src/features/research/strategyLibrary/sections/strategyRetirementData.ts` (40 lines)
+* **Mounted In**: `LibraryView.tsx` (`/research/strategies`).
+* **Features**:
+  - Retirement rules cards: Max Drawdown Ceiling (15%), 90-day Alpha Decay (>5% lag), and Sharpe Floor (<0.50 SR).
+  - Historical demotion audit trail logging strategy, trigger reason, prior/new stage, and capital reallocation.
+  - Pairwise cross-strategy correlation matrix highlighting high correlation clusters (>0.70) with diversification warning banners.
+
+#### E-09: Settings Tax Rules, Inflation & Cost Budgets
+* **Requirements & Spec**: Requirements 30, 34; UI Spec §19.2.
+* **Components Created**:
+  - `apps/web/src/features/settings/tax/TaxRulesAndInflationSection.tsx` (230 lines)
+  - `apps/web/src/features/settings/tax/InflationAssumptionsSubcard.tsx` (133 lines)
+  - `apps/web/src/features/settings/budget/OperatingCostBudgetSection.tsx` (253 lines)
+* **Mounted In**: `SettingsCurrenciesPage.tsx`.
+* **Features**:
+  - Configurable federal tax rates, Section 1256 options rules, and benchmark annual CPI inflation rates for USD and INR.
+  - Algorithmic operating cost budget tracker itemizing broker API fees, real-time market data, VPS infrastructure, and data feeds ($125 / $150 accrued; drag: 0.04% of AUM).
+
+### Verification Results for Stage E
+- `pnpm typecheck`: **PASS (0 errors across workspace)**
+- `eslint`: **PASS (0 errors, 0 warnings across `apps/web/src`)**
+- `prettier --check`: **PASS (100% formatted)**
+- `pnpm build`: **PASS (Vite production bundle generated)**
+- `Decision 18 (< 300 lines)`: **PASS (all 25 touched and created files strictly $\le 300$ lines)**
+
 

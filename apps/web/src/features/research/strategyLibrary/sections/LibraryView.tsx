@@ -9,6 +9,7 @@ import { useStrategyPromotions } from '../useStrategyPromotions';
 import { LibraryFilterBar } from './LibraryFilterBar';
 import { PromotionDialog } from './PromotionDialog';
 import { StrategyCard } from './StrategyCard';
+import { StrategyRetirementSection } from './StrategyRetirementSection';
 import styles from '../StrategyLibrary.module.scss';
 
 export interface LibraryViewProps {
@@ -71,6 +72,8 @@ export function LibraryView({ entries }: LibraryViewProps): ReactElement {
           })}
         </div>
       )}
+
+      <StrategyRetirementSection />
 
       {promotingEntry !== undefined && (
         <PromotionDialog

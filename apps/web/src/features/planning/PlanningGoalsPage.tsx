@@ -9,6 +9,7 @@ import { useGoals, useInstruments, usePortfolioHoldings } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import styles from './Planning.module.scss';
+import { EmergencyReserveCard } from './sections/EmergencyReserveCard';
 import { GoalCard } from './sections/GoalCard';
 import { GoalForm } from './sections/GoalForm';
 
@@ -49,6 +50,7 @@ function GoalsBody(): ReactElement {
 
   return (
     <div className={styles.page}>
+      <EmergencyReserveCard />
       <div className={styles.toolbar}>
         <span className={styles.meta}>
           {goals.data.length} goals · {goals.data.filter((item) => item.onTrack).length} on track

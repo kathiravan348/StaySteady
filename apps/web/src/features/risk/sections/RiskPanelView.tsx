@@ -14,6 +14,8 @@ import {
   closenessOf,
   groupLimits,
 } from '../model/limitDisplay';
+import { ComplianceLimitsPanel } from './ComplianceLimitsPanel';
+import { CounterpartyExposureSection } from './CounterpartyExposureSection';
 import { EmergencyControls } from './EmergencyControls';
 import { LimitCard } from './LimitCard';
 import { LimitChangeDialog } from './LimitChangeDialog';
@@ -68,6 +70,10 @@ export function RiskPanelView({ panel }: { readonly panel: RiskPanelDto }): Reac
       </div>
 
       <EmergencyControls />
+
+      <ComplianceLimitsPanel />
+
+      <CounterpartyExposureSection />
 
       {groupLimits(panel.limits).map(({ group, limits }) => (
         <section key={group} className={styles.stack} aria-labelledby={`group-${group}`}>

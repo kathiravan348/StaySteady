@@ -9,6 +9,7 @@ import { useInstruments } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import styles from './Planning.module.scss';
+import { LiquidityLadderSection } from './sections/LiquidityLadderSection';
 import { ProjectionPanel } from './sections/ProjectionPanel';
 import { TradePreviewPanel } from './sections/TradePreviewPanel';
 
@@ -32,6 +33,7 @@ function ScenariosBody(): ReactElement {
   return (
     <div className={styles.page}>
       <ProjectionPanel />
+      <LiquidityLadderSection />
       <TradePreviewPanel
         instruments={instruments.data}
         initial={{

@@ -208,3 +208,48 @@
     @include mx.focus-ring;
   }
 }
+
+.liquidityBar {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.liquidityGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--space-3);
+}
+
+.liquidityCard {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+.liquidityLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.liquidityValue {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.nonMarketCard {
+  border: var(--border-width-thin) dashed var(--border-strong);
+  background: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+

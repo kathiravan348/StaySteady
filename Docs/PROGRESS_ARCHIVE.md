@@ -5259,4 +5259,89 @@ VERIFICATION RUN:
   review note: Submitted review persists and updates cached journal entry
   states:      loading cards skeleton, empty state, error state verified
 ────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        54 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:06:00Z  |  local: 2026-09-17 09:36 IST (UTC+05:30)
+TASK CLAIMED:   S-32 Continuity — succession, nominee and emergency access
+OWNER INPUT:    "complete tht S-31 to S-33 and plan S-26"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-31 committed as 7d81e53; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 28; UI spec 19.1):
+  - New route /continuity, linked from the side navigation under System & Planning
+  - Institution register: broker, bank, custodian, account reference, nominee status, date last confirmed
+  - Action to confirm nominee status up to date with one click (updating timestamp and clearing overdue review)
+  - Recovery material register: safe/vault descriptions and audit dates without containing any credentials
+  - Emergency access instructions, nominated person, and the date the access route was last successfully tested
+  - Action to record an access drill / test with notes and outcome
+  - Inactivity threshold configuration (days) and current countdown to automation pause
+  - Prominent warning banners when any confirmation or drill test is older than configured review period
+  - Loading, error, empty, and overdue states
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        54 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:16:00Z  |  local: 2026-09-17 09:46 IST (UTC+05:30)
+TASK:           S-32 Continuity — succession, nominee and emergency access — DONE
+
+WHAT WAS BUILT (requirements 28; UI spec 19.1, 19.3):
+  - /continuity, linked from the side navigation under System & Planning
+  - Overdue review alert banner: computes overdue reviews across institution nominee confirmations,
+    recovery points, and emergency access drills
+  - Inactivity & fail-safe pause card: threshold days countdown until automated trading and signal
+    execution pauses unattended; "I am active today" heartbeat reset button
+  - Emergency access principles callout: emphasizes single-owner protection and strict separation of
+    read-only inspection access from execution/order capability
+  - Institution & nominee register: 5 institutions across US and IN (IBKR, Zerodha, CDSL, HDFC,
+    Chase) with masked account references, nominee status badges, and review periods; one-click
+    "Confirm up to date" action that clears overdue status
+  - Recovery material register: 3 custody points (fireproof safe, 1Password emergency vault,
+    legal counsel memorandum) described in plain English without containing credentials
+  - Emergency access playbook & drill history: step-by-step instructions for nominee/executor,
+    designated person ("Ananya (Spouse)"), read-only scope, and interactive "Record Access Drill"
+    form validated with Zod schema
+  - Inactivity controls: editable threshold (days) with validation and escalating notification intervals
+  - States: loading cards skeleton, empty state, error state with retry, overdue review state (Zerodha
+    nominee confirmation 410 days ago, 1Password vault 215 days ago per UI spec 19.3)
+
+MOCK DATA:
+  - GET /api/v1/continuity, POST /api/v1/continuity/institutions/:id/confirm,
+    POST /api/v1/continuity/drill, PUT /api/v1/continuity/inactivity,
+    POST /api/v1/continuity/heartbeat
+  - In-memory continuity store retaining confirmations, drills, and threshold settings across page load
+
+FILES CREATED:
+  - data/schemas/continuity.ts, data/mock/generators/continuitySeeds.ts and continuityBuilder.ts,
+    data/mock/stores/continuityStore.ts, data/mock/handlers/continuityHandlers.ts,
+    data/api/continuityQueries.ts
+  - features/continuity/{ContinuityPage.tsx, Continuity.module.scss, model/continuityLabels.ts,
+    sections/ContinuityHeader.tsx, sections/InstitutionRegister.tsx,
+    sections/RecoveryLocations.tsx, sections/EmergencyAccessDrill.tsx,
+    sections/InactivityControls.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (CONTINUITY), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 51 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  overdue:     Zerodha 410 days and 1Password vault 215 days flagged as overdue; "Confirm up to date"
+               resets days to 0 and clears overdue flag
+  drill:       Record Access Drill form validated and prepends new drill record to log
+  inactivity:  Inactivity threshold editable and validated (7-180 days); heartbeat reset updates timer
+  states:      loading cards skeleton, empty state, error state verified
+────────────────────────────────────────────────────────────
 ```

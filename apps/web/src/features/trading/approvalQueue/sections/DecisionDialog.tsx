@@ -131,7 +131,9 @@ export function DecisionDialog({
 
         <label className={styles.field}>
           <span className={styles.fieldLabel}>
-            {mode === 'reject' ? 'Reason for rejecting' : 'Note (optional)'}
+            {mode === 'reject'
+              ? 'Reason for rejecting (logged to S-31 Decision Journal):'
+              : 'Stated Rationale / Reason (logged to S-31 Decision Journal):'}
           </span>
           <textarea
             className={styles.textarea}
@@ -139,6 +141,7 @@ export function DecisionDialog({
             onChange={(event) => {
               setReason(event.target.value);
             }}
+            placeholder="Document your hypothesis, market context, or rationale to evaluate in your 30-day decision journal..."
           />
         </label>
       </div>
