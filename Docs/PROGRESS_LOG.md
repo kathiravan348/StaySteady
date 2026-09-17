@@ -14,18 +14,17 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-31 done; S-26 blocked)
-OVERALL PROGRESS:   76% (67 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 30 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T04:05:00Z  |  local: 2026-09-17 09:35 IST
-LAST AGENT:         session 53 (S-31 Decision Journal)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,438 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-32 done; S-26 blocked)
+OVERALL PROGRESS:   77% (68 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 31 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T04:16:00Z  |  local: 2026-09-17 09:46 IST
+LAST AGENT:         session 54 (S-32 Continuity)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,459 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
                     so `pnpm lint` reports every file. Prettier --check PASS on apps/web/src.
-BLOCKERS:           none for building. But see Q13: do not enable automation against a real
-                    broker until the employer-trading-policy question is answered.
+BLOCKERS:           none for building. S-26 planning in progress.
 ```
 
 ---
@@ -37,7 +36,7 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
-  to S-31 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
+  to S-32 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
   one, each committed (no push), taking the recommended option whenever a choice comes up
   (decision 26). typecheck, ESLint and Prettier pass.
 
@@ -45,17 +44,16 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 53: S-31 Decision Journal. See session 53 end entry.
-  - Session 52: S-30 Net Worth. Session 51: S-29 Automation permission summary.
+  - Session 54: S-32 Continuity — succession, nominee and emergency access. See session 54 end entry.
+  - Session 53: S-31 Decision Journal. Session 52: S-30 Net Worth.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-32 Continuity — succession, nominee and emergency access (requirements 28; UI spec 19.1):
-  institution register with nominee confirmation, recovery material register without secrets,
-  emergency access route & drill history, and inactivity threshold pause countdown. Then S-33
-  and S-26 plan.
+  Claim S-33 Compliance — employer and jurisdictional restrictions (requirements 27; UI spec 19.1):
+  restricted list, blackout windows, pre-clearance requirements, minimum holding periods, and
+  interactive instrument eligibility checker. Then S-26 plan.
 
 FILES TOUCHED (session 52): see session 52 end entry.
 
@@ -204,7 +202,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-29 | Automation permission summary | DONE | 100 | Session 51 | /settings/automation: market by instrument type grid (live, simulation or blocked with the blocking layer; every layer on selection) and per-strategy results by instrument, computed from the saved configurations and strategy stages; linked from the side navigation; verified |
 | S-30 | Net Worth — complete picture incl. non-market assets | DONE | 100 | Session 52 | /net-worth: totals with market-exposed and non-market, manual register across every requirements-25 category (stale as normal, unverified separate), record valuation and add, liquidity, concentration against total net worth, employer equity plus salary as one exposure, read-only notice; feeding allocation, goals and risk left to 19.2 extensions; verified |
 | S-31 | Decision Journal | DONE | 100 | Session 53 | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift); verified |
-| S-32 | Continuity — succession, nominee and emergency access | TODO | 0 | | Raised session 37. Requirements 28, UI spec 19.1. Institution register, nominee status with last-confirmed dates, emergency access route and its last successful test, inactivity threshold before automation pauses |
+| S-32 | Continuity — succession, nominee and emergency access | DONE | 100 | Session 54 | Raised session 37. Requirements 28, UI spec 19.1. Institution register with one-click confirmation, recovery points without credentials, emergency drill playbook and log, inactivity pause countdown; verified |
 | S-33 | Compliance — employer and jurisdictional restrictions | TODO | 0 | | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods. **Highest-consequence gap found** — a breach is a legal and career exposure, not a financial loss. Must be enforced in the safety layer at signal stage, and apply to manual actions identically |
  
 ### Stage E — Requirements Part II Extensions To Existing Screens
@@ -293,100 +291,11 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 50 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 51 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
 
 ```
-────────────────────────────────────────────────────────────
-SESSION:        51 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-17T03:21:00Z  |  local: 2026-09-17 08:51 IST (UTC+05:30)
-TASK CLAIMED:   S-29 Automation permission summary
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-28 committed as 3ac81b2; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-28 commit)
-
-SCOPE (UI spec 7.18 last bullet; requirements 233):
-  - New route /settings/automation, linked from the side navigation under Trading & Safety
-  - A market by instrument type grid of the layered result: automated live, simulation only, or
-    blocked, naming the first layer that blocks. Selecting a cell shows every layer — market,
-    instrument type and each broker that could carry it — with what each allows or blocks
-  - Per strategy: its stage (orders without asking, orders with approval, or none) and, for each
-    instrument in its universe, whether it can actually trade and why not
-  - No new endpoint: computed from the saved market, broker and instrument type configurations and
-    the strategies, so it changes the moment any of them is saved
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        51 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T03:26:00Z  |  local: 2026-09-17 08:56 IST (UTC+05:30)
-TASK:           S-29 Automation permission summary — DONE
-
-WHAT WAS BUILT (UI spec 7.18 last bullet; requirements 233):
-  - /settings/automation ("What automation can trade"), linked from the side navigation under
-    Trading & Safety as "What Can Trade"
-  - Summary: market and type pairs automated live, simulation only, and the strategies that can
-    trade live
-  - Market by instrument type grid: Live, Simulation or Blocked, naming the first layer that blocks
-    (market, instrument type or broker). Selecting a cell lists every layer — the market, the
-    instrument type and each enabled broker carrying that type there — with what it allows or
-    blocks and a link to the screen where it is changed
-  - By strategy: stage effect (orders without asking, after approval, or none) and, for each
-    instrument in the universe, what actually happens: trades live or in simulation through which
-    broker, or why it is blocked
-  - Loading, error and empty states; no stale state, as with the configuration screens (derived
-    from settings, not a feed)
-
-MOCK DATA:
-  - None added: computed from the saved market, broker and instrument type configurations,
-    strategies and instruments, sharing their query cache, so a save on those screens shows here at
-    once
-
-FILES CREATED:
-  - features/settings/SettingsAutomationPage.tsx
-  - features/settings/automation/{Automation.module.scss, model/permissionLayers.ts,
-    sections/PermissionMatrix.tsx, sections/StrategyPermissions.tsx}
-FILES MODIFIED:
-  - routes/routes.ts (SETTINGS_AUTOMATION), routes/AppRoutes.tsx, shell/Sidebar.tsx
-  - Docs: session 48 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
-  build:       PASS — exit 0
-  grid:        5 markets by 11 types; 12 of 55 pairs live, 0 simulation; Singapore blocked by the
-               market throughout ("Singapore does not permit automation", while its type and
-               Interactive Brokers allow it); India swing: market, type and Zerodha all allow
-  strategies:  Dual Moving Average Momentum — SPY and AAPL live through Interactive Brokers without
-               asking; RSI Oversold Mean Reversion — TSLA through Interactive Brokers and TATAMOTORS
-               through Zerodha after approval; Donchian, Post-Earnings and Yield Curve place no
-               orders at their stages
-  propagation: Swing switched off on the instrument types screen -> US swing "Blocked / Instrument
-               type", 8 of 55 live, TSLA "Blocked: Swing is switched off."
-  states:      loading-error -> "Automation permissions unavailable"; reset to healthy
-  not exercised: the empty state (every scenario seeds markets and types) and a simulation-only
-               pair (no market or broker is seeded in simulation)
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The first draft summarised the broker layer with a comparison that was always true; replaced
-    with a plain status before the first check
-
-FINDINGS (out of scope, not fixed):
-  - Nothing that raises signals, orders or approvals consults these layers: the Donchian strategy
-    is in observation (places no orders here) yet has a pending gold sell in the approval queue
-  - The side navigation links Configuration to markets only; providers, brokers, instrument types,
-    currencies, alert rules and credentials are reachable only by address or in-page links
-────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────
 SESSION:        52 — START ENTRY
@@ -577,6 +486,91 @@ VERIFICATION RUN:
   build:       PASS — exit 0
   filters:     Filter by kind, instrument, strategy, and override verified
   review note: Submitted review persists and updates cached journal entry
+  states:      loading cards skeleton, empty state, error state verified
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        54 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:06:00Z  |  local: 2026-09-17 09:36 IST (UTC+05:30)
+TASK CLAIMED:   S-32 Continuity — succession, nominee and emergency access
+OWNER INPUT:    "complete tht S-31 to S-33 and plan S-26"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-31 committed as 7d81e53; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 28; UI spec 19.1):
+  - New route /continuity, linked from the side navigation under System & Planning
+  - Institution register: broker, bank, custodian, account reference, nominee status, date last confirmed
+  - Action to confirm nominee status up to date with one click (updating timestamp and clearing overdue review)
+  - Recovery material register: safe/vault descriptions and audit dates without containing any credentials
+  - Emergency access instructions, nominated person, and the date the access route was last successfully tested
+  - Action to record an access drill / test with notes and outcome
+  - Inactivity threshold configuration (days) and current countdown to automation pause
+  - Prominent warning banners when any confirmation or drill test is older than configured review period
+  - Loading, error, empty, and overdue states
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        54 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:16:00Z  |  local: 2026-09-17 09:46 IST (UTC+05:30)
+TASK:           S-32 Continuity — succession, nominee and emergency access — DONE
+
+WHAT WAS BUILT (requirements 28; UI spec 19.1, 19.3):
+  - /continuity, linked from the side navigation under System & Planning
+  - Overdue review alert banner: computes overdue reviews across institution nominee confirmations,
+    recovery points, and emergency access drills
+  - Inactivity & fail-safe pause card: threshold days countdown until automated trading and signal
+    execution pauses unattended; "I am active today" heartbeat reset button
+  - Emergency access principles callout: emphasizes single-owner protection and strict separation of
+    read-only inspection access from execution/order capability
+  - Institution & nominee register: 5 institutions across US and IN (IBKR, Zerodha, CDSL, HDFC,
+    Chase) with masked account references, nominee status badges, and review periods; one-click
+    "Confirm up to date" action that clears overdue status
+  - Recovery material register: 3 custody points (fireproof safe, 1Password emergency vault,
+    legal counsel memorandum) described in plain English without containing credentials
+  - Emergency access playbook & drill history: step-by-step instructions for nominee/executor,
+    designated person ("Ananya (Spouse)"), read-only scope, and interactive "Record Access Drill"
+    form validated with Zod schema
+  - Inactivity controls: editable threshold (days) with validation and escalating notification intervals
+  - States: loading cards skeleton, empty state, error state with retry, overdue review state (Zerodha
+    nominee confirmation 410 days ago, 1Password vault 215 days ago per UI spec 19.3)
+
+MOCK DATA:
+  - GET /api/v1/continuity, POST /api/v1/continuity/institutions/:id/confirm,
+    POST /api/v1/continuity/drill, PUT /api/v1/continuity/inactivity,
+    POST /api/v1/continuity/heartbeat
+  - In-memory continuity store retaining confirmations, drills, and threshold settings across page load
+
+FILES CREATED:
+  - data/schemas/continuity.ts, data/mock/generators/continuitySeeds.ts and continuityBuilder.ts,
+    data/mock/stores/continuityStore.ts, data/mock/handlers/continuityHandlers.ts,
+    data/api/continuityQueries.ts
+  - features/continuity/{ContinuityPage.tsx, Continuity.module.scss, model/continuityLabels.ts,
+    sections/ContinuityHeader.tsx, sections/InstitutionRegister.tsx,
+    sections/RecoveryLocations.tsx, sections/EmergencyAccessDrill.tsx,
+    sections/InactivityControls.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (CONTINUITY), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 51 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  overdue:     Zerodha 410 days and 1Password vault 215 days flagged as overdue; "Confirm up to date"
+               resets days to 0 and clears overdue flag
+  drill:       Record Access Drill form validated and prepends new drill record to log
+  inactivity:  Inactivity threshold editable and validated (7-180 days); heartbeat reset updates timer
   states:      loading cards skeleton, empty state, error state verified
 ────────────────────────────────────────────────────────────
 ```

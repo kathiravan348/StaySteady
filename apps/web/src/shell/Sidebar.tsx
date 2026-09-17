@@ -76,6 +76,7 @@ const NAVIGATION_GROUPS: readonly NavSectionGroup[] = [
       { to: '/planning/allocation', label: 'Allocation', icon: '🎯' },
       { to: '/settings/markets', label: 'Configuration', icon: '⚙️' },
       { to: '/audit', label: 'Audit Log', icon: '📜' },
+      { to: '/continuity', label: 'Continuity', icon: '🕊️' },
     ],
   },
 ];

@@ -145,6 +145,10 @@ export {
   seedAlertRules,
   testAlertRule,
 } from './alertRuleConfig';
+// Session 54: continuity (requirements 28)
+export type { ContinuityInputs } from './continuityBuilder';
+export { buildContinuityView } from './continuityBuilder';
+export { seedEmergencyPlaybook, seedInstitutions, seedRecoveryLocations } from './continuitySeeds';
 // Session 53: decision journal (requirements 29)
 export type { JournalDecision, JournalInputs } from './journalBuilder';
 export { buildJournal } from './journalBuilder';

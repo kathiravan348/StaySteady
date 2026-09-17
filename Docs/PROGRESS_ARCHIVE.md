@@ -4954,3 +4954,101 @@ FINDINGS (out of scope, not fixed):
   - No configuration screen has a stale state
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 51 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        51 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:21:00Z  |  local: 2026-09-17 08:51 IST (UTC+05:30)
+TASK CLAIMED:   S-29 Automation permission summary
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-28 committed as 3ac81b2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-28 commit)
+
+SCOPE (UI spec 7.18 last bullet; requirements 233):
+  - New route /settings/automation, linked from the side navigation under Trading & Safety
+  - A market by instrument type grid of the layered result: automated live, simulation only, or
+    blocked, naming the first layer that blocks. Selecting a cell shows every layer — market,
+    instrument type and each broker that could carry it — with what each allows or blocks
+  - Per strategy: its stage (orders without asking, orders with approval, or none) and, for each
+    instrument in its universe, whether it can actually trade and why not
+  - No new endpoint: computed from the saved market, broker and instrument type configurations and
+    the strategies, so it changes the moment any of them is saved
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        51 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:26:00Z  |  local: 2026-09-17 08:56 IST (UTC+05:30)
+TASK:           S-29 Automation permission summary — DONE
+
+WHAT WAS BUILT (UI spec 7.18 last bullet; requirements 233):
+  - /settings/automation ("What automation can trade"), linked from the side navigation under
+    Trading & Safety as "What Can Trade"
+  - Summary: market and type pairs automated live, simulation only, and the strategies that can
+    trade live
+  - Market by instrument type grid: Live, Simulation or Blocked, naming the first layer that blocks
+    (market, instrument type or broker). Selecting a cell lists every layer — the market, the
+    instrument type and each enabled broker carrying that type there — with what it allows or
+    blocks and a link to the screen where it is changed
+  - By strategy: stage effect (orders without asking, after approval, or none) and, for each
+    instrument in the universe, what actually happens: trades live or in simulation through which
+    broker, or why it is blocked
+  - Loading, error and empty states; no stale state, as with the configuration screens (derived
+    from settings, not a feed)
+
+MOCK DATA:
+  - None added: computed from the saved market, broker and instrument type configurations,
+    strategies and instruments, sharing their query cache, so a save on those screens shows here at
+    once
+
+FILES CREATED:
+  - features/settings/SettingsAutomationPage.tsx
+  - features/settings/automation/{Automation.module.scss, model/permissionLayers.ts,
+    sections/PermissionMatrix.tsx, sections/StrategyPermissions.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (SETTINGS_AUTOMATION), routes/AppRoutes.tsx, shell/Sidebar.tsx
+  - Docs: session 48 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  grid:        5 markets by 11 types; 12 of 55 pairs live, 0 simulation; Singapore blocked by the
+               market throughout ("Singapore does not permit automation", while its type and
+               Interactive Brokers allow it); India swing: market, type and Zerodha all allow
+  strategies:  Dual Moving Average Momentum — SPY and AAPL live through Interactive Brokers without
+               asking; RSI Oversold Mean Reversion — TSLA through Interactive Brokers and TATAMOTORS
+               through Zerodha after approval; Donchian, Post-Earnings and Yield Curve place no
+               orders at their stages
+  propagation: Swing switched off on the instrument types screen -> US swing "Blocked / Instrument
+               type", 8 of 55 live, TSLA "Blocked: Swing is switched off."
+  states:      loading-error -> "Automation permissions unavailable"; reset to healthy
+  not exercised: the empty state (every scenario seeds markets and types) and a simulation-only
+               pair (no market or broker is seeded in simulation)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first draft summarised the broker layer with a comparison that was always true; replaced
+    with a plain status before the first check
+
+FINDINGS (out of scope, not fixed):
+  - Nothing that raises signals, orders or approvals consults these layers: the Donchian strategy
+    is in observation (places no orders here) yet has a pending gold sell in the approval queue
+  - The side navigation links Configuration to markets only; providers, brokers, instrument types,
+    currencies, alert rules and credentials are reachable only by address or in-page links
+────────────────────────────────────────────────────────────
+```

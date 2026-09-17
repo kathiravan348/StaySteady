@@ -135,3 +135,10 @@ export type { RecordValuationVariables } from './netWorthQueries';
 export { useAddManualAsset, useNetWorth, useRecordValuation } from './netWorthQueries';
 export type { JournalReviewVariables } from './journalQueries';
 export { useJournal, useJournalReview } from './journalQueries';
+export {
+  useConfirmNominee,
+  useContinuity,
+  useRecordDrill,
+  useResetHeartbeat,
+  useUpdateInactivity,
+} from './continuityQueries';
