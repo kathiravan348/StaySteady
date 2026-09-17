@@ -4724,3 +4724,113 @@ FINDINGS (out of scope, not fixed):
   - none new
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 49 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        49 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:10:00Z  |  local: 2026-09-17 08:40 IST (UTC+05:30)
+TASK CLAIMED:   S-27 Trading — Positions
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-26 blocked and committed as 55b00ec; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit; S-26 changed
+               docs only)
+
+SCOPE:
+  - Open question 10 (is Trading -> Positions distinct from Holdings?) is unanswered. Recommended
+    option taken (decision 26): distinct. Holdings lists everything owned; Positions shows only
+    positions opened by a strategy, from the automation's side — which strategy and stage holds it,
+    what that stage means for its exit (placed automatically, proposed for approval, or not acted
+    on), stop level and distance, loss if the stop is hit, profit target where the strategy has one,
+    and orders still working in the instrument (unconfirmed ones flagged)
+  - No new endpoint: composed from holdings, live quotes, strategies, order history and FX rates, so
+    prices and values agree with Holdings
+  - The placeholder's own description ("active algorithmic positions, stop levels, and profit
+    targets") matches this reading
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        49 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:08:00Z  |  local: 2026-09-17 08:38 IST (UTC+05:30)
+TASK:           S-27 Trading — Positions — DONE
+
+WHAT WAS BUILT (nav map 6; open question 10, recommended option per decision 26):
+  - /trading/positions: only positions a strategy opened (Holdings keeps everything owned), with
+    the strategy, what its stage means at the stop (exits automatically / exit needs approval / no
+    automated exit), value in the base currency, gain or loss in the instrument's currency, stop,
+    distance above the stop, value lost if the stop is reached, and orders still working
+  - Summary: open positions, value, total lost if every stop is reached, near the stop, no
+    automated exit
+  - Attention banner for a position within 3% of (or through) a stop its strategy will not exit, or
+    with an unconfirmed order
+  - Row detail: strategy, version and stage with what the stage means, rules from its parameters
+    (trailing stop, profit target, holding days, risk sizing), opened date and purchases, average
+    cost, last price, result if closed at the stop, profit target, working orders (awaiting
+    approval, unconfirmed and simulated marked), links to position detail, strategy, orders and
+    approvals
+  - Filters by strategy and exit handling; loading, error, empty, no-results and stale states; order
+    history failing degrades to a note and "Unknown" working orders
+
+MOCK DATA:
+  - None added: composed from holdings, live quotes, strategies, order history, brokers and FX rates
+
+FILES CREATED:
+  - features/trading/positions/{Positions.module.scss, usePositionsData.ts, model/positionRows.ts,
+    sections/PositionsView.tsx, sections/PositionDetail.tsx, sections/AttentionBanner.tsx}
+  - features/portfolio/transactions/sections/TransactionDetail.tsx (split, see mistakes)
+FILES MODIFIED:
+  - features/trading/TradingPositionsPage.tsx — rewritten from a placeholder
+  - features/portfolio/transactions/sections/TransactionsView.tsx — see mistakes
+  - Docs: session 46 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (open question 10 answered provisionally with the recommended option, as the start entry
+    records)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  table:       4 positions — AAPL and SPY (Dual Moving Average Momentum, exits automatically), BTCUSD
+               and XAUUSD (Donchian Channel Breakout, observation, no automated exit); value
+               $88,840.14; lost if every stop is reached -$10,226.09; AAPL 2.5% above its stop
+  detail:      AAPL buy 30 at market "Awaiting approval"; XAUUSD sell 2 at $1,550.00 marked
+               Simulated; XAUUSD result at the stop -$23,602.54
+  filters:     No automated exit -> BTCUSD, XAUUSD
+  states:      stale-data -> "Data may be delayed"; loading-error -> "Positions unavailable";
+               empty-portfolio -> "No automated positions"; reset to healthy
+  transactions: the AAPL buy's link now opens /portfolio/positions/inst-us-aapl ("AAPL position")
+  not exercised: the attention banner (no seeded position is near a stop its strategy will not
+               exit) and the order-history-failure note (no scenario fails that endpoint alone)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Found in S-24 (session 46): the transaction detail linked to the position by holding id
+    (/portfolio/positions/hld-1), but position detail looks up by instrument id, so the link led
+    to a not-found page. Fixed
+  - Found in S-24 (session 46): TransactionsView.tsx was committed at 307 lines, over the 300-line
+    rule (no lint rule enforces it, and the line count used then skipped blank lines). The row
+    detail moved to TransactionDetail.tsx; the view is now 275 lines
+  - The session 49 start time (03:10:00Z) was estimated ahead of the clock; work started about
+    03:00Z
+  - The first build of the view had type assertions on Object.keys and a gain converted at today's
+    rate that would have disagreed with Holdings; both replaced before verification
+
+FINDINGS (out of scope, not fixed):
+  - The Donchian Channel Breakout strategy is in observation, yet holds BTC and gold positions and
+    has a working sell order; either the positions predate a demotion or the seed is inconsistent
+  - The SPY buy of 25 filled on 2026-09-14 (ord-0001) is not among SPY's purchase lots
+  - No lint rule enforces the 300-line file limit
+────────────────────────────────────────────────────────────
+```

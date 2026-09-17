@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-29 done; S-26 blocked)
-OVERALL PROGRESS:   74% (65 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 28 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T03:26:00Z  |  local: 2026-09-17 08:56 IST
-LAST AGENT:         session 51 (S-29 Automation permission summary)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,395 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-30 done; S-26 blocked)
+OVERALL PROGRESS:   75% (66 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 29 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T03:37:00Z  |  local: 2026-09-17 09:07 IST
+LAST AGENT:         session 52 (S-30 Net Worth)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,421 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -37,7 +37,7 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
-  to S-29 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
+  to S-30 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
   one, each committed (no push), taking the recommended option whenever a choice comes up
   (decision 26). typecheck, ESLint and Prettier pass.
 
@@ -45,18 +45,20 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 51: S-29 Automation permission summary. See session 51 end entry.
-  - Session 50: S-28 Configuration — credentials. Session 49: S-27 Trading — Positions.
+  - Session 52: S-30 Net Worth. See session 52 end entry.
+  - Session 51: S-29 Automation permission summary. Session 50: S-28 Configuration — credentials.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-30 Net Worth (requirements 25, UI spec 19.1): manual asset register (provident fund,
-  deposits, gold, property, employer equity, liabilities), liquidity class, concentration against
-  total net worth. Read requirements section 25 and UI spec 19.1 first. Then S-31..S-33.
+  Claim S-31 Decision Journal (requirements 29; UI spec 19.1): manual trades and limit overrides
+  with the reason given at the time, outcome attached once known, filters by type, instrument,
+  strategy and override, and behaviour patterns (override repetition, post-loss clustering, target
+  drift). UI spec 19.4 asks for one clearly poor decision. Reuse the approval decision reasons the
+  trading store already keeps. Then S-32 and S-33.
 
-FILES TOUCHED (session 51): see session 51 end entry.
+FILES TOUCHED (session 52): see session 52 end entry.
 
 WATCH OUT FOR:
  
@@ -201,7 +203,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-27 | Trading — Positions | DONE | 100 | Session 49 | Open question 10 answered provisionally (decision 26): distinct from Holdings — only strategy-opened positions, with what the strategy stage does at the stop, distance and value lost to the stop, rules, working orders and an attention banner; all states verified |
 | S-28 | Configuration — credentials | DONE | 100 | Session 50 | Register of credential references on the configuration pattern: no secret field, key-as-reference rejected, /simulation/ segment separates simulation from live, read-only or trading access, expiry with warnings, revoke, usage from provider and broker configs, unregistered references called out, audit log; verified |
 | S-29 | Automation permission summary | DONE | 100 | Session 51 | /settings/automation: market by instrument type grid (live, simulation or blocked with the blocking layer; every layer on selection) and per-strategy results by instrument, computed from the saved configurations and strategy stages; linked from the side navigation; verified |
-| S-30 | Net Worth — complete picture incl. non-market assets | TODO | 0 | | Raised session 37. Requirements 25, UI spec 19.1. Manual asset register (provident fund, deposits, gold, property, employer equity, liabilities), liquidity class, concentration against **total** net worth. Without this, allocation targets and goal projections are computed on a minority of actual wealth |
+| S-30 | Net Worth — complete picture incl. non-market assets | DONE | 100 | Session 52 | /net-worth: totals with market-exposed and non-market, manual register across every requirements-25 category (stale as normal, unverified separate), record valuation and add, liquidity, concentration against total net worth, employer equity plus salary as one exposure, read-only notice; feeding allocation, goals and risk left to 19.2 extensions; verified |
 | S-31 | Decision Journal | TODO | 0 | | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift) |
 | S-32 | Continuity — succession, nominee and emergency access | TODO | 0 | | Raised session 37. Requirements 28, UI spec 19.1. Institution register, nominee status with last-confirmed dates, emergency access route and its last successful test, inactivity threshold before automation pauses |
 | S-33 | Compliance — employer and jurisdictional restrictions | TODO | 0 | | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods. **Highest-consequence gap found** — a breach is a legal and career exposure, not a financial loss. Must be enforced in the safety layer at signal stage, and apply to manual actions identically |
@@ -292,113 +294,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 48 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 49 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        49 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-17T03:10:00Z  |  local: 2026-09-17 08:40 IST (UTC+05:30)
-TASK CLAIMED:   S-27 Trading — Positions
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-26 blocked and committed as 55b00ec; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit; S-26 changed
-               docs only)
-
-SCOPE:
-  - Open question 10 (is Trading -> Positions distinct from Holdings?) is unanswered. Recommended
-    option taken (decision 26): distinct. Holdings lists everything owned; Positions shows only
-    positions opened by a strategy, from the automation's side — which strategy and stage holds it,
-    what that stage means for its exit (placed automatically, proposed for approval, or not acted
-    on), stop level and distance, loss if the stop is hit, profit target where the strategy has one,
-    and orders still working in the instrument (unconfirmed ones flagged)
-  - No new endpoint: composed from holdings, live quotes, strategies, order history and FX rates, so
-    prices and values agree with Holdings
-  - The placeholder's own description ("active algorithmic positions, stop levels, and profit
-    targets") matches this reading
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        49 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T03:08:00Z  |  local: 2026-09-17 08:38 IST (UTC+05:30)
-TASK:           S-27 Trading — Positions — DONE
-
-WHAT WAS BUILT (nav map 6; open question 10, recommended option per decision 26):
-  - /trading/positions: only positions a strategy opened (Holdings keeps everything owned), with
-    the strategy, what its stage means at the stop (exits automatically / exit needs approval / no
-    automated exit), value in the base currency, gain or loss in the instrument's currency, stop,
-    distance above the stop, value lost if the stop is reached, and orders still working
-  - Summary: open positions, value, total lost if every stop is reached, near the stop, no
-    automated exit
-  - Attention banner for a position within 3% of (or through) a stop its strategy will not exit, or
-    with an unconfirmed order
-  - Row detail: strategy, version and stage with what the stage means, rules from its parameters
-    (trailing stop, profit target, holding days, risk sizing), opened date and purchases, average
-    cost, last price, result if closed at the stop, profit target, working orders (awaiting
-    approval, unconfirmed and simulated marked), links to position detail, strategy, orders and
-    approvals
-  - Filters by strategy and exit handling; loading, error, empty, no-results and stale states; order
-    history failing degrades to a note and "Unknown" working orders
-
-MOCK DATA:
-  - None added: composed from holdings, live quotes, strategies, order history, brokers and FX rates
-
-FILES CREATED:
-  - features/trading/positions/{Positions.module.scss, usePositionsData.ts, model/positionRows.ts,
-    sections/PositionsView.tsx, sections/PositionDetail.tsx, sections/AttentionBanner.tsx}
-  - features/portfolio/transactions/sections/TransactionDetail.tsx (split, see mistakes)
-FILES MODIFIED:
-  - features/trading/TradingPositionsPage.tsx — rewritten from a placeholder
-  - features/portfolio/transactions/sections/TransactionsView.tsx — see mistakes
-  - Docs: session 46 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none (open question 10 answered provisionally with the recommended option, as the start entry
-    records)
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
-  build:       PASS — exit 0
-  table:       4 positions — AAPL and SPY (Dual Moving Average Momentum, exits automatically), BTCUSD
-               and XAUUSD (Donchian Channel Breakout, observation, no automated exit); value
-               $88,840.14; lost if every stop is reached -$10,226.09; AAPL 2.5% above its stop
-  detail:      AAPL buy 30 at market "Awaiting approval"; XAUUSD sell 2 at $1,550.00 marked
-               Simulated; XAUUSD result at the stop -$23,602.54
-  filters:     No automated exit -> BTCUSD, XAUUSD
-  states:      stale-data -> "Data may be delayed"; loading-error -> "Positions unavailable";
-               empty-portfolio -> "No automated positions"; reset to healthy
-  transactions: the AAPL buy's link now opens /portfolio/positions/inst-us-aapl ("AAPL position")
-  not exercised: the attention banner (no seeded position is near a stop its strategy will not
-               exit) and the order-history-failure note (no scenario fails that endpoint alone)
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - Found in S-24 (session 46): the transaction detail linked to the position by holding id
-    (/portfolio/positions/hld-1), but position detail looks up by instrument id, so the link led
-    to a not-found page. Fixed
-  - Found in S-24 (session 46): TransactionsView.tsx was committed at 307 lines, over the 300-line
-    rule (no lint rule enforces it, and the line count used then skipped blank lines). The row
-    detail moved to TransactionDetail.tsx; the view is now 275 lines
-  - The session 49 start time (03:10:00Z) was estimated ahead of the clock; work started about
-    03:00Z
-  - The first build of the view had type assertions on Object.keys and a gain converted at today's
-    rate that would have disagreed with Holdings; both replaced before verification
-
-FINDINGS (out of scope, not fixed):
-  - The Donchian Channel Breakout strategy is in observation, yet holds BTC and gold positions and
-    has a working sell order; either the positions predate a demotion or the seed is inconsistent
-  - The SPY buy of 25 filled on 2026-09-14 (ord-0001) is not among SPY's purchase lots
-  - No lint rule enforces the 300-line file limit
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        50 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -599,6 +499,117 @@ FINDINGS (out of scope, not fixed):
     is in observation (places no orders here) yet has a pending gold sell in the approval queue
   - The side navigation links Configuration to markets only; providers, brokers, instrument types,
     currencies, alert rules and credentials are reachable only by address or in-page links
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        52 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:28:00Z  |  local: 2026-09-17 08:58 IST (UTC+05:30)
+TASK CLAIMED:   S-30 Net Worth — complete picture incl. non-market assets
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-29 committed as 0536e21; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-29 commit)
+
+SCOPE (requirements 25; UI spec 19.1, 19.3, 19.4):
+  - New route /net-worth, linked from the side navigation under Portfolio
+  - Totals: net worth, assets and liabilities, market-exposed and non-market; the brokerage part
+    comes from the shared portfolio valuation, so it matches Performance and Reports
+  - Manual asset register across every category in requirements 25 (retirement, cash and deposits,
+    gold, property, insurance-linked savings, employer equity with vesting, liabilities): type,
+    institution, value, last-updated date, valuation method (manual, periodic or formula-accrued),
+    liquidity class; stale after its own age as a normal state, unverified marked separately
+  - Record a new valuation, and add an asset
+  - Liquidity classes; concentration by issuer, sector and asset class against total net worth
+    with configured limits; employer equity and salary shown as one combined exposure
+  - Read-only to strategy and execution, said plainly on the screen; nothing here can be traded
+  - Scope choice (decision 26): feeding these assets into allocation, goals and risk limits
+    (requirements 25 "participate in") belongs to those screens' extensions (UI spec 19.2) and is
+    not part of this task
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        52 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:37:00Z  |  local: 2026-09-17 09:07 IST (UTC+05:30)
+TASK:           S-30 Net Worth — complete picture incl. non-market assets — DONE
+
+WHAT WAS BUILT (requirements 25; UI spec 19.1, 19.3):
+  - /net-worth, linked from the side navigation under Portfolio
+  - A plain notice that nothing on the screen can be traded and automation never reads it
+  - Totals in the top-bar currency: net worth, assets, liabilities, market-exposed and non-market
+    (with shares of assets), and the brokerage portfolio at today's prices
+  - Employer exposure: vested and unvested equity plus a year's salary from the same employer as
+    one figure, against a 25% limit
+  - Liquidity classes as shares of total assets; concentration by asset class, issuer and sector
+    against total net worth with limits (60%, 20%, 35%), over-limit items flagged
+  - Manual asset register: name, institution, type, value in its own currency and in the view
+    currency (liabilities negative), last updated, "Due for an update" past its own age (the normal
+    state, not an error), "Unverified" separately, liquidity. Row detail: valuation method, recorded
+    value, rate, maturity, issuer, purchase cost, the asset a loan is secured against, vesting
+  - Record a new valuation (value, date, verified) and add an asset or liability, both validated
+    inline with the same schema the mock saves with
+  - Loading, error and empty states; the stale state is the per-record "Due for an update"
+
+MOCK DATA:
+  - GET /api/v1/net-worth?currency=, POST /api/v1/net-worth/assets, PUT
+    /api/v1/net-worth/assets/:id/valuation; writes return the whole view
+  - Eleven records across every category in requirements 25 (UI spec 19.4): EPF accruing at 8.25%,
+    PPF deliberately past its 180-day age, savings, a fixed deposit accruing at 7.1%, sovereign gold
+    bonds, gold jewellery never verified, an apartment with purchase cost, an endowment policy's
+    surrender value, partly vested employer RSUs, a home loan secured against the apartment and a
+    credit card balance; dates relative to today. Brokerage from the shared portfolio valuation
+
+FILES CREATED:
+  - data/schemas/net-worth.ts; data/mock/generators/netWorthAssets.ts and netWorthView.ts;
+    data/mock/stores/netWorthStore.ts; data/mock/handlers/netWorthHandlers.ts;
+    data/api/netWorthQueries.ts
+  - features/netWorth/{NetWorthPage.tsx, NetWorth.module.scss, model/netWorthLabels.ts,
+    sections/NetWorthSummary.tsx, ExposureSections.tsx, AssetRegister.tsx,
+    RecordValuationForm.tsx, AddAssetForm.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (NET_WORTH), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers and api index files
+  - Docs: session 49 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none. Scope choices recorded in the start entry (decision 26): feeding these records into
+    allocation, goals and risk limits is left to those screens' extensions (UI spec 19.2). Limits
+    and the employer rule (equity plus a year's salary) are mock settings, stated on the screen
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  totals:      USD net worth $316,285.95; assets $382,816.34; liabilities $66,530.38;
+               market-exposed $157,201.20 (41% of assets); brokerage $98,449.44 across 7 holdings
+  flags:       "1 record due for an update" (Public Provident Fund, 212 days); "1 value never
+               verified" (gold jewellery); Northwind Systems combined $131,286.94, 41.5% of net
+               worth, above the 25% limit
+  exposures:   liquidity locked 53.8%, within a month 41.1%; real estate 51.7% (limit 60%),
+               Government of India 15.0% (limit 20%), information technology 18.6%
+  valuation:   "abc" rejected inline; PPF recorded at 1012500.00 -> "today", the due badge and its
+               count gone, net worth $317,137.16
+  add:         empty form -> "Name the asset", "Say where it is held", amount error; Car loan
+               600000 INR at SBI -> -$8,171.59 in the register, liabilities $74,701.98
+  currency:    INR view: apartment ₹1,20,00,000.00, net worth ₹2,26,85,827.84
+  states:      loading-error -> "Net worth unavailable"; empty-portfolio -> brokerage $0.00 with
+               the manual records still shown; reset to healthy
+  not exercised: the empty state (every scenario seeds manual records)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The totals card repeated the page title "Net worth"; renamed during verification
+
+FINDINGS (out of scope, not fixed):
+  - Allocation targets, goal projections and risk concentration limits still use only the
+    brokerage portfolio (requirements 25 "participate in"; UI spec 19.2 extensions)
+  - Holdings has no liquidity class and does not include manual assets in its totals (UI spec 19.2)
+  - The add form does not take maturity, purchase cost, vesting or a secured-against link; records
+    can be added without them and there is no edit or delete for a record
 ────────────────────────────────────────────────────────────
 ```
  

@@ -30,6 +30,7 @@ const NAVIGATION_GROUPS: readonly NavSectionGroup[] = [
       { to: '/portfolio/holdings', label: 'Holdings', icon: '💼' },
       { to: '/portfolio/transactions', label: 'Transactions', icon: '📝' },
       { to: '/portfolio/performance', label: 'Performance', icon: '📈' },
+      { to: '/net-worth', label: 'Net Worth', icon: '🏦' },
     ],
   },
   {

@@ -145,6 +145,9 @@ export {
   seedAlertRules,
   testAlertRule,
 } from './alertRuleConfig';
+// Session 52: net worth (requirements 25)
+export { currentAmount, seedManualAssets } from './netWorthAssets';
+export { buildNetWorthView } from './netWorthView';
 // Session 50: credential references (UI spec 7.18)
 export {
   credentialConfigHealth,

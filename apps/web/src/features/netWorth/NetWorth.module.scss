@@ -1,0 +1,152 @@
+@use '../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-4);
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.big {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.end {
+  @include mx.numeric(end);
+}
+
+.readOnly {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.rows {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-3);
+  align-items: center;
+}
+
+/* A share bar: the fill is the share of net worth, the marker the configured limit. */
+
+.bar {
+  position: relative;
+  grid-column: 1 / -1;
+  height: var(--space-2);
+  overflow: hidden;
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-full);
+}
+
+.fill {
+  height: 100%;
+  background-color: var(--interactive-primary);
+  border-radius: var(--radius-full);
+}
+
+.fillBreached {
+  background-color: var(--change-loss);
+}
+
+.detail {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.detailGrid,
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-3);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.checkOption {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.negative {
+  color: var(--change-loss);
+}
+
+.warning {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--change-loss);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
