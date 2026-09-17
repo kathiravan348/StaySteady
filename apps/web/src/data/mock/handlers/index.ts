@@ -11,6 +11,7 @@ import { riskHandlers } from './riskHandlers';
 import { configHandlers } from './configHandlers';
 import { alertCentreHandlers } from './alertCentreHandlers';
 import { auditHandlers } from './auditHandlers';
+import { performanceHandlers } from './performanceHandlers';
 import { planningHandlers } from './planningHandlers';
 import { reportHandlers } from './reportHandlers';
 
@@ -33,6 +34,7 @@ export const handlers: readonly HttpHandler[] = [
   ...planningHandlers,
   ...alertCentreHandlers,
   ...auditHandlers,
+  ...performanceHandlers,
 ];
 
 export {

@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-24 done)
-OVERALL PROGRESS:   69% (61 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 24 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-16T22:56:30Z  |  local: 2026-09-17 04:26 IST
-LAST AGENT:         session 46 (S-24 Portfolio — Transactions)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,349 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 done)
+OVERALL PROGRESS:   70% (62 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 25 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T02:54:00Z  |  local: 2026-09-17 08:24 IST
+LAST AGENT:         session 47 (S-25 Portfolio — Performance)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,356 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,32 +36,27 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-24 done.
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 done.
   The owner asked for the remaining S tasks one by one, each committed (no push), taking the
-  recommended option whenever a choice comes up (decision 26). typecheck and ESLint pass; Prettier
-  fails on Windows checkouts only (CRLF, see findings) — not a code defect.
+  recommended option whenever a choice comes up (decision 26). typecheck, ESLint and Prettier pass.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 46: S-24 Portfolio — Transactions. See session 46 end entry.
-  - Session 45: S-23 Audit Log. Session 44: S-22 Alerts Centre.
+  - Session 47: S-25 Portfolio — Performance. See session 47 end entry.
+  - Session 46: S-24 Portfolio — Transactions. Session 45: S-23 Audit Log.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-25 Portfolio — Performance (/portfolio/performance). Open question 9 asks whether it is
-  the same as Reports -> Performance; the provisional answer keeps it separate. Recommended reading
-  (decision 26): a portfolio-focused performance view — value over time, returns for standard
-  periods, a monthly returns heatmap (the preset exists) and contribution by holding — computed on
-  the mock side with data/mock/generators/reportValuation.ts, with a link to the full performance
-  report rather than duplicating its comparisons, export or schedules.
-  Then S-26 Screener: no specification (open question 11) — mark it BLOCKED, do not invent it.
-  Then S-27 Trading — Positions (open question 10), then S-28..S-33.
+  S-26 Screener: no specification (open question 11) — mark it BLOCKED with the reason, do not
+  invent it. Then S-27 Trading — Positions (open question 10): recommended reading is positions
+  opened by automation (strategy, entry signal, stop and target, exit rules), distinct from S-02
+  Holdings. Then S-28..S-33.
 
-FILES TOUCHED (session 46): see session 46 end entry.
+FILES TOUCHED (session 47): see session 47 end entry.
 
 WATCH OUT FOR:
  
@@ -201,7 +196,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-22 | Alerts Centre | DONE | 100 | Session 44 | Alert groups with occurrences, severity in word/symbol/colour, filters by severity/category/market/state, acknowledge and resolve with notes and history, escalation from the saved alert rules with failed deliveries named, links to the screen holding each fact; stale banner and empty state built but not browser-verified |
 | S-23 | Audit Log | DONE | 100 | Session 45 | Audit log rebuilt from real records (configuration versions with field-level before/after, risk changes, order lifecycles with decision reasons, strategy versions and stages); search, type/trigger/date filters; decision chain trace from signal to fill; stage promotion dates provisional |
 | S-24 | Portfolio — Transactions | DONE | 100 | Session 46 | Transaction history with fees, signed cash effect and base-currency amounts at each transaction date's rate; conversion charges linked to their purchases; totals by type; filters by type, instrument, broker, currency and date; CSV export; all states verified |
-| S-25 | Portfolio — Performance | TODO | 0 | | Raised session 36. In nav map and routed at `/portfolio/performance`; 29-line placeholder, no task. **See open question 9** — may be intended to fold into S-20 Reports |
+| S-25 | Portfolio — Performance | DONE | 100 | Session 47 | Open question 9 answered provisionally (decision 26): at-a-glance view, the report keeps chosen periods, comparisons, export and schedules. Returns and gain for 1M/3M/YTD/1Y/since first purchase from the report builder, value curve, monthly heatmap, contribution by holding; all states incl. stale verified |
 | S-26 | Markets — Screener | TODO | 0 | | Raised session 36. In nav map and routed at `/markets/screener`; 29-line placeholder, no task. Note: the nav map lists it but section 7 has no screen specification for it — **see open question 11** |
 | S-27 | Trading — Positions | TODO | 0 | | Raised session 36. In nav map and routed at `/trading/positions`; 29-line placeholder, no task. **See open question 10** — overlap with S-02 Holdings is undefined |
 | S-28 | Configuration — credentials | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires stored references only, never displayed, with expiry tracking and warnings. `/settings/credentials` currently renders the providers placeholder. Zero credential-reference handling in the app |
@@ -297,112 +292,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 43 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 44 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        44 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T22:31:44Z  |  local: 2026-09-17 04:01 IST (UTC+05:30)
-TASK CLAIMED:   S-22 Alerts Centre
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-21 committed as 8a5d903; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-21 commit)
-
-SCOPE (UI spec 7.19):
-  - Chronological list with severity, category, source, market, time and acknowledgement state;
-    filters by severity, category, market and state; repeated alerts grouped with their
-    occurrences; acknowledge and resolve with optional notes; escalation state shown for
-    unacknowledged critical alerts
-  - New endpoint /api/v1/alerts/centre with a store for state and notes. The existing
-    /api/v1/system/alerts feed (Overview) is left unchanged
-  - Alerts describe things other screens already show: the unconfirmed order (S-13), an expiring
-    approval (S-12), the provider delay (System Health), failed report deliveries on the webhook
-    (S-20), the Apple regulatory story on a holding (S-19), broker maintenance, allocation drift
-    (S-21). Developer scenarios add their alert (provider down, broker disconnected, safety breach)
-  - Escalation follows the saved alert rules (S-18): a critical alert matched by the critical rule
-    goes to its channels, and escalates to the rule's escalation channels after its wait unless
-    acknowledged; the webhook's failing test shows as a failed escalation delivery
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        44 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T22:40:30Z  |  local: 2026-09-17 04:10 IST (UTC+05:30)
-TASK:           S-22 Alerts Centre — DONE
-
-WHAT WAS BUILT (UI spec 7.19):
-  - /alerts: counts of open critical, unacknowledged, escalated and resolved alerts; filters by
-    severity, category, market and state (default: not resolved); newest first
-  - Each alert: severity in word, symbol and coloured edge; state; category, source and market;
-    relative time; repeated alerts grouped as "×4 occurrences" with every occurrence listed
-  - Expanding shows the message, a link to the screen that holds the fact, occurrences, and the
-    acknowledge/resolve history with notes; Acknowledge and Resolve with an optional note
-  - Unacknowledged critical alerts show their escalation: the rule, where they were sent, and
-    either when they escalate ("at 22:40:01 UTC (in 2 minutes) unless acknowledged") or that they
-    escalated and to which channels, naming a failed delivery
-  - The list refreshes each minute; a failed refresh keeps the last list with a stale banner
-
-MOCK DATA:
-  - GET /api/v1/alerts/centre, POST /api/v1/alerts/centre/:id/action {action, note}
-  - Seven alerts about facts other screens show (NVDA unconfirmed order, TSLA approval expiring,
-    failed report deliveries on the webhook, London price delays, AAPL news, commodity allocation
-    drift, broker maintenance); scenarios add provider down, broker disconnected or safety breach
-  - Escalation computed from the saved alert rules (S-18) and channel test results
-  - /api/v1/system/alerts (Overview) unchanged
-
-FILES CREATED:
-  - data/schemas/alerts-centre.ts; data/api/alertCentreQueries.ts
-  - data/mock/generators/alertCentre.ts; data/mock/handlers/alertCentreHandlers.ts
-  - features/alerts/{Alerts.module.scss, model/alertFilters.ts, sections/AlertCentreView.tsx,
-    sections/AlertItem.tsx}
-FILES MODIFIED:
-  - features/alerts/AlertsPage.tsx — rewritten from a placeholder
-  - data/schemas/index.ts; data/api/index.ts; data/mock/generators/index.ts; data/mock/handlers/index.ts
-  - Docs: session 41 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  list:        "Open critical 1, Unacknowledged 5, Escalated 0, Resolved 1"; NVDA critical first
-               with its escalation; London delays "×4 occurrences", acknowledged, with four
-               occurrence times and the seeded note
-  filters:     critical -> 1; UK -> 1
-  acknowledge: NVDA with note "Called the broker: order is live." -> Acknowledged, escalation gone,
-               history shows the note; counts became open critical 0, unacknowledged 4
-  escalation:  provider-down: provider alert "×3 occurrences ... Escalated to Email, Webhook ...
-               Delivery to Webhook failed"; NVDA "Escalates ... (in 2 minutes) unless acknowledged"
-  resolve:     resolving the provider alert removed it from "Not resolved" and listed it under
-               Resolved
-  states:      loading-error -> "Alerts unavailable"; reset to healthy
-  NOT verified in the browser: the stale banner after a failed refresh (needs a refetch to fail
-  while data is on screen); and the empty state (no scenario yields zero alerts)
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - A future escalation first read "Escalates ... in the future" because formatRelativeTime only
-    describes the past; it now shows the time and minutes remaining
-  - Two seeded links pointed at routes that do not exist (/system, /risk); corrected to
-    /health/status and /risk/limits before verification
-
-FINDINGS (out of scope, not fixed):
-  - The top bar's unread count is a hardcoded 3 in SystemStateProvider, not the open alert count
-  - The Overview's recent alerts still use the older /system/alerts feed, so acknowledging here
-    does not change it
-  - Alert state resets on a full reload, like every mock store
-  - Quiet hours from the alert rules are not applied to the escalation times shown
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        45 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -583,6 +477,88 @@ FINDINGS (out of scope, not fixed):
     not balance
   - The base currency here follows the top bar switch, not the configured base currency (S-18)
   - No sells, withdrawals or splits exist in the mock data, so those filters are empty
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        47 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:57:12Z  |  local: 2026-09-17 04:27 IST (UTC+05:30)
+TASK CLAIMED:   S-25 Portfolio — Performance
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-24 committed as 0cefb99; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-24 commit)
+
+SCOPE:
+  - Open question 9 (is Portfolio -> Performance the same as Reports -> Performance?) is still
+    unanswered. Recommended option taken (decision 26), keeping both and making them different
+    rather than duplicates: this screen is the at-a-glance portfolio view (value since the first
+    purchase, returns for standard periods, a monthly returns heatmap, contribution by holding);
+    the report stays the place for chosen periods, comparisons, export and schedules, and is linked
+  - Computed on the mock side with the report valuation and the performance builder (S-20), so a
+    period's return here equals the performance report for the same dates
+  - New endpoint GET /api/v1/portfolio/performance?currency=
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        47 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T02:54:00Z  |  local: 2026-09-17 08:24 IST (UTC+05:30)
+TASK:           S-25 Portfolio — Performance — DONE
+
+WHAT WAS BUILT (nav map 6; open question 9, recommended option per decision 26):
+  - /portfolio/performance: time-weighted returns and money gain or loss for 1 month, 3 months,
+    year to date, 1 year and since the first purchase, each with its dates
+  - Value since the first purchase (weekly equity curve), with a note that rises include money
+    added; monthly returns heatmap; contribution by holding with each holding's share of the total
+  - A note explains why a return and a money gain can point in different directions, and links to
+    the performance report for chosen periods, benchmark comparison and export (not duplicated)
+  - Loading, error, empty (empty-portfolio) and stale states. Stale: the page expects valuations at
+    the previous day's close and shows a banner with how many days behind they are
+
+MOCK DATA:
+  - GET /api/v1/portfolio/performance?currency= built from the shared portfolio valuation and the
+    performance report builder (S-20), so a period here equals the report for the same dates
+  - loading-error returns 500; stale-data holds valuations back three days
+
+FILES CREATED:
+  - data/schemas/portfolio-performance.ts, data/mock/generators/portfolioPerformance.ts,
+    data/mock/handlers/performanceHandlers.ts, data/api/performanceQueries.ts
+  - features/portfolio/performance/{Performance.module.scss, sections/PerformanceView.tsx}
+FILES MODIFIED:
+  - features/portfolio/PortfolioPerformancePage.tsx — rewritten from a placeholder
+  - schemas, generators, handlers and api index files (exports and handler registration)
+  - Docs: session 44 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (open question 9 answered provisionally with the recommended option, as the start entry
+    records)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  periods:     1 month +4.76% (+$4,458.16), 3 months +8.89%, year to date -2.81% (-$1,864.82),
+               1 year -4.90%, since 2022-01-14 +1.39% with -$13,817.22; value $98,047.11 at the
+               2026-09-16 close; 57 months in the heatmap; both charts render
+  contribution: 7 holdings, shares add to -99.9% (rounding) of a loss; XAUUSD -$17,471.16 (-126.4%)
+  states:      stale-data -> banner "valued at the 2026-09-13 close, 3 days behind the last close";
+               loading-error -> "Performance unavailable"; empty-portfolio -> "No performance yet";
+               reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The note under the contribution table said only a losing holding shows a negative share; every
+    share keeps its holding's sign. Corrected during browser verification
+  - The page was first written without a stale state; added before completion
+
+FINDINGS (out of scope, not fixed):
+  - Transactions (S-24) and Reports (S-20) have no stale state; the S-24 entry argues a record needs
+    none, but CLAUDE.md requires one on every screen
+  - The base currency here follows the top bar switch, not the configured base currency (S-18)
 ────────────────────────────────────────────────────────────
 ```
  

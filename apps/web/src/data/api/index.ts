@@ -127,3 +127,4 @@ export {
 export type { AlertActionVariables } from './alertCentreQueries';
 export { useAlertAction, useAlertCentre } from './alertCentreQueries';
 export { useAuditLog } from './auditQueries';
+export { usePortfolioPerformance } from './performanceQueries';

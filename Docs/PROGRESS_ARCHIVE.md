@@ -4263,3 +4263,112 @@ FINDINGS (out of scope, not fixed):
   - Sectors for ETFs and funds would need look-through holdings data
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 44 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        44 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:31:44Z  |  local: 2026-09-17 04:01 IST (UTC+05:30)
+TASK CLAIMED:   S-22 Alerts Centre
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-21 committed as 8a5d903; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-21 commit)
+
+SCOPE (UI spec 7.19):
+  - Chronological list with severity, category, source, market, time and acknowledgement state;
+    filters by severity, category, market and state; repeated alerts grouped with their
+    occurrences; acknowledge and resolve with optional notes; escalation state shown for
+    unacknowledged critical alerts
+  - New endpoint /api/v1/alerts/centre with a store for state and notes. The existing
+    /api/v1/system/alerts feed (Overview) is left unchanged
+  - Alerts describe things other screens already show: the unconfirmed order (S-13), an expiring
+    approval (S-12), the provider delay (System Health), failed report deliveries on the webhook
+    (S-20), the Apple regulatory story on a holding (S-19), broker maintenance, allocation drift
+    (S-21). Developer scenarios add their alert (provider down, broker disconnected, safety breach)
+  - Escalation follows the saved alert rules (S-18): a critical alert matched by the critical rule
+    goes to its channels, and escalates to the rule's escalation channels after its wait unless
+    acknowledged; the webhook's failing test shows as a failed escalation delivery
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        44 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:40:30Z  |  local: 2026-09-17 04:10 IST (UTC+05:30)
+TASK:           S-22 Alerts Centre — DONE
+
+WHAT WAS BUILT (UI spec 7.19):
+  - /alerts: counts of open critical, unacknowledged, escalated and resolved alerts; filters by
+    severity, category, market and state (default: not resolved); newest first
+  - Each alert: severity in word, symbol and coloured edge; state; category, source and market;
+    relative time; repeated alerts grouped as "×4 occurrences" with every occurrence listed
+  - Expanding shows the message, a link to the screen that holds the fact, occurrences, and the
+    acknowledge/resolve history with notes; Acknowledge and Resolve with an optional note
+  - Unacknowledged critical alerts show their escalation: the rule, where they were sent, and
+    either when they escalate ("at 22:40:01 UTC (in 2 minutes) unless acknowledged") or that they
+    escalated and to which channels, naming a failed delivery
+  - The list refreshes each minute; a failed refresh keeps the last list with a stale banner
+
+MOCK DATA:
+  - GET /api/v1/alerts/centre, POST /api/v1/alerts/centre/:id/action {action, note}
+  - Seven alerts about facts other screens show (NVDA unconfirmed order, TSLA approval expiring,
+    failed report deliveries on the webhook, London price delays, AAPL news, commodity allocation
+    drift, broker maintenance); scenarios add provider down, broker disconnected or safety breach
+  - Escalation computed from the saved alert rules (S-18) and channel test results
+  - /api/v1/system/alerts (Overview) unchanged
+
+FILES CREATED:
+  - data/schemas/alerts-centre.ts; data/api/alertCentreQueries.ts
+  - data/mock/generators/alertCentre.ts; data/mock/handlers/alertCentreHandlers.ts
+  - features/alerts/{Alerts.module.scss, model/alertFilters.ts, sections/AlertCentreView.tsx,
+    sections/AlertItem.tsx}
+FILES MODIFIED:
+  - features/alerts/AlertsPage.tsx — rewritten from a placeholder
+  - data/schemas/index.ts; data/api/index.ts; data/mock/generators/index.ts; data/mock/handlers/index.ts
+  - Docs: session 41 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        "Open critical 1, Unacknowledged 5, Escalated 0, Resolved 1"; NVDA critical first
+               with its escalation; London delays "×4 occurrences", acknowledged, with four
+               occurrence times and the seeded note
+  filters:     critical -> 1; UK -> 1
+  acknowledge: NVDA with note "Called the broker: order is live." -> Acknowledged, escalation gone,
+               history shows the note; counts became open critical 0, unacknowledged 4
+  escalation:  provider-down: provider alert "×3 occurrences ... Escalated to Email, Webhook ...
+               Delivery to Webhook failed"; NVDA "Escalates ... (in 2 minutes) unless acknowledged"
+  resolve:     resolving the provider alert removed it from "Not resolved" and listed it under
+               Resolved
+  states:      loading-error -> "Alerts unavailable"; reset to healthy
+  NOT verified in the browser: the stale banner after a failed refresh (needs a refetch to fail
+  while data is on screen); and the empty state (no scenario yields zero alerts)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - A future escalation first read "Escalates ... in the future" because formatRelativeTime only
+    describes the past; it now shows the time and minutes remaining
+  - Two seeded links pointed at routes that do not exist (/system, /risk); corrected to
+    /health/status and /risk/limits before verification
+
+FINDINGS (out of scope, not fixed):
+  - The top bar's unread count is a hardcoded 3 in SystemStateProvider, not the open alert count
+  - The Overview's recent alerts still use the older /system/alerts feed, so acknowledging here
+    does not change it
+  - Alert state resets on a full reload, like every mock store
+  - Quiet hours from the alert rules are not applied to the escalation times shown
+────────────────────────────────────────────────────────────
+```

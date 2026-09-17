@@ -176,3 +176,6 @@ export { seedAlertGroups, withEscalation } from './alertCentre';
 // Session 45: audit log (UI spec 7.20)
 export type { AuditSources, ConfigArea } from './auditLog';
 export { buildAuditLog } from './auditLog';
+
+// Session 47: portfolio performance at a glance
+export { buildPortfolioPerformance } from './portfolioPerformance';

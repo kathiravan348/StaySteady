@@ -34,3 +34,4 @@ export * from './reports';
 export * from './planning';
 export * from './alerts-centre';
 export * from './audit';
+export * from './portfolio-performance';
