@@ -11,6 +11,7 @@ import { useInstruments } from '../../../data/api';
 import { ROUTES, workspaceTickerPath } from '../../../routes/routes';
 import { PageShell } from '../../../shell/PageShell';
 import styles from './CompanyResearch.module.scss';
+import { FinancialsTab } from './sections/FinancialsTab';
 import { FlagsSection } from './sections/FlagsSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { StandingSection } from './sections/StandingSection';
@@ -54,6 +55,11 @@ export function CompanyResearchPage(): ReactElement {
   } else {
     const tabs: TabItemConfig[] = [
       { id: 'overview', label: 'Overview', content: <OverviewTab instrumentId={instrumentId} /> },
+      {
+        id: 'financials',
+        label: 'Financials',
+        content: <FinancialsTab instrumentId={instrumentId} />,
+      },
     ];
     body = (
       <div className={styles.page}>

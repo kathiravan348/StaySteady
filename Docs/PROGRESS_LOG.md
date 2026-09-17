@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   88% (94 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 7 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T09:00:00Z  |  local: 2026-09-18 14:30 IST
-LAST AGENT:         Claude Opus 5 (session 90)
-BUILD STATE:        PASS (pnpm build, session 90)
+OVERALL PROGRESS:   89% (95 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 8 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T10:00:00Z  |  local: 2026-09-18 15:30 IST
+LAST AGENT:         Claude Opus 5 (session 91)
+BUILD STATE:        PASS (pnpm build, session 91)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-08, the Financials tab, is next and adds to the screen built in R-07.
+BLOCKERS:           none. R-09, the Ratios tab with peer comparison, is next.
 ```
 
 ---
@@ -34,31 +34,31 @@ BLOCKERS:           none. R-08, the Financials tab, is next and adds to the scre
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R (requirements
-  Part III, UI spec 20, decisions 48-54) has its data layer complete (R-01 to R-06) and its screen
-  started: R-07 added /markets/company/:instrumentId with the Overview tab. R-08 adds the Financials
-  tab to the same screen.
+  Part III, UI spec 20, decisions 48-54): data layer complete (R-01 to R-06); the Company Research
+  screen at /markets/company/:instrumentId now has an Overview tab (R-07) and a Financials tab
+  (R-08). R-09, the Ratios tab, is next.
 
-WHAT R-07 ADDED (session 90):
-  - Route MARKETS_COMPANY (/markets/company/:instrumentId) with companyResearchPath, and
-    features/markets/company: CompanyResearchPage plus ProfileSection, StandingSection and
-    FlagsSection, each loading and failing on its own.
-  - Overview answers "what am I buying": the business description, revenue by segment and geography
-    with the share each covers, listings, employees, reporting currency and year end, executives
-    with a recent appointment called out, the auditor, what the business depends on, sector and
-    industry, group and parent with listed relatives, market value, five headline measures each
-    beside its industry median, and the warning flags with their evidence.
+WHAT R-08 ADDED (session 91):
+  - features/markets/company/model/statementTables.ts describes the three tables once: which lines
+    each shows, how to read a period off it, and the change against the period before.
+  - sections/FinancialsTab.tsx renders them with an annual/quarterly toggle, a consolidated/
+    standalone toggle shown only where the company publishes both, five periods side by side, the
+    period end and publication date per column, a restatement banner, and two bar charts (revenue
+    with net profit, and free cash flow) from the existing AnalyticalChart presets.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-08 Financials tab: the three statements as tables, annual and quarterly toggle, consolidated
-     and standalone toggle where both exist (basesAvailable says so), five periods side by side with
-     the change per line, publication date per column, and trend charts from the existing
-     AnalyticalChart presets. Add it to the tabs array in CompanyResearchPage.
-  2. R-09 Ratios tab with peer comparison, R-10 Ownership tab (the look-through data from R-03 is
-     ready for the fund case), R-11 news and events tab, R-12 surfacing, R-13 screener factors.
+  1. R-09 Ratios tab: the measures grouped by valuation, profitability, health, growth and cash
+     quality, each with its own trend, the industry median beside it and the inputs available on
+     request, plus a peer comparison over the same measures. useFundamentalMeasures already returns
+     everything needed including history and peerSymbols.
+  2. R-10 Ownership tab (ownership over time, pledge trend, group structure; fund look-through for
+     a fund), R-11 news and events tab, R-12 surfacing, R-13 screener factors.
   3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
+  - Charts need plain numbers; convert money once for display through decimal arithmetic, as
+    FinancialsTab does, and never parseFloat an amount for anything that is then displayed as money.
   - The developer scenario switcher is the footer select in the browser pane; set it with the native
     value setter and a change event, and set it back to healthy afterwards.
   - Every ratio comes from shared/fundamentals through the measures endpoint. Do not compute one in
@@ -274,7 +274,7 @@ already built but cannot work without classification.
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | DONE | 100 | Claude Opus 5 (session 88) | Requirements 37; decision 50. Must tie to price history (decision 19) |
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | DONE | 100 | Claude Opus 5 (session 89) | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | DONE | 100 | Claude Opus 5 (session 90) | UI spec 20.1 |
-| R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | TODO | 0 | | UI spec 20.1 |
+| R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | DONE | 100 | Claude Opus 5 (session 91) | UI spec 20.1 |
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | TODO | 0 | | UI spec 20.1 |
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | TODO | 0 | | UI spec 20.1; requirements 36 |
 | R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | TODO | 0 | | Requirements 38; UI spec 20.1 |
@@ -1574,6 +1574,40 @@ FILES: created apps/web/src/features/markets/company/{CompanyResearchPage.tsx,
 CompanyResearch.module.scss,sections/ProfileSection.tsx,sections/StandingSection.tsx,
 sections/FlagsSection.tsx}; modified apps/web/src/routes/{routes.ts,AppRoutes.tsx},
 Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 91 | Claude Opus 5
+START:          2026-09-18T09:05:00Z  |  local: 2026-09-18 14:35 IST
+END:            2026-09-18T10:00:00Z  |  local: 2026-09-18 15:30 IST
+TASK CLAIMED:   R-08 Financials tab
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Income statement, balance sheet and cash flow as tables, five periods side by side, with the
+    change per line against the period before and each column headed by its fiscal period, period
+    end and publication date (decision 50 made visible).
+  - Annual and quarterly toggle; consolidated and standalone toggle shown only where basesAvailable
+    says the company publishes both, with the note explaining that they are not interchangeable.
+  - A restatement banner naming the period and what was restated.
+  - Revenue with net profit, and free cash flow, as bar charts from the existing presets; money
+    converts to chart numbers once through decimal arithmetic, for display only.
+  - Loading, error with retry, and a plain explanation when a company has no statements.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS. In the browser against the dev
+  server, Tata Motors: the income statement reads revenue 4.4LCr with net profit 26.83KCr and a
+  +9.20% change, each column carrying its publication date 14 June; switching to standalone drops
+  revenue to 1.45LCr, which is the point of keeping the two apart; switching to quarterly shows
+  Q1 FY2027 back to Q1 FY2026 with publication dates 45 days after each period end.
+
+FILES: created apps/web/src/features/markets/company/model/statementTables.ts,
+apps/web/src/features/markets/company/sections/FinancialsTab.tsx;
+modified apps/web/src/features/markets/company/{CompanyResearchPage.tsx,
+CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 
