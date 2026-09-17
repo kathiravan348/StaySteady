@@ -140,6 +140,7 @@ export {
   useContinuity,
   useRecordDrill,
   useResetHeartbeat,
+  useUpdateAccessPlan,
   useUpdateInactivity,
 } from './continuityQueries';
 export {

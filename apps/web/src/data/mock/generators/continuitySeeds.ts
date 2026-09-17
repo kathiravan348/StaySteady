@@ -124,6 +124,7 @@ export function seedEmergencyPlaybook(today: string): EmergencyAccessPlaybookDto
   const lastTest = addDays(today, -140);
   return {
     nominatedPerson: 'Ananya (Spouse)',
+    backupNominee: 'Karthik (Brother)',
     accessScope:
       'Read-Only inspection of all accounts, holdings, and asset registers. Trading and execution capabilities are strictly locked and cannot be triggered.',
     stepByStepInstructions: [
@@ -135,6 +136,7 @@ export function seedEmergencyPlaybook(today: string): EmergencyAccessPlaybookDto
     ],
     lastTestDate: toIsoUtcTimestamp(`${lastTest}T00:00:00.000Z`),
     testIntervalDays: 180,
+    nextDrillDueDate: toIsoUtcTimestamp(`${addDays(lastTest, 180)}T00:00:00.000Z`),
     isOverdue: false,
     daysSinceLastTest: 140,
     drillHistory: [

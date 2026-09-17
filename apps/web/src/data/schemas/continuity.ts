@@ -51,10 +51,13 @@ export type EmergencyDrillRecordDto = z.infer<typeof EmergencyDrillRecordSchema>
 
 export const EmergencyAccessPlaybookSchema = z.object({
   nominatedPerson: z.string().min(1),
+  // A second view-only nominee in case the first cannot act (owner question 17).
+  backupNominee: z.string().min(1).nullable(),
   accessScope: z.string().min(1),
   stepByStepInstructions: z.array(z.string().min(1)),
   lastTestDate: IsoUtcTimestampSchema,
   testIntervalDays: z.number().int().positive(),
+  nextDrillDueDate: IsoUtcTimestampSchema,
   isOverdue: z.boolean(),
   daysSinceLastTest: z.number().int().nonnegative(),
   drillHistory: z.array(EmergencyDrillRecordSchema),
@@ -88,6 +91,18 @@ export const RecordDrillRequestSchema = z.object({
   notes: z.string().trim().min(1, 'Add drill notes and verification outcome'),
 });
 export type RecordDrillRequestDto = z.infer<typeof RecordDrillRequestSchema>;
+
+// Owner question 17: one primary and one backup nominee, drills every 6 to 12 months.
+export const UpdateAccessPlanRequestSchema = z.object({
+  nominatedPerson: z.string().trim().min(1, 'Name the primary nominee'),
+  backupNominee: z.string().trim().min(1, 'Name a backup nominee'),
+  testIntervalDays: z
+    .number()
+    .int()
+    .min(180, 'Choose between 6 and 12 months')
+    .max(365, 'Choose between 6 and 12 months'),
+});
+export type UpdateAccessPlanRequestDto = z.infer<typeof UpdateAccessPlanRequestSchema>;
 
 export const UpdateInactivityRequestSchema = z.object({
   thresholdDays: z.number().int().min(7, 'Threshold must be at least 7 days').max(180),

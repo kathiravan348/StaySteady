@@ -9,7 +9,7 @@ import type {
   RecoveryLocationDto,
 } from '../../schemas/continuity';
 import { toIsoUtcTimestamp } from '../../../shared/types/dateTime';
-import { daysBetween } from './reportValuation';
+import { addDays, daysBetween } from './reportValuation';
 
 export interface ContinuityInputs {
   readonly today: string;
@@ -57,6 +57,9 @@ export function buildContinuityView(inputs: ContinuityInputs): ContinuityViewDto
 
   const resolvedEmergency: EmergencyAccessPlaybookDto = {
     ...emergencyAccess,
+    nextDrillDueDate: toIsoUtcTimestamp(
+      `${addDays(emergencyAccess.lastTestDate.slice(0, 10), emergencyAccess.testIntervalDays)}T00:00:00.000Z`,
+    ),
     daysSinceLastTest: drillDaysSince,
     isOverdue: drillOverdue,
   };

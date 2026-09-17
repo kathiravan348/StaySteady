@@ -6,6 +6,7 @@ import type { EmergencyAccessPlaybookDto } from '../../../data/schemas/continuit
 import { RecordDrillRequestSchema } from '../../../data/schemas/continuity';
 import { useRecordDrill } from '../../../data/api';
 import styles from '../Continuity.module.scss';
+import { AccessPlanForm } from './AccessPlanForm';
 import { DRILL_OUTCOME_CONFIG } from '../model/continuityLabels';
 
 export function EmergencyAccessDrill({
@@ -39,9 +40,16 @@ export function EmergencyAccessDrill({
           </Badge>
           <span className={styles.meta}>
             Last tested: {playbook.lastTestDate.slice(0, 10)} ({playbook.daysSinceLastTest} days ago
-            — drill every {playbook.testIntervalDays} days)
+            — drill every {playbook.testIntervalDays} days, next due{' '}
+            {playbook.nextDrillDueDate.slice(0, 10)})
           </span>
         </div>
+        <div className={styles.inline}>
+          <span className={styles.title}>Backup nominee:</span>
+          <span className={styles.note}>{playbook.backupNominee ?? 'None named'}</span>
+          {playbook.backupNominee === null && <Badge variant="warning">Name a backup</Badge>}
+        </div>
+        <AccessPlanForm playbook={playbook} />
 
         <p className={styles.note}>
           <strong>Scope:</strong> {playbook.accessScope}

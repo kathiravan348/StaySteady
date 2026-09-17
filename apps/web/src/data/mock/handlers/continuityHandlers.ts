@@ -10,11 +10,13 @@ import {
   getContinuityStore,
   recordDrillInStore,
   resetHeartbeatInStore,
+  updateAccessPlanInStore,
   updateInactivityInStore,
 } from '../stores/continuityStore';
 import {
   ContinuityViewSchema,
   RecordDrillRequestSchema,
+  UpdateAccessPlanRequestSchema,
   UpdateInactivityRequestSchema,
 } from '../../schemas/continuity';
 import { nowUtc } from '../../../shared/types/dateTime';
@@ -56,6 +58,17 @@ export const continuityHandlers: readonly HttpHandler[] = [
     const parsed = RecordDrillRequestSchema.safeParse(body);
     if (!parsed.success) return failure(firstIssue(parsed.error), 400);
     recordDrillInStore(parsed.data, nowUtc());
+    return continuityResponse();
+  }),
+
+  http.put('/api/v1/continuity/access-plan', async ({ request }) => {
+    const body = (await request.json().catch(() => null)) as unknown;
+    const parsed = UpdateAccessPlanRequestSchema.safeParse(body);
+    if (!parsed.success) return failure(firstIssue(parsed.error), 400);
+    if (parsed.data.backupNominee === parsed.data.nominatedPerson) {
+      return failure('The backup nominee must be a different person', 400);
+    }
+    updateAccessPlanInStore(parsed.data);
     return continuityResponse();
   }),
 

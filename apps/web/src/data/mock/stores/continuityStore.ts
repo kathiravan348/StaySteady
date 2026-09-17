@@ -78,6 +78,15 @@ export const recordDrillInStore = (
   };
 };
 
+export const updateAccessPlanInStore = (plan: {
+  nominatedPerson: string;
+  backupNominee: string;
+  testIntervalDays: number;
+}): void => {
+  const s = ensureState();
+  s.emergencyAccess = { ...s.emergencyAccess, ...plan };
+};
+
 export const updateInactivityInStore = (thresholdDays: number): void => {
   const s = ensureState();
   s.inactivityThresholdDays = thresholdDays;

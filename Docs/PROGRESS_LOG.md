@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:47:00Z  |  local: 2026-09-17 19:17 IST
-LAST AGENT:         session 76 (Claude Opus 5; S-35 performance links)
+LAST UPDATED:       2026-09-17T13:52:00Z  |  local: 2026-09-17 19:22 IST
+LAST AGENT:         session 77 (Claude Opus 5; S-36 continuity nominees)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -213,7 +213,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-33 | Compliance — employer and jurisdictional restrictions | DONE | 100 | Session 55 | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods, pre-trade eligibility checker ("May I trade this right now, and why not?"), refusals log intercepted at signal stage; verified |
 | S-34 | Screener factors from price history and fundamentals | TODO | 0 | | Owner Q19 session 64: price, RSI, SMA distance from M-04 price history; P/E, ROE, yield from fundamentals (S-04) instead of fixed seeds |
 | S-35 | Portfolio Performance links to the full performance report | DONE | 100 | Session 76 | Owner Q9 session 64. Each period links to the performance report opened on the same dates; verified session 76 |
-| S-36 | Continuity — backup nominee and drill schedule | TODO | 0 | | Owner Q17 session 64: second view-only nominee, drill due every 6 to 12 months with overdue state |
+| S-36 | Continuity — backup nominee and drill schedule | DONE | 100 | Session 77 | Owner Q17 session 64. Backup view-only nominee and a 6 to 12 month drill schedule with next due date, editable and validated; verified session 77 |
  
 ### Stage E — Requirements Part II Extensions To Existing Screens
  
@@ -796,6 +796,34 @@ VERIFICATION RUN:
 
 FILES: features/portfolio/performance/sections/PerformanceView.tsx,
   features/reports/sections/ReportScreen.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        77
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:48:00Z  |  local: 2026-09-17 19:18 IST (UTC+05:30)
+END:            2026-09-17T13:52:00Z  |  local: 2026-09-17 19:22 IST (UTC+05:30)
+TASK CLAIMED:   S-36 Continuity — backup nominee and drill schedule (owner Q17)
+END STATUS:     DONE
+
+COMPLETED:
+  - Emergency access playbook carries backupNominee (seed: Karthik (Brother)) and nextDrillDueDate
+    (last test plus interval, computed by the builder).
+  - PUT /api/v1/continuity/access-plan: primary and backup nominee (must differ) and drill interval
+    between 180 and 365 days; useUpdateAccessPlan.
+  - AccessPlanForm in the playbook card: change nominees and choose every 6, 9 or 12 months; the
+    card shows the backup nominee (warning when none) and the next drill due date.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: same person as backup → 400; 90-day interval → 400;
+  365 days with Karthik → 200, next due 2027-04-30. UI /continuity: "Backup nominee: Karthik
+  (Brother)", "next due 2026-10-27", change button renders.
+
+FILES: modified schemas/continuity.ts, generators/{continuitySeeds,continuityBuilder}.ts,
+  stores/continuityStore.ts, handlers/continuityHandlers.ts, api/{continuityQueries,index}.ts,
+  continuity/sections/EmergencyAccessDrill.tsx; created continuity/sections/AccessPlanForm.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

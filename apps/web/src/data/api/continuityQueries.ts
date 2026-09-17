@@ -7,6 +7,7 @@ import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import type {
   ContinuityViewDto,
   RecordDrillRequestDto,
+  UpdateAccessPlanRequestDto,
   UpdateInactivityRequestDto,
 } from '../schemas/continuity';
 import { ContinuityViewSchema } from '../schemas/continuity';
@@ -46,6 +47,21 @@ export function useRecordDrill(): UseMutationResult<
   return useMutation({
     mutationFn: (drill: RecordDrillRequestDto) =>
       apiSend('POST', '/api/v1/continuity/drill', drill, ContinuityViewSchema),
+    onSuccess: (updated) => {
+      client.setQueryData(CONTINUITY_KEY, updated);
+    },
+  });
+}
+
+export function useUpdateAccessPlan(): UseMutationResult<
+  ContinuityViewDto,
+  Error,
+  UpdateAccessPlanRequestDto
+> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (plan: UpdateAccessPlanRequestDto) =>
+      apiSend('PUT', '/api/v1/continuity/access-plan', plan, ContinuityViewSchema),
     onSuccess: (updated) => {
       client.setQueryData(CONTINUITY_KEY, updated);
     },
