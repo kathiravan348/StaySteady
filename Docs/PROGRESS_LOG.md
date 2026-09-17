@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:39:00Z  |  local: 2026-09-17 19:09 IST
-LAST AGENT:         session 74 (Claude Opus 5; E-08 strategy standing)
+LAST UPDATED:       2026-09-17T13:44:00Z  |  local: 2026-09-17 19:14 IST
+LAST AGENT:         session 75 (Claude Opus 5; E-09 part c employer policy)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -230,7 +230,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | DONE | 100 | Session 57; reworked session 68 | Requirements 26, 30, 31; UI spec 19.2. Real return and real benchmark from recorded inflation or assumption; costs and tax as share of gross gain; tax pack for the residence country (gains by asset class, income with withholding and foreign tax credit, losses carried forward, foreign holdings, remittance cap); verified session 68 |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | DONE | 100 | Session 57; reworked session 73 | Requirements 29, 30, 31; UI spec 19.2; owner Q18. Emergency reserve apart from trading cash, liquidity ladder, commitments against reachable liquidity, withdrawal phase, automation ceiling; ranged projections offer the saved inflation assumption; verified session 73 |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | DONE | 100 | Session 57; reworked session 74 | Requirements 28, 33; UI spec 19.2. Criteria set at promotion, standing measured from each strategy's positions (or at demotion), review due dates, demotion history, correlation of daily returns; verified session 74 |
-| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 85 | Session 57; audited 59; parts a/b sessions 62, 66 | Requirements 26, 27, 30, 34; UI spec 19.2. **Done:** inflation assumptions, cost budget, counterparty threshold, decision safeguards and export settings (/settings/assumptions); tax rule sets per residence country and asset class replacing per-market rates (/settings/tax-rules, decision 45). **Remaining (low priority, decision 43):** employer policy rules as configuration read by the compliance store |
+| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | DONE | 100 | Session 57; parts a/b/c sessions 62, 66, 75 | Requirements 26, 27, 30, 34; UI spec 19.2. Inflation assumptions, cost budget, counterparty threshold, decision safeguards and export (/settings/assumptions); tax rule sets per residence country and asset class (/settings/tax-rules, decision 45); employer policy as configuration read by the eligibility check (decision 43); verified sessions 62, 66, 75 |
  
 ### Stage P — Polish
  
@@ -741,6 +741,39 @@ FILES: created schemas/strategy-standing.ts, generators/strategyStanding.ts,
   strategyLibrary/sections/StrategyRetirement.module.scss; modified schemas/index.ts,
   handlers/partTwoReferenceHandlers.ts, api/{partTwoReferenceQueries,index}.ts,
   strategyLibrary/sections/StrategyRetirementSection.tsx; deleted sections/strategyRetirementData.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        75
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:40:00Z  |  local: 2026-09-17 19:10 IST (UTC+05:30)
+END:            2026-09-17T13:44:00Z  |  local: 2026-09-17 19:14 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part c — employer policy rules as configuration (decision 43)
+END STATUS:     DONE (E-09 complete)
+
+COMPLETED:
+  - EmployerPolicySchema (enabled, employer name, pre-clearance, minimum holding days) in the
+    compliance overview; PUT /api/v1/compliance/employer-policy (employer name required when on);
+    useSaveEmployerPolicy refreshes compliance, approvals and screener.
+  - Blackout windows carry `symbols` and `appliesToAll`; the eligibility check uses them instead of
+    matching hardcoded symbol lists against scope text.
+  - When the policy is off: blackout windows, holding locks and employer-equity restrictions are not
+    enforced; conflict, audit-client, insider (MNPI), short-swing and sanction restrictions still are.
+    Pre-clearance on a blackout refusal follows the policy. Mock seed keeps the policy on so spec
+    19.3/19.4 states stay visible (decision 43).
+  - EmployerPolicyCard on /compliance with a switch, fields, discard and save.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: with the policy on MSFT BUY refused (blackout),
+  NORTHWIND BUY refused (employer equity), AAPL SELL refused (holding lock), NVDA BUY refused (MNPI);
+  saving on with a blank employer → 400; saving off → MSFT, NORTHWIND and AAPL allowed, NVDA still
+  refused. UI: the policy switch renders on /compliance.
+
+FILES: modified schemas/compliance.ts, generators/{complianceSeeds,complianceBuilder}.ts,
+  stores/complianceStore.ts, handlers/complianceHandlers.ts, api/{complianceQueries,index}.ts,
+  compliance/CompliancePage.tsx; created compliance/sections/EmployerPolicyCard.tsx.
 ────────────────────────────────────────────────────────────
 ```
  

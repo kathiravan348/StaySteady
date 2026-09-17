@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 
 import type {
+  EmployerPolicy,
   AddRestrictedInstrumentInput,
   ComplianceView,
   EligibilityCheckResult,
@@ -70,6 +71,20 @@ export function useConfirmPolicyReview(): UseMutationResult<ComplianceView, Erro
       apiSend('POST', '/api/v1/compliance/confirm-review', {}, ComplianceViewSchema),
     onSuccess: (updated) => {
       client.setQueryData(COMPLIANCE_KEY, updated);
+    },
+  });
+}
+
+// Saving the employer policy changes what trades are refused, so approvals and the screener refresh.
+export function useSaveEmployerPolicy(): UseMutationResult<ComplianceView, Error, EmployerPolicy> {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (policy: EmployerPolicy) =>
+      apiSend('PUT', '/api/v1/compliance/employer-policy', policy, ComplianceViewSchema),
+    onSuccess: (updated) => {
+      client.setQueryData(COMPLIANCE_KEY, updated);
+      void client.invalidateQueries({ queryKey: ['approvals', 'queue'] });
+      void client.invalidateQueries({ queryKey: ['screener'] });
     },
   });
 }

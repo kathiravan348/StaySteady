@@ -43,6 +43,9 @@ export const BlackoutWindowSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   scope: z.string().min(1),
+  // What the window covers, used by the eligibility check: listed symbols, or every equity.
+  symbols: z.array(z.string().min(1)),
+  appliesToAll: z.boolean(),
   windowType: BlackoutWindowTypeSchema,
   startDate: IsoUtcTimestampSchema,
   endDate: IsoUtcTimestampSchema,
@@ -100,6 +103,18 @@ export const DisclosureObligationSchema = z.object({
 });
 export type DisclosureObligation = z.infer<typeof DisclosureObligationSchema>;
 
+// Employer trading policy as configuration (E-09; requirements 27; decision 43). Off means blackout
+// windows, holding locks and employer-equity restrictions are not enforced; restrictions for other
+// reasons (conflicts, sanctions, insider lists) always are.
+export const EmployerPolicySchema = z.object({
+  enabled: z.boolean(),
+  employerName: z.string().trim(),
+  preClearanceRequired: z.boolean(),
+  // 0 turns minimum holding locks off.
+  minimumHoldingDays: z.number().int().min(0, 'Cannot be negative').max(365, 'At most a year'),
+});
+export type EmployerPolicy = z.infer<typeof EmployerPolicySchema>;
+
 export const CompliancePolicyOverviewSchema = z.object({
   policyVersion: z.string().min(1),
   lastReviewedDate: IsoUtcTimestampSchema,
@@ -110,6 +125,7 @@ export const CompliancePolicyOverviewSchema = z.object({
   restrictedInstrumentsCount: z.number().int().nonnegative(),
   activeLocksCount: z.number().int().nonnegative(),
   preClearanceEnforced: z.boolean(),
+  employerPolicy: EmployerPolicySchema,
 });
 export type CompliancePolicyOverview = z.infer<typeof CompliancePolicyOverviewSchema>;
 

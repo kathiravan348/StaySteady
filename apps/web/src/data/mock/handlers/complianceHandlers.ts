@@ -11,11 +11,13 @@ import {
   evaluateEligibility,
   getComplianceStoreView,
   removeRestrictedInstrumentFromStore,
+  saveEmployerPolicy,
 } from '../stores/complianceStore';
 import {
   AddRestrictedInstrumentInputSchema,
   ComplianceViewSchema,
   EligibilityCheckResultSchema,
+  EmployerPolicySchema,
 } from '../../schemas/compliance';
 import { failure, firstIssue } from './versionedConfigHandlers';
 
@@ -63,6 +65,16 @@ export const complianceHandlers: readonly HttpHandler[] = [
   http.delete('/api/v1/compliance/restricted/:id', ({ params }) => {
     const id = String(params['id']);
     removeRestrictedInstrumentFromStore(id);
+    return complianceResponse();
+  }),
+
+  http.put('/api/v1/compliance/employer-policy', async ({ request }) => {
+    const parsed = EmployerPolicySchema.safeParse(await request.json().catch(() => null));
+    if (!parsed.success) return failure(firstIssue(parsed.error), 400);
+    if (parsed.data.enabled && parsed.data.employerName === '') {
+      return failure('Name the employer whose policy applies', 400);
+    }
+    saveEmployerPolicy(parsed.data);
     return complianceResponse();
   }),
 

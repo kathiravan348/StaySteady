@@ -17,6 +17,7 @@ import styles from './Compliance.module.scss';
 import { BlackoutWindowsSection } from './sections/BlackoutWindowsSection';
 import { ComplianceBanner } from './sections/ComplianceBanner';
 import { DisclosuresSection } from './sections/DisclosuresSection';
+import { EmployerPolicyCard } from './sections/EmployerPolicyCard';
 import { InstrumentEligibilityChecker } from './sections/InstrumentEligibilityChecker';
 import { MinimumHoldingSection } from './sections/MinimumHoldingSection';
 import { RefusalsLogSection } from './sections/RefusalsLogSection';
@@ -66,6 +67,11 @@ function ComplianceBody(): ReactElement {
         overview={compliance.overview}
         onConfirmReview={() => void confirmReviewMutation.mutate()}
         isConfirming={confirmReviewMutation.isPending}
+      />
+
+      <EmployerPolicyCard
+        key={JSON.stringify(compliance.overview.employerPolicy)}
+        policy={compliance.overview.employerPolicy}
       />
 
       <InstrumentEligibilityChecker

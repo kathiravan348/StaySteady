@@ -2,6 +2,7 @@
 // Manages policy configuration, restricted instruments, holding locks, and real-time eligibility evaluation.
 
 import type {
+  EmployerPolicy,
   AddRestrictedInstrumentInput,
   BlackoutWindow,
   ComplianceView,
@@ -12,7 +13,7 @@ import type {
   RestrictedInstrument,
 } from '../../schemas/compliance';
 import { toIsoUtcTimestamp } from '../../../shared/types/dateTime';
-import { buildComplianceView } from '../generators/complianceBuilder';
+import { SEED_EMPLOYER_POLICY, buildComplianceView } from '../generators/complianceBuilder';
 import {
   seedBlackoutWindows,
   seedDisclosures,
@@ -31,6 +32,12 @@ let locks: HoldingPeriodLock[] = [...seedHoldingLocks(DEFAULT_TODAY)];
 let refusalsList: RefusalRecord[] = [...seedRefusals(DEFAULT_TODAY)];
 let disclosuresList: DisclosureObligation[] = [...seedDisclosures(DEFAULT_TODAY)];
 let policyReviewedDate = `${addDays(DEFAULT_TODAY, -45)}T00:00:00.000Z`;
+let employerPolicy: EmployerPolicy = SEED_EMPLOYER_POLICY;
+
+export function saveEmployerPolicy(next: EmployerPolicy): ComplianceView {
+  employerPolicy = next;
+  return getComplianceStoreView();
+}
 
 export function getComplianceStoreView(): ComplianceView {
   return buildComplianceView({
@@ -41,6 +48,7 @@ export function getComplianceStoreView(): ComplianceView {
     refusals: refusalsList,
     disclosures: disclosuresList,
     policyLastReviewedDate: policyReviewedDate,
+    employerPolicy,
   });
 }
 
@@ -50,8 +58,12 @@ export function evaluateEligibility(
 ): EligibilityCheckResult {
   const symbol = symbolInput.trim().toUpperCase();
 
-  // 1. Check Restricted List
-  const restrictedMatch = restrictedList.find((item) => item.symbol.toUpperCase() === symbol);
+  // 1. Check Restricted List (employer-equity entries only while the employer policy applies)
+  const restrictedMatch = restrictedList.find(
+    (item) =>
+      item.symbol.toUpperCase() === symbol &&
+      (employerPolicy.enabled || item.reasonCategory !== 'EMPLOYER_EQUITY'),
+  );
   if (restrictedMatch) {
     const reasons = [
       `Instrument ${symbol} is on the Restricted List (${restrictedMatch.reasonCategory}).`,
@@ -71,19 +83,13 @@ export function evaluateEligibility(
   }
 
   // 2. Check Active Blackout Windows
-  const activeBlackout = blackouts.find((b) => {
-    if (b.status !== 'ACTIVE') return false;
-    // Check if blackout scope applies
-    if (b.scope.includes('Northwind') && symbol === 'NORTHWIND') return true;
-    if (
-      b.scope.includes('Enterprise Cloud Software') &&
-      ['MSFT', 'ORCL', 'CRM', 'NOW'].includes(symbol)
-    ) {
-      return true;
-    }
-    if (b.scope.includes('All Global Equities')) return true;
-    return false;
-  });
+  const activeBlackout = !employerPolicy.enabled
+    ? undefined
+    : blackouts.find(
+        (window) =>
+          window.status === 'ACTIVE' &&
+          (window.appliesToAll || window.symbols.some((item) => item.toUpperCase() === symbol)),
+      );
 
   if (activeBlackout) {
     return {
@@ -98,12 +104,13 @@ export function evaluateEligibility(
         `Active window: ${activeBlackout.name}`,
         `Mandatory quiet period in effect until ${activeBlackout.endDate.slice(0, 10)}`,
       ],
-      preClearanceRequired: activeBlackout.preClearanceRequired,
+      preClearanceRequired:
+        activeBlackout.preClearanceRequired && employerPolicy.preClearanceRequired,
     };
   }
 
   // 3. If action is SELL, check Minimum Holding Period Lock
-  if (action === 'SELL') {
+  if (action === 'SELL' && employerPolicy.enabled && employerPolicy.minimumHoldingDays > 0) {
     const lockMatch = locks.find((l) => l.symbol.toUpperCase() === symbol && l.daysRemaining > 0);
     if (lockMatch) {
       return {
@@ -190,4 +197,5 @@ export function resetComplianceStore(today = DEFAULT_TODAY): void {
   refusalsList = [...seedRefusals(today)];
   disclosuresList = [...seedDisclosures(today)];
   policyReviewedDate = `${addDays(today, -45)}T00:00:00.000Z`;
+  employerPolicy = SEED_EMPLOYER_POLICY;
 }

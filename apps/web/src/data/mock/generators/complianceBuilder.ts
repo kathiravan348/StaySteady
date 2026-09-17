@@ -1,6 +1,7 @@
 // Assembles the ComplianceView DTO for S-33 (requirements 27; UI spec 19.1).
 
 import type {
+  EmployerPolicy,
   BlackoutWindow,
   CompliancePolicyOverview,
   ComplianceView,
@@ -27,7 +28,16 @@ export interface BuildComplianceOptions {
   readonly refusals?: readonly RefusalRecord[];
   readonly disclosures?: readonly DisclosureObligation[];
   readonly policyLastReviewedDate?: string;
+  readonly employerPolicy?: EmployerPolicy;
 }
+
+// The mock owner's demonstration policy; outside the mock phase it starts disabled (decision 43).
+export const SEED_EMPLOYER_POLICY: EmployerPolicy = {
+  enabled: true,
+  employerName: 'Northwind Systems',
+  preClearanceRequired: true,
+  minimumHoldingDays: 30,
+};
 
 export function buildComplianceView(options: BuildComplianceOptions): ComplianceView {
   const { today } = options;
@@ -55,7 +65,10 @@ export function buildComplianceView(options: BuildComplianceOptions): Compliance
     activeBlackoutCount,
     restrictedInstrumentsCount: restricted.length,
     activeLocksCount: locks.length,
-    preClearanceEnforced: true,
+    preClearanceEnforced:
+      (options.employerPolicy ?? SEED_EMPLOYER_POLICY).enabled &&
+      (options.employerPolicy ?? SEED_EMPLOYER_POLICY).preClearanceRequired,
+    employerPolicy: options.employerPolicy ?? SEED_EMPLOYER_POLICY,
   };
 
   return {
