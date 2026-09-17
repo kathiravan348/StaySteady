@@ -18,7 +18,7 @@ import type {
 } from '../../schemas';
 import { instrumentTypeLabel } from '../../../shared/format';
 import type { ValuationContext } from './reportValuation';
-import { SECTORS } from './researchData';
+import { classificationLabelForSymbol } from './classification';
 
 const ZERO = new Decimal(0);
 export const DIMENSIONS: readonly AllocationDimensionDto[] = [
@@ -56,7 +56,7 @@ export function bucketOf(
     case 'currency':
       return { key: instrument.currency, label: instrument.currency };
     case 'sector': {
-      const sector = SECTORS[instrument.symbol] ?? UNCLASSIFIED;
+      const sector = classificationLabelForSymbol(instrument.symbol, UNCLASSIFIED);
       return { key: sector, label: sector };
     }
   }
@@ -291,7 +291,7 @@ export function buildAllocationView(
     suggestions: suggestTrades(positions, plan, currency, asOf, v, costs),
     notes: [
       `Values at the ${asOf} close in ${currency}. Cash and assets outside the brokers are not included yet (S-30).`,
-      'Only individual stocks carry a sector; funds, commodities, crypto and bonds show as Not classified.',
+      'A company shows its sector. A fund, commodity or currency shows its asset class instead, and what it really holds needs look-through before it can count towards a sector target.',
       'Suggested trades are estimates to consider. Nothing is ordered or sent for approval from here.',
       'Each dimension is balanced on its own, so suggestions for type and currency can overlap; preview a trade to see its effect on all four.',
     ],

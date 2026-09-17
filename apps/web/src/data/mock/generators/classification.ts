@@ -5,22 +5,26 @@ import type { z } from 'zod';
 
 import type { InstrumentDto } from '../../schemas';
 import type {
+  ClassificationIndexDto,
   ClassificationTaxonomyDto,
   InstrumentClassificationDto,
 } from '../../schemas/classification';
 import {
   CLASSIFICATION_SCHEME,
+  ClassificationIndexSchema,
   ClassificationTaxonomySchema,
   InstrumentClassificationSchema,
 } from '../../schemas/classification';
 import {
   ASSET_CLASS_BY_SYMBOL,
   assetClassForType,
+  GROUP_ID_BY_SYMBOL,
+  GROUPS,
   INDUSTRY_BY_SYMBOL,
   PROVIDER_MAPPINGS_BY_SYMBOL,
 } from './classificationAssignments';
 import { ASSET_CLASSES, placementForIndustry, TAXONOMY_SECTORS } from './classificationTaxonomy';
-import { getInstrumentById } from './canonicalInstruments';
+import { CANONICAL_INSTRUMENTS, getInstrumentById } from './canonicalInstruments';
 import type { MockGeneratorContext } from './mockContext';
 import { parseGenerated } from './validated';
 
@@ -120,6 +124,34 @@ export function generateInstrumentClassification(
 ): InstrumentClassificationDto | null {
   const instrument = getInstrumentById(instrumentId);
   return instrument === undefined ? null : classificationForInstrument(ctx, instrument);
+}
+
+// One row per instrument in the universe, for tables and allocation views.
+export function generateClassificationIndex(ctx: MockGeneratorContext): ClassificationIndexDto {
+  return parseGenerated(
+    ClassificationIndexSchema,
+    {
+      scheme: CLASSIFICATION_SCHEME,
+      rows: CANONICAL_INSTRUMENTS.map((instrument) => {
+        const classification = classificationForInstrument(ctx, instrument);
+        const groupId = GROUP_ID_BY_SYMBOL[instrument.symbol] ?? null;
+        return {
+          instrumentId: String(classification.instrumentId),
+          symbol: classification.symbol,
+          kind: classification.kind,
+          sectorId: classification.sectorId,
+          sectorName: classification.sectorName,
+          industryId: classification.industryId,
+          industryName: classification.industryName,
+          assetClass: classification.assetClass,
+          groupId,
+          groupName: groupId === null ? null : (GROUPS[groupId] ?? null),
+        };
+      }),
+      asOf: asOfDate(ctx),
+    },
+    'classification index',
+  );
 }
 
 // The label a list or filter shows for a symbol: the sector for a company, the asset class

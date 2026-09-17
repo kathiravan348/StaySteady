@@ -3,6 +3,7 @@
 import { Decimal } from 'decimal.js';
 
 import type { CalendarEventDto, MarketDto, NewsItemDto } from '../../../data/schemas';
+import type { ClassificationLookup } from '../../../shared/classification/classificationIndex';
 import { humanizeToken } from '../../../shared/format';
 import { createMoney } from '../../../shared/money';
 import type { BaseCurrencyCode } from '../../../shared/types/currency';
@@ -20,6 +21,8 @@ export const ALLOCATION_DIMENSIONS: readonly AllocationDimension[] = [
   'country',
   'currency',
   'type',
+  'sector',
+  'group',
 ];
 
 const MOVER_COUNT = 3;
@@ -39,6 +42,7 @@ function dimensionLabel(
   position: ValuedPosition,
   dimension: AllocationDimension,
   markets: readonly MarketDto[],
+  classification: ClassificationLookup,
 ): string {
   switch (dimension) {
     case 'country':
@@ -50,6 +54,10 @@ function dimensionLabel(
       return position.instrument.currency;
     case 'type':
       return humanizeToken(position.instrument.type);
+    case 'sector':
+      return classification.sectorLabel(String(position.instrument.id));
+    case 'group':
+      return classification.groupLabel(String(position.instrument.id));
   }
 }
 
@@ -58,13 +66,14 @@ export interface AllocationRequest {
   readonly markets: readonly MarketDto[];
   readonly total: Decimal;
   readonly baseCurrency: BaseCurrencyCode;
+  readonly classification: ClassificationLookup;
 }
 
 export function buildAllocation(request: AllocationRequest): AllocationBreakdown {
   const build = (dimension: AllocationDimension): readonly AllocationSlice[] => {
     const groups = new Map<string, Decimal>();
     for (const position of request.positions) {
-      const label = dimensionLabel(position, dimension, request.markets);
+      const label = dimensionLabel(position, dimension, request.markets, request.classification);
       groups.set(label, (groups.get(label) ?? new Decimal(0)).plus(position.baseValue.amount));
     }
     return [...groups.entries()]
@@ -77,7 +86,13 @@ export function buildAllocation(request: AllocationRequest): AllocationBreakdown
       }))
       .sort((a, b) => b.percent - a.percent);
   };
-  return { country: build('country'), currency: build('currency'), type: build('type') };
+  return {
+    country: build('country'),
+    currency: build('currency'),
+    type: build('type'),
+    sector: build('sector'),
+    group: build('group'),
+  };
 }
 
 export interface Movers {

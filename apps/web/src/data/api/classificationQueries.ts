@@ -4,12 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 
 import type {
+  ClassificationIndexDto,
   ClassificationTaxonomyDto,
   CorporateStructureDto,
   InstrumentClassificationDto,
   InstrumentOwnershipResponseDto,
 } from '../schemas/classification';
 import {
+  ClassificationIndexSchema,
   ClassificationTaxonomySchema,
   CorporateStructureSchema,
   InstrumentClassificationSchema,
@@ -28,6 +30,15 @@ export function useClassificationTaxonomy(): UseQueryResult<ClassificationTaxono
     queryKey: ['classification', 'taxonomy'],
     queryFn: ({ signal }) =>
       apiGet('/api/v1/classification/taxonomy', ClassificationTaxonomySchema, signal),
+    staleTime: SLOW_STALE_MS,
+  });
+}
+
+export function useClassificationIndex(): UseQueryResult<ClassificationIndexDto> {
+  return useQuery({
+    queryKey: ['classification', 'index'],
+    queryFn: ({ signal }) =>
+      apiGet('/api/v1/classification/instruments', ClassificationIndexSchema, signal),
     staleTime: SLOW_STALE_MS,
   });
 }

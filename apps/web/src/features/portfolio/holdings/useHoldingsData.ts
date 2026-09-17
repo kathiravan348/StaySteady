@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 
 import {
   useBrokers,
+  useClassificationIndex,
   useFxHistories,
   useFxRates,
   useInstrumentTypeConfigs,
@@ -63,6 +64,7 @@ export function useHoldingsData(): HoldingsState {
   const news = useNewsItems();
   const taxRules = useTaxRuleSets();
   const instrumentTypes = useInstrumentTypeConfigs();
+  const classification = useClassificationIndex();
   const heldIds = useMemo(
     () => holdings.data?.map((holding) => holding.instrumentId) ?? [],
     [holdings.data],
@@ -86,7 +88,13 @@ export function useHoldingsData(): HoldingsState {
       fxRates.data &&
       taxRules.data &&
       instrumentTypes.data;
-    if (!coreReady || !fxHistories.data || strategies.isPending || news.isPending) {
+    if (
+      !coreReady ||
+      !fxHistories.data ||
+      strategies.isPending ||
+      news.isPending ||
+      classification.isPending
+    ) {
       return null;
     }
     if (heldIds.length > 0 && quotes.data === undefined) {
@@ -102,6 +110,7 @@ export function useHoldingsData(): HoldingsState {
       fxRates: fxRates.data,
       fxHistories: fxHistories.data,
       news: news.data ?? [],
+      classifications: classification.data?.rows ?? [],
       marketStates,
       baseCurrency,
       taxRules: residenceRules(taxRules.data.map((entry) => entry.config)),
@@ -121,6 +130,8 @@ export function useHoldingsData(): HoldingsState {
     strategies.data,
     news.isPending,
     news.data,
+    classification.isPending,
+    classification.data,
     quotes.data,
     heldIds.length,
     marketStates,
@@ -144,7 +155,7 @@ export function useHoldingsData(): HoldingsState {
       status: 'error',
       message: failed.error?.message ?? 'Unknown error',
       retry: () => {
-        [...core, quotes, strategies, news].forEach((query) => {
+        [...core, quotes, strategies, news, classification].forEach((query) => {
           void query.refetch();
         });
       },
@@ -162,6 +173,14 @@ export function useHoldingsData(): HoldingsState {
       ? [{ name: 'Strategies', impact: 'strategy ids are shown instead of names' }]
       : []),
     ...(news.isError ? [{ name: 'News', impact: 'news flags are hidden' }] : []),
+    ...(classification.isError
+      ? [
+          {
+            name: 'Classification',
+            impact: 'sector, industry and group show as not classified',
+          },
+        ]
+      : []),
   ];
   return {
     status: 'ready',
@@ -173,6 +192,7 @@ export function useHoldingsData(): HoldingsState {
     retry: () => {
       void strategies.refetch();
       void news.refetch();
+      void classification.refetch();
     },
   };
 }

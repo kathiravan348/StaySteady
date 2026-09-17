@@ -4,6 +4,7 @@
 import { useMemo } from 'react';
 
 import {
+  useClassificationIndex,
   useFxRates,
   useInstruments,
   useMarkets,
@@ -36,6 +37,7 @@ export function useOverviewCore(): OverviewCoreState {
   const instruments = useInstruments();
   const markets = useMarkets();
   const fxRates = useFxRates();
+  const classification = useClassificationIndex();
   const heldIds = useMemo(
     () => holdings.data?.map((holding) => holding.instrumentId) ?? [],
     [holdings.data],
@@ -44,7 +46,14 @@ export function useOverviewCore(): OverviewCoreState {
 
   const overview = useMemo(() => {
     const quotesReady = heldIds.length === 0 || quotes.data !== undefined;
-    if (!holdings.data || !summary.data || !instruments.data || !markets.data || !fxRates.data) {
+    if (
+      !holdings.data ||
+      !summary.data ||
+      !instruments.data ||
+      !markets.data ||
+      !fxRates.data ||
+      !classification.data
+    ) {
       return null;
     }
     if (!quotesReady) {
@@ -58,6 +67,7 @@ export function useOverviewCore(): OverviewCoreState {
       fxRates: fxRates.data,
       summary: summary.data,
       baseCurrency,
+      classifications: classification.data.rows,
     });
   }, [
     holdings.data,
@@ -65,6 +75,7 @@ export function useOverviewCore(): OverviewCoreState {
     instruments.data,
     markets.data,
     fxRates.data,
+    classification.data,
     quotes.data,
     heldIds.length,
     baseCurrency,
@@ -78,7 +89,7 @@ export function useOverviewCore(): OverviewCoreState {
     };
   }, [overview?.positions]);
 
-  const queries = [holdings, summary, instruments, markets, fxRates];
+  const queries = [holdings, summary, instruments, markets, fxRates, classification];
   const failed = [...queries, ...(heldIds.length > 0 ? [quotes] : [])].find((q) => q.isError);
   if (failed !== undefined) {
     return {

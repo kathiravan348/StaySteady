@@ -94,6 +94,7 @@ export {
 export {
   classificationForInstrument,
   classificationLabelForSymbol,
+  generateClassificationIndex,
   generateClassificationTaxonomy,
   generateInstrumentClassification,
   industryLabelForSymbol,

@@ -163,3 +163,26 @@ export const InstrumentOwnershipResponseSchema = z
     path: ['unavailableReason'],
   });
 export type InstrumentOwnershipResponseDto = z.infer<typeof InstrumentOwnershipResponseSchema>;
+
+// A list screen cannot make one request per row, so the index answers for the whole universe at
+// once: what a table or an allocation view needs, and nothing more.
+export const ClassificationIndexRowSchema = z.object({
+  instrumentId: InstrumentIdSchema,
+  symbol: z.string().min(1),
+  kind: ClassificationKindSchema,
+  sectorId: z.string().min(1).nullable(),
+  sectorName: z.string().min(1).nullable(),
+  industryId: z.string().min(1).nullable(),
+  industryName: z.string().min(1).nullable(),
+  assetClass: z.string().min(1).nullable(),
+  groupId: z.string().min(1).nullable(),
+  groupName: z.string().min(1).nullable(),
+});
+export type ClassificationIndexRowDto = z.infer<typeof ClassificationIndexRowSchema>;
+
+export const ClassificationIndexSchema = z.object({
+  scheme: z.literal(CLASSIFICATION_SCHEME),
+  rows: z.array(ClassificationIndexRowSchema),
+  asOf: IsoDateSchema,
+});
+export type ClassificationIndexDto = z.infer<typeof ClassificationIndexSchema>;

@@ -26,6 +26,9 @@ const GROUPING_COLUMNS: Readonly<Record<HoldingGrouping, readonly string[]>> = {
   country: ['country'],
   currency: ['currency'],
   type: ['type'],
+  sector: ['sector'],
+  industry: ['industry'],
+  group: ['group'],
   broker: ['broker'],
   strategy: ['strategy'],
 };

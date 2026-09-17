@@ -4,6 +4,7 @@ import { http, HttpResponse, type HttpHandler } from 'msw';
 
 import {
   createMockGeneratorContext,
+  generateClassificationIndex,
   generateClassificationTaxonomy,
   generateCorporateStructure,
   generateInstrumentClassification,
@@ -27,6 +28,13 @@ export const classificationHandlers: readonly HttpHandler[] = [
     return (
       failure('Failed to load the classification taxonomy') ??
       HttpResponse.json(generateClassificationTaxonomy(ctx))
+    );
+  }),
+
+  http.get('/api/v1/classification/instruments', () => {
+    return (
+      failure('Failed to load the classification index') ??
+      HttpResponse.json(generateClassificationIndex(ctx))
     );
   }),
 

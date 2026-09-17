@@ -5,6 +5,7 @@ import type { ColumnDef } from '@staysteady/ui';
 import { Link } from 'react-router-dom';
 
 import { positionDetailPath } from '../../../../routes/routes';
+import { NO_GROUP_LABEL } from '../../../../shared/classification/classificationIndex';
 import {
   formatMoney,
   formatNumber,
@@ -71,6 +72,32 @@ export function createHoldingColumns(baseCurrency: BaseCurrencyCode): readonly H
       meta: { label: 'Currency' },
     },
     { id: 'type', header: 'Type', accessorFn: (row) => row.typeLabel, meta: { label: 'Type' } },
+    {
+      id: 'sector',
+      header: 'Sector',
+      accessorFn: (row) => row.sectorLabel,
+      meta: { label: 'Sector' },
+    },
+    {
+      id: 'industry',
+      header: 'Industry',
+      accessorFn: (row) => row.industryLabel,
+      meta: { label: 'Industry' },
+    },
+    {
+      id: 'group',
+      header: 'Group',
+      accessorFn: (row) => row.groupLabel,
+      meta: { label: 'Group' },
+      cell: ({ row }) => (
+        <span className={styles.stackCell}>
+          <span>{row.original.groupLabel}</span>
+          {row.original.groupLabel !== NO_GROUP_LABEL && (
+            <span className={styles.meta}>Counts towards group exposure</span>
+          )}
+        </span>
+      ),
+    },
     {
       id: 'liquidity',
       header: 'Liquidity',

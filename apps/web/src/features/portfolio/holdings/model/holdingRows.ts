@@ -16,6 +16,9 @@ import type {
   NewsItemDto,
   StrategyDto,
 } from '../../../../data/schemas';
+import type { ClassificationIndexRowDto } from '../../../../data/schemas/classification';
+import type { ClassificationLookup } from '../../../../shared/classification/classificationIndex';
+import { createClassificationLookup } from '../../../../shared/classification/classificationIndex';
 import { directionOfNumber, humanizeToken } from '../../../../shared/format';
 import type { MarketSessionState } from '../../../../shared/marketTime';
 import type { FxQuote, Money } from '../../../../shared/money';
@@ -39,6 +42,7 @@ export interface HoldingRowInputs {
   readonly fxRates: readonly FxRateDto[];
   readonly fxHistories: readonly FxRateHistoryDto[];
   readonly news: readonly NewsItemDto[];
+  readonly classifications: readonly ClassificationIndexRowDto[];
   readonly marketStates: ReadonlyMap<string, MarketSessionState>;
   readonly baseCurrency: BaseCurrencyCode;
   // The residence tax rule set; null when none is configured (no long-term distinction shown).
@@ -85,7 +89,12 @@ export function describeExit(level: Money | undefined, lastPrice: Money): ExitIn
   return { level, distancePercent, proximity };
 }
 
-function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext): RowDraft | null {
+function buildDraft(
+  holding: HoldingDto,
+  inputs: HoldingRowInputs,
+  fx: FxContext,
+  classification: ClassificationLookup,
+): RowDraft | null {
   const instrument = inputs.instruments.find((item) => item.id === holding.instrumentId);
   if (instrument === undefined) {
     return null;
@@ -139,6 +148,9 @@ function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext
     country: market?.country ?? instrument.marketId,
     marketState: inputs.marketStates.get(instrument.marketId) ?? null,
     typeLabel: humanizeToken(instrument.type),
+    sectorLabel: classification.sectorLabel(String(instrument.id)),
+    industryLabel: classification.industryLabel(String(instrument.id)),
+    groupLabel: classification.groupLabel(String(instrument.id)),
     brokerName:
       inputs.brokers.find((item) => item.id === holding.brokerId)?.name ?? holding.brokerId,
     strategyName:
@@ -182,8 +194,9 @@ export function buildHoldingRows(inputs: HoldingRowInputs): readonly HoldingRow[
     current: fxTableFromDtos(inputs.fxRates),
     history: indexFxHistories(inputs.fxHistories),
   };
+  const classification = createClassificationLookup(inputs.classifications);
   const drafts = inputs.holdings
-    .map((holding) => buildDraft(holding, inputs, fx))
+    .map((holding) => buildDraft(holding, inputs, fx, classification))
     .filter((draft): draft is RowDraft => draft !== null);
   const total = drafts.reduce((sum, draft) => sum.plus(draft.valueBase.amount), new Decimal(0));
   const largest = drafts.reduce(

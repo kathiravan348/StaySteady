@@ -28,7 +28,7 @@ export interface ValuedPosition {
   readonly quoteTimestamp: IsoUtcTimestamp | null;
 }
 
-export type AllocationDimension = 'country' | 'currency' | 'type';
+export type AllocationDimension = 'country' | 'currency' | 'type' | 'sector' | 'group';
 
 export interface AllocationSlice {
   readonly label: string;

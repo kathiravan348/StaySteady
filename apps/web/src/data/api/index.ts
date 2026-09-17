@@ -35,6 +35,7 @@ export {
   useWatchlists,
 } from './watchlistQueries';
 export {
+  useClassificationIndex,
   useClassificationTaxonomy,
   useCorporateStructure,
   useInstrumentClassification,

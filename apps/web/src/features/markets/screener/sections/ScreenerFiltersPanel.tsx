@@ -10,12 +10,15 @@ export interface ScreenerFiltersPanelProps {
   readonly filters: ScreenerFilterCriteria;
   readonly onChange: (filters: ScreenerFilterCriteria) => void;
   readonly onReset: () => void;
+  // Sector values present in the universe, from the classification taxonomy (decision 49).
+  readonly sectorOptions: readonly string[];
 }
 
 export const ScreenerFiltersPanel: FC<ScreenerFiltersPanelProps> = ({
   filters,
   onChange,
   onReset,
+  sectorOptions,
 }) => {
   const updateField = <K extends keyof ScreenerFilterCriteria>(
     field: K,
@@ -84,6 +87,27 @@ export const ScreenerFiltersPanel: FC<ScreenerFiltersPanelProps> = ({
               <option value="">All Classes (Equities & ETFs)</option>
               <option value="EQUITY">Common Equities</option>
               <option value="ETF">Index & Sector ETFs</option>
+            </select>
+          </div>
+
+          {/* Sector */}
+          <div className={styles.field}>
+            <label htmlFor="scr-filter-sector" className={styles.fieldLabel}>
+              Sector
+            </label>
+            <select
+              id="scr-filter-sector"
+              className={styles.select}
+              value={filters.sectors[0] ?? ''}
+              disabled={sectorOptions.length === 0}
+              onChange={(e) => updateField('sectors', e.target.value ? [e.target.value] : [])}
+            >
+              <option value="">All sectors and asset classes</option>
+              {sectorOptions.map((sector) => (
+                <option key={sector} value={sector}>
+                  {sector}
+                </option>
+              ))}
             </select>
           </div>
 

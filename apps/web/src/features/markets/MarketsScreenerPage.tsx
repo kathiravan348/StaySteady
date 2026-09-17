@@ -161,6 +161,7 @@ export function MarketsScreenerPage(): ReactElement {
           filters={criteria}
           onChange={handleFilterChange}
           onReset={handleResetFilters}
+          sectorOptions={searchResult?.summary.availableSectors ?? []}
         />
 
         {searchResult.rows.length === 0 && criteria.query === '' && !criteria.complianceOnly ? (

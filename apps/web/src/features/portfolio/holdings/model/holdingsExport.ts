@@ -54,6 +54,27 @@ export const HOLDING_COLUMN_OPTIONS: readonly HoldingColumnOption[] = [
     exportValue: (row) => row.typeLabel,
   },
   {
+    id: 'sector',
+    label: 'Sector',
+    pickable: true,
+    defaultVisible: false,
+    exportValue: (row) => row.sectorLabel,
+  },
+  {
+    id: 'industry',
+    label: 'Industry',
+    pickable: true,
+    defaultVisible: false,
+    exportValue: (row) => row.industryLabel,
+  },
+  {
+    id: 'group',
+    label: 'Group',
+    pickable: true,
+    defaultVisible: false,
+    exportValue: (row) => row.groupLabel,
+  },
+  {
     id: 'liquidity',
     label: 'Liquidity',
     pickable: true,

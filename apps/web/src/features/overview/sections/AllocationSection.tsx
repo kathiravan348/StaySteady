@@ -12,7 +12,9 @@ export interface AllocationSectionProps {
   readonly allocation: AllocationBreakdown;
 }
 
-// UI spec 7.1 — switchable allocation breakdown. Sector and strategy are not in the data yet.
+// UI spec 7.1 — switchable allocation breakdown, including sector and business group from the
+// classification index (R-02). Strategy is still not in the data. A fund shows as its asset class
+// until look-through (R-03) says which sectors it really holds.
 // The list beside the chart is the accessible data alternative (UI spec 13).
 export function AllocationSection({ allocation }: AllocationSectionProps): ReactElement {
   const [dimension, setDimension] = useState<AllocationDimension>('country');

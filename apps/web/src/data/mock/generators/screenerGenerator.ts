@@ -15,6 +15,9 @@ export function executeScreenerSearch(
   criteria: ScreenerFilterCriteria,
   universe: readonly ScreenerRow[],
 ): ScreenerSearchResult {
+  const availableSectors = [...new Set(universe.map((row) => row.sector))].sort((a, b) =>
+    a.localeCompare(b),
+  );
   let filtered = [...universe];
 
   // Text search
@@ -36,6 +39,11 @@ export function executeScreenerSearch(
   // Asset Classes
   if (criteria.assetClasses.length > 0) {
     filtered = filtered.filter((r) => criteria.assetClasses.includes(r.assetClass));
+  }
+
+  // Sectors, named from the one classification taxonomy (R-02, decision 49)
+  if (criteria.sectors.length > 0) {
+    filtered = filtered.filter((r) => criteria.sectors.includes(r.sector));
   }
 
   // Valuation: P/E
@@ -170,6 +178,7 @@ export function executeScreenerSearch(
       medianPe,
       medianRoePct,
       medianDivYieldPct,
+      availableSectors,
     },
     total,
     page,

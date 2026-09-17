@@ -43,6 +43,11 @@ export interface HoldingRow {
   readonly country: string;
   readonly marketState: MarketSessionState | null;
   readonly typeLabel: string;
+  // Classification (R-02). A fund or commodity shows its asset class in place of a sector, and
+  // anything with no business group behind it shows "No group".
+  readonly sectorLabel: string;
+  readonly industryLabel: string;
+  readonly groupLabel: string;
   readonly brokerName: string;
   readonly strategyName: string;
   // Strategy that opened the position; null when it was opened manually.

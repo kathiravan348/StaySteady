@@ -19,6 +19,15 @@ const SEED_PLAN: SavedPlan = {
       { dimension: 'type', key: 'commodity', targetPercent: 20 },
       { dimension: 'type', key: 'bond', targetPercent: 10 },
       { dimension: 'type', key: 'digital_asset', targetPercent: 5 },
+      // Sector targets cover asset classes too, because that is what the sector view shows until
+      // fund look-through lands (R-03). Targets per dimension must add up to 100.
+      { dimension: 'sector', key: 'Information technology', targetPercent: 20 },
+      { dimension: 'sector', key: 'Health care', targetPercent: 8 },
+      { dimension: 'sector', key: 'Energy', targetPercent: 5 },
+      { dimension: 'sector', key: 'Commodity', targetPercent: 25 },
+      { dimension: 'sector', key: 'Broad market fund', targetPercent: 30 },
+      { dimension: 'sector', key: 'Digital asset', targetPercent: 5 },
+      { dimension: 'sector', key: 'Private credit', targetPercent: 7 },
       { dimension: 'currency', key: 'USD', targetPercent: 80 },
       { dimension: 'currency', key: 'INR', targetPercent: 10 },
       { dimension: 'currency', key: 'GBP', targetPercent: 10 },

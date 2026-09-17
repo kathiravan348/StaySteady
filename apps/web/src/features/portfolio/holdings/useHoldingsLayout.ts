@@ -9,6 +9,9 @@ export const HOLDING_GROUPINGS = [
   'country',
   'currency',
   'type',
+  'sector',
+  'industry',
+  'group',
   'broker',
   'strategy',
 ] as const;

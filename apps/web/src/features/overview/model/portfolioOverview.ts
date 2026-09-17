@@ -4,6 +4,8 @@
 import { Decimal } from 'decimal.js';
 
 import { fxTableFromDtos, moneyFromDto } from '../../../data/api/mappers';
+import type { ClassificationIndexRowDto } from '../../../data/schemas/classification';
+import { createClassificationLookup } from '../../../shared/classification/classificationIndex';
 import type {
   FxRateDto,
   HoldingDto,
@@ -32,6 +34,7 @@ export interface OverviewInputs {
   readonly fxRates: readonly FxRateDto[];
   readonly summary: PortfolioSummaryDto;
   readonly baseCurrency: BaseCurrencyCode;
+  readonly classifications: readonly ClassificationIndexRowDto[];
 }
 
 interface PositionTotals {
@@ -125,6 +128,7 @@ export function buildPortfolioOverview(inputs: OverviewInputs): PortfolioOvervie
       markets: inputs.markets,
       total,
       baseCurrency: inputs.baseCurrency,
+      classification: createClassificationLookup(inputs.classifications),
     }),
     oldestQuoteTimestamp: oldestTimestamp(positions),
   };

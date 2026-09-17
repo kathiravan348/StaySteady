@@ -79,6 +79,9 @@ export const ScreenerSummaryMetricsSchema = z.object({
   medianPe: z.number().nullable(),
   medianRoePct: z.number().nullable(),
   medianDivYieldPct: z.number().nullable(),
+  // Every sector value present in the universe before filtering, so the filter list can never
+  // offer a sector no row carries. Names come from the classification taxonomy (decision 49).
+  availableSectors: z.array(z.string().min(1)),
 });
 export type ScreenerSummaryMetrics = z.infer<typeof ScreenerSummaryMetricsSchema>;
 

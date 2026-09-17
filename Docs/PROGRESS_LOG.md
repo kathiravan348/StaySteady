@@ -15,14 +15,14 @@
 
 ```
 PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   82% (88 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 1 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-18T01:00:00Z  |  local: 2026-09-18 06:30 IST
-LAST AGENT:         Claude Opus 5 (session 84)
-BUILD STATE:        PASS (pnpm build, session 84)
+OVERALL PROGRESS:   83% (89 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 2 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T02:30:00Z  |  local: 2026-09-18 08:00 IST
+LAST AGENT:         Claude Opus 5 (session 85)
+BUILD STATE:        PASS (pnpm build, session 85)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
-BLOCKERS:           none. R-02 is next and needs no new data.
+BLOCKERS:           none. R-03 is next: group exposure and fund look-through.
 ```
 
 ---
@@ -33,47 +33,50 @@ BLOCKERS:           none. R-02 is next and needs no new data.
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE; session 82 finished the
-  design system; session 83 specified Stage R (requirements Part III, UI spec 20, decisions 48-54);
-  session 84 built R-01, the classification and corporate structure data layer. R-02 is next.
+  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE. Stage R is the active
+  scope (requirements Part III, UI spec 20, decisions 48-54): R-01 built the classification data
+  layer, R-02 wired it into the screens that needed it. R-03 is next.
 
-WHAT R-01 ADDED (session 84, data layer only, no screen changes):
-  - data/schemas/classification.ts: instrument classification (sector/industry for a company, asset
-    class otherwise, provider mappings kept), corporate structure (parent, group, related listed
-    companies), ownership points over eight quarters, and an ownership response that carries either
-    the pattern or the reason there is none.
-  - data/mock/generators/: classificationTaxonomy.ts (11 sectors, 30 industries, slug ids),
-    classificationAssignments.ts (symbol to industry, asset classes, provider mappings, groups),
-    classification.ts (generator plus sectorNameForSymbol, peerSymbolsForSymbol),
-    corporateStructure.ts (parents, relatives, groupSymbolsForSymbol), ownershipPattern.ts.
-  - Endpoints: GET /api/v1/classification/taxonomy, and per instrument /classification, /structure,
-    /ownership. Hooks: useClassificationTaxonomy, useInstrumentClassification, useCorporateStructure,
-    useInstrumentOwnership.
-  - The SECTORS map in researchData.ts is now derived from the taxonomy, and the screener's rows
-    take their sector from it in screenerFactors.ts. There is one sector source, as decision 49 says.
+WHAT R-02 ADDED (session 85):
+  - Bulk endpoint GET /api/v1/classification/instruments (one row per instrument: sector, industry,
+    asset class, group) with useClassificationIndex, because a table cannot fetch per row.
+  - apps/web/src/shared/classification/classificationIndex.ts: createClassificationLookup with
+    sectorLabel, industryLabel and groupLabel. A company shows its sector; a fund or commodity shows
+    its asset class, which says more than "Not classified"; anything ungrouped shows "No group".
+  - Overview: allocation now switches by sector and business group as well as country, currency and
+    type. Holdings: sector, industry and group columns (pickable, hidden by default), grouping by any
+    of them, and the three fields in the CSV export. Classification is a partial-data source there,
+    so the table still renders with a banner if it fails.
+  - Screener: the engine now applies criteria.sectors, which it had always accepted and ignored. The
+    filter list comes from summary.availableSectors, the distinct sector values in the universe, so
+    it can never offer a sector no row carries.
+  - Planning: the sector view uses the same labels as everything else, and the seeded plan now has a
+    full set of sector targets (they must add up to 100 per dimension, which the schema enforces).
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-02: wire the classification into the screens that need it. The data is there and verified.
-     - Overview allocation: features/overview/sections/AllocationSection.tsx still says sector is
-       "not in the data yet".
-     - Holdings: sector, industry and group columns, and grouping by them.
-     - Planning: sector targets already work through SECTORS; check nothing else needs changing.
-     - Screener: apply criteria.sectors, which the engine currently ignores (see findings), and
-       build the filter list from useClassificationTaxonomy instead of row values.
-  2. R-03 group exposure and fund look-through, then R-04..R-06 data, then R-07..R-13 screens.
-  3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
-  4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
+  1. R-03 group exposure and fund look-through:
+     - Risk & Safety: make the "global-sector" limit in riskLimits.ts measurable, and add a group
+       limit beside it. Use classificationForInstrument/groupSymbolsForSymbol from R-01.
+     - Fund look-through: an ETF's sector weights, so exposure held through SPY counts. This is the
+       missing piece behind Planning's "Commodity 41%" and "Broad market fund 31%" rows.
+     - Only one Tata company is held, so a second held group company is needed for group exposure to
+       show anything; adding one to the mock portfolio is part of this task.
+  2. R-04 research record, R-05 statements, R-06 ratio engine.
+  3. R-07..R-11 the Company Research screen tabs; R-12 surfacing; R-13 screener factors.
+  4. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
+  5. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
 
 WATCH OUT FOR:
-  - Sector and industry have exactly one source now: classificationAssignments.ts. Do not add a
-    second table. A new symbol needs an entry there, and its industry must exist in the taxonomy or
-    placementForIndustry throws (deliberately).
-  - Screener symbols that are not canonical instruments (MSFT, TCS, HDFCBANK and so on) have no
-    instrument id, so /classification cannot be called for them. They classify by symbol through
-    classificationLabelForSymbol. R-02 and R-13 need to keep using the symbol path for those.
-  - Ownership percentages must add up to 100 (schema refine) and a pledge cannot exist without a
-    promoter holding. Promoter fields are null where the market does not report them, which is not
-    the same as zero: HDFCBANK reports zero, AAPL reports nothing.
+  - Sector and industry have one source: classificationAssignments.ts, read through the taxonomy.
+    A new symbol needs an entry there and its industry must exist in the taxonomy, or
+    placementForIndustry throws deliberately. Screens read the index through the shared lookup;
+    do not add another sector table or a second label convention.
+  - Screener symbols that are not canonical instruments (MSFT, TCS, HDFCBANK) have no instrument id,
+    so they classify by symbol through classificationLabelForSymbol, not the per-instrument endpoint.
+  - Planning allocation targets must add up to 100 per dimension (schema refine). Adding a target to
+    one dimension means rebalancing that whole dimension's set.
+  - Ownership percentages must add up to 100, and a pledge cannot exist without a promoter holding.
+    Promoter null means the market does not report one; HDFCBANK reports zero, which is different.
   - Statements (R-05) must tie to price history (decision 19) and carry publication dates
     (decision 50): assets = liabilities + equity, EPS from net profit and shares.
   - Do not mark a task DONE because the UI renders. Every section fetches through data/api hooks and
@@ -87,25 +90,25 @@ WATCH OUT FOR:
     convertMoneyWithTable before comparing. Never Number()/parseFloat a money amount.
   - Screens fetch only through data/api hooks (decision 22); writes return the full set
     (decision 33); shared mock state lives in data/mock/stores (decision 37).
-  - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - A generator that passes a parsed DTO back into a schema needs the z.input shape, not the output
-    type: branded Percentage and IsoDate values assign to number and string, but the other way
-    round does not compile. Annotate with `satisfies Omit<z.input<typeof Schema>, ...>` instead of
-    asserting.
+  - Shared UI and shared logic live in apps/web/src/shared (decision 25); features never import
+    each other.
+  - A generator passing a parsed DTO back into a schema needs the z.input shape, not the output
+    type. Annotate with `satisfies Omit<z.input<typeof Schema>, ...>` rather than asserting.
   - Browser pane: the first /api/* fetch after a page load can return the shell before MSW is
-    listening; repeat the fetch rather than concluding the endpoint is broken. Typing does not reach
-    native time and date inputs. Mock stores reset on a full navigation. Modal content is portalled
-    outside <main>. Screenshots can come back blank; read the DOM instead.
+    listening; repeat it rather than concluding the endpoint is broken. Typing does not reach native
+    date inputs; set values with the native setter and dispatch an input or change event. Mock
+    stores reset on a full navigation. Screenshots can come back blank; read the DOM instead.
+  - A dev server may already be running on 5173 (started outside the preview tool). Navigate to it
+    instead of starting a second one.
   - Stale modules: restart the preview; if that fails, delete apps/web/node_modules/.vite.
   - The Bash tool mangles heredocs containing quotes and backticks; write files with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Open findings: the screener ignores criteria.sectors (R-02); planning shows 78% "Not classified"
-    because funds and commodities dominate, which R-03 look-through addresses; only one Tata company
-    is held, so group exposure needs a second held group company to be visible (R-03); market cap is
-    formatted with Number() in ResearchSections.tsx (R-14); configuration is not read by the rest of
-    the app; the kill switch has no confirmation or record; chart theme colours hardcoded hex; single
-    large JS chunk (P-04); Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
+  - Open findings: only one Tata company is held, so group exposure needs a second held group
+    company (R-03); market cap is formatted with Number() in ResearchSections.tsx (R-14);
+    configuration is not read by the rest of the app; the kill switch has no confirmation or record;
+    chart theme colours hardcoded hex; single large JS chunk (P-04); Node 20.11 blocks ESLint 10
+    and Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -262,7 +265,7 @@ already built but cannot work without classification.
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
 | R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | DONE | 100 | Claude Opus 5 (session 84) | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
-| R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | TODO | 0 | | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
+| R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | DONE | 100 | Claude Opus 5 (session 85) | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
 | R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | TODO | 0 | | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | TODO | 0 | | Requirements 35 |
 | R-05 | Financial statements — schema and coherent generator: five years annual, eight quarters interim, consolidated and standalone, publication and restatement dates | TODO | 0 | | Requirements 37; decision 50. Must tie to price history (decision 19) |
@@ -1223,6 +1226,74 @@ modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/i
 apps/web/src/data/mock/generators/{researchData.ts,screenerFactors.ts},
 apps/web/src/data/mock/handlers/index.ts, apps/web/src/data/api/index.ts,
 Docs/{PROGRESS_LOG.md,DECISIONS.md}.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 85 | Claude Opus 5
+START:          2026-09-18T01:15:00Z  |  local: 2026-09-18 06:45 IST
+END:            2026-09-18T02:30:00Z  |  local: 2026-09-18 08:00 IST
+TASK CLAIMED:   R-02 classification wired into Overview, Holdings, Planning and the Screener
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Bulk classification index: schema (ClassificationIndexRow, ClassificationIndex), generator
+    generateClassificationIndex over the canonical universe, endpoint
+    GET /api/v1/classification/instruments, hook useClassificationIndex. A list screen cannot make
+    one request per row, so the per-instrument endpoints from R-01 needed a list companion.
+  - shared/classification/classificationIndex.ts: createClassificationLookup(rows) with row,
+    sectorLabel, industryLabel, groupLabel and isEmpty. Provisional labelling choice: a company
+    shows its sector, a fund or commodity shows its asset class rather than "Not classified", and
+    anything with no business group shows "No group".
+  - Overview (UI spec 7.1, 20.2): AllocationDimension gains 'sector' and 'group'; the index is part
+    of the core query set, so an index failure shows the existing error state rather than a silently
+    unclassified chart. The comment claiming sector "is not in the data yet" is gone.
+  - Holdings (UI spec 7.2, 20.2): HoldingRow carries sectorLabel, industryLabel and groupLabel;
+    three new pickable columns, hidden by default like Country, Currency and Type; grouping by
+    sector, industry or group; the same three fields in the CSV export. Classification is an
+    optional source like strategies and news, so the table still renders with a partial-data banner
+    if it fails.
+  - Screener (UI spec 8.3, 20.2): executeScreenerSearch now applies criteria.sectors (the finding
+    from session 84). ScreenerSummaryMetrics gains availableSectors, the distinct sector values in
+    the universe before filtering, and the panel's new Sector control is built from that, so the
+    filter list and the rows cannot drift apart.
+  - Planning (UI spec 7.17): the sector view now uses the same labels as the rest of the app
+    (classificationLabelForSymbol), its note explains what a fund shows and why, and the seeded plan
+    carries a full set of sector targets. Targets must add up to 100 per dimension, which the schema
+    enforces: a first attempt with two targets totalling 35% failed validation and was corrected.
+
+NOT COMPLETED / LIMITS:
+  - Group exposure is not measured anywhere yet, and funds are not looked through: both are R-03.
+  - The screener's industry filter is not built; only sector. UI spec 20.2 asks for industry too,
+    and it belongs with R-13 where the statement-derived factors are added.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS with no
+  rebaseline needed. In the browser against the dev server: the index returns 17 rows with three
+  grouped symbols; Overview sector allocation reads Commodity 41.3%, Broad market fund 31.0%,
+  Information technology 17.0%, Health care 4.6%, Private credit 4.5%, Digital asset 1.0%, Energy
+  0.6%, and group allocation reads No group 99.4% / Reliance group 0.6%; Holdings offers grouping by
+  sector, industry and group, and grouping by sector produces correctly labelled group rows with
+  totals even while the column itself is hidden; the screener's sector list offers exactly the seven
+  values its universe carries and selecting Financials returns HDFCBANK, BRK.B, JPM and V, while
+  Broad market fund returns SPY and NIFTYBEES; Planning's sector view shows targets and drift
+  (Commodity 41.41% against a 25% target, over).
+
+FILES: created apps/web/src/shared/classification/classificationIndex.ts;
+modified apps/web/src/data/schemas/{classification.ts,screener.ts},
+apps/web/src/data/mock/generators/{classification.ts,index.ts,screenerGenerator.ts,
+planningAllocation.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/mock/stores/planningStore.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts},
+apps/web/src/features/overview/{useOverviewCore.ts,sections/AllocationSection.tsx,
+model/overviewTypes.ts,model/overviewLists.ts,model/portfolioOverview.ts},
+apps/web/src/features/portfolio/holdings/{useHoldingsData.ts,useHoldingsLayout.ts,
+columns/holdingColumns.tsx,model/holdingTypes.ts,model/holdingRows.ts,model/holdingsExport.ts,
+sections/HoldingsTable.tsx},
+apps/web/src/features/markets/{MarketsScreenerPage.tsx,screener/sections/ScreenerFiltersPanel.tsx},
+Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 
