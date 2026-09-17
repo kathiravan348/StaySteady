@@ -40,3 +40,4 @@ export * from './alerts-centre';
 export * from './audit';
 export * from './portfolio-performance';
 export * from './compliance';
+export * from './screener';

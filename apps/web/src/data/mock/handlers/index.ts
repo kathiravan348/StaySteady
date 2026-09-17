@@ -14,6 +14,7 @@ import { auditHandlers } from './auditHandlers';
 import { journalHandlers } from './journalHandlers';
 import { continuityHandlers } from './continuityHandlers';
 import { complianceHandlers } from './complianceHandlers';
+import { screenerHandlers } from './screenerHandlers';
 import { netWorthHandlers } from './netWorthHandlers';
 import { performanceHandlers } from './performanceHandlers';
 import { planningHandlers } from './planningHandlers';
@@ -43,6 +44,7 @@ export const handlers: readonly HttpHandler[] = [
   ...journalHandlers,
   ...continuityHandlers,
   ...complianceHandlers,
+  ...screenerHandlers,
 ];
 
 export {
@@ -59,4 +61,5 @@ export {
   researchHandlers,
   newsHandlers,
   complianceHandlers,
+  screenerHandlers,
 };

@@ -210,3 +210,10 @@ export {
   seedRefusals,
   seedDisclosures,
 } from './complianceSeeds';
+
+// Session 56: screener (UI spec 8.3; Open Question 11)
+export {
+  SCREENER_PRESETS,
+  SCREENER_UNIVERSE,
+  executeScreenerSearch,
+} from './screenerGenerator';

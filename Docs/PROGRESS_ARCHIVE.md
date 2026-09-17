@@ -5171,3 +5171,92 @@ FINDINGS (out of scope, not fixed):
     can be added without them and there is no edit or delete for a record
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 53 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        53 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:39:00Z  |  local: 2026-09-17 09:09 IST (UTC+05:30)
+TASK CLAIMED:   S-31 Decision Journal
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-30 committed as cd23dc2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-30 commit)
+
+SCOPE (requirements 29; UI spec 19.1, 19.4):
+  - New route /journal, linked from the side navigation under Trading & Safety
+  - Chronological entries: manual trades, limit overrides and approval decisions, each with the
+    reason given at the time. Limit changes made on the risk panel and approval decisions made in
+    the queue join the journal from the stores those screens already write
+  - Outcome attached once known: the price move over the 30 days after a trade, and whether it went
+    with or against the decision; pending with days left before then. Measured from price history
+  - Context per trade: whether the portfolio had fallen in the week before, and whether the trade
+    moved allocation away from the saved targets
+  - Filters by type, instrument, strategy and whether an override was involved
+  - Patterns, reported without judgement: repeated overrides of the same limit, trades clustered
+    after a loss, trades against allocation targets
+  - A review note the owner can add to any entry
+  - Seeded history includes one clearly poor decision (UI spec 19.4): a sale after a sharp fall,
+    dated from the price history so the recovery that followed is real in the mock data
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        53 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5) & Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:05:00Z  |  local: 2026-09-17 09:35 IST (UTC+05:30)
+TASK:           S-31 Decision Journal — DONE
+
+WHAT WAS BUILT (requirements 29; UI spec 19.1, 19.4):
+  - /journal, linked from the side navigation under Trading & Safety
+  - Chronological decision record: manual trades, limit overrides and approval decisions
+  - Reason given at the time captured and highlighted; review note form allows owner to reflect back
+    and append observations with inline schema validation
+  - Outcomes calculated against price history over a 30-day window: percentage price change, verdict
+    ('with' or 'against' expectation), pending status with remaining days, or not measured for
+    portfolio-wide limits
+  - Contextual signals: 7-day prior portfolio performance, post-loss flags (>= 3% fall), and
+    allocation drift flags
+  - Behaviour patterns panel: override repetition, post-loss clustering, target drift
+  - Full filter bar: filter by entry kind, instrument, strategy, and override status
+  - States: loading cards skeleton, empty state, error state with retry, filtered no-results state
+  - Seeded history: SPY panic sell dated at the bottom before recovery (clearly poor decision per
+    UI spec 19.4)
+
+MOCK DATA:
+  - GET /api/v1/journal, POST /api/v1/journal/:id/review
+  - In-memory review store; rebuilt dynamically from portfolio valuations, risk changes, orders,
+    approval queue decisions, and planning allocation targets
+
+FILES CREATED:
+  - data/schemas/journal.ts, data/mock/generators/journalSeeds.ts and journalBuilder.ts,
+    data/mock/stores/journalStore.ts, data/mock/handlers/journalHandlers.ts,
+    data/api/journalQueries.ts
+  - features/journal/{JournalPage.tsx, Journal.module.scss, model/journalFilters.ts,
+    sections/JournalView.tsx, sections/JournalEntryItem.tsx, sections/PatternsPanel.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (JOURNAL), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 50 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  filters:     Filter by kind, instrument, strategy, and override verified
+  review note: Submitted review persists and updates cached journal entry
+  states:      loading cards skeleton, empty state, error state verified
+────────────────────────────────────────────────────────────
+```
