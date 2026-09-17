@@ -9,6 +9,7 @@ import { relativeStrengthIndex, simpleMovingAverage } from '../../../shared/indi
 import { toInstrumentId, toMarketId } from '../../../shared/types/identifiers';
 import { toQuantity } from '../../../shared/types/quantities';
 import { CANONICAL_INSTRUMENTS } from './canonicalInstruments';
+import { classificationLabelForSymbol } from './classification';
 import type { MockGeneratorContext } from './mockContext';
 import { generatePriceHistoryForInstrument } from './priceHistory';
 import { generateInstrumentFundamentals } from './researchData';
@@ -45,6 +46,9 @@ export function withMarketFactors(
 ): ScreenerSeed[] {
   return seeds.map((seed) => {
     const instrument = instrumentFor(seed);
+    // Sector comes from the one classification source (R-01, decision 49), never the seed's own
+    // wording, so a row here and a row on Planning cannot name the same company differently.
+    const sector = classificationLabelForSymbol(seed.symbol, seed.sector);
     const bars = generatePriceHistoryForInstrument(ctx, instrument);
     // Indicators work on plain number series; the price itself stays a decimal string.
     const closes = bars.map((bar) => Number(bar.close));
@@ -53,10 +57,11 @@ export function withMarketFactors(
     const rsi = relativeStrengthIndex(closes, 14).at(-1);
     const sma = simpleMovingAverage(closes, 200).at(-1);
     const fundamentals = generateInstrumentFundamentals(ctx, String(instrument.id));
-    if (last === undefined) return seed;
+    if (last === undefined) return { ...seed, sector };
     const lastBar = bars.at(-1);
     return {
       ...seed,
+      sector,
       price: lastBar?.close ?? seed.price,
       change24hPct:
         previous === undefined || previous === 0 ? 0 : round((last / previous - 1) * 100, 2),

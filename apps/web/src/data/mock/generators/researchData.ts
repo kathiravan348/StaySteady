@@ -5,6 +5,8 @@ import type { z } from 'zod';
 
 import type { InstrumentDto, InstrumentFundamentalsDto, WatchlistDto } from '../../schemas';
 import { InstrumentFundamentalsSchema, WatchlistSchema } from '../../schemas';
+import { sectorNameForSymbol } from './classification';
+import { INDUSTRY_BY_SYMBOL } from './classificationAssignments';
 import { CANONICAL_INSTRUMENTS, getInstrumentById } from './instruments';
 import type { MockGeneratorContext } from './mockContext';
 import { parseGenerated, parseGeneratedList } from './validated';
@@ -12,16 +14,15 @@ import { currencyDecimals } from './values';
 
 type FundamentalsInput = z.input<typeof InstrumentFundamentalsSchema>;
 
-// Exported for planning's sector allocation (session 43); only individual stocks have a sector.
-export const SECTORS: Readonly<Record<string, string>> = {
-  AAPL: 'Information technology',
-  NVDA: 'Information technology',
-  TSLA: 'Consumer discretionary',
-  AZN: 'Health care',
-  RELIANCE: 'Energy',
-  TATAMOTORS: 'Consumer discretionary',
-  '7203': 'Consumer discretionary',
-};
+// Sector per symbol, derived from the one classification source (R-01, decision 49) rather than a
+// second table of its own. Exported for planning's sector allocation (session 43); only a company
+// instrument has a sector, so funds, commodities and currencies are absent by design.
+export const SECTORS: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.keys(INDUSTRY_BY_SYMBOL).flatMap((symbol) => {
+    const sector = sectorNameForSymbol(symbol);
+    return sector === null ? [] : [[symbol, sector] as const];
+  }),
+);
 
 const EQUITY_TYPES = new Set<InstrumentDto['type']>(['intraday', 'swing', 'long_term', 'ipo']);
 const FUND_TYPES = new Set<InstrumentDto['type']>(['etf', 'mutual_fund']);
@@ -46,7 +47,7 @@ function fundamentalsFor(ctx: MockGeneratorContext, instrument: InstrumentDto): 
     const capital = new Decimal(stream.float(5, 3000)).times('1e9');
     return {
       ...base,
-      sector: SECTORS[instrument.symbol] ?? null,
+      sector: sectorNameForSymbol(instrument.symbol),
       marketCap: {
         amount: capital.toFixed(currencyDecimals(instrument.currency)),
         currency: instrument.currency,

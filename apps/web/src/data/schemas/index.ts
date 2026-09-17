@@ -14,6 +14,7 @@ export * from './trading';
 export * from './research';
 export * from './system';
 export * from './news';
+export * from './classification';
 export * from './research-data';
 export * from './system-health';
 export * from './backtest-setup';

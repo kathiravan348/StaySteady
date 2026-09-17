@@ -6,6 +6,7 @@ import { tradingHandlers } from './tradingHandlers';
 import { researchHandlers } from './researchHandlers';
 import { newsHandlers } from './newsHandlers';
 import { researchDataHandlers } from './researchDataHandlers';
+import { classificationHandlers } from './classificationHandlers';
 import { healthHandlers } from './healthHandlers';
 import { riskHandlers } from './riskHandlers';
 import { configHandlers } from './configHandlers';
@@ -37,6 +38,7 @@ export const handlers: readonly HttpHandler[] = [
   ...researchHandlers,
   ...newsHandlers,
   ...researchDataHandlers,
+  ...classificationHandlers,
   ...healthHandlers,
   ...riskHandlers,
   ...configHandlers,

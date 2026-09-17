@@ -91,6 +91,22 @@ export {
 } from './healthDetails';
 
 // Session 23: fundamentals and watchlists for the instrument workspace
+export {
+  classificationForInstrument,
+  classificationLabelForSymbol,
+  generateClassificationTaxonomy,
+  generateInstrumentClassification,
+  industryLabelForSymbol,
+  peerSymbolsForSymbol,
+  sectorNameForSymbol,
+} from './classification';
+export { ASSET_CLASSES, TAXONOMY_SECTORS } from './classificationTaxonomy';
+export {
+  generateCorporateStructure,
+  groupSymbolsForSymbol,
+  structureForInstrument,
+} from './corporateStructure';
+export { generateInstrumentOwnership, ownershipForInstrument } from './ownershipPattern';
 export { generateInstrumentFundamentals, generateWatchlists } from './researchData';
 
 // M-15 Live Ticking

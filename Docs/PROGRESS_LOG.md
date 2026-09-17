@@ -14,15 +14,15 @@
 ## 1. Current Status
 
 ```
-PHASE:              Research (Stage R, new) is the active scope; Polish (Stage P) and F-22 remain
-OVERALL PROGRESS:   81% (87 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
-                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 0 of 14; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T18:30:00Z  |  local: 2026-09-18 00:00 IST
-LAST AGENT:         Claude Opus 5 (session 83)
-BUILD STATE:        PASS (unchanged; session 83 was documentation only)
-TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces; re-run session 83)
-LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository; re-run session 83)
-BLOCKERS:           none. Stage R is specified and ready to claim, starting at R-01.
+PHASE:              Research (Stage R) in progress; Polish (Stage P) and F-22 remain
+OVERALL PROGRESS:   82% (88 of 107 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
+                    Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage R 1 of 14; Stage P 0 of 5)
+LAST UPDATED:       2026-09-18T01:00:00Z  |  local: 2026-09-18 06:30 IST
+LAST AGENT:         Claude Opus 5 (session 84)
+BUILD STATE:        PASS (pnpm build, session 84)
+TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
+LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
+BLOCKERS:           none. R-02 is next and needs no new data.
 ```
 
 ---
@@ -33,45 +33,53 @@ BLOCKERS:           none. Stage R is specified and ready to claim, starting at R
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE (sessions 60-81); the
-  design system pass finished in session 82. Session 83 added scope rather than code: the owner
-  asked for end-to-end company research before investing, so Requirements Part III (sections 35-38)
-  and UI spec section 20 were written, decisions 48-53 recorded, and Stage R (R-01..R-14) added to
-  the registry. No application code changed in session 83.
+  pnpm workspace monorepo, git branch main. Stages M, L, S and E are DONE; session 82 finished the
+  design system; session 83 specified Stage R (requirements Part III, UI spec 20, decisions 48-54);
+  session 84 built R-01, the classification and corporate structure data layer. R-02 is next.
 
-WHAT SESSION 83 ADDED (read before claiming R-anything):
-  - Requirements 35 research record, 36 classification/parent/group/ownership/fund look-through,
-    37 statements and derived measures, 38 instrument news, events and filings.
-  - UI spec 20.1 the new Company Research screen (five tabs), 20.2 the screens it extends,
-    20.3 its extra states, 20.4 the mock data it needs.
-  - Decisions 48-53. 49-53 are provisional agent choices taken under decision 26 and are flagged
-    as such in DECISIONS.md and Open Questions 22-27; the owner can still overrule any of them.
-
-WHAT IS PARTIALLY DONE:
-  - Nothing. Stage R has not been started. F-22 still needs Node 22 installed by the owner.
+WHAT R-01 ADDED (session 84, data layer only, no screen changes):
+  - data/schemas/classification.ts: instrument classification (sector/industry for a company, asset
+    class otherwise, provider mappings kept), corporate structure (parent, group, related listed
+    companies), ownership points over eight quarters, and an ownership response that carries either
+    the pattern or the reason there is none.
+  - data/mock/generators/: classificationTaxonomy.ts (11 sectors, 30 industries, slug ids),
+    classificationAssignments.ts (symbol to industry, asset classes, provider mappings, groups),
+    classification.ts (generator plus sectorNameForSymbol, peerSymbolsForSymbol),
+    corporateStructure.ts (parents, relatives, groupSymbolsForSymbol), ownershipPattern.ts.
+  - Endpoints: GET /api/v1/classification/taxonomy, and per instrument /classification, /structure,
+    /ownership. Hooks: useClassificationTaxonomy, useInstrumentClassification, useCorporateStructure,
+    useInstrumentOwnership.
+  - The SECTORS map in researchData.ts is now derived from the taxonomy, and the screener's rows
+    take their sector from it in screenerFactors.ts. There is one sector source, as decision 49 says.
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. R-01 classification and corporate structure data. It unblocks three features that are already
-     built but cannot work: the risk limit "Maximum in any one sector" (riskLimits.ts says the data
-     does not exist), the Overview sector allocation (AllocationSection.tsx says the same), and the
-     Screener, whose sector names do not match Planning's.
-  2. R-02, then R-03; then the data tasks R-04..R-06; then the screen tasks R-07..R-13.
-  3. R-14 is a one-line fix and can ride along with any Stage R task that touches that file.
+  1. R-02: wire the classification into the screens that need it. The data is there and verified.
+     - Overview allocation: features/overview/sections/AllocationSection.tsx still says sector is
+       "not in the data yet".
+     - Holdings: sector, industry and group columns, and grouping by them.
+     - Planning: sector targets already work through SECTORS; check nothing else needs changing.
+     - Screener: apply criteria.sectors, which the engine currently ignores (see findings), and
+       build the filter list from useClassificationTaxonomy instead of row values.
+  2. R-03 group exposure and fund look-through, then R-04..R-06 data, then R-07..R-13 screens.
+  3. R-14 is a one-line fix; fold it into any task touching ResearchSections.tsx.
   4. P-05, P-01..P-04 when the owner asks for polish; F-22 last.
-  After any UI change run pnpm visual; rebaseline with pnpm visual:update only for intended changes.
 
 WATCH OUT FOR:
-  - Sector today has two sources that disagree: the SECTORS map in data/mock/generators/researchData.ts
-    (7 symbols) and free-text sector strings in the screener seeds. R-01 replaces both with one source.
-    Do not add a third.
-  - Statements must be internally consistent and tie to the existing price history (decision 19):
-    assets = liabilities + equity, EPS from net profit and shares, market cap from price x shares.
-  - Every statement needs its publication date (decision 50). A fundamental rule without it makes
-    backtests look better than reality.
+  - Sector and industry have exactly one source now: classificationAssignments.ts. Do not add a
+    second table. A new symbol needs an entry there, and its industry must exist in the taxonomy or
+    placementForIndustry throws (deliberately).
+  - Screener symbols that are not canonical instruments (MSFT, TCS, HDFCBANK and so on) have no
+    instrument id, so /classification cannot be called for them. They classify by symbol through
+    classificationLabelForSymbol. R-02 and R-13 need to keep using the symbol path for those.
+  - Ownership percentages must add up to 100 (schema refine) and a pledge cannot exist without a
+    promoter holding. Promoter fields are null where the market does not report them, which is not
+    the same as zero: HDFCBANK reports zero, AAPL reports nothing.
+  - Statements (R-05) must tie to price history (decision 19) and carry publication dates
+    (decision 50): assets = liabilities + equity, EPS from net profit and shares.
   - Do not mark a task DONE because the UI renders. Every section fetches through data/api hooks and
     renders loading, empty, error and stale states.
   - Run the full `pnpm lint` (repo-wide), not prettier on a hand-picked list of files.
-  - Strict 300 lines limit per file (decision 18). Always split components/generators before 300.
+  - Strict 300 lines limit per file (decision 18). Always split before 300.
   - Library component props: check packages/ui/src/index.ts. Badge variants include positive,
     negative, neutral, critical, info. LoadingState: table, cards, chart, detail. DataTable page
     sizes 10/20/50/100. Toggle is a React Aria Switch (isSelected, onChange, isDisabled, aria-label).
@@ -80,20 +88,24 @@ WATCH OUT FOR:
   - Screens fetch only through data/api hooks (decision 22); writes return the full set
     (decision 33); shared mock state lives in data/mock/stores (decision 37).
   - Shared UI lives in apps/web/src/shared (decision 25); features never import each other.
-  - Browser pane: typing does not reach native time and date inputs, and label clicks may not reach
-    wrapped inputs. Set the value with the native HTMLInputElement value setter and dispatch an
-    input event, which runs React's onChange. Mock stores reset on a full navigation. Modal content
-    is portalled outside <main>. Set the scenario with setActiveDeveloperScenario in one tab and
-    reset it to 'healthy'. Screenshots can come back blank; read the DOM instead.
+  - A generator that passes a parsed DTO back into a schema needs the z.input shape, not the output
+    type: branded Percentage and IsoDate values assign to number and string, but the other way
+    round does not compile. Annotate with `satisfies Omit<z.input<typeof Schema>, ...>` instead of
+    asserting.
+  - Browser pane: the first /api/* fetch after a page load can return the shell before MSW is
+    listening; repeat the fetch rather than concluding the endpoint is broken. Typing does not reach
+    native time and date inputs. Mock stores reset on a full navigation. Modal content is portalled
+    outside <main>. Screenshots can come back blank; read the DOM instead.
   - Stale modules: restart the preview; if that fails, delete apps/web/node_modules/.vite.
   - The Bash tool mangles heredocs containing quotes and backticks; write files with the
     file-writing tool. Multi-line in-place edits are reliable through a small python script.
   - packages/ui must NEVER import from apps/web or domain DTOs.
-  - Two files differing only in case break the build on Windows. Pick a distinct name.
-  - Open findings: market cap is formatted with Number() in features/markets/workspace/sections/
-    ResearchSections.tsx, breaking decision 4 (R-14); configuration is not yet read by the rest of
-    the app; the top bar kill switch has no confirmation or record; chart theme colours hardcoded
-    hex; single large JS chunk (P-04); Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
+  - Open findings: the screener ignores criteria.sectors (R-02); planning shows 78% "Not classified"
+    because funds and commodities dominate, which R-03 look-through addresses; only one Tata company
+    is held, so group exposure needs a second held group company to be visible (R-03); market cap is
+    formatted with Number() in ResearchSections.tsx (R-14); configuration is not read by the rest of
+    the app; the kill switch has no confirmation or record; chart theme colours hardcoded hex; single
+    large JS chunk (P-04); Node 20.11 blocks ESLint 10 and Vite 7 (Q7, Q8).
 ```
 
 ---
@@ -249,7 +261,7 @@ already built but cannot work without classification.
 
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
-| R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | TODO | 0 | | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
+| R-01 | Classification and corporate structure — one taxonomy (sector, industry), parent, business group, listed siblings, ownership pattern; schema, generator and endpoints | DONE | 100 | Claude Opus 5 (session 84) | Requirements 36; decisions 49, 51. Replaces the SECTORS map in researchData.ts and the screener seeds' free-text sectors |
 | R-02 | Classification wired into the screens that already need it — Overview sector allocation, Holdings sector/industry/group columns and grouping, Planning sector targets, Screener shared sector list | TODO | 0 | | UI spec 20.2. Fixes AllocationSection.tsx "not in the data yet" and the Planning/Screener name mismatch |
 | R-03 | Group exposure and fund look-through — group limit beside the sector limit on Risk & Safety, both counting exposure held through funds | TODO | 0 | | Requirements 36; decision 51. Makes riskLimits.ts "global-sector" measurable |
 | R-04 | Company research record — profile, business description, segment and geography revenue, key people, auditor; schema, generator, endpoint | TODO | 0 | | Requirements 35 |
@@ -1131,6 +1143,86 @@ VERIFICATION RUN:
 FILES: modified Docs/Personal_Investment_Platform_Requirements.md (Part III, sections 35-38),
 Docs/UI_Specification_Mock_Phase.md (section 20), Docs/DECISIONS.md (48-53),
 Docs/PROGRESS_LOG.md (status, handoff, Stage R registry, this entry, questions 22-27).
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 84 | Claude Opus 5
+START:          2026-09-17T18:45:00Z  |  local: 2026-09-18 00:15 IST
+END:            2026-09-18T01:00:00Z  |  local: 2026-09-18 06:30 IST
+TASK CLAIMED:   R-01 classification and corporate structure (data layer)
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+OWNER INSTRUCTION THIS SESSION:
+  Provisional decisions 49-53 adopted as suggested; question 26 (fundamentals inside strategy rules)
+  stays research-only. Recorded as decision 54.
+
+COMPLETED:
+  - Schemas (data/schemas/classification.ts, 165 lines): InstrumentClassification with kind
+    company/fund/asset_class and refines that force a sector and industry on a company and an asset
+    class on anything else; ProviderClassification kept as a mapping (decision 49); RelatedCompany
+    and CorporateStructure (parent, groupId/groupName, related listed companies); OwnershipPoint
+    with a refine that percentages add up to 100 and no pledge without a promoter holding;
+    InstrumentOwnershipResponse carrying either the pattern or the reason there is none, so "no
+    shareholders" is a state and not an error.
+  - Taxonomy (classificationTaxonomy.ts): 11 sectors, 30 industries, 9 asset classes, slug ids so a
+    saved filter survives a rename; an unknown industry name throws rather than passing silently.
+  - Assignments (classificationAssignments.ts): 18 company symbols across US, UK, JP, SG and IN
+    (canonical instruments plus the screener-only names), 10 asset-class symbols, a per-type
+    fallback, deliberately partial provider mappings (NSE for the Indian names, a global provider
+    for AAPL and NVDA), and six business groups.
+  - Generators: classification.ts (taxonomy, per-instrument classification, sectorNameForSymbol,
+    industryLabelForSymbol, peerSymbolsForSymbol for R-06/R-09); corporateStructure.ts (Tata Sons
+    above Tata Motors and TCS, HDFC Bank with two listed subsidiaries, Toyota's listed associates,
+    Temasek above DBS with a note that it is a controlling shareholder not a holding company, plus
+    groupSymbolsForSymbol for R-03); ownershipPattern.ts (eight calendar quarters, promoter null
+    where the market does not report one, HDFCBANK reporting zero, TATAMOTORS pledge rising 2.1% to
+    9.4% as UI spec 20.4 requires).
+  - Endpoints (classificationHandlers.ts): /api/v1/classification/taxonomy and per instrument
+    /classification, /structure, /ownership; 404 on an unknown instrument; loading-error scenario
+    honoured. Hooks (classificationQueries.ts): four read hooks on the decision 22 pattern.
+  - One sector source (decision 49): SECTORS in researchData.ts is now derived from the taxonomy,
+    fundamentals take their sector from it, and screenerFactors.ts replaces each row's seeded
+    sector with the taxonomy name. "Energy & Conglomerate", "Broad Market Blend", "Technology &
+    Growth" and "Healthcare" are gone from the screener.
+
+NOT COMPLETED / LIMITS:
+  - No screen consumes the new data yet: that is R-02, deliberately out of scope here.
+  - Screener-only symbols have no instrument id, so they classify by symbol, not through the
+    per-instrument endpoint.
+
+FINDINGS (not fixed, outside R-01 scope):
+  - executeScreenerSearch ignores criteria.sectors: the filter exists in the schema and the UI state
+    but nothing applies it. Belongs to R-02.
+  - Planning's sector view shows 77.81% "Not classified" because funds, commodities, crypto and
+    bonds dominate the portfolio. R-03 fund look-through is what makes that number meaningful.
+  - Only one Tata company (TATAMOTORS) is held; TCS exists in the screener universe only. R-03 needs
+    a second held group company for group exposure to show anything.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web, visual: 0 errors); pnpm lint PASS (eslint . and
+  prettier --check . repo-wide); pnpm build PASS. Runtime checks in the browser pane against the dev
+  server: taxonomy returns 11 sectors; AAPL classifies as Information technology / Technology
+  hardware with its provider mapping; XAUUSD, SPY and PRIV-NOTE return asset classes with a reason
+  instead of a sector; Tata Motors returns Tata Sons as parent, the Tata group and TCS as a group
+  company; Tata Motors ownership returns eight quarters ending 2026-06-30, each adding to exactly
+  100, pledge 2.1 to 9.4; AAPL ownership reports no promoter block; SPY ownership returns the
+  unavailable reason; an unknown instrument returns 404. Screener rows now read Energy, Information
+  technology, Financials, Health care, Communication services, Broad market fund, Sector fund.
+  Planning's sector dimension still resolves (Information technology 16.96%, Health care 4.59%,
+  Energy 0.63%). No console errors beyond the deliberate 404. pnpm visual not re-run: no UI changed.
+
+FILES: created apps/web/src/data/schemas/classification.ts,
+apps/web/src/data/mock/generators/{classificationTaxonomy.ts,classificationAssignments.ts,
+classification.ts,corporateStructure.ts,ownershipPattern.ts},
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/classificationQueries.ts;
+modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/generators/{researchData.ts,screenerFactors.ts},
+apps/web/src/data/mock/handlers/index.ts, apps/web/src/data/api/index.ts,
+Docs/{PROGRESS_LOG.md,DECISIONS.md}.
 ────────────────────────────────────────────────────────────
 ```
 

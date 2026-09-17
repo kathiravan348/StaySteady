@@ -34,6 +34,12 @@ export {
   useSetWatchlistInstruments,
   useWatchlists,
 } from './watchlistQueries';
+export {
+  useClassificationTaxonomy,
+  useCorporateStructure,
+  useInstrumentClassification,
+  useInstrumentOwnership,
+} from './classificationQueries';
 export type { IntradayTimeframe, PriceHistoriesResult } from './marketQueries';
 export {
   useCorporateActions,
