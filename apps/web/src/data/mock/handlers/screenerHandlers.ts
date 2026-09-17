@@ -8,7 +8,9 @@ import {
   SCREENER_PRESETS,
   SCREENER_UNIVERSE,
 } from '../generators/screenerGenerator';
+import { withMarketFactors } from '../generators/screenerFactors';
 import { withScreenerStatus } from '../generators/screenerStatus';
+import { tradingContext } from '../stores/tradingStore';
 import {
   currentConfigs,
   getBrokerVersions,
@@ -36,7 +38,7 @@ export const screenerHandlers: readonly HttpHandler[] = [
     const parsed = ScreenerFilterCriteriaSchema.safeParse(body);
     const criteria = parsed.success ? parsed.data : ScreenerFilterCriteriaSchema.parse({});
 
-    const universe = withScreenerStatus(SCREENER_UNIVERSE, {
+    const universe = withScreenerStatus(withMarketFactors(SCREENER_UNIVERSE, tradingContext), {
       checkEligibility: evaluateEligibility,
       permissions: {
         markets: currentConfigs(getMarketVersions()),

@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:52:00Z  |  local: 2026-09-17 19:22 IST
-LAST AGENT:         session 77 (Claude Opus 5; S-36 continuity nominees)
+LAST UPDATED:       2026-09-17T13:56:00Z  |  local: 2026-09-17 19:26 IST
+LAST AGENT:         session 78 (Claude Opus 5; S-34 screener factors)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -211,7 +211,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-31 | Decision Journal | DONE | 100 | Session 53 | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift); verified |
 | S-32 | Continuity — succession, nominee and emergency access | DONE | 100 | Session 54 | Raised session 37. Requirements 28, UI spec 19.1. Institution register with one-click confirmation, recovery points without credentials, emergency drill playbook and log, inactivity pause countdown; verified |
 | S-33 | Compliance — employer and jurisdictional restrictions | DONE | 100 | Session 55 | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods, pre-trade eligibility checker ("May I trade this right now, and why not?"), refusals log intercepted at signal stage; verified |
-| S-34 | Screener factors from price history and fundamentals | TODO | 0 | | Owner Q19 session 64: price, RSI, SMA distance from M-04 price history; P/E, ROE, yield from fundamentals (S-04) instead of fixed seeds |
+| S-34 | Screener factors from price history and fundamentals | DONE | 100 | Session 78 | Owner Q19 session 64. Price, change, RSI-14 and SMA-200 distance from mock price history; P/E and yield from fundamentals where covered; P/B, ROE and market cap remain seeded (no source); verified session 78 |
 | S-35 | Portfolio Performance links to the full performance report | DONE | 100 | Session 76 | Owner Q9 session 64. Each period links to the performance report opened on the same dates; verified session 76 |
 | S-36 | Continuity — backup nominee and drill schedule | DONE | 100 | Session 77 | Owner Q17 session 64. Backup view-only nominee and a 6 to 12 month drill schedule with next due date, editable and validated; verified session 77 |
  
@@ -824,6 +824,35 @@ VERIFICATION RUN:
 FILES: modified schemas/continuity.ts, generators/{continuitySeeds,continuityBuilder}.ts,
   stores/continuityStore.ts, handlers/continuityHandlers.ts, api/{continuityQueries,index}.ts,
   continuity/sections/EmergencyAccessDrill.tsx; created continuity/sections/AccessPlanForm.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        78
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:53:00Z  |  local: 2026-09-17 19:23 IST (UTC+05:30)
+END:            2026-09-17T13:56:00Z  |  local: 2026-09-17 19:26 IST (UTC+05:30)
+TASK CLAIMED:   S-34 Screener factors from price history and fundamentals (owner Q19)
+END STATUS:     DONE
+
+COMPLETED:
+  - generators/screenerFactors.ts: price (last close), daily change, RSI-14 and distance from the
+    200-day SMA computed from the mock price history (shared indicators, decision 30); canonical
+    instruments use their own series, other screener symbols a deterministic series keyed by symbol.
+    P/E and dividend yield from the fundamentals generator for canonical instruments.
+  - The screener search applies the factors before compliance and automation status.
+
+NOT COMPLETED / LIMITS:
+  - P/B, ROE and market capitalisation have no mock data source and stay seeded reference figures;
+    non-canonical symbols keep seeded P/E and yield. Recorded as a finding.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API search (15 rows, ~300 ms): SPY 400.59 equals the
+  holdings row price; AAPL 156.09 last close against the live ticking quote 156.23 (decision 19);
+  RSI and SMA distance vary by symbol; medians recomputed (P/E 26.2).
+
+FILES: created generators/screenerFactors.ts; modified handlers/screenerHandlers.ts.
 ────────────────────────────────────────────────────────────
 ```
  
