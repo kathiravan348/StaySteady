@@ -45,6 +45,7 @@ export * from './config-assumptions';
 export * from './config-tax-rules';
 export * from './counterparties';
 export * from './reconciliation';
+export * from './planning-liquidity';
 export * from './inflation';
 export * from './strategy-lifecycle';
 export * from './tax-losses';

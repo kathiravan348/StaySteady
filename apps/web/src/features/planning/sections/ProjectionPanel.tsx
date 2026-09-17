@@ -2,7 +2,7 @@ import { AnalyticalChart, Button, Card } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 
-import { moneyFromDto, useProjection } from '../../../data/api';
+import { moneyFromDto, useInflationAssumptions, useProjection } from '../../../data/api';
 import type { ReportCurrencyDto } from '../../../data/schemas';
 import { formatMoney } from '../../../shared/format';
 import { BASE_CURRENCIES } from '../../../shared/types/currency';
@@ -29,6 +29,7 @@ const LABELS: Readonly<Record<Exclude<keyof Assumptions, 'currency'>, string>> =
 // value, in nominal terms and in today's money.
 export function ProjectionPanel(): ReactElement {
   const projection = useProjection();
+  const assumptions = useInflationAssumptions();
   const [form, setForm] = useState<Assumptions>({
     currency: 'USD',
     monthlyContribution: '1000',
@@ -51,6 +52,9 @@ export function ProjectionPanel(): ReactElement {
         ? 'Every assumption must be a number.'
         : null;
   const data = projection.data;
+  // The saved inflation assumption for the projection currency's country (E-07; requirements 30).
+  const country = { USD: 'US', INR: 'IN', GBP: 'GB', EUR: null }[form.currency];
+  const saved = assumptions.data?.find((entry) => entry.config.country === country)?.config;
 
   return (
     <Card
@@ -90,6 +94,22 @@ export function ProjectionPanel(): ReactElement {
             </label>
           ))}
         </div>
+        {saved !== undefined && String(saved.assumedAnnualPercent) !== form.inflationPercent && (
+          <span className={styles.inline}>
+            <span className={styles.meta}>
+              Saved inflation assumption for {saved.country}: {saved.assumedAnnualPercent}% a year.
+            </span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onPress={() => {
+                setForm({ ...form, inflationPercent: String(saved.assumedAnnualPercent) });
+              }}
+            >
+              Use it
+            </Button>
+          </span>
+        )}
         {problem !== null && <p className={styles.warning}>{problem}</p>}
         {projection.isError && <p className={styles.warning}>{projection.error.message}</p>}
         <span className={styles.inline}>
