@@ -54,13 +54,16 @@ WHAT IS PARTIALLY DONE:
   - L-12: no visual regression tooling (question 12).
 
 EXACT NEXT STEP (one task per session, in this order):
-  1. E-09 part b (tax rule sets per country and instrument type) and part c (employer policy rules
-     read by complianceStore). Part a (inflation, cost budget, counterparty threshold, export) is on
-     /settings/assumptions (session 62).
-  2. E-03 part b (Orders screen), then Money not Number), then E-02, E-01, E-04, E-05,
-     E-06, E-07, E-08. M-17 data is available through useInflationHistory, useLossCarryForwards,
-     useCounterparties and useStrategyLifecycles. Replace inline styles with SCSS modules.
-  3. Then M-16, L-13, L-14, P-05, P-01..P-04.
+  1. E-03 part b: Orders screen shows the compliance result for working orders (split
+     OrdersView.tsx first; it is 337 lines).
+  2. E-02, E-01, E-04, E-05, E-06, E-07, E-08. M-17 data is available through useInflationHistory,
+     useLossCarryForwards, useCounterparties and useStrategyLifecycles; inflation assumptions and the
+     counterparty threshold through useInflationAssumptions and useOperatingPolicy. Tax rates stay in
+     market config and instrument type thresholds until E-09b. Replace inline styles with SCSS modules.
+  3. E-09 part b (tax rule sets per residence country and instrument type) and part c (employer policy
+     rules read by complianceStore) wait on owner answers: questions 13 and 16, and whether rule sets
+     replace the per-market tax rules.
+  4. Then M-16, L-13, L-14, P-05, P-01..P-04.
 
 SESSION 60 (M-17) ADDED: schemas inflation.ts, tax-losses.ts, counterparties.ts,
   strategy-lifecycle.ts; generators inflationHistory, taxLossCarryForward, counterpartyProfiles,
