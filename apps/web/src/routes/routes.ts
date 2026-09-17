@@ -8,6 +8,7 @@ export const ROUTES = {
   NET_WORTH: '/net-worth',
   JOURNAL: '/journal',
   CONTINUITY: '/continuity',
+  COMPLIANCE: '/compliance',
 
   // Portfolio
   PORTFOLIO_HOLDINGS: '/portfolio/holdings',

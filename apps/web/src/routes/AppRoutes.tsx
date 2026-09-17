@@ -11,6 +11,7 @@ import { AuditLogPage } from '../features/audit/AuditLogPage';
 import { NetWorthPage } from '../features/netWorth/NetWorthPage';
 import { JournalPage } from '../features/journal/JournalPage';
 import { ContinuityPage } from '../features/continuity/ContinuityPage';
+import { CompliancePage } from '../features/compliance/CompliancePage';
 import { NotFoundPage } from '../features/notFound/NotFoundPage';
 
 import { PortfolioHoldingsPage } from '../features/portfolio/PortfolioHoldingsPage';
@@ -78,6 +79,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.NET_WORTH} element={<NetWorthPage />} />
         <Route path={ROUTES.JOURNAL} element={<JournalPage />} />
         <Route path={ROUTES.CONTINUITY} element={<ContinuityPage />} />
+        <Route path={ROUTES.COMPLIANCE} element={<CompliancePage />} />
 
         {/* Portfolio */}
         <Route path={ROUTES.PORTFOLIO_HOLDINGS} element={<PortfolioHoldingsPage />} />

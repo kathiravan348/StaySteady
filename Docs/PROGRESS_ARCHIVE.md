@@ -5052,3 +5052,122 @@ FINDINGS (out of scope, not fixed):
     currencies, alert rules and credentials are reachable only by address or in-page links
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 52 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        52 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:28:00Z  |  local: 2026-09-17 08:58 IST (UTC+05:30)
+TASK CLAIMED:   S-30 Net Worth — complete picture incl. non-market assets
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-29 committed as 0536e21; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-29 commit)
+
+SCOPE (requirements 25; UI spec 19.1, 19.3, 19.4):
+  - New route /net-worth, linked from the side navigation under Portfolio
+  - Totals: net worth, assets and liabilities, market-exposed and non-market; the brokerage part
+    comes from the shared portfolio valuation, so it matches Performance and Reports
+  - Manual asset register across every category in requirements 25 (retirement, cash and deposits,
+    gold, property, insurance-linked savings, employer equity with vesting, liabilities): type,
+    institution, value, last-updated date, valuation method (manual, periodic or formula-accrued),
+    liquidity class; stale after its own age as a normal state, unverified marked separately
+  - Record a new valuation, and add an asset
+  - Liquidity classes; concentration by issuer, sector and asset class against total net worth
+    with configured limits; employer equity and salary shown as one combined exposure
+  - Read-only to strategy and execution, said plainly on the screen; nothing here can be traded
+  - Scope choice (decision 26): feeding these assets into allocation, goals and risk limits
+    (requirements 25 "participate in") belongs to those screens' extensions (UI spec 19.2) and is
+    not part of this task
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        52 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:37:00Z  |  local: 2026-09-17 09:07 IST (UTC+05:30)
+TASK:           S-30 Net Worth — complete picture incl. non-market assets — DONE
+
+WHAT WAS BUILT (requirements 25; UI spec 19.1, 19.3):
+  - /net-worth, linked from the side navigation under Portfolio
+  - A plain notice that nothing on the screen can be traded and automation never reads it
+  - Totals in the top-bar currency: net worth, assets, liabilities, market-exposed and non-market
+    (with shares of assets), and the brokerage portfolio at today's prices
+  - Employer exposure: vested and unvested equity plus a year's salary from the same employer as
+    one figure, against a 25% limit
+  - Liquidity classes as shares of total assets; concentration by asset class, issuer and sector
+    against total net worth with limits (60%, 20%, 35%), over-limit items flagged
+  - Manual asset register: name, institution, type, value in its own currency and in the view
+    currency (liabilities negative), last updated, "Due for an update" past its own age (the normal
+    state, not an error), "Unverified" separately, liquidity. Row detail: valuation method, recorded
+    value, rate, maturity, issuer, purchase cost, the asset a loan is secured against, vesting
+  - Record a new valuation (value, date, verified) and add an asset or liability, both validated
+    inline with the same schema the mock saves with
+  - Loading, error and empty states; the stale state is the per-record "Due for an update"
+
+MOCK DATA:
+  - GET /api/v1/net-worth?currency=, POST /api/v1/net-worth/assets, PUT
+    /api/v1/net-worth/assets/:id/valuation; writes return the whole view
+  - Eleven records across every category in requirements 25 (UI spec 19.4): EPF accruing at 8.25%,
+    PPF deliberately past its 180-day age, savings, a fixed deposit accruing at 7.1%, sovereign gold
+    bonds, gold jewellery never verified, an apartment with purchase cost, an endowment policy's
+    surrender value, partly vested employer RSUs, a home loan secured against the apartment and a
+    credit card balance; dates relative to today. Brokerage from the shared portfolio valuation
+
+FILES CREATED:
+  - data/schemas/net-worth.ts; data/mock/generators/netWorthAssets.ts and netWorthView.ts;
+    data/mock/stores/netWorthStore.ts; data/mock/handlers/netWorthHandlers.ts;
+    data/api/netWorthQueries.ts
+  - features/netWorth/{NetWorthPage.tsx, NetWorth.module.scss, model/netWorthLabels.ts,
+    sections/NetWorthSummary.tsx, ExposureSections.tsx, AssetRegister.tsx,
+    RecordValuationForm.tsx, AddAssetForm.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (NET_WORTH), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers and api index files
+  - Docs: session 49 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none. Scope choices recorded in the start entry (decision 26): feeding these records into
+    allocation, goals and risk limits is left to those screens' extensions (UI spec 19.2). Limits
+    and the employer rule (equity plus a year's salary) are mock settings, stated on the screen
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  totals:      USD net worth $316,285.95; assets $382,816.34; liabilities $66,530.38;
+               market-exposed $157,201.20 (41% of assets); brokerage $98,449.44 across 7 holdings
+  flags:       "1 record due for an update" (Public Provident Fund, 212 days); "1 value never
+               verified" (gold jewellery); Northwind Systems combined $131,286.94, 41.5% of net
+               worth, above the 25% limit
+  exposures:   liquidity locked 53.8%, within a month 41.1%; real estate 51.7% (limit 60%),
+               Government of India 15.0% (limit 20%), information technology 18.6%
+  valuation:   "abc" rejected inline; PPF recorded at 1012500.00 -> "today", the due badge and its
+               count gone, net worth $317,137.16
+  add:         empty form -> "Name the asset", "Say where it is held", amount error; Car loan
+               600000 INR at SBI -> -$8,171.59 in the register, liabilities $74,701.98
+  currency:    INR view: apartment ₹1,20,00,000.00, net worth ₹2,26,85,827.84
+  states:      loading-error -> "Net worth unavailable"; empty-portfolio -> brokerage $0.00 with
+               the manual records still shown; reset to healthy
+  not exercised: the empty state (every scenario seeds manual records)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The totals card repeated the page title "Net worth"; renamed during verification
+
+FINDINGS (out of scope, not fixed):
+  - Allocation targets, goal projections and risk concentration limits still use only the
+    brokerage portfolio (requirements 25 "participate in"; UI spec 19.2 extensions)
+  - Holdings has no liquidity class and does not include manual assets in its totals (UI spec 19.2)
+  - The add form does not take maturity, purchase cost, vesting or a secured-against link; records
+    can be added without them and there is no edit or delete for a record
+────────────────────────────────────────────────────────────
+```

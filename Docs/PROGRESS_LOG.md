@@ -14,17 +14,17 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-32 done; S-26 blocked)
-OVERALL PROGRESS:   77% (68 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 31 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T04:16:00Z  |  local: 2026-09-17 09:46 IST
-LAST AGENT:         session 54 (S-32 Continuity)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,459 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-33 done; S-26 planned)
+OVERALL PROGRESS:   78% (69 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 32 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T04:30:00Z  |  local: 2026-09-17 10:00 IST
+LAST AGENT:         session 55 (S-33 Compliance)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,495 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
                     so `pnpm lint` reports every file. Prettier --check PASS on apps/web/src.
-BLOCKERS:           none for building. S-26 planning in progress.
+BLOCKERS:           none for building. S-26 planning completed.
 ```
 
 ---
@@ -36,24 +36,22 @@ BLOCKERS:           none for building. S-26 planning in progress.
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
-  to S-32 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
-  one, each committed (no push), taking the recommended option whenever a choice comes up
-  (decision 26). typecheck, ESLint and Prettier pass.
+  to S-33 done, S-26 plan formulated. The owner asked for S-31 to S-33 and plan S-26; S-31 and S-32
+  committed, S-33 built and verified. typecheck, ESLint and Prettier pass.
 
   Session history older than the last three sessions is in PROGRESS_ARCHIVE.md and is NOT
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 54: S-32 Continuity — succession, nominee and emergency access. See session 54 end entry.
-  - Session 53: S-31 Decision Journal. Session 52: S-30 Net Worth.
+  - Session 55: S-33 Compliance — employer and jurisdictional restrictions. See session 55 end entry.
+  - Session 54: S-32 Continuity — succession, nominee and emergency access.
+  - Session 53: S-31 Decision Journal.
 
 WHAT IS PARTIALLY DONE:
-  Nothing.
+  Nothing. (S-31, S-32, S-33 complete; S-26 blueprint designed; verification log documented).
 
 EXACT NEXT STEP:
-  Claim S-33 Compliance — employer and jurisdictional restrictions (requirements 27; UI spec 19.1):
-  restricted list, blackout windows, pre-clearance requirements, minimum holding periods, and
-  interactive instrument eligibility checker. Then S-26 plan.
+  Commit S-33, review S-26 plan in Docs/SESSION_VERIFICATION_LOG.md with the owner, and proceed to Stage E.
 
 FILES TOUCHED (session 52): see session 52 end entry.
 
@@ -203,7 +201,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-30 | Net Worth — complete picture incl. non-market assets | DONE | 100 | Session 52 | /net-worth: totals with market-exposed and non-market, manual register across every requirements-25 category (stale as normal, unverified separate), record valuation and add, liquidity, concentration against total net worth, employer equity plus salary as one exposure, read-only notice; feeding allocation, goals and risk left to 19.2 extensions; verified |
 | S-31 | Decision Journal | DONE | 100 | Session 53 | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift); verified |
 | S-32 | Continuity — succession, nominee and emergency access | DONE | 100 | Session 54 | Raised session 37. Requirements 28, UI spec 19.1. Institution register with one-click confirmation, recovery points without credentials, emergency drill playbook and log, inactivity pause countdown; verified |
-| S-33 | Compliance — employer and jurisdictional restrictions | TODO | 0 | | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods. **Highest-consequence gap found** — a breach is a legal and career exposure, not a financial loss. Must be enforced in the safety layer at signal stage, and apply to manual actions identically |
+| S-33 | Compliance — employer and jurisdictional restrictions | DONE | 100 | Session 55 | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods, pre-trade eligibility checker ("May I trade this right now, and why not?"), refusals log intercepted at signal stage; verified |
  
 ### Stage E — Requirements Part II Extensions To Existing Screens
  
@@ -291,122 +289,11 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 51 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 52 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
 
 ```
-
-────────────────────────────────────────────────────────────
-SESSION:        52 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-17T03:28:00Z  |  local: 2026-09-17 08:58 IST (UTC+05:30)
-TASK CLAIMED:   S-30 Net Worth — complete picture incl. non-market assets
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-29 committed as 0536e21; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-29 commit)
-
-SCOPE (requirements 25; UI spec 19.1, 19.3, 19.4):
-  - New route /net-worth, linked from the side navigation under Portfolio
-  - Totals: net worth, assets and liabilities, market-exposed and non-market; the brokerage part
-    comes from the shared portfolio valuation, so it matches Performance and Reports
-  - Manual asset register across every category in requirements 25 (retirement, cash and deposits,
-    gold, property, insurance-linked savings, employer equity with vesting, liabilities): type,
-    institution, value, last-updated date, valuation method (manual, periodic or formula-accrued),
-    liquidity class; stale after its own age as a normal state, unverified marked separately
-  - Record a new valuation, and add an asset
-  - Liquidity classes; concentration by issuer, sector and asset class against total net worth
-    with configured limits; employer equity and salary shown as one combined exposure
-  - Read-only to strategy and execution, said plainly on the screen; nothing here can be traded
-  - Scope choice (decision 26): feeding these assets into allocation, goals and risk limits
-    (requirements 25 "participate in") belongs to those screens' extensions (UI spec 19.2) and is
-    not part of this task
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        52 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T03:37:00Z  |  local: 2026-09-17 09:07 IST (UTC+05:30)
-TASK:           S-30 Net Worth — complete picture incl. non-market assets — DONE
-
-WHAT WAS BUILT (requirements 25; UI spec 19.1, 19.3):
-  - /net-worth, linked from the side navigation under Portfolio
-  - A plain notice that nothing on the screen can be traded and automation never reads it
-  - Totals in the top-bar currency: net worth, assets, liabilities, market-exposed and non-market
-    (with shares of assets), and the brokerage portfolio at today's prices
-  - Employer exposure: vested and unvested equity plus a year's salary from the same employer as
-    one figure, against a 25% limit
-  - Liquidity classes as shares of total assets; concentration by asset class, issuer and sector
-    against total net worth with limits (60%, 20%, 35%), over-limit items flagged
-  - Manual asset register: name, institution, type, value in its own currency and in the view
-    currency (liabilities negative), last updated, "Due for an update" past its own age (the normal
-    state, not an error), "Unverified" separately, liquidity. Row detail: valuation method, recorded
-    value, rate, maturity, issuer, purchase cost, the asset a loan is secured against, vesting
-  - Record a new valuation (value, date, verified) and add an asset or liability, both validated
-    inline with the same schema the mock saves with
-  - Loading, error and empty states; the stale state is the per-record "Due for an update"
-
-MOCK DATA:
-  - GET /api/v1/net-worth?currency=, POST /api/v1/net-worth/assets, PUT
-    /api/v1/net-worth/assets/:id/valuation; writes return the whole view
-  - Eleven records across every category in requirements 25 (UI spec 19.4): EPF accruing at 8.25%,
-    PPF deliberately past its 180-day age, savings, a fixed deposit accruing at 7.1%, sovereign gold
-    bonds, gold jewellery never verified, an apartment with purchase cost, an endowment policy's
-    surrender value, partly vested employer RSUs, a home loan secured against the apartment and a
-    credit card balance; dates relative to today. Brokerage from the shared portfolio valuation
-
-FILES CREATED:
-  - data/schemas/net-worth.ts; data/mock/generators/netWorthAssets.ts and netWorthView.ts;
-    data/mock/stores/netWorthStore.ts; data/mock/handlers/netWorthHandlers.ts;
-    data/api/netWorthQueries.ts
-  - features/netWorth/{NetWorthPage.tsx, NetWorth.module.scss, model/netWorthLabels.ts,
-    sections/NetWorthSummary.tsx, ExposureSections.tsx, AssetRegister.tsx,
-    RecordValuationForm.tsx, AddAssetForm.tsx}
-FILES MODIFIED:
-  - routes/routes.ts (NET_WORTH), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
-    handlers and api index files
-  - Docs: session 49 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none. Scope choices recorded in the start entry (decision 26): feeding these records into
-    allocation, goals and risk limits is left to those screens' extensions (UI spec 19.2). Limits
-    and the employer rule (equity plus a year's salary) are mock settings, stated on the screen
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
-  build:       PASS — exit 0
-  totals:      USD net worth $316,285.95; assets $382,816.34; liabilities $66,530.38;
-               market-exposed $157,201.20 (41% of assets); brokerage $98,449.44 across 7 holdings
-  flags:       "1 record due for an update" (Public Provident Fund, 212 days); "1 value never
-               verified" (gold jewellery); Northwind Systems combined $131,286.94, 41.5% of net
-               worth, above the 25% limit
-  exposures:   liquidity locked 53.8%, within a month 41.1%; real estate 51.7% (limit 60%),
-               Government of India 15.0% (limit 20%), information technology 18.6%
-  valuation:   "abc" rejected inline; PPF recorded at 1012500.00 -> "today", the due badge and its
-               count gone, net worth $317,137.16
-  add:         empty form -> "Name the asset", "Say where it is held", amount error; Car loan
-               600000 INR at SBI -> -$8,171.59 in the register, liabilities $74,701.98
-  currency:    INR view: apartment ₹1,20,00,000.00, net worth ₹2,26,85,827.84
-  states:      loading-error -> "Net worth unavailable"; empty-portfolio -> brokerage $0.00 with
-               the manual records still shown; reset to healthy
-  not exercised: the empty state (every scenario seeds manual records)
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The totals card repeated the page title "Net worth"; renamed during verification
-
-FINDINGS (out of scope, not fixed):
-  - Allocation targets, goal projections and risk concentration limits still use only the
-    brokerage portfolio (requirements 25 "participate in"; UI spec 19.2 extensions)
-  - Holdings has no liquidity class and does not include manual assets in its totals (UI spec 19.2)
-  - The add form does not take maturity, purchase cost, vesting or a secured-against link; records
-    can be added without them and there is no edit or delete for a record
-────────────────────────────────────────────────────────────
 
 ────────────────────────────────────────────────────────────
 SESSION:        53 — START ENTRY
@@ -571,6 +458,96 @@ VERIFICATION RUN:
                resets days to 0 and clears overdue flag
   drill:       Record Access Drill form validated and prepends new drill record to log
   inactivity:  Inactivity threshold editable and validated (7-180 days); heartbeat reset updates timer
+  states:      loading cards skeleton, empty state, error state verified
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        55 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:20:00Z  |  local: 2026-09-17 09:50 IST (UTC+05:30)
+TASK CLAIMED:   S-33 Compliance — employer and jurisdictional restrictions
+OWNER INPUT:    "complete tht S-31 to S-33 and plan S-26"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-32 committed as 4dfd27d; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 27; UI spec 19.1, 19.3, 19.4):
+  - New route /compliance, linked from the side navigation under Trading & Safety
+  - Policy summary banner: active blackout window alert with date range and countdown, annual
+    policy review date with overdue warning if applicable, and review confirmation action
+  - Interactive instrument eligibility checker ("May I trade this right now, and why not?"):
+    real-time evaluation of any ticker returning ALLOWED or REFUSED with cited policy clause
+  - Restricted instrument list: employer equity, audit clients, conflict of interest, regulatory
+    short-swing rules; with interactive Add/Remove actions
+  - Blackout windows register: active and upcoming earnings/quiet blackout windows with countdown
+    and pre-clearance requirements
+  - Minimum holding period tracking: lots subject to mandatory holding lock (e.g. 30/90 days)
+    preventing short-term round trips, with remaining lock countdown
+  - Refusals audit log: historical record of signals and manual trades blocked at signal stage,
+    demonstrating enforcement that never reaches a broker
+  - Personal disclosure obligations schedule: statutory/employer reporting filing deadlines
+  - Loading, error, empty, and domain-specific states (active blackout, overdue review)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        55 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:30:00Z  |  local: 2026-09-17 10:00 IST (UTC+05:30)
+TASK:           S-33 Compliance — employer and jurisdictional restrictions — DONE
+
+WHAT WAS BUILT (requirements 27; UI spec 19.1, 19.3, 19.4):
+  - /compliance, linked from side navigation under Trading & Safety
+  - Policy summary banner: active blackout alert (12-day countdown on Q3 corporate earnings window),
+    annual policy review status card, and one-click "Confirm Policy Up to Date" action
+  - Pre-trade instrument eligibility evaluator ("May I trade this right now, and why not?"):
+    instant evaluation returning ALLOWED (green) or REFUSED (red) citing exact policy clauses and
+    reasons; preset test buttons for NVDA, NORTHWIND, AAPL, TSLA, SPY
+  - Restricted instrument register: 5 seeded securities (NVDA for MNPI, NORTHWIND for employer equity,
+    INFY for audit conflict, TSLA for short-swing rule, BA overdue for annual review); filter/search
+    bar, interactive add modal form with Zod schema validation, and remove action
+  - Blackout windows register: active and upcoming earnings and M&A quiet periods with scope,
+    countdown badges, and mandatory pre-clearance requirements
+  - Minimum holding period tracking: lots under mandatory holding lock (AAPL 18 days remaining, MSFT
+    8 days, RELIANCE 15 days) preventing short-term round trips
+  - Signal refusals & audit log: historical record of trades blocked at signal stage, proving zero broker exposure
+  - Personal disclosure obligations schedule: quarterly and annual reporting deadlines and filing status
+  - States: loading cards skeleton, empty state, error state with retry, active blackout banner, and overdue review warning
+
+MOCK DATA:
+  - GET /api/v1/compliance, POST /api/v1/compliance/check, POST /api/v1/compliance/restricted,
+    DELETE /api/v1/compliance/restricted/:id, POST /api/v1/compliance/confirm-review
+  - In-memory compliance store managing restricted list additions/removals and real-time eligibility evaluation
+
+FILES CREATED:
+  - data/schemas/compliance.ts, data/mock/generators/complianceSeeds.ts and complianceBuilder.ts,
+    data/mock/stores/complianceStore.ts, data/mock/handlers/complianceHandlers.ts,
+    data/api/complianceQueries.ts
+  - features/compliance/{CompliancePage.tsx, Compliance.module.scss, model/complianceLabels.ts,
+    sections/ComplianceBanner.tsx, sections/InstrumentEligibilityChecker.tsx,
+    sections/RestrictedListSection.tsx, sections/BlackoutWindowsSection.tsx,
+    sections/MinimumHoldingSection.tsx, sections/RefusalsLogSection.tsx,
+    sections/DisclosuresSection.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (COMPLIANCE), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 52 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0 (3,495.70 kB)
+  checker:     Evaluated NVDA (REFUSED: Restricted List MNPI), NORTHWIND (REFUSED: Employer Equity Blackout),
+               AAPL SELL (REFUSED: Holding Period Lock), TSLA BUY (REFUSED: Short-Swing rule),
+               SPY (ALLOWED: Trading Permitted)
+  restricted:  Add restricted instrument validated inline; Remove action deletes record and refreshes view
+  review:      Confirm Policy Up to Date clears overdue status and updates review timestamp
   states:      loading cards skeleton, empty state, error state verified
 ────────────────────────────────────────────────────────────
 ```

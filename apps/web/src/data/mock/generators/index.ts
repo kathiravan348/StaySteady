@@ -199,3 +199,14 @@ export { buildAuditLog } from './auditLog';
 
 // Session 47: portfolio performance at a glance
 export { buildPortfolioPerformance } from './portfolioPerformance';
+
+// Session 55: compliance (requirements 27; UI spec 19.1)
+export { buildComplianceView } from './complianceBuilder';
+export type { BuildComplianceOptions } from './complianceBuilder';
+export {
+  seedRestrictedInstruments,
+  seedBlackoutWindows,
+  seedHoldingLocks,
+  seedRefusals,
+  seedDisclosures,
+} from './complianceSeeds';

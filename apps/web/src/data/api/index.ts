@@ -142,3 +142,11 @@ export {
   useResetHeartbeat,
   useUpdateInactivity,
 } from './continuityQueries';
+export {
+  COMPLIANCE_KEY,
+  useAddRestrictedInstrument,
+  useCheckEligibility,
+  useCompliance,
+  useConfirmPolicyReview,
+  useRemoveRestrictedInstrument,
+} from './complianceQueries';

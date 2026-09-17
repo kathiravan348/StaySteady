@@ -66,6 +66,7 @@ const NAVIGATION_GROUPS: readonly NavSectionGroup[] = [
       { to: '/risk/limits', label: 'Risk Limits', icon: '⚠️' },
       { to: '/settings/automation', label: 'What Can Trade', icon: '🔐' },
       { to: '/journal', label: 'Decision Journal', icon: '📓' },
+      { to: '/compliance', label: 'Compliance', icon: '⚖️' },
     ],
   },
   {

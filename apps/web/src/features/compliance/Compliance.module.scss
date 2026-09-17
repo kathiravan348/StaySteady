@@ -1,0 +1,196 @@
+@use '../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stackTight {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.inlineBetween {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  background-color: var(--surface-raised);
+}
+
+.bannerCritical {
+  border-color: var(--color-critical);
+  background-color: color-mix(in srgb, var(--color-critical) 12%, var(--surface-raised));
+}
+
+.bannerWarning {
+  border-color: var(--color-warning);
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--surface-raised));
+}
+
+.bannerText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.bannerSubtext {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--space-4);
+}
+
+.gridThree {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 8rem;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.input,
+.select {
+  min-width: 0;
+  min-height: var(--density-control-height);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.textarea {
+  min-height: 4.5rem;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+}
+
+.quickPill {
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+    border-color: var(--color-primary);
+  }
+}
+
+.checkerBox {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+  border: var(--border-width-thin) solid var(--border-default);
+}
+
+.resultPanel {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-width-thin) solid;
+}
+
+.resultAllowed {
+  border-color: var(--color-positive);
+  background-color: color-mix(in srgb, var(--color-positive) 10%, var(--surface-raised));
+}
+
+.resultRefused {
+  border-color: var(--color-critical);
+  background-color: color-mix(in srgb, var(--color-critical) 10%, var(--surface-raised));
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 32rem;
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-lg);
+}
