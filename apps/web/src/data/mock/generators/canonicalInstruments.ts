@@ -206,7 +206,7 @@ export const CANONICAL_INSTRUMENTS_RAW: readonly InstrumentDto[] = [
     name: 'Unlisted Private Secured Note 8.5%',
     marketId: toMarketId('US'),
     currency: 'USD',
-    type: 'bond',
+    type: 'unlisted',
     lotSize: toQuantity(1000),
     tickSize: '1.00',
     isFractionalAllowed: false,

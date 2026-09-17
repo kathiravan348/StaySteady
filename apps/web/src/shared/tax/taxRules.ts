@@ -22,7 +22,7 @@ export function taxAssetClassOf(
   residenceCountry: string,
 ): TaxAssetClassDto {
   const isDomestic = instrument.marketId === residenceCountry;
-  if (instrument.type === 'bond') return 'debt';
+  if (instrument.type === 'bond' || instrument.type === 'unlisted') return 'debt';
   if (instrument.type === 'commodity') return GOLD.test(instrument.symbol) ? 'gold' : 'other';
   if (instrument.type === 'mutual_fund' || instrument.type === 'etf') {
     return isDomestic ? 'domestic_equity_fund' : 'foreign_equity';

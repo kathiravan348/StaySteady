@@ -27,6 +27,8 @@ export const InstrumentTypeSchema = z.enum([
   'currency_pair',
   'derivative',
   'digital_asset',
+  // Held privately with no exchange (private placements, unlisted notes): tracked by hand only.
+  'unlisted',
 ]);
 export type InstrumentTypeDto = z.infer<typeof InstrumentTypeSchema>;
 

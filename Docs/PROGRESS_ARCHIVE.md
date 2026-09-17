@@ -6141,3 +6141,135 @@ VERIFICATION RUN:
   documentation only; no code changed.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 65 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+END:            2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b (Orders screen)
+END STATUS:     DONE (E-03 complete)
+
+COMPLETED:
+  - Order history entries carry compliance (current eligibility, working orders only; null once
+    ended) and coolingOffUntil (from the approval's cooling-off window), added by the handler;
+    the generator and audit log use the base OrderHistoryItemSchema.
+  - Orders screen: Compliance column (Clear / Restricted / Ended), "Cooling off" badge beside status,
+    alert listing working orders that are now restricted, restricted rows highlighted, detail items
+    for compliance and cooling-off end.
+  - OrdersView.tsx split (337 → 143 lines) into orderColumns.tsx and OrderFilterBar.tsx; the
+    `as OrderFilters['status']` assertion replaced by a lookup in the options.
+  - No manual actions exist on the Orders screen, so the reason prompt applies to the approval queue
+    only (done in part a).
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API: seeded working orders TSLA (partly filled) and NVDA (unconfirmed) report refused — both
+  instruments are on the seeded restricted list; after restricting AAPL its pending order turned
+  refused; after lowering the threshold to 3000 USD and approving XAUUSD (3100 USD) its order showed
+  coolingOffUntil 5 minutes ahead. UI: alert "2 working orders are now restricted", Compliance column
+  with Restricted/Clear/Ended rendered. Themes not re-checked (existing tokens only).
+
+FINDINGS:
+  - The seeded TSLA and NVDA orders exist although both instruments are restricted, which requirements
+    27 says should be refused at signal stage. The screen now shows it plainly; reseeding is a mock
+    data question left as is, since it demonstrates the alert.
+
+FILES: created orders/sections/{orderColumns.tsx, OrderFilterBar.tsx}; modified schemas/order-history.ts,
+  generators/{orderHistory,auditLog,approvalSafeguards}.ts, handlers/tradingHandlers.ts,
+  orders/sections/{OrdersView,OrderDetail}.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b: Orders screen compliance and cooling off
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 955a2e0; working tree clean. type check, lint, build PASS at 3fb8168 (docs-only since).
+
+SCOPE:
+  - Order history carries compliance for working orders (pending, partly filled, unconfirmed) from
+    the compliance store, and when an approved order may be placed while cooling off.
+  - Orders screen: compliance column, alert when a working order is now restricted, detail items.
+  - Split OrdersView.tsx (337 lines, P-05) into view, columns and filter bar; remove its
+    `as OrderFilters['status']` assertion.
+────────────────────────────────────────────────────────────
+```
+
+---
+
+## Session History - Session 65 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+END:            2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b (Orders screen)
+END STATUS:     DONE (E-03 complete)
+
+COMPLETED:
+  - Order history entries carry compliance (current eligibility, working orders only; null once
+    ended) and coolingOffUntil (from the approval's cooling-off window), added by the handler;
+    the generator and audit log use the base OrderHistoryItemSchema.
+  - Orders screen: Compliance column (Clear / Restricted / Ended), "Cooling off" badge beside status,
+    alert listing working orders that are now restricted, restricted rows highlighted, detail items
+    for compliance and cooling-off end.
+  - OrdersView.tsx split (337 → 143 lines) into orderColumns.tsx and OrderFilterBar.tsx; the
+    `as OrderFilters['status']` assertion replaced by a lookup in the options.
+  - No manual actions exist on the Orders screen, so the reason prompt applies to the approval queue
+    only (done in part a).
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API: seeded working orders TSLA (partly filled) and NVDA (unconfirmed) report refused — both
+  instruments are on the seeded restricted list; after restricting AAPL its pending order turned
+  refused; after lowering the threshold to 3000 USD and approving XAUUSD (3100 USD) its order showed
+  coolingOffUntil 5 minutes ahead. UI: alert "2 working orders are now restricted", Compliance column
+  with Restricted/Clear/Ended rendered. Themes not re-checked (existing tokens only).
+
+FINDINGS:
+  - The seeded TSLA and NVDA orders exist although both instruments are restricted, which requirements
+    27 says should be refused at signal stage. The screen now shows it plainly; reseeding is a mock
+    data question left as is, since it demonstrates the alert.
+
+FILES: created orders/sections/{orderColumns.tsx, OrderFilterBar.tsx}; modified schemas/order-history.ts,
+  generators/{orderHistory,auditLog,approvalSafeguards}.ts, handlers/tradingHandlers.ts,
+  orders/sections/{OrdersView,OrderDetail}.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        65 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
+TASK CLAIMED:   E-03 part b: Orders screen compliance and cooling off
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 955a2e0; working tree clean. type check, lint, build PASS at 3fb8168 (docs-only since).
+
+SCOPE:
+  - Order history carries compliance for working orders (pending, partly filled, unconfirmed) from
+    the compliance store, and when an approved order may be placed while cooling off.
+  - Orders screen: compliance column, alert when a working order is now restricted, detail items.
+  - Split OrdersView.tsx (337 lines, P-05) into view, columns and filter bar; remove its
+    `as OrderFilters['status']` assertion.
+────────────────────────────────────────────────────────────
+```

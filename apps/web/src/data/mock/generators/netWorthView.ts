@@ -40,6 +40,7 @@ const MARKET_CATEGORIES = new Set<ManualAssetDto['category']>(['employer_equity'
 function brokerageClass(instrument: InstrumentDto): AssetClassDto {
   switch (instrument.type) {
     case 'bond':
+    case 'unlisted':
       return 'fixed_income';
     case 'commodity':
       return instrument.symbol.startsWith('XAU') ? 'gold' : 'other';

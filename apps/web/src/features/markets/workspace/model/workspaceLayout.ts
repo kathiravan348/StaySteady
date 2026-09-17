@@ -101,6 +101,7 @@ export function builtInLayoutFor(type: InstrumentTypeDto): WorkspaceLayout {
   switch (type) {
     case 'bond':
     case 'mutual_fund':
+    case 'unlisted':
       return { ...BUILT_IN_LAYOUT, style: 'line', indicators: [] };
     case 'intraday':
       return { ...BUILT_IN_LAYOUT, timeframe: '5m', indicators: ['ema20', 'volume'] };

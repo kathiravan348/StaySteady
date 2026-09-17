@@ -57,7 +57,17 @@ const SEEDS: Readonly<Record<InstrumentType, TypeSeed>> = {
     minimumQuantity: '0.0001',
     settlementDays: 0,
   },
+  // Sold only by private arrangement; transfer of title takes weeks, not a settlement cycle.
+  unlisted: {
+    ...DAILY,
+    minimumQuantity: '1000',
+    minimumOrderValue: '10000.00',
+    settlementDays: 10,
+  },
 };
+
+// Types with no exchange: recorded and valued by hand, never traded automatically (UI spec 7.18).
+const MANUAL_ONLY = new Set<InstrumentType>(['unlisted']);
 
 export function seedInstrumentTypeConfigs(
   markets: readonly MarketConfigInput[],
@@ -69,9 +79,9 @@ export function seedInstrumentTypeConfigs(
     return {
       type,
       enabled: covered.length > 0,
-      automationPermitted: brokers.some((broker) => broker.automationTypes.includes(type)),
-      // No manual-only type exists in the mock data yet (M-16), so none is seeded as one.
-      manualOnly: false,
+      automationPermitted:
+        !MANUAL_ONLY.has(type) && brokers.some((broker) => broker.automationTypes.includes(type)),
+      manualOnly: MANUAL_ONLY.has(type),
       markets: covered.map((market) => market.marketId),
       granularities: [...seed.granularities],
       minimumQuantity: seed.minimumQuantity,

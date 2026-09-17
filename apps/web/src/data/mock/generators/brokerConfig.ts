@@ -82,7 +82,7 @@ const SEEDS: Readonly<Record<string, Seed>> = {
   },
   'brk-private-notes': {
     ...MANUAL,
-    instrumentTypes: ['bond'],
+    instrumentTypes: ['unlisted'],
     fees: { model: 'none', commissionBps: 0, minimumPerOrder: '0.00', flatPerOrder: '0.00' },
   },
 };

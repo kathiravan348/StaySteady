@@ -30,6 +30,7 @@ function getVolatilityConfig(type: InstrumentTypeDto, currency: string): Volatil
     case 'digital_asset':
       return { dailyDrift: 0.0005, dailyVol: 0.038, basePrice: 42000 };
     case 'bond':
+    case 'unlisted':
       return { dailyDrift: 0.00005, dailyVol: 0.0025, basePrice: 98 };
     case 'commodity':
       return { dailyDrift: 0.0002, dailyVol: 0.015, basePrice: 1950 };

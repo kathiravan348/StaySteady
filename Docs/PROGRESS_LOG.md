@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T10:00:00Z  |  local: 2026-09-17 15:30 IST
-LAST AGENT:         session 68 (Claude Opus 5; E-06 reports)
+LAST UPDATED:       2026-09-17T13:03:00Z  |  local: 2026-09-17 18:33 IST
+LAST AGENT:         session 69 (Claude Opus 5; M-16 manual-only type)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -150,7 +150,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | M-13 | Health and alert data | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 17 |
 | M-14 | Scenario switcher (dev panel) | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 17; session 19: stale-data ages quotes, market-closed reaches market status provider |
 | M-15 | Simulated live price ticking | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 17; session 19: signed changes, drift bounded to ±10% of previous close. Re-verified session 36 in the browser: prices tick |
-| M-16 | Manual-only instrument type in mock data | TODO | 0 | | Raised session 36. UI spec 15 requires holdings "spanning every configured instrument type, including a manual-only type" and spec 7.18 requires a manual-only flag on instrument types. Zero occurrences anywhere in the app — M-07 and M-09 were marked DONE without it |
+| M-16 | Manual-only instrument type in mock data | DONE | 100 | Session 69 | Raised session 36. Instrument type unlisted, seeded manual-only with automation off; the private secured note holding uses it; verified session 69 |
 | M-17 | Mock data for Requirements Part II | DONE | 100 | Session 60 | Raised session 37. UI spec 19.4: non-market assets (one stale, one never verified), a liability, partly-vested employer equity, a restricted instrument and active blackout window, manual trades with stated reasons and known outcomes incl. one poor decision, an over-weight counterparty, a decayed and demoted strategy, historical inflation for two countries, losses carried forward with differing expiry, dividends with tax withheld. **Session 60:** first seven were already seeded and verified; added inflation history (US/IN/GB), losses carried forward, counterparty profiles with a 25% over-weight threshold (IBKR 28%), strategy lifecycles with the RSI demotion; four read-only endpoints and hooks |
  
 ### Stage L — Component Library
@@ -302,69 +302,9 @@ NOTES FOR NEXT AGENT:
 
 ### Entries
 
-> Sessions 0 to 64 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 65 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        65 — START ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
-TASK CLAIMED:   E-03 part b: Orders screen compliance and cooling off
-OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git: 955a2e0; working tree clean. type check, lint, build PASS at 3fb8168 (docs-only since).
-
-SCOPE:
-  - Order history carries compliance for working orders (pending, partly filled, unconfirmed) from
-    the compliance store, and when an approved order may be placed while cooling off.
-  - Orders screen: compliance column, alert when a working order is now restricted, detail items.
-  - Split OrdersView.tsx (337 lines, P-05) into view, columns and filter bar; remove its
-    `as OrderFilters['status']` assertion.
-────────────────────────────────────────────────────────────
-```
-
-```
-────────────────────────────────────────────────────────────
-SESSION:        65 — END ENTRY
-AGENT:          Claude Opus 5
-START:          2026-09-17T09:24:00Z  |  local: 2026-09-17 14:54 IST (UTC+05:30)
-END:            2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST (UTC+05:30)
-TASK CLAIMED:   E-03 part b (Orders screen)
-END STATUS:     DONE (E-03 complete)
-
-COMPLETED:
-  - Order history entries carry compliance (current eligibility, working orders only; null once
-    ended) and coolingOffUntil (from the approval's cooling-off window), added by the handler;
-    the generator and audit log use the base OrderHistoryItemSchema.
-  - Orders screen: Compliance column (Clear / Restricted / Ended), "Cooling off" badge beside status,
-    alert listing working orders that are now restricted, restricted rows highlighted, detail items
-    for compliance and cooling-off end.
-  - OrdersView.tsx split (337 → 143 lines) into orderColumns.tsx and OrderFilterBar.tsx; the
-    `as OrderFilters['status']` assertion replaced by a lookup in the options.
-  - No manual actions exist on the Orders screen, so the reason prompt applies to the approval queue
-    only (done in part a).
-
-VERIFICATION RUN:
-  type check PASS; lint PASS (repo-wide); build PASS.
-  API: seeded working orders TSLA (partly filled) and NVDA (unconfirmed) report refused — both
-  instruments are on the seeded restricted list; after restricting AAPL its pending order turned
-  refused; after lowering the threshold to 3000 USD and approving XAUUSD (3100 USD) its order showed
-  coolingOffUntil 5 minutes ahead. UI: alert "2 working orders are now restricted", Compliance column
-  with Restricted/Clear/Ended rendered. Themes not re-checked (existing tokens only).
-
-FINDINGS:
-  - The seeded TSLA and NVDA orders exist although both instruments are restricted, which requirements
-    27 says should be refused at signal stage. The screen now shows it plainly; reseeding is a mock
-    data question left as is, since it demonstrates the alert.
-
-FILES: created orders/sections/{orderColumns.tsx, OrderFilterBar.tsx}; modified schemas/order-history.ts,
-  generators/{orderHistory,auditLog,approvalSafeguards}.ts, handlers/tradingHandlers.ts,
-  orders/sections/{OrdersView,OrderDetail}.tsx.
-────────────────────────────────────────────────────────────
-```
 
 ```
 ────────────────────────────────────────────────────────────
@@ -565,6 +505,51 @@ FILES: created generators/reportRealReturns.ts, generators/reportTaxPack.ts; mod
   reports.ts, reportTaxBuilder.ts, reportCashBuilders.ts (exports), portfolioPerformance.ts,
   handlers/reportHandlers.ts, features/reports/sections/ReportBody.tsx; deleted
   features/reports/sections/{RealReturnsComparisonSection,JurisdictionTaxPackSection}.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        69 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T12:57:00Z  |  local: 2026-09-17 18:27 IST (UTC+05:30)
+TASK CLAIMED:   M-16 Manual-only instrument type in mock data
+OWNER INPUT:    "other than polish complete the remaining items"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 2d76422; working tree clean; type check, lint, build PASS at session 68 end.
+
+SCOPE:
+  - Add instrument type `unlisted` (private placements and other holdings with no exchange),
+    seeded manual-only with automation off; the private secured note moves to it; permitted in the
+    US market configuration so its holding is covered.
+  - Update every per-type lookup the type checker names; tax class for unlisted is debt.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        69 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T12:57:00Z  |  local: 2026-09-17 18:27 IST (UTC+05:30)
+END:            2026-09-17T13:03:00Z  |  local: 2026-09-17 18:33 IST (UTC+05:30)
+TASK CLAIMED:   M-16 Manual-only instrument type
+END STATUS:     DONE
+
+COMPLETED:
+  - Instrument type `unlisted` added to InstrumentTypeSchema; seeded manual-only with automation
+    never permitted, 10-day settlement and a 10,000 minimum order value.
+  - The private secured note (PRIV-NOTE) is now `unlisted`; the private placement broker carries
+    `unlisted`; the US market permits it. Price history, net worth asset class (fixed income), tax
+    class (debt) and the workspace default layout treat it like a bond.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: instrument types list shows unlisted enabled,
+  manualOnly true, automationPermitted false, markets [US], health "1 market; 1 held"; PRIV-NOTE type
+  unlisted with a holding worth 4,442.68 USD.
+
+FILES: schemas/instruments.ts; generators/{instrumentTypeConfig,canonicalInstruments,markets,
+  brokerConfig,netWorthView,priceHistory}.ts; workspace/model/workspaceLayout.ts; shared/tax/taxRules.ts.
 ────────────────────────────────────────────────────────────
 ```
  

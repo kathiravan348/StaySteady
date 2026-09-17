@@ -47,6 +47,7 @@ export const CANONICAL_MARKETS_RAW: readonly z.input<typeof MarketSchema>[] = [
       'commodity',
       'derivative',
       'digital_asset',
+      'unlisted',
     ],
     automationPermitted: true,
     gainLossConvention: 'green-up',
