@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage E rework; E-03 done, E-09a done
+PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T09:33:00Z  |  local: 2026-09-17 15:03 IST
-LAST AGENT:         session 65 (Claude Opus 5; E-03 part b: Orders screen)
+LAST UPDATED:       2026-09-17T09:46:00Z  |  local: 2026-09-17 15:16 IST
+LAST AGENT:         session 66 (Claude Opus 5; E-09 part b: tax rule sets)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -55,8 +55,7 @@ WHAT IS PARTIALLY DONE:
 
 EXACT NEXT STEP (one task per session, in this order):
   Owner answered questions 7-10, 12-21 in session 64; decisions 43-46 record the direction.
-  1. E-09 part b: tax rule sets per residence country and asset class replace per-market rates
-     (decision 45); then E-02 and E-06 read them.
+  1. E-02 and E-06 using the tax rule sets (useTaxRuleSets, shared/tax/taxRules.ts).
   2. E-01 (per Q14), E-04, E-05 (per Q15), E-07 (per Q18), E-08.
   3. S-34, S-35, S-36, M-16, L-13, L-14, L-12 (Playwright), P-05, P-01..P-04.
   4. Low priority: E-09 part c (employer rules optional), F-22 (Node 22 upgrade).
@@ -232,7 +231,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
 | E-06 | Reports — real returns, per-jurisdiction tax pack, cost and tax as share of gross return | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed returns, waterfall and CSV rows. Needs computing from lots, costs and inflation history; gains by category, income, withholding, losses carried in/out, foreign holdings, benchmark alternative **Owner Q16 session 64:** India resident with foreign stocks — tax pack follows April-March, includes foreign assets (Schedule FA), foreign tax credit and losses carried in/out. |
 | E-07 | Planning — emergency reserve, liquidity ladder, commitments, withdrawal phase, ranged projections | PARTIAL | 20 | Session 57; audited session 59 | UI only: component-state reserve and fixed ladder. Missing: known commitments against projected liquidity, ranged projections with stated assumptions, data from the mock layer **Owner Q18 session 64:** reserve target 6 months (configurable); automation reduced above a configurable share of automated positions, default 30%. |
 | E-08 | Strategy Library — retirement criteria, standing against them, demotion history, cross-correlation | PARTIAL | 20 | Session 57; audited session 59 | UI only: fixed demotion log and correlation matrix in the feature folder. Missing: retirement criteria set at promotion, standing computed from results, correlation from return series |
-| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | CLAIMED | 55 | Session 57; audited 59; part a session 62 | **Done (session 62):** inflation assumptions, cost budget, counterparty threshold and export settings as versioned config on /settings/assumptions; hardcoded sections removed. **Remaining:** (b) tax rule sets per country and instrument type; (c) employer policy rules read by the compliance store **Owner session 64:** part b replaces per-market tax rates with rule sets per residence country and asset class (decision 45); part c low priority, employer rules optional and off by default (decision 43). |
+| E-09 | Configuration — tax rule sets, inflation assumptions, employer policy, export, cost budget | PARTIAL | 85 | Session 57; audited 59; parts a/b sessions 62, 66 | Requirements 26, 27, 30, 34; UI spec 19.2. **Done:** inflation assumptions, cost budget, counterparty threshold, decision safeguards and export settings (/settings/assumptions); tax rule sets per residence country and asset class replacing per-market rates (/settings/tax-rules, decision 45). **Remaining (low priority, decision 43):** employer policy rules as configuration read by the compliance store |
  
 ### Stage P — Polish
  
@@ -482,6 +481,59 @@ SCOPE:
     instrument type config (taxThresholdDays) and MarketDto (holdingPeriodTaxThresholdDays).
   - Holdings tax status, the tax report and the loss carry-forward window read the rule set.
   - /settings/tax-rules page with form, health and version history.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        66 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:34:00Z  |  local: 2026-09-17 15:04 IST (UTC+05:30)
+END:            2026-09-17T09:46:00Z  |  local: 2026-09-17 15:16 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part b (tax rule sets)
+END STATUS:     PARTIAL (E-09 parts a and b done; part c, employer rules, low priority per decision 43)
+
+COMPLETED:
+  - Tax rule sets (decision 45): schema config-tax-rules.ts; versioned area /api/v1/config/tax-rules
+    keyed by country, no create; server check keeps exactly one residence; health compares held
+    asset classes with the rules. Seed: India residence, FY from 1 April, FIFO, 8-year loss
+    carry-forward; domestic equity and equity funds 20%/12.5% after 365 days with 1.25 lakh
+    exemption; foreign shares 30%/12.5% after 730 days; debt 30%; gold 30%/12.5% after 730 days;
+    other 30%; 2018 grandfathering protection; foreign asset disclosure, 250,000 USD remittance cap,
+    foreign tax credit. Version 1 holds the pre-July-2024 rules.
+  - shared/tax/taxRules.ts: tax asset class from instrument type and listing vs residence; rule lookup.
+  - Removed gains rates and holding periods from market config (now "Tax at source": dividend
+    withholding only; market IN history now a withholding change), from instrument types
+    (taxThresholdDays) and from MarketDto (holdingPeriodTaxThresholdDays).
+  - Holdings lot tax status, the tax report (per-class rates, yearly long-term exemption relief,
+    asset class shown per lot, notes) and the loss carry-forward window read the residence rules.
+  - /settings/tax-rules page: residence, tax year, cost basis, carry-forward, per-class rules with
+    add/remove, cost basis protections, foreign assets, version history; loading/error/empty states;
+    SettingsNav "Tax rules".
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  Browser: tax rules page renders "IN (residence) · 6 asset classes · v2 · Healthy"; PUT with
+  isResidence false → 400 "One rule set must be the country of residence"; tax report (INR) lots show
+  "AAPL (Foreign shares and funds)" 731 days Long term 12.5%, 252 days Short term 30%, note cites the
+  IN residence rules; loss windows FY 2026-27 / 2029-30 / 2032-33; markets settings shows "Tax at
+  source" with dividend withholding only; holdings shows "Mixed: 1 of 3 lots long term".
+  Themes not re-checked (existing config components only).
+
+NOT COMPLETED:
+  - E-09 part c (employer policy rules as configuration), low priority (decision 43).
+  - Remittance cap tracking against actual outward transfers and the foreign asset disclosure
+    schedule belong to E-06 (tax pack).
+
+FILES: created schemas/config-tax-rules.ts, shared/tax/taxRules.ts, generators/taxRulesConfig.ts,
+  stores/taxRulesStore.ts, handlers/taxRulesConfigHandlers.ts, api/taxRulesConfigQueries.ts,
+  features/settings/SettingsTaxRulesPage.tsx, features/settings/taxRules/{model/taxRulesDraft.ts,
+  sections/TaxRulesView.tsx, TaxRuleSetForm.tsx, AssetClassRulesCard.tsx, ForeignAssetsCard.tsx};
+  modified config-markets.ts, config-instruments.ts, markets.ts (schema and generator),
+  marketConfig.ts, instrumentTypeConfig.ts, reportValuation.ts, reportTaxBuilder.ts,
+  taxLossCarryForward.ts, portfolioValuation.ts, partTwoReferenceHandlers.ts, holdingRows.ts,
+  useHoldingsData.ts, marketDraft.ts, MarketCalendarRules.tsx, instrumentDraft.ts,
+  InstrumentTypeForm.tsx, routes, SettingsNav, index files.
 ────────────────────────────────────────────────────────────
 ```
  
