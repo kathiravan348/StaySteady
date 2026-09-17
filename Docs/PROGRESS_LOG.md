@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T14:16:00Z  |  local: 2026-09-17 19:46 IST
-LAST AGENT:         Claude Opus 5 (session 80)
+LAST UPDATED:       2026-09-17T14:30:00Z  |  local: 2026-09-17 20:00 IST
+LAST AGENT:         Claude Opus 5 (session 81)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -168,7 +168,7 @@ Only one task may be `CLAIMED` at a time. Claiming requires a session-start log 
 | L-09 | Chart wrapper — price/candlestick | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — TradingView Lightweight Charts v5 wrapper for candles, bars, lines, areas & volume histogram |
 | L-10 | Chart wrapper — analytical charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — Apache ECharts v6 wrapper with presets: equity curves, drawdowns, heatmaps & donuts |
 | L-11 | Theme-change handling for charts | DONE | 100 | Antigravity (Gemini 3.8 Flash) | Session 18 — useChartTheme MutationObserver on root attributes (data-theme, data-gain-loss) |
-| L-12 | Visual regression test setup | PARTIAL | 20 | Antigravity (Gemini 3.8 Flash) | **REOPENED session 36.** `verify_stage_l.ts` is not in the repository and README pointed at `C:\Users\kathiravan\.gemini\antigravity-ide\...\scratch\` — another machine's path. No visual regression tooling exists (no Playwright, no baselines, no runner). The story registry is real and is the only part delivered **Owner Q12 session 64:** Playwright screenshot baselines, local only, key screens in dark and light. |
+| L-12 | Visual regression test setup | DONE | 100 | Claude Opus 5 | Session 81: Playwright 1.49.1 baselines for 7 key screens in dark and light (visual/), pnpm visual, local only |
 | L-13 | Analytical chart presets — remaining spec 8.1 types | DONE | 100 | Claude Opus 5 | Session 80: eight presets (distribution, treemap, stacked area, correlation, rolling, bar, waterfall, scatter) with stories; props are a preset/data union |
 | L-14 | Partial-data state component | DONE | 100 | Claude Opus 5 | Session 79: PartialDataState in packages/ui with story; used by holdings and position detail |
  
@@ -926,6 +926,45 @@ FILES: created charts/analytical/{buildAnalyticalOption,presetParts,distribution
 compositionPresets}.ts, workbench/stories/analyticalPresetStories.tsx; modified
 charts/analytical/{types.ts,AnalyticalChart.tsx}, charts/index.ts, theme/chartThemeTokens.ts,
 workbench/storyRegistry.ts, apps/web overview/model/valueChartOptions.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        81
+AGENT:          Claude Opus 5
+START:          2026-09-17T14:17:00Z  |  local: 2026-09-17 19:47 IST (UTC+05:30)
+END:            2026-09-17T14:30:00Z  |  local: 2026-09-17 20:00 IST (UTC+05:30)
+TASK CLAIMED:   L-12 Visual regression test setup (owner Q12: Playwright baselines, local, dark and light)
+END STATUS:     DONE
+
+COMPLETED:
+  - DEPENDENCY ADDED: @playwright/test 1.49.1 (root devDependency). Reason: owner question 12 chose
+    Playwright screenshot baselines. Pinned to 1.49.1 because its Chromium build (1148) is already
+    installed on this machine, so no browser download was needed. Upgrading it needs
+    "npx playwright install chromium".
+  - visual/playwright.config.ts: reuses or starts the Vite dev server (MSW mock API), 1440x900,
+    Asia/Kolkata, 1% pixel tolerance, animations disabled; screenshot.css hides the floating
+    developer scenario switcher. Baselines at visual/baselines/{screen}-{theme}-win32.png.
+  - visual/screens.spec.ts: overview, holdings, performance, orders, approvals, risk limits and
+    market settings, each in dark and light (14 baselines, about 3.7 MB). Date pinned to
+    2026-09-17T09:30Z because mock data is generated from the current day; timers still run.
+  - Scripts: pnpm visual (compare), pnpm visual:update (rebaseline); pnpm typecheck also checks
+    visual/. Run output (visual/results, visual/report) ignored. Command listed in CLAUDE.md.
+
+NOT COMPLETED / LIMITS:
+  - The app shell scrolls inside its main area, so full-page captures show the main column in
+    full but the sidebar only to the viewport height.
+  - Baselines are Windows renders; another platform writes its own -{platform} files.
+  - No CI (decision 11); run locally before and after UI changes.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS. pnpm visual:update wrote 14 baselines; pnpm visual then passed
+  14 of 14 twice against them (stable). Baselines inspected: themes correct, switcher hidden.
+
+FILES: created visual/{playwright.config.ts,screens.spec.ts,screenshot.css,tsconfig.json},
+visual/baselines/*.png; modified package.json, pnpm-lock.yaml, .gitignore, .prettierignore,
+CLAUDE.md.
 ────────────────────────────────────────────────────────────
 ```
  

@@ -1,0 +1,5 @@
+/* Applied only while taking screenshots: hide the floating developer scenario switcher, which
+   overlaps screen content and is not part of any screen. */
+aside[aria-label='Developer scenario switcher'] {
+  visibility: hidden;
+}

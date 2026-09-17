@@ -8,13 +8,16 @@
   },
   "scripts": {
     "dev": "pnpm --filter @staysteady/web dev",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm -r typecheck && tsc -p visual",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "visual": "playwright test -c visual/playwright.config.ts",
+    "visual:update": "playwright test -c visual/playwright.config.ts --update-snapshots"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.49.1",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",

@@ -22,6 +22,7 @@ pnpm dev         # Vite dev server + MSW mock API on :5173
 pnpm typecheck   # tsc --noEmit, all workspaces
 pnpm lint        # eslint + prettier --check
 pnpm build       # typecheck + vite build
+pnpm visual      # Playwright screenshot comparison of key screens (local only; visual:update to rebaseline)
 ```
 
 ## Hard constraints

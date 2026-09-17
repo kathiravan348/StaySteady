@@ -6,3 +6,5 @@ dist/
 coverage/
 storybook-static/
 node_modules/
+visual/results/
+visual/report/

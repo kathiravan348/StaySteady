@@ -21,3 +21,7 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Visual regression run output (baselines in visual/baselines are committed)
+visual/results/
+visual/report/
