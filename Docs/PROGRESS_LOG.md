@@ -18,8 +18,8 @@ PHASE:              Stage E rework; E-03 done, E-09 parts a and b done
 OVERALL PROGRESS:   77% (72 of 93 active tasks done; Stage F 11 of 12; Stage M 16 of 17;
                     Stage L 11 of 14 + L-12 partial; Stage S 33 of 36;
                     Stage E 1 of 9, 8 partial; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T13:03:00Z  |  local: 2026-09-17 18:33 IST
-LAST AGENT:         session 69 (Claude Opus 5; M-16 manual-only type)
+LAST UPDATED:       2026-09-17T13:11:00Z  |  local: 2026-09-17 18:41 IST
+LAST AGENT:         session 70 (Claude Opus 5; E-01 holdings liquidity)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -222,7 +222,7 @@ not be folded silently into an unrelated task. See UI spec 19.2.
  
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
-| E-01 | Holdings — liquidity class; non-market assets in totals | PARTIAL | 50 | Session 57; audited session 59 | Bucket totals and a manual-asset toggle exist and read useNetWorth. Missing: liquidity class per position (spec asks per row); manual assets excluded from totals by default; `as ReportCurrencyDto` assertion; parseFloat on a money amount; inline styles with raw values **Owner Q14 session 64:** traded portfolio only — remove the non-market asset toggle from holdings totals; remaining work is liquidity class per position from settlement and instrument data. |
+| E-01 | Holdings — liquidity class; non-market assets in totals | DONE | 100 | Session 57; reworked session 70 | Requirements 25, 30; UI spec 19.2. Liquidity class per position (days, weeks, months or longer) from settlement and manual-only types, column and summary; non-market assets excluded (decision 44); verified session 70 |
 | E-02 | Position Detail — tax category, holding-period boundary, cost of disposing today | DONE | 100 | Session 57; reworked session 67 | Requirements 26, 30; UI spec 19.2. Lot treatment and days to long term from the residence tax rule set; cost of disposing today with market fees, purchase-date FX, loss netting, carried-forward losses and exemption; verified session 67 |
 | E-03 | Orders & Approval Queue — compliance result, cooling-off countdown, reason prompt | DONE | 100 | Session 57; reworked sessions 63, 65 | Requirements 27, 29, 33; UI spec 19.2. Approval queue: real compliance result beside risk checks, cooling off after approval with withdraw, stated reason; enforced by the server; safeguards configurable. Orders: compliance for working orders, restricted alert, cooling-off badge. Verified sessions 63 and 65 |
 | E-04 | Risk & Safety — counterparty exposure; compliance limits shown beside risk limits | PARTIAL | 50 | Session 57; audited session 59 | Compliance limits panel reads useCompliance (no loading/error handling). Counterparty exposure is a hardcoded array, not derived from holdings, brokers and net worth |
@@ -550,6 +550,39 @@ VERIFICATION RUN:
 
 FILES: schemas/instruments.ts; generators/{instrumentTypeConfig,canonicalInstruments,markets,
   brokerConfig,netWorthView,priceHistory}.ts; workspace/model/workspaceLayout.ts; shared/tax/taxRules.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        70
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:04:00Z  |  local: 2026-09-17 18:34 IST (UTC+05:30)
+END:            2026-09-17T13:11:00Z  |  local: 2026-09-17 18:41 IST (UTC+05:30)
+TASK CLAIMED:   E-01 Holdings — liquidity class per position (owner Q14: traded portfolio only)
+END STATUS:     DONE
+
+COMPLETED:
+  - shared/liquidity/liquidityClass.ts: days (settles within 5 business days), weeks (longer
+    settlement), months or longer (manual-only types, no exchange); shared so Planning (E-07) uses it.
+  - Holding rows carry liquidity from the instrument type's settlement override or the market's
+    settlement cycle, and the type's manual-only flag (useInstrumentTypeConfigs added to holdings).
+  - Liquidity column (visible by default, in export) and a rewritten summary: value, share and count
+    per class from the rows. Removed the non-market assets toggle, useNetWorth, the type assertion,
+    parseFloat on money and inline styles (decision 44). Defined the missing .liquiditySub style and
+    removed the unused .nonMarketCard.
+  - holdingColumns.tsx (was 295 lines) split: helpers moved to columns/columnHelpers.tsx.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser: summary "Days $94,006.76 · 95.5% · 6 positions;
+  Weeks $0.00; Months or longer $4,442.68 · 4.5% · 1 position" (the unlisted note); table rows show
+  "Days · Settles T+1" for AAPL and SPY, "Settles T+0" for BTCUSD. Themes not re-checked (existing
+  classes only).
+
+FILES: created shared/liquidity/liquidityClass.ts, holdings/columns/columnHelpers.tsx; modified
+  holdings/{columns/holdingColumns.tsx, model/holdingTypes.ts, model/holdingRows.ts,
+  model/holdingsExport.ts, useHoldingsData.ts, sections/HoldingsLiquiditySummary.tsx,
+  HoldingsPage.module.scss}.
 ────────────────────────────────────────────────────────────
 ```
  

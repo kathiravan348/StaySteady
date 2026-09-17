@@ -21,7 +21,8 @@ import type { MarketSessionState } from '../../../../shared/marketTime';
 import type { FxQuote, Money } from '../../../../shared/money';
 import { createMoney, findFxRate } from '../../../../shared/money';
 import type { BaseCurrencyCode } from '../../../../shared/types/currency';
-import type { TaxRuleSetConfigInput } from '../../../../data/schemas';
+import type { InstrumentTypeConfigInput, TaxRuleSetConfigInput } from '../../../../data/schemas';
+import { liquidityOf } from '../../../../shared/liquidity/liquidityClass';
 import { taxRuleFor } from '../../../../shared/tax/taxRules';
 import type { FxHistoryIndex } from './fxOnDate';
 import { fxTableOn, indexFxHistories } from './fxOnDate';
@@ -42,6 +43,8 @@ export interface HoldingRowInputs {
   readonly baseCurrency: BaseCurrencyCode;
   // The residence tax rule set; null when none is configured (no long-term distinction shown).
   readonly taxRules: TaxRuleSetConfigInput | null;
+  // Settlement overrides and manual-only flags per instrument type.
+  readonly instrumentTypes: readonly InstrumentTypeConfigInput[];
   // Today's calendar date (YYYY-MM-DD), passed in to keep this function pure.
   readonly today: string;
 }
@@ -156,6 +159,13 @@ function buildDraft(holding: HoldingDto, inputs: HoldingRowInputs, fx: FxContext
     currencyEffectBase: base(currencyEffect),
     daysHeld: lots.reduce((oldest, lot) => Math.max(oldest, lot.daysHeld), 0),
     tax: holdingTaxStatus(lots.map((lot) => lot.tax)),
+    liquidity: (() => {
+      const typeConfig = inputs.instrumentTypes.find((item) => item.type === instrument.type);
+      return liquidityOf({
+        settlementDays: typeConfig?.settlementDays ?? market?.settlementDays ?? 2,
+        manualOnly: typeConfig?.manualOnly ?? false,
+      });
+    })(),
     exit: describeExit(
       holding.exitLevel === undefined ? undefined : moneyFromDto(holding.exitLevel),
       lastPrice,

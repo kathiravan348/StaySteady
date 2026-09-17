@@ -1,77 +1,23 @@
 // Holdings table columns (UI spec 7.2). Base-currency columns total up in group rows (UI spec 9).
 
 import { Badge } from '@staysteady/ui';
-import type { ColumnDef, Row } from '@staysteady/ui';
-import { Decimal } from 'decimal.js';
-import type { ReactElement } from 'react';
+import type { ColumnDef } from '@staysteady/ui';
 import { Link } from 'react-router-dom';
 
 import { positionDetailPath } from '../../../../routes/routes';
 import {
   formatMoney,
   formatNumber,
-  formatSignedMoney,
   formatSignedPercent,
   pluralize,
 } from '../../../../shared/format';
-import type { MarketSessionState } from '../../../../shared/marketTime';
-import type { Money } from '../../../../shared/money';
-import { createMoney } from '../../../../shared/money';
 import type { BaseCurrencyCode } from '../../../../shared/types/currency';
 import styles from '../HoldingsPage.module.scss';
-import type { BaseMoney, HoldingRow } from '../model/holdingTypes';
+import type { HoldingRow } from '../model/holdingTypes';
 import { TaxStatusBadge } from '../sections/TaxStatusBadge';
+import { ARROWS, MARKET_STATE_NOTE, gainStack, numeric, signedMoney, sumOf } from './columnHelpers';
 
 type HoldingColumn = ColumnDef<HoldingRow, unknown>;
-
-// Colour is never the only signal: moves carry an arrow and a sign (UI spec 4).
-const ARROWS: Readonly<Record<HoldingRow['direction'], string>> = {
-  positive: '▲',
-  negative: '▼',
-  neutral: '■',
-};
-
-const MARKET_STATE_NOTE: Readonly<Record<MarketSessionState, string | null>> = {
-  open: null,
-  'pre-open': 'Pre-open',
-  'post-close': 'After hours',
-  closed: 'Closed, last price',
-  holiday: 'Holiday, last price',
-};
-
-function sumOf(
-  rows: readonly Row<HoldingRow>[],
-  pick: (row: HoldingRow) => BaseMoney,
-): BaseMoney | null {
-  const first = rows[0];
-  if (first === undefined) {
-    return null;
-  }
-  const total = rows.reduce((sum, row) => sum.plus(pick(row.original).amount), new Decimal(0));
-  return createMoney(total, pick(first.original).currency);
-}
-
-function signClass(value: number): string | undefined {
-  if (value > 0) {
-    return styles.positive;
-  }
-  return value < 0 ? styles.negative : styles.neutral;
-}
-
-function signedMoney(money: Money): ReactElement {
-  return <span className={signClass(money.amount.toNumber())}>{formatSignedMoney(money)}</span>;
-}
-
-function gainStack(gain: Money, percent: number): ReactElement {
-  return (
-    <span className={styles.valueStack}>
-      {signedMoney(gain)}
-      <span className={signClass(percent)}>{formatSignedPercent(percent)}</span>
-    </span>
-  );
-}
-
-const numeric = (label: string): NonNullable<HoldingColumn['meta']> => ({ align: 'end', label });
 
 export function createHoldingColumns(baseCurrency: BaseCurrencyCode): readonly HoldingColumn[] {
   return [
@@ -125,6 +71,18 @@ export function createHoldingColumns(baseCurrency: BaseCurrencyCode): readonly H
       meta: { label: 'Currency' },
     },
     { id: 'type', header: 'Type', accessorFn: (row) => row.typeLabel, meta: { label: 'Type' } },
+    {
+      id: 'liquidity',
+      header: 'Liquidity',
+      accessorFn: (row) => row.liquidity.label,
+      meta: { label: 'Liquidity' },
+      cell: ({ row }) => (
+        <span className={styles.stackCell}>
+          <span>{row.original.liquidity.label}</span>
+          <span className={styles.meta}>{row.original.liquidity.detail}</span>
+        </span>
+      ),
+    },
     {
       id: 'broker',
       header: 'Broker',

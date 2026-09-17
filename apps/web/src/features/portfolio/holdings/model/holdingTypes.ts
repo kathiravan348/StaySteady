@@ -1,5 +1,6 @@
 // Holdings view model types (UI spec 7.2).
 
+import type { Liquidity } from '../../../../shared/liquidity/liquidityClass';
 import type { InstrumentDto } from '../../../../data/schemas';
 import type { NumberDirection } from '../../../../shared/format';
 import type { MarketSessionState } from '../../../../shared/marketTime';
@@ -65,6 +66,8 @@ export interface HoldingRow {
   readonly sizeRatio: number;
   readonly daysHeld: number;
   readonly tax: TaxStatus;
+  // How quickly the position could become cash (requirements 30).
+  readonly liquidity: Liquidity;
   readonly exit: ExitInfo | null;
   readonly newsStories: number;
   readonly hasHighImportanceNews: boolean;

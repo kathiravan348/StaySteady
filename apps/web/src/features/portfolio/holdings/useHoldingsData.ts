@@ -7,6 +7,7 @@ import {
   useBrokers,
   useFxHistories,
   useFxRates,
+  useInstrumentTypeConfigs,
   useInstruments,
   useMarkets,
   useNewsItems,
@@ -59,6 +60,7 @@ export function useHoldingsData(): HoldingsState {
   const strategies = useStrategies();
   const news = useNewsItems();
   const taxRules = useTaxRuleSets();
+  const instrumentTypes = useInstrumentTypeConfigs();
   const heldIds = useMemo(
     () => holdings.data?.map((holding) => holding.instrumentId) ?? [],
     [holdings.data],
@@ -80,7 +82,8 @@ export function useHoldingsData(): HoldingsState {
       markets.data &&
       brokers.data &&
       fxRates.data &&
-      taxRules.data;
+      taxRules.data &&
+      instrumentTypes.data;
     if (!coreReady || !fxHistories.data || strategies.isPending || news.isPending) {
       return null;
     }
@@ -100,6 +103,7 @@ export function useHoldingsData(): HoldingsState {
       marketStates,
       baseCurrency,
       taxRules: residenceRules(taxRules.data.map((entry) => entry.config)),
+      instrumentTypes: instrumentTypes.data.map((entry) => entry.config),
       today,
     });
   }, [
@@ -110,6 +114,7 @@ export function useHoldingsData(): HoldingsState {
     fxRates.data,
     fxHistories.data,
     taxRules.data,
+    instrumentTypes.data,
     strategies.isPending,
     strategies.data,
     news.isPending,
@@ -121,7 +126,16 @@ export function useHoldingsData(): HoldingsState {
     today,
   ]);
 
-  const core = [holdings, instruments, markets, brokers, fxRates, fxHistories, taxRules];
+  const core = [
+    holdings,
+    instruments,
+    markets,
+    brokers,
+    fxRates,
+    fxHistories,
+    taxRules,
+    instrumentTypes,
+  ];
   const failed = [...core, ...(heldIds.length > 0 ? [quotes] : [])].find((query) => query.isError);
   if (failed !== undefined) {
     return {
