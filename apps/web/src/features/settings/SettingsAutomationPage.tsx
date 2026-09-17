@@ -19,6 +19,7 @@ import type { PermissionInputs } from './automation/model/permissionLayers';
 import { evaluateCell, strategyPermissions } from './automation/model/permissionLayers';
 import { PermissionMatrix } from './automation/sections/PermissionMatrix';
 import { StrategyPermissions } from './automation/sections/StrategyPermissions';
+import { SettingsNav } from './sections/SettingsNav';
 
 function AutomationBody(): ReactElement {
   const markets = useMarketConfigs();
@@ -114,6 +115,7 @@ export function SettingsAutomationPage(): ReactElement {
         { label: 'Automation permissions' },
       ]}
     >
+      <SettingsNav />
       <AutomationBody />
     </PageShell>
   );

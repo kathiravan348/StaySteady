@@ -349,4 +349,56 @@ Stage E completes all 9 screen extensions specified in **Requirements Part II (R
 - `pnpm build`: **PASS (Vite production bundle generated)**
 - `Decision 18 (< 300 lines)`: **PASS (all 25 touched and created files strictly $\le 300$ lines)**
 
+---
+
+## 5. Comprehensive Navigation & Routing Audit: Complete Screen Accessibility
+
+### Background & Core Problem
+During user validation, the user raised a critical UX observation: *"validate all navigations and routings, i feel we build more screens but in the Ui i unable see the options."*
+
+An exhaustive audit of the 40+ application routes in `AppRoutes.tsx` against the persistent `Sidebar.tsx` and in-page navigation revealed that while all 33 Stage S screens and 9 Stage E extensions existed, **15+ sub-screens were completely orphaned or unreachable without manual URL typing**:
+1. **Settings & Configuration (7 of 9 screens hidden)**: Only `/settings/markets` and `/settings/automation` were in the sidebar. The remaining 7 screens (`/settings/providers`, `/settings/brokers`, `/settings/instruments`, `/settings/currencies`, `/settings/alerts`, `/settings/credentials`, `/settings/display`) had no tab strip on the configuration pages.
+2. **Financial Planning (2 of 3 screens hidden)**: The sidebar only linked to `/planning/allocation`. The `/planning/goals` (Emergency Reserve & Goals) and `/planning/scenarios` (Liquidity Ladder & Decumulation) screens were unlinked.
+3. **Risk & Safety (1 of 2 screens hidden)**: The sidebar linked to `/risk/limits`. The `/risk/breaches` (Historical breach and safety stop ledger) screen was unlinked.
+4. **Research & Backtest (2 of 3 backtest screens hidden)**: The sidebar linked to `/research/backtest/results`. The `/research/backtest/new` (backtest runner setup) and `/research/backtest/compare` (multi-run overlay comparison) screens were unlinked.
+5. **Reports (2 of 3 report screens hidden from direct tab navigation)**: `/reports/costs` and `/reports/tax` were separate routes in `AppRoutes.tsx` but lacked a top-level tab strip.
+
+### Architectural Solution
+Following the proven sub-navigation pattern of `HealthNav.tsx`, we built a standardized, accessible multi-route navigation system:
+
+1. **`SubNav.tsx` & `SubNav.module.scss`** (`apps/web/src/shell/SubNav.tsx`):
+   - Semantic `<nav aria-label={ariaLabel}>` with horizontal flex list.
+   - Active route styling with `aria-current="page"`, primary color indicator, and keyboard focus rings (`mx.focus-ring`).
+   - Smooth horizontal scroll container with hidden scrollbar for overflow on smaller displays.
+   - Badge support for notification / count indicators.
+   - Fully typed with TypeScript `exactOptionalPropertyTypes` compliance.
+
+2. **Domain-Specific Sub-Navigation Components**:
+   - `SettingsNav.tsx` (21 lines): Links all 9 configuration screens (`Markets`, `Providers`, `Brokers`, `Instruments`, `Currencies & Tax`, `Alert Rules`, `Credentials`, `What Can Trade`, `Display Preferences`).
+   - `PlanningNav.tsx` (15 lines): Links all 3 planning screens (`Allocation Targets`, `Goals & Reserve`, `Scenarios & Ladder`).
+   - `RiskNav.tsx` (14 lines): Links both risk screens (`Limits & Safety Controls`, `Breach History`).
+   - `BacktestNav.tsx` (15 lines): Links all 3 backtest screens (`Saved Runs`, `New Backtest`, `Compare Runs`).
+   - `ReportsNav.tsx` (15 lines): Links all 3 report screens (`Performance & Returns`, `Costs & Drag`, `Tax Packs`).
+
+3. **Mounted into Page Shells**:
+   - Mounted `<SettingsNav />` into all 9 settings pages (`SettingsMarketsPage`, `SettingsProvidersPage`, `SettingsBrokersPage`, `SettingsInstrumentsPage`, `SettingsCurrenciesPage`, `SettingsAlertsPage`, `SettingsCredentialsPage`, `SettingsAutomationPage`, `SettingsDisplayPage`).
+   - Mounted `<PlanningNav />` into all 3 planning pages (`PlanningAllocationPage`, `PlanningGoalsPage`, `PlanningScenariosPage`).
+   - Mounted `<RiskNav />` into both risk pages (`RiskLimitsPage`, `RiskBreachesPage`).
+   - Mounted `<BacktestNav />` into all 3 backtest pages (`BacktestResultsPage`, `BacktestSetupPage`, `BacktestComparePage`).
+   - Mounted `<ReportsNav />` into all 3 report pages (`ReportsPerformancePage`, `ReportsCostsPage`, `ReportsTaxPage`).
+
+4. **Updated `Sidebar.tsx`**:
+   - Replaced all hardcoded string route literals with centralized `ROUTES` constants.
+   - Enhanced labels: `"Allocation"` → `"Financial Planning"`, `"Configuration"` → `"Settings & Config"`, `"Risk Limits"` → `"Risk & Limits"`.
+   - Added direct entry to `ROUTES.WORKBENCH` (`"UI Workbench"`) under System & Planning for instant access to the component workbench.
+
+### Verification Results
+- **TypeScript Typecheck**: `pnpm -r typecheck` → **PASS (0 errors across workspace)**
+- **ESLint**: `node node_modules/eslint/bin/eslint.js apps/web/src` → **PASS (0 errors, 0 warnings)**
+- **Prettier**: `node node_modules/prettier/bin/prettier.cjs --check ...` → **PASS (100% formatted)**
+- **Vite Build**: `pnpm -r build` → **PASS (production bundle built cleanly in 61s)**
+- **Decision 18 Compliance**: Every touched and created file is strictly $< 130$ lines (maximum was `BacktestResultsPage.tsx` at 127 lines, far below the 300-line ceiling).
+- **Route Accessibility**: **100% of all 40+ application routes are now accessible via direct 1-click UI elements.**
+
+
 

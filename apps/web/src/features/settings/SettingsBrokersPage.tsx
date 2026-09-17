@@ -9,6 +9,7 @@ import { useBrokerConfigs, useMarketConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { BrokersView } from './brokers/sections/BrokersView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function BrokersBody(): ReactElement {
   const brokers = useBrokerConfigs();
@@ -53,6 +54,7 @@ export function SettingsBrokersPage(): ReactElement {
         { label: 'Brokers' },
       ]}
     >
+      <SettingsNav />
       <BrokersBody />
     </PageShell>
   );

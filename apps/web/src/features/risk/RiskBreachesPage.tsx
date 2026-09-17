@@ -7,6 +7,7 @@ import { useRiskBreaches } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { BreachHistoryView } from './sections/BreachHistoryView';
+import { RiskNav } from './sections/RiskNav';
 
 function BreachesBody(): ReactElement {
   const breaches = useRiskBreaches();
@@ -47,6 +48,7 @@ export function RiskBreachesPage(): ReactElement {
         { label: 'Breach history' },
       ]}
     >
+      <RiskNav />
       <BreachesBody />
     </PageShell>
   );

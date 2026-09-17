@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { NavLink } from 'react-router-dom';
+import { ROUTES } from '../routes/routes';
 import styles from './Sidebar.module.scss';
 
 interface NavItem {
@@ -20,64 +21,65 @@ const NAVIGATION_GROUPS: readonly NavSectionGroup[] = [
   {
     title: 'Core',
     items: [
-      { to: '/overview', label: 'Overview', icon: '📊' },
-      { to: '/alerts', label: 'Alerts', icon: '🔔', badge: 3 },
+      { to: ROUTES.OVERVIEW, label: 'Overview', icon: '📊' },
+      { to: ROUTES.ALERTS, label: 'Alerts', icon: '🔔', badge: 3 },
     ],
   },
   {
     title: 'Portfolio',
     items: [
-      { to: '/portfolio/holdings', label: 'Holdings', icon: '💼' },
-      { to: '/portfolio/transactions', label: 'Transactions', icon: '📝' },
-      { to: '/portfolio/performance', label: 'Performance', icon: '📈' },
-      { to: '/net-worth', label: 'Net Worth', icon: '🏦' },
+      { to: ROUTES.PORTFOLIO_HOLDINGS, label: 'Holdings', icon: '💼' },
+      { to: ROUTES.PORTFOLIO_TRANSACTIONS, label: 'Transactions', icon: '📝' },
+      { to: ROUTES.PORTFOLIO_PERFORMANCE, label: 'Performance', icon: '📈' },
+      { to: ROUTES.NET_WORTH, label: 'Net Worth', icon: '🏦' },
     ],
   },
   {
     title: 'Markets',
     items: [
-      { to: '/markets/watchlists', label: 'Watchlists', icon: '⭐' },
-      { to: '/markets/workspace', label: 'Workspace', icon: '🖥️' },
-      { to: '/markets/screener', label: 'Screener', icon: '🔍' },
+      { to: ROUTES.MARKETS_WATCHLISTS, label: 'Watchlists', icon: '⭐' },
+      { to: ROUTES.MARKETS_WORKSPACE, label: 'Workspace', icon: '🖥️' },
+      { to: ROUTES.MARKETS_SCREENER, label: 'Screener', icon: '🔍' },
     ],
   },
   {
     title: 'News & Events',
     items: [
-      { to: '/news/feed', label: 'Live Feed', icon: '📰' },
-      { to: '/news/calendar', label: 'Event Calendar', icon: '📅' },
+      { to: ROUTES.NEWS_FEED, label: 'Live Feed', icon: '📰' },
+      { to: ROUTES.NEWS_CALENDAR, label: 'Event Calendar', icon: '📅' },
     ],
   },
   {
     title: 'Research & Backtest',
     items: [
-      { to: '/research/strategies', label: 'Strategies', icon: '🧪' },
-      { to: '/research/editor', label: 'Strategy Editor', icon: '✏️' },
-      { to: '/research/backtest/results', label: 'Backtests', icon: '⏮️' },
+      { to: ROUTES.RESEARCH_STRATEGIES, label: 'Strategies', icon: '🧪' },
+      { to: ROUTES.RESEARCH_EDITOR, label: 'Strategy Editor', icon: '✏️' },
+      { to: ROUTES.RESEARCH_BACKTEST_RESULTS, label: 'Backtests', icon: '⏮️' },
     ],
   },
   {
     title: 'Trading & Safety',
     items: [
-      { to: '/trading/signals', label: 'Signals', icon: '⚡' },
-      { to: '/trading/approvals', label: 'Approval Queue', icon: '🛡️', badge: 2 },
-      { to: '/trading/orders', label: 'Orders', icon: '📦' },
-      { to: '/trading/positions', label: 'Positions', icon: '📌' },
-      { to: '/risk/limits', label: 'Risk Limits', icon: '⚠️' },
-      { to: '/settings/automation', label: 'What Can Trade', icon: '🔐' },
-      { to: '/journal', label: 'Decision Journal', icon: '📓' },
-      { to: '/compliance', label: 'Compliance', icon: '⚖️' },
+      { to: ROUTES.TRADING_SIGNALS, label: 'Signals', icon: '⚡' },
+      { to: ROUTES.TRADING_APPROVALS, label: 'Approval Queue', icon: '🛡️', badge: 2 },
+      { to: ROUTES.TRADING_ORDERS, label: 'Orders', icon: '📦' },
+      { to: ROUTES.TRADING_POSITIONS, label: 'Positions', icon: '📌' },
+      { to: ROUTES.RISK_LIMITS, label: 'Risk & Limits', icon: '⚠️' },
+      { to: ROUTES.SETTINGS_AUTOMATION, label: 'What Can Trade', icon: '🔐' },
+      { to: ROUTES.JOURNAL, label: 'Decision Journal', icon: '📓' },
+      { to: ROUTES.COMPLIANCE, label: 'Compliance', icon: '⚖️' },
     ],
   },
   {
     title: 'System & Planning',
     items: [
-      { to: '/health/status', label: 'System Health', icon: '❤️' },
-      { to: '/reports/performance', label: 'Reports', icon: '📑' },
-      { to: '/planning/allocation', label: 'Allocation', icon: '🎯' },
-      { to: '/settings/markets', label: 'Configuration', icon: '⚙️' },
-      { to: '/audit', label: 'Audit Log', icon: '📜' },
-      { to: '/continuity', label: 'Continuity', icon: '🕊️' },
+      { to: ROUTES.HEALTH_STATUS, label: 'System Health', icon: '❤️' },
+      { to: ROUTES.REPORTS_PERFORMANCE, label: 'Reports', icon: '📑' },
+      { to: ROUTES.PLANNING_ALLOCATION, label: 'Financial Planning', icon: '🎯' },
+      { to: ROUTES.SETTINGS_MARKETS, label: 'Settings & Config', icon: '⚙️' },
+      { to: ROUTES.AUDIT, label: 'Audit Log', icon: '📜' },
+      { to: ROUTES.CONTINUITY, label: 'Continuity', icon: '🕊️' },
+      { to: ROUTES.WORKBENCH, label: 'UI Workbench', icon: '🧩' },
     ],
   },
 ];

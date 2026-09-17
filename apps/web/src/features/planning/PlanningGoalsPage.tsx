@@ -12,6 +12,7 @@ import styles from './Planning.module.scss';
 import { EmergencyReserveCard } from './sections/EmergencyReserveCard';
 import { GoalCard } from './sections/GoalCard';
 import { GoalForm } from './sections/GoalForm';
+import { PlanningNav } from './sections/PlanningNav';
 
 const NEW = '__new__';
 
@@ -115,6 +116,7 @@ export function PlanningGoalsPage(): ReactElement {
         { label: 'Goals' },
       ]}
     >
+      <PlanningNav />
       <GoalsBody />
     </PageShell>
   );

@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { PageShell } from '../../shell/PageShell';
 import { useDisplaySettings } from '../../shared/display/useDisplaySettings';
 import { DisplaySettingsPanel } from '../../shared/display/DisplaySettingsPanel';
+import { SettingsNav } from './sections/SettingsNav';
 
 export function SettingsDisplayPage(): ReactElement {
   const display = useDisplaySettings();
@@ -18,6 +19,7 @@ export function SettingsDisplayPage(): ReactElement {
         { label: 'Display' },
       ]}
     >
+      <SettingsNav />
       <div
         style={{
           maxWidth: '600px',

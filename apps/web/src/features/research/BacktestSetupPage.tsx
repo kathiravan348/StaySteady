@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { BacktestNav } from './backtestResults/sections/BacktestNav';
 import { BacktestSetupView } from './backtestSetup/sections/BacktestSetupView';
 import { useBacktestSetup } from './backtestSetup/useBacktestSetup';
 
@@ -42,6 +43,7 @@ export function BacktestSetupPage(): ReactElement {
         { label: 'New backtest' },
       ]}
     >
+      <BacktestNav />
       {body}
     </PageShell>
   );

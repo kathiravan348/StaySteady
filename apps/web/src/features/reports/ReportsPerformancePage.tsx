@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { ReportsNav } from './sections/ReportsNav';
 import { ReportScreen } from './sections/ReportScreen';
 
 export function ReportsPerformancePage(): ReactElement {
@@ -18,6 +19,7 @@ export function ReportsPerformancePage(): ReactElement {
         { label: 'Performance' },
       ]}
     >
+      <ReportsNav />
       <ReportScreen defaultType="performance" />
     </PageShell>
   );

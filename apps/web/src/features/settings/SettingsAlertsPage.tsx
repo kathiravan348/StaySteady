@@ -8,6 +8,7 @@ import { useAlertChannels, useAlertRuleConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { AlertRulesView } from './alerts/sections/AlertRulesView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function AlertRulesBody(): ReactElement {
   const rules = useAlertRuleConfigs();
@@ -52,6 +53,7 @@ export function SettingsAlertsPage(): ReactElement {
         { label: 'Alert rules' },
       ]}
     >
+      <SettingsNav />
       <AlertRulesBody />
     </PageShell>
   );

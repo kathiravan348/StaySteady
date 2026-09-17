@@ -10,6 +10,7 @@ import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import styles from './Planning.module.scss';
 import { LiquidityLadderSection } from './sections/LiquidityLadderSection';
+import { PlanningNav } from './sections/PlanningNav';
 import { ProjectionPanel } from './sections/ProjectionPanel';
 import { TradePreviewPanel } from './sections/TradePreviewPanel';
 
@@ -57,6 +58,7 @@ export function PlanningScenariosPage(): ReactElement {
         { label: 'Scenarios' },
       ]}
     >
+      <PlanningNav />
       <ScenariosBody />
     </PageShell>
   );

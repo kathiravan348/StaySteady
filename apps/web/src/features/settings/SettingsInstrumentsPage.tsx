@@ -9,6 +9,7 @@ import { useInstrumentTypeConfigs, useMarketConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { InstrumentTypesView } from './instruments/sections/InstrumentTypesView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function InstrumentsBody(): ReactElement {
   const types = useInstrumentTypeConfigs();
@@ -52,6 +53,7 @@ export function SettingsInstrumentsPage(): ReactElement {
         { label: 'Instrument types' },
       ]}
     >
+      <SettingsNav />
       <InstrumentsBody />
     </PageShell>
   );

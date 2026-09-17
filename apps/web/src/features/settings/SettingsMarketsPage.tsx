@@ -8,6 +8,7 @@ import { useMarketConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { MarketsView } from './markets/sections/MarketsView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function MarketsBody(): ReactElement {
   const markets = useMarketConfigs();
@@ -48,6 +49,7 @@ export function SettingsMarketsPage(): ReactElement {
         { label: 'Countries & markets' },
       ]}
     >
+      <SettingsNav />
       <MarketsBody />
     </PageShell>
   );

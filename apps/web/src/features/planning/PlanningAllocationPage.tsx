@@ -10,6 +10,7 @@ import type { ReportCurrencyDto } from '../../data/schemas';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { AllocationView } from './sections/AllocationView';
+import { PlanningNav } from './sections/PlanningNav';
 
 function AllocationBody(): ReactElement {
   // Null follows the configured base currency until another is picked.
@@ -52,6 +53,7 @@ export function PlanningAllocationPage(): ReactElement {
         { label: 'Allocation' },
       ]}
     >
+      <PlanningNav />
       <AllocationBody />
     </PageShell>
   );

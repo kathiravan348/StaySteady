@@ -10,6 +10,7 @@ import { PageShell } from '../../shell/PageShell';
 import styles from './backtestCompare/BacktestCompare.module.scss';
 import { CompareView } from './backtestCompare/sections/CompareView';
 import { useCompareRuns } from './backtestCompare/useCompareRuns';
+import { BacktestNav } from './backtestResults/sections/BacktestNav';
 
 function CompareBody(): ReactElement {
   const compare = useCompareRuns();
@@ -58,6 +59,7 @@ export function BacktestComparePage(): ReactElement {
         { label: 'Compare' },
       ]}
     >
+      <BacktestNav />
       <CompareBody />
     </PageShell>
   );

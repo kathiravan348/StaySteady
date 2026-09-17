@@ -9,6 +9,7 @@ import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { unregisteredReferences } from './credentials/model/credentialDraft';
 import { CredentialsView } from './credentials/sections/CredentialsView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function CredentialsBody(): ReactElement {
   const credentials = useCredentialConfigs();
@@ -59,6 +60,7 @@ export function SettingsCredentialsPage(): ReactElement {
         { label: 'Credentials' },
       ]}
     >
+      <SettingsNav />
       <CredentialsBody />
     </PageShell>
   );

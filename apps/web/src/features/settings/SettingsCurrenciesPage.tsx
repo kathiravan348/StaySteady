@@ -9,6 +9,7 @@ import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { OperatingCostBudgetSection } from './budget/OperatingCostBudgetSection';
 import { CurrenciesView } from './currencies/sections/CurrenciesView';
+import { SettingsNav } from './sections/SettingsNav';
 import { TaxRulesAndInflationSection } from './tax/TaxRulesAndInflationSection';
 
 function CurrenciesBody(): ReactElement {
@@ -56,6 +57,7 @@ export function SettingsCurrenciesPage(): ReactElement {
         { label: 'Currencies' },
       ]}
     >
+      <SettingsNav />
       <CurrenciesBody />
       <div style={{ marginTop: 'var(--space-5)', display: 'grid', gap: 'var(--space-4)' }}>
         <TaxRulesAndInflationSection />

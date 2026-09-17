@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { ReportsNav } from './sections/ReportsNav';
 import { ReportScreen } from './sections/ReportScreen';
 
 export function ReportsTaxPage(): ReactElement {
@@ -18,6 +19,7 @@ export function ReportsTaxPage(): ReactElement {
         { label: 'Tax' },
       ]}
     >
+      <ReportsNav />
       <ReportScreen defaultType="tax" />
     </PageShell>
   );

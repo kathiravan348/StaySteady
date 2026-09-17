@@ -7,6 +7,7 @@ import type { ReactElement } from 'react';
 import { useRiskPanel } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { RiskNav } from './sections/RiskNav';
 import { RiskPanelView } from './sections/RiskPanelView';
 
 function PanelBody(): ReactElement {
@@ -36,6 +37,7 @@ export function RiskLimitsPage(): ReactElement {
       description="Every limit with its usage and headroom, the emergency controls, and every recorded change."
       breadcrumbs={[{ label: 'Overview', to: ROUTES.OVERVIEW }, { label: 'Risk & safety' }]}
     >
+      <RiskNav />
       <PanelBody />
     </PageShell>
   );

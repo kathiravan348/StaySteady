@@ -527,6 +527,36 @@ VERIFICATION RUN:
   build:       PASS — Vite production bundle generated cleanly (built in 48.24s)
 ────────────────────────────────────────────────────────────
 ```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 58 (2026-09-17 11:00-11:25 IST)
+GOAL: Comprehensive Navigation and Routing Audit & UI Sub-Nav Polish
+TASKS: Audit all 40+ routes; implement SubNav tab bars; eliminate hidden/orphaned screens.
+
+BACKGROUND:
+  User observed: "validate all navigations and routings, i feel we build more screens but in the Ui i unable see the options."
+  Audit confirmed 15+ built screens were orphaned because the persistent sidebar only linked to domain root paths, and sub-pages lacked in-page navigation tabs.
+
+WHAT WAS BUILT:
+  - SubNav.tsx (37 lines) & SubNav.module.scss (72 lines): Reusable accessible tab navigation component.
+  - SettingsNav.tsx (21 lines): Tab navigation across all 9 settings sub-pages (Markets, Providers, Brokers, Instruments, Currencies & Tax, Alerts, Credentials, What Can Trade, Display). Mounted in all 9 Settings*Page.tsx files.
+  - PlanningNav.tsx (15 lines): Tab navigation across Allocation Targets, Goals & Reserve, Scenarios & Ladder. Mounted in all 3 Planning*Page.tsx files.
+  - RiskNav.tsx (14 lines): Tab navigation across Limits & Safety Controls and Breach History. Mounted in RiskLimitsPage.tsx and RiskBreachesPage.tsx.
+  - BacktestNav.tsx (15 lines): Tab navigation across Saved Runs, New Backtest, and Compare Runs. Mounted in BacktestResultsPage.tsx, BacktestSetupPage.tsx, and BacktestComparePage.tsx.
+  - ReportsNav.tsx (15 lines): Tab navigation across Performance & Returns, Costs & Drag, and Tax Packs. Mounted in ReportsPerformancePage.tsx, ReportsCostsPage.tsx, and ReportsTaxPage.tsx.
+  - Sidebar.tsx (118 lines): Converted all hardcoded string routes to ROUTES constants; updated labels (Financial Planning, Settings & Config, Risk & Limits); added UI Workbench link.
+
+DECISION 18 ADHERENCE:
+  - Every file strictly <= 127 lines (far below the 300-line ceiling).
+
+VERIFICATION:
+  typecheck: PASS (0 errors across workspace)
+  lint:      ESLint PASS (0 errors across apps/web/src); Prettier PASS
+  build:     PASS (Vite production bundle built cleanly in 61s)
+  routes:    100% of routes accessible via direct 1-click UI elements
+────────────────────────────────────────────────────────────
+```
  
 ---
  

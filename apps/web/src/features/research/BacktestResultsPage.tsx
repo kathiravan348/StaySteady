@@ -10,6 +10,7 @@ import { backtestResultsPath, ROUTES } from '../../routes/routes';
 import { formatSignedPercent, pluralize } from '../../shared/format';
 import { PageShell } from '../../shell/PageShell';
 import styles from './backtestResults/BacktestResults.module.scss';
+import { BacktestNav } from './backtestResults/sections/BacktestNav';
 import { ResultsView } from './backtestResults/sections/ResultsView';
 
 function SavedRuns(): ReactElement {
@@ -118,6 +119,7 @@ export function BacktestResultsPage(): ReactElement {
           : [{ label: 'Backtest results', to: ROUTES.RESEARCH_BACKTEST_RESULTS }, { label: id }]),
       ]}
     >
+      <BacktestNav />
       {id === undefined ? <SavedRuns /> : <ResultDetail backtestId={id} />}
     </PageShell>
   );

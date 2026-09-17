@@ -9,6 +9,7 @@ import { useMarketConfigs, useProviderConfigs } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import { ProvidersView } from './providers/sections/ProvidersView';
+import { SettingsNav } from './sections/SettingsNav';
 
 function ProvidersBody(): ReactElement {
   const providers = useProviderConfigs();
@@ -53,6 +54,7 @@ export function SettingsProvidersPage(): ReactElement {
         { label: 'Data providers' },
       ]}
     >
+      <SettingsNav />
       <ProvidersBody />
     </PageShell>
   );
