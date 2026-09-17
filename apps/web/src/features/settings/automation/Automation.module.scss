@@ -1,0 +1,138 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-2);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-4);
+}
+
+.summaryLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.summaryValue {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+/* The grid scrolls inside its own box on narrow screens; the page never scrolls sideways. */
+
+.scroller {
+  overflow-x: auto;
+}
+
+.grid {
+  width: 100%;
+  font-size: var(--font-size-xs);
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-1);
+    text-align: center;
+    border: var(--border-width-thin) solid var(--border-subtle);
+  }
+
+  th {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+  }
+
+  th[scope='row'] {
+    text-align: start;
+    white-space: nowrap;
+  }
+}
+
+.cell {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: var(--density-control-height);
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.cellSelected {
+  box-shadow: inset 0 0 0 var(--border-width-thick) var(--interactive-primary);
+}
+
+.layers {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.layer {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-3);
+  align-items: start;
+}
+
+.layerName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.layerDetail {
+  grid-column: 2;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.link {
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  text-decoration: underline;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}

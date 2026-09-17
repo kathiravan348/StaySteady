@@ -64,6 +64,7 @@ export const ROUTES = {
   SETTINGS_CURRENCIES: '/settings/currencies',
   SETTINGS_ALERTS: '/settings/alerts',
   SETTINGS_CREDENTIALS: '/settings/credentials',
+  SETTINGS_AUTOMATION: '/settings/automation',
   SETTINGS_DISPLAY: '/settings/display',
 
   // Developer Component Workbench (UI Spec 4.4 / Stage L)

@@ -4660,3 +4660,67 @@ FINDINGS (out of scope, not fixed):
   - The base currency here follows the top bar switch, not the configured base currency (S-18)
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 48 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        48 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T02:58:00Z  |  local: 2026-09-17 08:28 IST (UTC+05:30)
+TASK CLAIMED:   S-26 Markets — Screener
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-25 committed as 8bec469; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit)
+
+SCOPE:
+  - Check whether any specification exists for the screener; if none, mark the task BLOCKED on open
+    question 11 rather than invent a screen (the question's provisional answer says do not build
+    until specified)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        48 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:00:00Z  |  local: 2026-09-17 08:30 IST (UTC+05:30)
+TASK:           S-26 Markets — Screener — BLOCKED
+
+WHAT WAS FOUND:
+  - The only mention of a screener in the requirements, UI specification and engineering standards
+    is the nav map line under Markets (UI spec section 6). Section 7 has no screen for it, and the
+    requirements name no screening criteria, universe or actions
+  - Open question 11 is unanswered and its provisional answer is "do not build until specified".
+    Decision 26 takes recommended options when a choice arises; it does not cover inventing a screen
+    with no requirement behind it, so the task is blocked rather than guessed
+  - /markets/screener keeps its placeholder page
+
+UNBLOCKS WHEN:
+  - The owner answers open question 11 (what the screener filters on, over which instruments, and
+    what a result leads to — watchlist, instrument detail or a strategy)
+
+FILES MODIFIED:
+  - Docs only: registry row, status, handoff; session 45 moved verbatim to PROGRESS_ARCHIVE.md
+    (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  - No code changed; checks from the S-25 commit stand
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - none
+
+FINDINGS (out of scope, not fixed):
+  - none new
+────────────────────────────────────────────────────────────
+```

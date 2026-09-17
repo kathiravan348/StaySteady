@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25, S-27 and S-28 done; S-26 blocked)
-OVERALL PROGRESS:   73% (64 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 27 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T03:19:00Z  |  local: 2026-09-17 08:49 IST
-LAST AGENT:         session 50 (S-28 Configuration — credentials)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,386 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-29 done; S-26 blocked)
+OVERALL PROGRESS:   74% (65 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 28 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T03:26:00Z  |  local: 2026-09-17 08:56 IST
+LAST AGENT:         session 51 (S-29 Automation permission summary)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,395 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,8 +36,8 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25, S-27 and
-  S-28 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
+  to S-29 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
   one, each committed (no push), taking the recommended option whenever a choice comes up
   (decision 26). typecheck, ESLint and Prettier pass.
 
@@ -45,20 +45,18 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 50: S-28 Configuration — credentials. See session 50 end entry.
-  - Session 49: S-27 Trading — Positions. Session 48: S-26 Screener blocked.
+  - Session 51: S-29 Automation permission summary. See session 51 end entry.
+  - Session 50: S-28 Configuration — credentials. Session 49: S-27 Trading — Positions.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-29 Automation permission summary (UI spec 7.18 last bullet): the layered result of
-  market + broker + instrument type + strategy together, so it is obvious what can actually trade.
-  Everything it needs is in the saved configurations (markets automationPermitted, brokers
-  automationTypes, instrument types automationPermitted/manualOnly) and strategy stages. Then
-  S-30..S-33.
+  Claim S-30 Net Worth (requirements 25, UI spec 19.1): manual asset register (provident fund,
+  deposits, gold, property, employer equity, liabilities), liquidity class, concentration against
+  total net worth. Read requirements section 25 and UI spec 19.1 first. Then S-31..S-33.
 
-FILES TOUCHED (session 50): see session 50 end entry.
+FILES TOUCHED (session 51): see session 51 end entry.
 
 WATCH OUT FOR:
  
@@ -202,7 +200,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-26 | Markets — Screener | BLOCKED | 0 | Session 48 | Raised session 36. Only the nav map (spec 6) names it; section 7 and the requirements specify nothing. Blocked on **open question 11** — unblocks when the owner says what it filters on, over which instruments, and where a result leads. `/markets/screener` keeps its placeholder |
 | S-27 | Trading — Positions | DONE | 100 | Session 49 | Open question 10 answered provisionally (decision 26): distinct from Holdings — only strategy-opened positions, with what the strategy stage does at the stop, distance and value lost to the stop, rules, working orders and an attention banner; all states verified |
 | S-28 | Configuration — credentials | DONE | 100 | Session 50 | Register of credential references on the configuration pattern: no secret field, key-as-reference rejected, /simulation/ segment separates simulation from live, read-only or trading access, expiry with warnings, revoke, usage from provider and broker configs, unregistered references called out, audit log; verified |
-| S-29 | Automation permission summary | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires a screen showing the layered result of market + broker + instrument type + strategy "so it is obvious what can actually trade". No route, no page, no task existed |
+| S-29 | Automation permission summary | DONE | 100 | Session 51 | /settings/automation: market by instrument type grid (live, simulation or blocked with the blocking layer; every layer on selection) and per-strategy results by instrument, computed from the saved configurations and strategy stages; linked from the side navigation; verified |
 | S-30 | Net Worth — complete picture incl. non-market assets | TODO | 0 | | Raised session 37. Requirements 25, UI spec 19.1. Manual asset register (provident fund, deposits, gold, property, employer equity, liabilities), liquidity class, concentration against **total** net worth. Without this, allocation targets and goal projections are computed on a minority of actual wealth |
 | S-31 | Decision Journal | TODO | 0 | | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift) |
 | S-32 | Continuity — succession, nominee and emergency access | TODO | 0 | | Raised session 37. Requirements 28, UI spec 19.1. Institution register, nominee status with last-confirmed dates, emergency access route and its last successful test, inactivity threshold before automation pauses |
@@ -294,67 +292,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 47 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 48 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        48 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-17T02:58:00Z  |  local: 2026-09-17 08:28 IST (UTC+05:30)
-TASK CLAIMED:   S-26 Markets — Screener
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-25 committed as 8bec469; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit)
-
-SCOPE:
-  - Check whether any specification exists for the screener; if none, mark the task BLOCKED on open
-    question 11 rather than invent a screen (the question's provisional answer says do not build
-    until specified)
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        48 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T03:00:00Z  |  local: 2026-09-17 08:30 IST (UTC+05:30)
-TASK:           S-26 Markets — Screener — BLOCKED
-
-WHAT WAS FOUND:
-  - The only mention of a screener in the requirements, UI specification and engineering standards
-    is the nav map line under Markets (UI spec section 6). Section 7 has no screen for it, and the
-    requirements name no screening criteria, universe or actions
-  - Open question 11 is unanswered and its provisional answer is "do not build until specified".
-    Decision 26 takes recommended options when a choice arises; it does not cover inventing a screen
-    with no requirement behind it, so the task is blocked rather than guessed
-  - /markets/screener keeps its placeholder page
-
-UNBLOCKS WHEN:
-  - The owner answers open question 11 (what the screener filters on, over which instruments, and
-    what a result leads to — watchlist, instrument detail or a strategy)
-
-FILES MODIFIED:
-  - Docs only: registry row, status, handoff; session 45 moved verbatim to PROGRESS_ARCHIVE.md
-    (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  - No code changed; checks from the S-25 commit stand
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - none
-
-FINDINGS (out of scope, not fixed):
-  - none new
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        49 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -567,6 +509,96 @@ FINDINGS (out of scope, not fixed):
   - A broker configuration has one credential reference; requirement 200 asks for separate
     simulation and live entries per broker
   - No configuration screen has a stale state
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        51 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:21:00Z  |  local: 2026-09-17 08:51 IST (UTC+05:30)
+TASK CLAIMED:   S-29 Automation permission summary
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-28 committed as 3ac81b2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-28 commit)
+
+SCOPE (UI spec 7.18 last bullet; requirements 233):
+  - New route /settings/automation, linked from the side navigation under Trading & Safety
+  - A market by instrument type grid of the layered result: automated live, simulation only, or
+    blocked, naming the first layer that blocks. Selecting a cell shows every layer — market,
+    instrument type and each broker that could carry it — with what each allows or blocks
+  - Per strategy: its stage (orders without asking, orders with approval, or none) and, for each
+    instrument in its universe, whether it can actually trade and why not
+  - No new endpoint: computed from the saved market, broker and instrument type configurations and
+    the strategies, so it changes the moment any of them is saved
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        51 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:26:00Z  |  local: 2026-09-17 08:56 IST (UTC+05:30)
+TASK:           S-29 Automation permission summary — DONE
+
+WHAT WAS BUILT (UI spec 7.18 last bullet; requirements 233):
+  - /settings/automation ("What automation can trade"), linked from the side navigation under
+    Trading & Safety as "What Can Trade"
+  - Summary: market and type pairs automated live, simulation only, and the strategies that can
+    trade live
+  - Market by instrument type grid: Live, Simulation or Blocked, naming the first layer that blocks
+    (market, instrument type or broker). Selecting a cell lists every layer — the market, the
+    instrument type and each enabled broker carrying that type there — with what it allows or
+    blocks and a link to the screen where it is changed
+  - By strategy: stage effect (orders without asking, after approval, or none) and, for each
+    instrument in the universe, what actually happens: trades live or in simulation through which
+    broker, or why it is blocked
+  - Loading, error and empty states; no stale state, as with the configuration screens (derived
+    from settings, not a feed)
+
+MOCK DATA:
+  - None added: computed from the saved market, broker and instrument type configurations,
+    strategies and instruments, sharing their query cache, so a save on those screens shows here at
+    once
+
+FILES CREATED:
+  - features/settings/SettingsAutomationPage.tsx
+  - features/settings/automation/{Automation.module.scss, model/permissionLayers.ts,
+    sections/PermissionMatrix.tsx, sections/StrategyPermissions.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (SETTINGS_AUTOMATION), routes/AppRoutes.tsx, shell/Sidebar.tsx
+  - Docs: session 48 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  grid:        5 markets by 11 types; 12 of 55 pairs live, 0 simulation; Singapore blocked by the
+               market throughout ("Singapore does not permit automation", while its type and
+               Interactive Brokers allow it); India swing: market, type and Zerodha all allow
+  strategies:  Dual Moving Average Momentum — SPY and AAPL live through Interactive Brokers without
+               asking; RSI Oversold Mean Reversion — TSLA through Interactive Brokers and TATAMOTORS
+               through Zerodha after approval; Donchian, Post-Earnings and Yield Curve place no
+               orders at their stages
+  propagation: Swing switched off on the instrument types screen -> US swing "Blocked / Instrument
+               type", 8 of 55 live, TSLA "Blocked: Swing is switched off."
+  states:      loading-error -> "Automation permissions unavailable"; reset to healthy
+  not exercised: the empty state (every scenario seeds markets and types) and a simulation-only
+               pair (no market or broker is seeded in simulation)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The first draft summarised the broker layer with a comparison that was always true; replaced
+    with a plain status before the first check
+
+FINDINGS (out of scope, not fixed):
+  - Nothing that raises signals, orders or approvals consults these layers: the Donchian strategy
+    is in observation (places no orders here) yet has a pending gold sell in the approval queue
+  - The side navigation links Configuration to markets only; providers, brokers, instrument types,
+    currencies, alert rules and credentials are reachable only by address or in-page links
 ────────────────────────────────────────────────────────────
 ```
  

@@ -54,6 +54,7 @@ import { SettingsBrokersPage } from '../features/settings/SettingsBrokersPage';
 import { SettingsCurrenciesPage } from '../features/settings/SettingsCurrenciesPage';
 import { SettingsInstrumentsPage } from '../features/settings/SettingsInstrumentsPage';
 import { SettingsCredentialsPage } from '../features/settings/SettingsCredentialsPage';
+import { SettingsAutomationPage } from '../features/settings/SettingsAutomationPage';
 import { SettingsProvidersPage } from '../features/settings/SettingsProvidersPage';
 import { SettingsDisplayPage } from '../features/settings/SettingsDisplayPage';
 import { WorkbenchShell } from '@staysteady/ui';
@@ -130,6 +131,7 @@ export function AppRoutes(): ReactElement {
         <Route path={ROUTES.SETTINGS_CURRENCIES} element={<SettingsCurrenciesPage />} />
         <Route path={ROUTES.SETTINGS_ALERTS} element={<SettingsAlertsPage />} />
         <Route path={ROUTES.SETTINGS_CREDENTIALS} element={<SettingsCredentialsPage />} />
+        <Route path={ROUTES.SETTINGS_AUTOMATION} element={<SettingsAutomationPage />} />
         <Route path={ROUTES.SETTINGS_DISPLAY} element={<SettingsDisplayPage />} />
 
         {/* Catch-all 404 */}
