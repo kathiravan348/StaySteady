@@ -133,3 +133,5 @@ export { useAuditLog } from './auditQueries';
 export { usePortfolioPerformance } from './performanceQueries';
 export type { RecordValuationVariables } from './netWorthQueries';
 export { useAddManualAsset, useNetWorth, useRecordValuation } from './netWorthQueries';
+export type { JournalReviewVariables } from './journalQueries';
+export { useJournal, useJournalReview } from './journalQueries';

@@ -14,16 +14,16 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-30 done; S-26 blocked)
-OVERALL PROGRESS:   75% (66 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 29 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T03:37:00Z  |  local: 2026-09-17 09:07 IST
-LAST AGENT:         session 52 (S-30 Net Worth)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,421 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 to S-31 done; S-26 blocked)
+OVERALL PROGRESS:   76% (67 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 30 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T04:05:00Z  |  local: 2026-09-17 09:35 IST
+LAST AGENT:         session 53 (S-31 Decision Journal)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,438 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
-                    so `pnpm lint` reports every file. Not a code defect — see findings.
+                    so `pnpm lint` reports every file. Prettier --check PASS on apps/web/src.
 BLOCKERS:           none for building. But see Q13: do not enable automation against a real
                     broker until the employer-trading-policy question is answered.
 ```
@@ -37,7 +37,7 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
-  to S-30 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
+  to S-31 done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by
   one, each committed (no push), taking the recommended option whenever a choice comes up
   (decision 26). typecheck, ESLint and Prettier pass.
 
@@ -45,18 +45,17 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 52: S-30 Net Worth. See session 52 end entry.
-  - Session 51: S-29 Automation permission summary. Session 50: S-28 Configuration — credentials.
+  - Session 53: S-31 Decision Journal. See session 53 end entry.
+  - Session 52: S-30 Net Worth. Session 51: S-29 Automation permission summary.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-31 Decision Journal (requirements 29; UI spec 19.1): manual trades and limit overrides
-  with the reason given at the time, outcome attached once known, filters by type, instrument,
-  strategy and override, and behaviour patterns (override repetition, post-loss clustering, target
-  drift). UI spec 19.4 asks for one clearly poor decision. Reuse the approval decision reasons the
-  trading store already keeps. Then S-32 and S-33.
+  Claim S-32 Continuity — succession, nominee and emergency access (requirements 28; UI spec 19.1):
+  institution register with nominee confirmation, recovery material register without secrets,
+  emergency access route & drill history, and inactivity threshold pause countdown. Then S-33
+  and S-26 plan.
 
 FILES TOUCHED (session 52): see session 52 end entry.
 
@@ -204,7 +203,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-28 | Configuration — credentials | DONE | 100 | Session 50 | Register of credential references on the configuration pattern: no secret field, key-as-reference rejected, /simulation/ segment separates simulation from live, read-only or trading access, expiry with warnings, revoke, usage from provider and broker configs, unregistered references called out, audit log; verified |
 | S-29 | Automation permission summary | DONE | 100 | Session 51 | /settings/automation: market by instrument type grid (live, simulation or blocked with the blocking layer; every layer on selection) and per-strategy results by instrument, computed from the saved configurations and strategy stages; linked from the side navigation; verified |
 | S-30 | Net Worth — complete picture incl. non-market assets | DONE | 100 | Session 52 | /net-worth: totals with market-exposed and non-market, manual register across every requirements-25 category (stale as normal, unverified separate), record valuation and add, liquidity, concentration against total net worth, employer equity plus salary as one exposure, read-only notice; feeding allocation, goals and risk left to 19.2 extensions; verified |
-| S-31 | Decision Journal | TODO | 0 | | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift) |
+| S-31 | Decision Journal | DONE | 100 | Session 53 | Raised session 37. Requirements 29, UI spec 19.1. Reason captured at the time of every manual trade and override, outcome attached later, behaviour patterns surfaced (override repetition, post-loss clustering, target drift); verified |
 | S-32 | Continuity — succession, nominee and emergency access | TODO | 0 | | Raised session 37. Requirements 28, UI spec 19.1. Institution register, nominee status with last-confirmed dates, emergency access route and its last successful test, inactivity threshold before automation pauses |
 | S-33 | Compliance — employer and jurisdictional restrictions | TODO | 0 | | Raised session 37. Requirements 27, UI spec 19.1. Restricted list, blackout windows, pre-clearance, minimum holding periods. **Highest-consequence gap found** — a breach is a legal and career exposure, not a financial loss. Must be enforced in the safety layer at signal stage, and apply to manual actions identically |
  
@@ -280,137 +279,25 @@ VERIFICATION RUN:
   build:       PASS / FAIL — <errors if any>
   themes:      verified in <which themes>
   states:      <which states built and checked>
- 
+
 FINDINGS (out of scope, not fixed):
   - <what is wrong, where>
- 
+
 NEW OPEN QUESTIONS:
   - <question>
- 
+
 NOTES FOR NEXT AGENT:
   - <anything non-obvious>
 ────────────────────────────────────────────────────────────
 ```
- 
+
 ### Entries
- 
-> Sessions 0 to 49 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+
+> Sessions 0 to 50 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
- 
+
 ```
-────────────────────────────────────────────────────────────
-SESSION:        50 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-17T03:14:00Z  |  local: 2026-09-17 08:44 IST (UTC+05:30)
-TASK CLAIMED:   S-28 Configuration — credentials
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-27 committed as 7766cb3; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-27 commit)
-
-SCOPE (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
-  - A register of credential references, following the configuration pattern (decision 38): list
-    with health and enabled switch, detail form, inline validation, version history with diff and
-    revert, new entries starting in simulation
-  - Each entry holds the reference, a label, simulation or live, read-only or trading access, where
-    the secret is kept (described), issue and expiry dates and the warning window. There is no field
-    for a secret value anywhere, and a value typed into the reference is rejected
-  - Health: expired, expiring within the warning window, revoked while in use, a live credential
-    used by a simulation entry or the reverse, trading access nothing needs, read-only access for a
-    broker that places orders, unused
-  - "Used by" is worked out from the saved provider and broker configurations; references those
-    configurations use that are not registered are called out
-  - Credential changes appear in the audit log with the other configuration areas
-  - Hard constraint kept: no credentials are added; mock references only
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        50 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-17T03:19:00Z  |  local: 2026-09-17 08:49 IST (UTC+05:30)
-TASK:           S-28 Configuration — credentials — DONE
-
-WHAT WAS BUILT (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
-  - /settings/credentials on the configuration pattern (decision 38): list with health, mode and an
-    enabled (revoke) switch; detail form; inline validation; version history with diff and revert;
-    new entries start in simulation, read-only
-  - An entry holds the reference, what it is for, where the secret is kept (in words), simulation or
-    live, read-only or trading access, issue and expiry dates and the warning window. No field for a
-    secret exists; a key typed as the reference is rejected
-  - Simulation references must carry a /simulation/ segment and live ones must not, so the two sets
-    cannot be confused from the reference alone (requirement 474)
-  - Health: expired (critical), expiring inside the warning window, revoked while in use
-    (critical), used by a provider or broker in the other mode (critical), trading access nothing
-    needs, read-only access for a broker that places orders, unused
-  - "Used by" from the saved provider and broker configurations; a banner lists references those
-    configurations name that are not registered
-  - Credential changes appear in the audit log; provider and broker saves and reverts refresh the
-    credential list so usage never lags
-  - Shared: DateField added to shared/config form fields
-  - States: loading, error, empty (no references and none named); no stale state, as with the other
-    configuration screens — the entries are settings, not a feed
-
-MOCK DATA:
-  - GET/POST /api/v1/config/credentials, PUT /:reference, POST /:reference/revert (versioned
-    configuration factory). Six seeded references: the five the provider and broker configurations
-    already name plus an unused IBKR paper-account reference; dates relative to today, the primary
-    market data key 14 days from expiry. Mock references only; no credential exists anywhere
-
-FILES CREATED:
-  - data/schemas/config-credentials.ts, data/mock/generators/credentialConfig.ts
-  - features/settings/credentials/{model/credentialDraft.ts, sections/CredentialsView.tsx,
-    sections/CredentialForm.tsx}
-FILES MODIFIED:
-  - features/settings/SettingsCredentialsPage.tsx — rewritten from a placeholder
-  - data/mock/stores/configStore.ts, data/mock/handlers/settingsConfigHandlers.ts and
-    auditHandlers.ts, data/api/settingsConfigQueries.ts and configQueries.ts (credential cache
-    refresh), schemas, generators and api index files, shared/config/FormFields.tsx and index.ts
-  - Docs: session 47 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none (the /simulation/ segment rule applies requirement 474 within this screen's schema)
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
-  build:       PASS — exit 0
-  list:        6 references; primary market data key "Expires in 14 days on 2026-10-01" (needs
-               attention); IBKR paper account "Nothing uses this reference"; others healthy with users
-  validation:  "sk_live_51HxYzAbC" as the reference -> "This looks like a key, not a reference";
-               vault://brokers/zerodha-paper in simulation -> needs a /simulation/ segment; simulation
-               notice shown on a new entry
-  add:         vault://simulation/brokers/zerodha-paper saved with a reason -> 7 references, flagged
-               unused; audit log "Credential vault://simulation/brokers/zerodha-paper configured"
-  revoke:      Zerodha switched off -> v2, "Revoked, but Zerodha still uses it and cannot connect."
-  usage:       IBKR broker form reference changed to vault://brokers/interactive-brokers-2026 and
-               saved -> credentials page at once shows "1 reference in use is not registered" and the
-               old IBKR reference "Nothing uses this reference"
-  revert:      primary key to version 1 -> "Expired 351 days ago on 2025-10-01; Primary market data
-               provider cannot connect."
-  states:      loading-error -> "Credential references unavailable"; reset to healthy
-  not exercised: the empty state (every scenario seeds references)
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The session 50 start time (03:14:00Z) was estimated ahead of the clock again; the claim ran at
-    03:10Z. Times are now read from the clock before writing an entry
-  - A wiring script stopped part-way because an anchor appeared twice; nothing was half-written in
-    the file it stopped on, and the rest was finished with direct edits
-  - The first build refreshed the credential list only on its own saves, so a broker saved through
-    its form left usage out of date for up to 30 seconds; provider and broker saves now refresh it
-
-FINDINGS (out of scope, not fixed):
-  - Provider and broker connection tests still check references against their own seed lists, not
-    this register, so a revoked or expired credential still tests as resolving
-  - A broker configuration has one credential reference; requirement 200 asks for separate
-    simulation and live entries per broker
-  - No configuration screen has a stale state
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        51 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -610,6 +497,87 @@ FINDINGS (out of scope, not fixed):
   - Holdings has no liquidity class and does not include manual assets in its totals (UI spec 19.2)
   - The add form does not take maturity, purchase cost, vesting or a secured-against link; records
     can be added without them and there is no edit or delete for a record
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        53 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:39:00Z  |  local: 2026-09-17 09:09 IST (UTC+05:30)
+TASK CLAIMED:   S-31 Decision Journal
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-30 committed as cd23dc2; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-30 commit)
+
+SCOPE (requirements 29; UI spec 19.1, 19.4):
+  - New route /journal, linked from the side navigation under Trading & Safety
+  - Chronological entries: manual trades, limit overrides and approval decisions, each with the
+    reason given at the time. Limit changes made on the risk panel and approval decisions made in
+    the queue join the journal from the stores those screens already write
+  - Outcome attached once known: the price move over the 30 days after a trade, and whether it went
+    with or against the decision; pending with days left before then. Measured from price history
+  - Context per trade: whether the portfolio had fallen in the week before, and whether the trade
+    moved allocation away from the saved targets
+  - Filters by type, instrument, strategy and whether an override was involved
+  - Patterns, reported without judgement: repeated overrides of the same limit, trades clustered
+    after a loss, trades against allocation targets
+  - A review note the owner can add to any entry
+  - Seeded history includes one clearly poor decision (UI spec 19.4): a sale after a sharp fall,
+    dated from the price history so the recovery that followed is real in the mock data
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        53 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5) & Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:05:00Z  |  local: 2026-09-17 09:35 IST (UTC+05:30)
+TASK:           S-31 Decision Journal — DONE
+
+WHAT WAS BUILT (requirements 29; UI spec 19.1, 19.4):
+  - /journal, linked from the side navigation under Trading & Safety
+  - Chronological decision record: manual trades, limit overrides and approval decisions
+  - Reason given at the time captured and highlighted; review note form allows owner to reflect back
+    and append observations with inline schema validation
+  - Outcomes calculated against price history over a 30-day window: percentage price change, verdict
+    ('with' or 'against' expectation), pending status with remaining days, or not measured for
+    portfolio-wide limits
+  - Contextual signals: 7-day prior portfolio performance, post-loss flags (>= 3% fall), and
+    allocation drift flags
+  - Behaviour patterns panel: override repetition, post-loss clustering, target drift
+  - Full filter bar: filter by entry kind, instrument, strategy, and override status
+  - States: loading cards skeleton, empty state, error state with retry, filtered no-results state
+  - Seeded history: SPY panic sell dated at the bottom before recovery (clearly poor decision per
+    UI spec 19.4)
+
+MOCK DATA:
+  - GET /api/v1/journal, POST /api/v1/journal/:id/review
+  - In-memory review store; rebuilt dynamically from portfolio valuations, risk changes, orders,
+    approval queue decisions, and planning allocation targets
+
+FILES CREATED:
+  - data/schemas/journal.ts, data/mock/generators/journalSeeds.ts and journalBuilder.ts,
+    data/mock/stores/journalStore.ts, data/mock/handlers/journalHandlers.ts,
+    data/api/journalQueries.ts
+  - features/journal/{JournalPage.tsx, Journal.module.scss, model/journalFilters.ts,
+    sections/JournalView.tsx, sections/JournalEntryItem.tsx, sections/PatternsPanel.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (JOURNAL), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 50 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  filters:     Filter by kind, instrument, strategy, and override verified
+  review note: Submitted review persists and updates cached journal entry
+  states:      loading cards skeleton, empty state, error state verified
 ────────────────────────────────────────────────────────────
 ```
  

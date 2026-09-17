@@ -145,6 +145,11 @@ export {
   seedAlertRules,
   testAlertRule,
 } from './alertRuleConfig';
+// Session 53: decision journal (requirements 29)
+export type { JournalDecision, JournalInputs } from './journalBuilder';
+export { buildJournal } from './journalBuilder';
+export type { JournalSeed } from './journalSeeds';
+export { journalSeeds } from './journalSeeds';
 // Session 52: net worth (requirements 25)
 export { currentAmount, seedManualAssets } from './netWorthAssets';
 export { buildNetWorthView } from './netWorthView';

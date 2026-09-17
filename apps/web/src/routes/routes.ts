@@ -6,6 +6,7 @@ export const ROUTES = {
   ALERTS: '/alerts',
   AUDIT: '/audit',
   NET_WORTH: '/net-worth',
+  JOURNAL: '/journal',
 
   // Portfolio
   PORTFOLIO_HOLDINGS: '/portfolio/holdings',

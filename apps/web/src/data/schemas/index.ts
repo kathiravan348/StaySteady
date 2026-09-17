@@ -32,6 +32,7 @@ export * from './config-currencies';
 export * from './config-alerts';
 export * from './config-credentials';
 export * from './net-worth';
+export * from './journal';
 export * from './reports';
 export * from './planning';
 export * from './alerts-centre';

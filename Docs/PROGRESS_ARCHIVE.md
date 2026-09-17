@@ -1,4 +1,4 @@
-﻿# StaySteady - Progress Log Archive
+# StaySteady - Progress Log Archive
 
 **Archived session history. Not required reading.**
 
@@ -4832,5 +4832,125 @@ FINDINGS (out of scope, not fixed):
     has a working sell order; either the positions predate a demotion or the seed is inconsistent
   - The SPY buy of 25 filled on 2026-09-14 (ord-0001) is not among SPY's purchase lots
   - No lint rule enforces the 300-line file limit
+────────────────────────────────────────────────────────────
+```
+
+---
+
+## Session History - Session 50 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        50 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:14:00Z  |  local: 2026-09-17 08:44 IST (UTC+05:30)
+TASK CLAIMED:   S-28 Configuration — credentials
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-27 committed as 7766cb3; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-27 commit)
+
+SCOPE (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
+  - A register of credential references, following the configuration pattern (decision 38): list
+    with health and enabled switch, detail form, inline validation, version history with diff and
+    revert, new entries starting in simulation
+  - Each entry holds the reference, a label, simulation or live, read-only or trading access, where
+    the secret is kept (described), issue and expiry dates and the warning window. There is no field
+    for a secret value anywhere, and a value typed into the reference is rejected
+  - Health: expired, expiring within the warning window, revoked while in use, a live credential
+    used by a simulation entry or the reverse, trading access nothing needs, read-only access for a
+    broker that places orders, unused
+  - "Used by" is worked out from the saved provider and broker configurations; references those
+    configurations use that are not registered are called out
+  - Credential changes appear in the audit log with the other configuration areas
+  - Hard constraint kept: no credentials are added; mock references only
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        50 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:19:00Z  |  local: 2026-09-17 08:49 IST (UTC+05:30)
+TASK:           S-28 Configuration — credentials — DONE
+
+WHAT WAS BUILT (UI spec 7.18; requirements 139, 176, 200, 457, 472-475):
+  - /settings/credentials on the configuration pattern (decision 38): list with health, mode and an
+    enabled (revoke) switch; detail form; inline validation; version history with diff and revert;
+    new entries start in simulation, read-only
+  - An entry holds the reference, what it is for, where the secret is kept (in words), simulation or
+    live, read-only or trading access, issue and expiry dates and the warning window. No field for a
+    secret exists; a key typed as the reference is rejected
+  - Simulation references must carry a /simulation/ segment and live ones must not, so the two sets
+    cannot be confused from the reference alone (requirement 474)
+  - Health: expired (critical), expiring inside the warning window, revoked while in use
+    (critical), used by a provider or broker in the other mode (critical), trading access nothing
+    needs, read-only access for a broker that places orders, unused
+  - "Used by" from the saved provider and broker configurations; a banner lists references those
+    configurations name that are not registered
+  - Credential changes appear in the audit log; provider and broker saves and reverts refresh the
+    credential list so usage never lags
+  - Shared: DateField added to shared/config form fields
+  - States: loading, error, empty (no references and none named); no stale state, as with the other
+    configuration screens — the entries are settings, not a feed
+
+MOCK DATA:
+  - GET/POST /api/v1/config/credentials, PUT /:reference, POST /:reference/revert (versioned
+    configuration factory). Six seeded references: the five the provider and broker configurations
+    already name plus an unused IBKR paper-account reference; dates relative to today, the primary
+    market data key 14 days from expiry. Mock references only; no credential exists anywhere
+
+FILES CREATED:
+  - data/schemas/config-credentials.ts, data/mock/generators/credentialConfig.ts
+  - features/settings/credentials/{model/credentialDraft.ts, sections/CredentialsView.tsx,
+    sections/CredentialForm.tsx}
+FILES MODIFIED:
+  - features/settings/SettingsCredentialsPage.tsx — rewritten from a placeholder
+  - data/mock/stores/configStore.ts, data/mock/handlers/settingsConfigHandlers.ts and
+    auditHandlers.ts, data/api/settingsConfigQueries.ts and configQueries.ts (credential cache
+    refresh), schemas, generators and api index files, shared/config/FormFields.tsx and index.ts
+  - Docs: session 47 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (the /simulation/ segment rule applies requirement 474 within this screen's schema)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  list:        6 references; primary market data key "Expires in 14 days on 2026-10-01" (needs
+               attention); IBKR paper account "Nothing uses this reference"; others healthy with users
+  validation:  "sk_live_51HxYzAbC" as the reference -> "This looks like a key, not a reference";
+               vault://brokers/zerodha-paper in simulation -> needs a /simulation/ segment; simulation
+               notice shown on a new entry
+  add:         vault://simulation/brokers/zerodha-paper saved with a reason -> 7 references, flagged
+               unused; audit log "Credential vault://simulation/brokers/zerodha-paper configured"
+  revoke:      Zerodha switched off -> v2, "Revoked, but Zerodha still uses it and cannot connect."
+  usage:       IBKR broker form reference changed to vault://brokers/interactive-brokers-2026 and
+               saved -> credentials page at once shows "1 reference in use is not registered" and the
+               old IBKR reference "Nothing uses this reference"
+  revert:      primary key to version 1 -> "Expired 351 days ago on 2025-10-01; Primary market data
+               provider cannot connect."
+  states:      loading-error -> "Credential references unavailable"; reset to healthy
+  not exercised: the empty state (every scenario seeds references)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The session 50 start time (03:14:00Z) was estimated ahead of the clock again; the claim ran at
+    03:10Z. Times are now read from the clock before writing an entry
+  - A wiring script stopped part-way because an anchor appeared twice; nothing was half-written in
+    the file it stopped on, and the rest was finished with direct edits
+  - The first build refreshed the credential list only on its own saves, so a broker saved through
+    its form left usage out of date for up to 30 seconds; provider and broker saves now refresh it
+
+FINDINGS (out of scope, not fixed):
+  - Provider and broker connection tests still check references against their own seed lists, not
+    this register, so a revoked or expired credential still tests as resolving
+  - A broker configuration has one credential reference; requirement 200 asks for separate
+    simulation and live entries per broker
+  - No configuration screen has a stale state
 ────────────────────────────────────────────────────────────
 ```
