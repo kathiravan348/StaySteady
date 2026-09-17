@@ -2,24 +2,22 @@ import { Badge, Button, DataTable, NoResultsState } from '@staysteady/ui';
 import type { ColumnDef } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import { moneyFromDto } from '../../../../data/api';
 import { TransactionTypeSchema } from '../../../../data/schemas';
 import { formatMoney } from '../../../../shared/format';
 import type { BaseCurrencyCode } from '../../../../shared/types/currency';
-import { positionDetailPath } from '../../../../routes/routes';
 import type { TransactionFilters, TransactionRow } from '../model/transactionRows';
 import {
   ALL,
   DEFAULT_TRANSACTION_FILTERS,
-  FUNDING_CURRENCY,
   TYPE_LABELS,
   applyTransactionFilters,
   totalsByType,
   transactionsToCsv,
 } from '../model/transactionRows';
 import styles from '../Transactions.module.scss';
+import { TransactionDetail } from './TransactionDetail';
 
 function download(fileName: string, content: string): void {
   const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
@@ -36,36 +34,6 @@ const signedClass = (row: TransactionRow): string | undefined =>
     : row.cashEffect.amount.isPositive()
       ? styles.inflow
       : undefined;
-
-function Detail({ row }: { readonly row: TransactionRow }): ReactElement {
-  const tx = row.transaction;
-  return (
-    <div className={styles.stack}>
-      {tx.notes !== undefined && <p className={styles.note}>{tx.notes}</p>}
-      <p className={styles.meta}>
-        Fees {formatMoney(moneyFromDto(tx.fees))}
-        {tx.unitPrice === undefined
-          ? ''
-          : ` · ${String(tx.quantity ?? '')} at ${formatMoney(moneyFromDto(tx.unitPrice))}`}
-        {row.fxRate === null || row.cashEffect.currency === row.cashEffectBase?.currency
-          ? ''
-          : ` · 1 ${row.cashEffect.currency} = ${row.fxRate.toFixed(4)} ${row.cashEffectBase?.currency ?? ''} on ${row.date}`}
-      </p>
-      {row.conversionCharge !== null && (
-        <p className={styles.note}>
-          Bought in {row.cashEffect.currency}: money was converted from {FUNDING_CURRENCY}, with a
-          conversion charge of {formatMoney(moneyFromDto(row.conversionCharge.netAmount))} booked
-          the same day.
-        </p>
-      )}
-      {row.holding !== undefined && (
-        <Link className={styles.meta} to={positionDetailPath(row.holding.id)}>
-          Open the {row.instrument?.symbol ?? ''} position
-        </Link>
-      )}
-    </div>
-  );
-}
 
 // UI spec 15 — transaction history with fees, charges and currency conversions.
 export function TransactionsView({
@@ -299,7 +267,7 @@ export function TransactionsView({
           columns={columns}
           getRowId={(row) => row.transaction.id}
           pageSize={20}
-          renderRowDetails={(row) => <Detail row={row} />}
+          renderRowDetails={(row) => <TransactionDetail row={row} />}
         />
       )}
     </div>

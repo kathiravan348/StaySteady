@@ -14,12 +14,12 @@
 ## 1. Current Status
 
 ```
-PHASE:              Stage S Screens — in progress (S-01 to S-25 done; S-26 blocked)
-OVERALL PROGRESS:   70% (62 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
-                    Stage L 11 of 14 + L-12 partial; Stage S 25 of 33; Stage E 0 of 9)
-LAST UPDATED:       2026-09-17T03:00:00Z  |  local: 2026-09-17 08:30 IST
-LAST AGENT:         session 48 (S-26 Markets — Screener, blocked)
-BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,356 kB chunk — see P-04)
+PHASE:              Stage S Screens — in progress (S-01 to S-25 and S-27 done; S-26 blocked)
+OVERALL PROGRESS:   72% (63 of 88 active tasks done; Stage F 100%; Stage M 15 of 17;
+                    Stage L 11 of 14 + L-12 partial; Stage S 26 of 33; Stage E 0 of 9)
+LAST UPDATED:       2026-09-17T03:08:00Z  |  local: 2026-09-17 08:38 IST
+LAST AGENT:         session 49 (S-27 Trading — Positions)
+BUILD STATE:        PASS (Vite 6 + React 19; JS one 3,371 kB chunk — see P-04)
 TYPE CHECK:         PASS (tsc --noEmit zero errors across all workspaces)
 LINT:               ESLint PASS (0 errors). Prettier FAILS on a Windows checkout: no
                     .gitattributes + core.autocrlf=true writes CRLF against endOfLine "lf",
@@ -36,8 +36,8 @@ BLOCKERS:           none for building. But see Q13: do not enable automation aga
 
 ```
 WHERE THINGS STAND:
-  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 done,
-  S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by one, each
+  pnpm workspace monorepo, git branch main. Stages F, M and L done. Stage S: S-01 to S-25 and S-27
+  done, S-26 BLOCKED on open question 11. The owner asked for the remaining S tasks one by one, each
   committed (no push), taking the recommended option whenever a choice comes up (decision 26).
   typecheck, ESLint and Prettier pass.
 
@@ -45,18 +45,20 @@ WHERE THINGS STAND:
   session-start reading.
 
 WHAT I COMPLETED THIS SESSION:
-  - Session 48: S-26 Screener marked BLOCKED (no specification). See session 48 end entry.
-  - Session 47: S-25 Portfolio — Performance. Session 46: S-24 Portfolio — Transactions.
+  - Session 49: S-27 Trading — Positions. See session 49 end entry.
+  - Session 48: S-26 Screener blocked. Session 47: S-25 Portfolio — Performance.
 
 WHAT IS PARTIALLY DONE:
   Nothing.
 
 EXACT NEXT STEP:
-  Claim S-27 Trading — Positions (open question 10). Recommended reading (decision 26): positions
-  opened by automation — strategy, entry signal, stop and target, exit rules and open P&L — distinct
-  from S-02 Holdings, which lists everything owned. Then S-28..S-33.
+  Claim S-28 Configuration — credentials (/settings/credentials, currently a placeholder). Spec
+  7.18: stored references only, never displayed, with expiry tracking and warnings. Hard
+  constraint: never add credentials — the screen handles references (name, where the secret lives,
+  what uses it, expiry), never a secret value. Follow the configuration pattern (decision 38,
+  shared/config). Then S-29..S-33.
 
-FILES TOUCHED (session 48): see session 48 end entry.
+FILES TOUCHED (session 49): see session 49 end entry.
 
 WATCH OUT FOR:
  
@@ -198,7 +200,7 @@ Build order per UI spec section 16. Each screen is done only when all states are
 | S-24 | Portfolio — Transactions | DONE | 100 | Session 46 | Transaction history with fees, signed cash effect and base-currency amounts at each transaction date's rate; conversion charges linked to their purchases; totals by type; filters by type, instrument, broker, currency and date; CSV export; all states verified |
 | S-25 | Portfolio — Performance | DONE | 100 | Session 47 | Open question 9 answered provisionally (decision 26): at-a-glance view, the report keeps chosen periods, comparisons, export and schedules. Returns and gain for 1M/3M/YTD/1Y/since first purchase from the report builder, value curve, monthly heatmap, contribution by holding; all states incl. stale verified |
 | S-26 | Markets — Screener | BLOCKED | 0 | Session 48 | Raised session 36. Only the nav map (spec 6) names it; section 7 and the requirements specify nothing. Blocked on **open question 11** — unblocks when the owner says what it filters on, over which instruments, and where a result leads. `/markets/screener` keeps its placeholder |
-| S-27 | Trading — Positions | TODO | 0 | | Raised session 36. In nav map and routed at `/trading/positions`; 29-line placeholder, no task. **See open question 10** — overlap with S-02 Holdings is undefined |
+| S-27 | Trading — Positions | DONE | 100 | Session 49 | Open question 10 answered provisionally (decision 26): distinct from Holdings — only strategy-opened positions, with what the strategy stage does at the stop, distance and value lost to the stop, rules, working orders and an attention banner; all states verified |
 | S-28 | Configuration — credentials | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires stored references only, never displayed, with expiry tracking and warnings. `/settings/credentials` currently renders the providers placeholder. Zero credential-reference handling in the app |
 | S-29 | Automation permission summary | TODO | 0 | | Raised session 36; first flagged as a finding in session 34. Spec 7.18 requires a screen showing the layered result of market + broker + instrument type + strategy "so it is obvious what can actually trade". No route, no page, no task existed |
 | S-30 | Net Worth — complete picture incl. non-market assets | TODO | 0 | | Raised session 37. Requirements 25, UI spec 19.1. Manual asset register (provident fund, deposits, gold, property, employer equity, liabilities), liquidity class, concentration against **total** net worth. Without this, allocation targets and goal projections are computed on a minority of actual wealth |
@@ -292,97 +294,11 @@ NOTES FOR NEXT AGENT:
  
 ### Entries
  
-> Sessions 0 to 45 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
+> Sessions 0 to 46 have been archived to [PROGRESS_ARCHIVE.md](./PROGRESS_ARCHIVE.md).
 > Only the last three sessions are kept here, per rule 11. Open the archive only when you need
 > a specific past session - it is not session-start reading.
  
 ```
-────────────────────────────────────────────────────────────
-SESSION:        46 — START ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-START:          2026-09-16T22:49:44Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
-TASK CLAIMED:   S-24 Portfolio — Transactions
-OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
-
-PRE-WORK VERIFICATION:
-  git:         S-23 committed as 2783986; working tree clean
-  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-23 commit)
-
-SCOPE (UI spec 15, nav map 6): transaction history with fees, charges and currency conversions
-  - /portfolio/transactions: every transaction (deposit, buys, dividends, conversion charges) with
-    instrument, broker, quantity, price, fees and cash effect; each amount also in the base currency
-    at the exchange rate on the day it happened, not today's rate
-  - A purchase outside the USD funding currency shows its conversion: the rate used and the charge,
-    linked to the charge transaction
-  - Filters by type, instrument, broker, currency and date; totals by type in the base currency;
-    CSV export; row detail with notes and a link to the position
-  - Screen-only: the existing /api/v1/portfolio/transactions, holdings, brokers and FX history
-    carry everything; no new endpoint
-────────────────────────────────────────────────────────────
-
-────────────────────────────────────────────────────────────
-SESSION:        46 — END ENTRY
-AGENT:          Claude Opus 5 (claude-opus-5)
-END:            2026-09-16T22:56:30Z  |  local: 2026-09-17 04:26 IST (UTC+05:30)
-TASK:           S-24 Portfolio — Transactions — DONE
-
-WHAT WAS BUILT (UI spec 15, nav map 6):
-  - /portfolio/transactions: every transaction newest first with date, type, instrument, broker,
-    quantity, fees, signed cash effect in its own currency, and the same amount in the base currency
-    (top bar) at the exchange rate on the transaction's date
-  - Totals by type in the base currency for the transactions shown
-  - Filters by type, instrument, broker, currency and date range; no-results state; CSV export of
-    the rows shown, including the rate used
-  - Row detail: notes, fees and unit price, the day's rate, and for a purchase outside the USD funding
-    currency the conversion charge booked with it; link to the position
-  - Loading, error and empty (empty-portfolio) states. Transactions are a record, not a stream, so
-    there is no stale state beyond the loading of fresh data
-
-MOCK DATA:
-  - None added: /portfolio/transactions, holdings, brokers and FX history already carry everything
-
-FILES CREATED:
-  - features/portfolio/transactions/{Transactions.module.scss, model/transactionRows.ts,
-    sections/TransactionsView.tsx}
-FILES MODIFIED:
-  - features/portfolio/PortfolioTransactionsPage.tsx — rewritten from a placeholder
-  - Docs: session 43 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
-
-DEPENDENCIES ADDED:
-  - none
-
-DECISIONS MADE:
-  - none
-
-VERIFICATION RUN:
-  type check:  PASS — exit 0
-  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
-  build:       PASS — exit 0
-  list:        19 transactions; totals Buy (11) -$111,617.33, Dividend (5) +$115.91, Fee or charge
-               (2) -$8.10, Deposit (1) +$50,000.00
-  currency:    INR filter -> RELIANCE dividend +₹470.00 = +$6.53, buy -₹64,255.20 = -$835.25, charge
-               -₹160.63 = -$2.09; the buy's detail: "1 INR = 0.0130 USD on 2022-05-13" and "Bought
-               in INR: money was converted from USD, with a conversion charge of ₹160.63 booked the
-               same day"
-  filters:     Dividend -> 5 transactions, total +$115.91
-  states:      loading-error -> "Transactions unavailable"; empty-portfolio -> "No transactions
-               yet"; reset to healthy
-
-MISTAKES THIS SESSION (recorded per rules section 7):
-  - The session-start script matched the registry row by passing its text through the shell, which
-    mangled the backticks in it; it failed safely (nothing written). A new script matches the row
-    by task id
-  - Colouring whole rows by inflow or outflow tinted every cell; only the amount is coloured now
-
-FINDINGS (out of scope, not fixed):
-  - Mock buys at every broker carry a 1.50 fee in the instrument's currency (₹1.50 at Zerodha),
-    while order history and broker configuration charge Zerodha ₹20 flat
-  - Purchases total about $111,600 against a single $50,000 deposit, so the mock cash record does
-    not balance
-  - The base currency here follows the top bar switch, not the configured base currency (S-18)
-  - No sells, withdrawals or splits exist in the mock data, so those filters are empty
-────────────────────────────────────────────────────────────
-
 ────────────────────────────────────────────────────────────
 SESSION:        47 — START ENTRY
 AGENT:          Claude Opus 5 (claude-opus-5)
@@ -519,6 +435,108 @@ MISTAKES THIS SESSION (recorded per rules section 7):
 
 FINDINGS (out of scope, not fixed):
   - none new
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        49 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-17T03:10:00Z  |  local: 2026-09-17 08:40 IST (UTC+05:30)
+TASK CLAIMED:   S-27 Trading — Positions
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-26 blocked and committed as 55b00ec; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-25 commit; S-26 changed
+               docs only)
+
+SCOPE:
+  - Open question 10 (is Trading -> Positions distinct from Holdings?) is unanswered. Recommended
+    option taken (decision 26): distinct. Holdings lists everything owned; Positions shows only
+    positions opened by a strategy, from the automation's side — which strategy and stage holds it,
+    what that stage means for its exit (placed automatically, proposed for approval, or not acted
+    on), stop level and distance, loss if the stop is hit, profit target where the strategy has one,
+    and orders still working in the instrument (unconfirmed ones flagged)
+  - No new endpoint: composed from holdings, live quotes, strategies, order history and FX rates, so
+    prices and values agree with Holdings
+  - The placeholder's own description ("active algorithmic positions, stop levels, and profit
+    targets") matches this reading
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        49 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-17T03:08:00Z  |  local: 2026-09-17 08:38 IST (UTC+05:30)
+TASK:           S-27 Trading — Positions — DONE
+
+WHAT WAS BUILT (nav map 6; open question 10, recommended option per decision 26):
+  - /trading/positions: only positions a strategy opened (Holdings keeps everything owned), with
+    the strategy, what its stage means at the stop (exits automatically / exit needs approval / no
+    automated exit), value in the base currency, gain or loss in the instrument's currency, stop,
+    distance above the stop, value lost if the stop is reached, and orders still working
+  - Summary: open positions, value, total lost if every stop is reached, near the stop, no
+    automated exit
+  - Attention banner for a position within 3% of (or through) a stop its strategy will not exit, or
+    with an unconfirmed order
+  - Row detail: strategy, version and stage with what the stage means, rules from its parameters
+    (trailing stop, profit target, holding days, risk sizing), opened date and purchases, average
+    cost, last price, result if closed at the stop, profit target, working orders (awaiting
+    approval, unconfirmed and simulated marked), links to position detail, strategy, orders and
+    approvals
+  - Filters by strategy and exit handling; loading, error, empty, no-results and stale states; order
+    history failing degrades to a note and "Unknown" working orders
+
+MOCK DATA:
+  - None added: composed from holdings, live quotes, strategies, order history, brokers and FX rates
+
+FILES CREATED:
+  - features/trading/positions/{Positions.module.scss, usePositionsData.ts, model/positionRows.ts,
+    sections/PositionsView.tsx, sections/PositionDetail.tsx, sections/AttentionBanner.tsx}
+  - features/portfolio/transactions/sections/TransactionDetail.tsx (split, see mistakes)
+FILES MODIFIED:
+  - features/trading/TradingPositionsPage.tsx — rewritten from a placeholder
+  - features/portfolio/transactions/sections/TransactionsView.tsx — see mistakes
+  - Docs: session 46 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none (open question 10 answered provisionally with the recommended option, as the start entry
+    records)
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0
+  table:       4 positions — AAPL and SPY (Dual Moving Average Momentum, exits automatically), BTCUSD
+               and XAUUSD (Donchian Channel Breakout, observation, no automated exit); value
+               $88,840.14; lost if every stop is reached -$10,226.09; AAPL 2.5% above its stop
+  detail:      AAPL buy 30 at market "Awaiting approval"; XAUUSD sell 2 at $1,550.00 marked
+               Simulated; XAUUSD result at the stop -$23,602.54
+  filters:     No automated exit -> BTCUSD, XAUUSD
+  states:      stale-data -> "Data may be delayed"; loading-error -> "Positions unavailable";
+               empty-portfolio -> "No automated positions"; reset to healthy
+  transactions: the AAPL buy's link now opens /portfolio/positions/inst-us-aapl ("AAPL position")
+  not exercised: the attention banner (no seeded position is near a stop its strategy will not
+               exit) and the order-history-failure note (no scenario fails that endpoint alone)
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - Found in S-24 (session 46): the transaction detail linked to the position by holding id
+    (/portfolio/positions/hld-1), but position detail looks up by instrument id, so the link led
+    to a not-found page. Fixed
+  - Found in S-24 (session 46): TransactionsView.tsx was committed at 307 lines, over the 300-line
+    rule (no lint rule enforces it, and the line count used then skipped blank lines). The row
+    detail moved to TransactionDetail.tsx; the view is now 275 lines
+  - The session 49 start time (03:10:00Z) was estimated ahead of the clock; work started about
+    03:00Z
+  - The first build of the view had type assertions on Object.keys and a gain converted at today's
+    rate that would have disagreed with Holdings; both replaced before verification
+
+FINDINGS (out of scope, not fixed):
+  - The Donchian Channel Breakout strategy is in observation, yet holds BTC and gold positions and
+    has a working sell order; either the positions predate a demotion or the seed is inconsistent
+  - The SPY buy of 25 filled on 2026-09-14 (ord-0001) is not among SPY's purchase lots
+  - No lint rule enforces the 300-line file limit
 ────────────────────────────────────────────────────────────
 ```
  

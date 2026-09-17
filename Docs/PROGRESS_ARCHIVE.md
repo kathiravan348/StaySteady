@@ -4476,3 +4476,97 @@ FINDINGS (out of scope, not fixed):
   - Risk changes carry title and detail text rather than structured before/after values
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 46 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        46 — START ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+START:          2026-09-16T22:49:44Z  |  local: 2026-09-17 04:19 IST (UTC+05:30)
+TASK CLAIMED:   S-24 Portfolio — Transactions
+OWNER INPUT:    "Try to complete the remaining pending S items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-23 committed as 2783986; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS (run immediately before the S-23 commit)
+
+SCOPE (UI spec 15, nav map 6): transaction history with fees, charges and currency conversions
+  - /portfolio/transactions: every transaction (deposit, buys, dividends, conversion charges) with
+    instrument, broker, quantity, price, fees and cash effect; each amount also in the base currency
+    at the exchange rate on the day it happened, not today's rate
+  - A purchase outside the USD funding currency shows its conversion: the rate used and the charge,
+    linked to the charge transaction
+  - Filters by type, instrument, broker, currency and date; totals by type in the base currency;
+    CSV export; row detail with notes and a link to the position
+  - Screen-only: the existing /api/v1/portfolio/transactions, holdings, brokers and FX history
+    carry everything; no new endpoint
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        46 — END ENTRY
+AGENT:          Claude Opus 5 (claude-opus-5)
+END:            2026-09-16T22:56:30Z  |  local: 2026-09-17 04:26 IST (UTC+05:30)
+TASK:           S-24 Portfolio — Transactions — DONE
+
+WHAT WAS BUILT (UI spec 15, nav map 6):
+  - /portfolio/transactions: every transaction newest first with date, type, instrument, broker,
+    quantity, fees, signed cash effect in its own currency, and the same amount in the base currency
+    (top bar) at the exchange rate on the transaction's date
+  - Totals by type in the base currency for the transactions shown
+  - Filters by type, instrument, broker, currency and date range; no-results state; CSV export of
+    the rows shown, including the rate used
+  - Row detail: notes, fees and unit price, the day's rate, and for a purchase outside the USD funding
+    currency the conversion charge booked with it; link to the position
+  - Loading, error and empty (empty-portfolio) states. Transactions are a record, not a stream, so
+    there is no stale state beyond the loading of fresh data
+
+MOCK DATA:
+  - None added: /portfolio/transactions, holdings, brokers and FX history already carry everything
+
+FILES CREATED:
+  - features/portfolio/transactions/{Transactions.module.scss, model/transactionRows.ts,
+    sections/TransactionsView.tsx}
+FILES MODIFIED:
+  - features/portfolio/PortfolioTransactionsPage.tsx — rewritten from a placeholder
+  - Docs: session 43 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS; Prettier --check PASS on every changed file (CRLF finding unchanged)
+  build:       PASS — exit 0
+  list:        19 transactions; totals Buy (11) -$111,617.33, Dividend (5) +$115.91, Fee or charge
+               (2) -$8.10, Deposit (1) +$50,000.00
+  currency:    INR filter -> RELIANCE dividend +₹470.00 = +$6.53, buy -₹64,255.20 = -$835.25, charge
+               -₹160.63 = -$2.09; the buy's detail: "1 INR = 0.0130 USD on 2022-05-13" and "Bought
+               in INR: money was converted from USD, with a conversion charge of ₹160.63 booked the
+               same day"
+  filters:     Dividend -> 5 transactions, total +$115.91
+  states:      loading-error -> "Transactions unavailable"; empty-portfolio -> "No transactions
+               yet"; reset to healthy
+
+MISTAKES THIS SESSION (recorded per rules section 7):
+  - The session-start script matched the registry row by passing its text through the shell, which
+    mangled the backticks in it; it failed safely (nothing written). A new script matches the row
+    by task id
+  - Colouring whole rows by inflow or outflow tinted every cell; only the amount is coloured now
+
+FINDINGS (out of scope, not fixed):
+  - Mock buys at every broker carry a 1.50 fee in the instrument's currency (₹1.50 at Zerodha),
+    while order history and broker configuration charge Zerodha ₹20 flat
+  - Purchases total about $111,600 against a single $50,000 deposit, so the mock cash record does
+    not balance
+  - The base currency here follows the top bar switch, not the configured base currency (S-18)
+  - No sells, withdrawals or splits exist in the mock data, so those filters are empty
+────────────────────────────────────────────────────────────
+```

@@ -1,0 +1,164 @@
+@use '../../../styles/mixins' as mx;
+
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+}
+
+.stack {
+  gap: var(--space-1);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--surface-raised);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.summaryLabel,
+.fieldLabel,
+.detailLabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.summaryValue {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+/* A position near its stop that no strategy will exit gets its own banner. */
+
+.alert {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--change-loss);
+  border-radius: var(--radius-md);
+}
+
+.alertTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--change-loss);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-4);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.filterBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 9rem;
+}
+
+.input {
+  min-width: 0;
+  min-height: var(--density-control-height);
+  padding-inline: var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-sunken);
+  border: var(--border-width-thin) solid var(--border-default);
+  border-radius: var(--radius-md);
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
+
+.detail {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-3);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-3);
+}
+
+.detailItem {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.detailValue {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+
+  @include mx.numeric(start);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.positive {
+  color: var(--change-gain);
+}
+
+.negative {
+  color: var(--change-loss);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.note,
+.meta {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.link {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  text-decoration: underline;
+
+  &:focus-visible {
+    @include mx.focus-ring;
+  }
+}
