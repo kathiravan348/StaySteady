@@ -5345,3 +5345,181 @@ VERIFICATION RUN:
   states:      loading cards skeleton, empty state, error state verified
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Sessions 55 to 56 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        55 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:20:00Z  |  local: 2026-09-17 09:50 IST (UTC+05:30)
+TASK CLAIMED:   S-33 Compliance — employer and jurisdictional restrictions
+OWNER INPUT:    "complete tht S-31 to S-33 and plan S-26"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-32 committed as 4dfd27d; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 27; UI spec 19.1, 19.3, 19.4):
+  - New route /compliance, linked from the side navigation under Trading & Safety
+  - Policy summary banner: active blackout window alert with date range and countdown, annual
+    policy review date with overdue warning if applicable, and review confirmation action
+  - Interactive instrument eligibility checker ("May I trade this right now, and why not?"):
+    real-time evaluation of any ticker returning ALLOWED or REFUSED with cited policy clause
+  - Restricted instrument list: employer equity, audit clients, conflict of interest, regulatory
+    short-swing rules; with interactive Add/Remove actions
+  - Blackout windows register: active and upcoming earnings/quiet blackout windows with countdown
+    and pre-clearance requirements
+  - Minimum holding period tracking: lots subject to mandatory holding lock (e.g. 30/90 days)
+    preventing short-term round trips, with remaining lock countdown
+  - Refusals audit log: historical record of signals and manual trades blocked at signal stage,
+    demonstrating enforcement that never reaches a broker
+  - Personal disclosure obligations schedule: statutory/employer reporting filing deadlines
+  - Loading, error, empty, and domain-specific states (active blackout, overdue review)
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        55 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:30:00Z  |  local: 2026-09-17 10:00 IST (UTC+05:30)
+TASK:           S-33 Compliance — employer and jurisdictional restrictions — DONE
+
+WHAT WAS BUILT (requirements 27; UI spec 19.1, 19.3, 19.4):
+  - /compliance, linked from side navigation under Trading & Safety
+  - Policy summary banner: active blackout alert (12-day countdown on Q3 corporate earnings window),
+    annual policy review status card, and one-click "Confirm Policy Up to Date" action
+  - Pre-trade instrument eligibility evaluator ("May I trade this right now, and why not?"):
+    instant evaluation returning ALLOWED (green) or REFUSED (red) citing exact policy clauses and
+    reasons; preset test buttons for NVDA, NORTHWIND, AAPL, TSLA, SPY
+  - Restricted instrument register: 5 seeded securities (NVDA for MNPI, NORTHWIND for employer equity,
+    INFY for audit conflict, TSLA for short-swing rule, BA overdue for annual review); filter/search
+    bar, interactive add modal form with Zod schema validation, and remove action
+  - Blackout windows register: active and upcoming earnings and M&A quiet periods with scope,
+    countdown badges, and mandatory pre-clearance requirements
+  - Minimum holding period tracking: lots under mandatory holding lock (AAPL 18 days remaining, MSFT
+    8 days, RELIANCE 15 days) preventing short-term round trips
+  - Signal refusals & audit log: historical record of trades blocked at signal stage, proving zero broker exposure
+  - Personal disclosure obligations schedule: quarterly and annual reporting deadlines and filing status
+  - States: loading cards skeleton, empty state, error state with retry, active blackout banner, and overdue review warning
+
+MOCK DATA:
+  - GET /api/v1/compliance, POST /api/v1/compliance/check, POST /api/v1/compliance/restricted,
+    DELETE /api/v1/compliance/restricted/:id, POST /api/v1/compliance/confirm-review
+  - In-memory compliance store managing restricted list additions/removals and real-time eligibility evaluation
+
+FILES CREATED:
+  - data/schemas/compliance.ts, data/mock/generators/complianceSeeds.ts and complianceBuilder.ts,
+    data/mock/stores/complianceStore.ts, data/mock/handlers/complianceHandlers.ts,
+    data/api/complianceQueries.ts
+  - features/compliance/{CompliancePage.tsx, Compliance.module.scss, model/complianceLabels.ts,
+    sections/ComplianceBanner.tsx, sections/InstrumentEligibilityChecker.tsx,
+    sections/RestrictedListSection.tsx, sections/BlackoutWindowsSection.tsx,
+    sections/MinimumHoldingSection.tsx, sections/RefusalsLogSection.tsx,
+    sections/DisclosuresSection.tsx}
+FILES MODIFIED:
+  - routes/routes.ts (COMPLIANCE), routes/AppRoutes.tsx, shell/Sidebar.tsx; schemas, generators,
+    handlers, and api index files
+  - Docs: session 52 moved verbatim to PROGRESS_ARCHIVE.md (rule 11)
+
+DEPENDENCIES ADDED:
+  - none
+
+DECISIONS MADE:
+  - none
+
+VERIFICATION RUN:
+  type check:  PASS — exit 0
+  lint:        ESLint PASS (0 errors); Prettier --check PASS on apps/web/src
+  build:       PASS — exit 0 (3,495.70 kB)
+  checker:     Evaluated NVDA (REFUSED: Restricted List MNPI), NORTHWIND (REFUSED: Employer Equity Blackout),
+               AAPL SELL (REFUSED: Holding Period Lock), TSLA BUY (REFUSED: Short-Swing rule),
+               SPY (ALLOWED: Trading Permitted)
+  restricted:  Add restricted instrument validated inline; Remove action deletes record and refreshes view
+  review:      Confirm Policy Up to Date clears overdue status and updates review timestamp
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        56 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:36:00Z  |  local: 2026-09-17 10:06 IST (UTC+05:30)
+TASK CLAIMED:   S-26 Markets — Screener
+OWNER INPUT:    "tes complete S-26"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-33 committed as e0d04b4, audit log as 7b460b6; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 8; UI spec 6, 8.3; Open Question 11 answered):
+  - /markets/screener: comprehensive factor-based instrument discovery engine
+  - 4 Factor Filter Pillars: Quality & Profitability (ROE, margin, leverage), Valuation Multiples (P/E, P/B, EV/EBITDA, yield),
+    Technical & Trend Momentum (200 SMA distance, RSI-14, volume), Safety & Compliance (Restricted check, automation permission)
+  - Strategy preset templates: "Quality Compounders", "Deep Value", "Trend Leaders", "Dividend Fortress", "Unrestricted Only"
+  - Summary metrics bar: active universe count, matching count, median P/E, median ROE
+  - Sortable, paginated results table with direct workflow handoffs:
+    - Inspect in Workspace (/markets/workspace/:ticker)
+    - Add to Watchlist (/markets/watchlists)
+    - Deploy to Backtest (/research/backtest/new?symbol=:ticker)
+    - Export filtered results as CSV
+  - URL query parameter state persistence for bookmarkable, sharable filters
+  - Loading skeleton, error state with retry, empty state when filters return 0 results
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        56 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T04:50:00Z  |  local: 2026-09-17 10:20 IST (UTC+05:30)
+TASK COMPLETE:  S-26 Markets — Screener (100% delivered)
+
+DELIVERED:
+  - Domain Schemas: ScreenerFilterCriteriaSchema, ScreenerPresetSchema, ScreenerRowSchema,
+    ScreenerSearchResultSchema, ScreenerSummaryMetricsSchema with zod in data/schemas/screener.ts
+  - Mock Infrastructure:
+    - 5 factor strategy presets (Quality Compounders, Deep Value, Trend Leaders, Dividend Fortress, Unrestricted & Automation-Ready) in screenerPresets.ts
+    - 15 multi-asset universe seeds across US (NASDAQ, NYSE) and India (NSE) in screenerSeedsUs.ts and screenerSeedsIn.ts, joined in screenerSeeds.ts
+    - Multi-factor search & statistical summary calculation engine (median P/E, median ROE, median Div Yield) in screenerGenerator.ts
+    - MSW request interception handlers for POST /api/v1/markets/screener/search and GET /api/v1/markets/screener/presets with error scenario coverage
+  - Client API Hooks: useScreenerSearch and useScreenerPresets via TanStack Query in data/api/screenerQueries.ts
+  - UI Screen & Components:
+    - ScreenerPresetsBar: 1-click strategy factor template loader with active indicator
+    - ScreenerMetricsSummary: 4-card KPI summary strip (Universe instruments, Matches passing, Median P/E, Median ROE)
+    - ScreenerFiltersPanel: multi-parameter controls for text search, universe, asset class, P/E, ROE, dividend yield, 200 SMA distance, RSI-14, S-33 compliance exclusion, and S-29 automation permission with reset button
+    - ScreenerResultsTable: sortable columns, direction-colored changes, valuation/quality/momentum metrics, safety badges, inline CSV export button, and direct workflow handoffs (Workspace, Watchlist, Backtest)
+    - MarketsScreenerPage: root container integrating PageShell, LoadingState, ErrorState, EmptyState, preset selection, and pagination
+  - Decision 18 Adherence:
+    - All newly created files strictly under 300 lines (longest component is ScreenerResultsTable at 299 lines, longest seed is screenerSeedsUs at 247 lines).
+    - Refactored S-33 RestrictedListSection by extracting AddRestrictedModal, reducing it from 315 to 119 lines.
+
+VERIFICATION:
+  - type check: PASS (tsc --noEmit zero errors across all workspaces)
+  - ESLint: PASS (zero errors across apps/web/src)
+  - Prettier: PASS (all touched files clean and compliant)
+  - Build: PASS (production Vite bundle built in 34.65s, dist ready)
+
+FILES CREATED/TOUCHED:
+  - apps/web/src/data/schemas/screener.ts (NEW, 94 lines)
+  - apps/web/src/data/schemas/index.ts (MODIFY)
+  - apps/web/src/data/mock/generators/screenerPresets.ts (NEW, 148 lines)
+  - apps/web/src/data/mock/generators/screenerSeedsUs.ts (NEW, 247 lines)
+  - apps/web/src/data/mock/generators/screenerSeedsIn.ts (NEW, 127 lines)
+  - apps/web/src/data/mock/generators/screenerSeeds.ts (NEW, 14 lines)
+  - apps/web/src/data/mock/generators/screenerGenerator.ts (NEW, 183 lines)
+  - apps/web/src/data/mock/generators/index.ts (MODIFY)
+  - apps/web/src/data/mock/handlers/screenerHandlers.ts (NEW, 33 lines)
+  - apps/web/src/data/mock/handlers/index.ts (MODIFY)
+  - apps/web/src/data/api/screenerQueries.ts (NEW, 35 lines)
+  - apps/web/src/data/api/index.ts (MODIFY)
+  - apps/web/src/features/markets/screener/Screener.module.scss (NEW, 222 lines)
+  - apps/web/src/features/markets/screener/sections/ScreenerPresetsBar.tsx (NEW, 51 lines)
+  - apps/web/src/features/markets/screener/sections/ScreenerMetricsSummary.tsx (NEW, 41 lines)
+  - apps/web/src/features/markets/screener/sections/ScreenerFiltersPanel.tsx (NEW, 218 lines)
+  - apps/web/src/features/markets/screener/sections/ScreenerResultsTable.tsx (NEW, 299 lines)
+  - apps/web/src/features/markets/MarketsScreenerPage.tsx (MODIFY, 188 lines)
+  - apps/web/src/features/compliance/sections/AddRestrictedModal.tsx (NEW, 223 lines)
+  - apps/web/src/features/compliance/sections/RestrictedListSection.tsx (MODIFY, 119 lines)
+  - Docs/PROGRESS_LOG.md (MODIFY)
+────────────────────────────────────────────────────────────
+```
