@@ -1,0 +1,6 @@
+@use '../tokens/theme-tokens' as tokens;
+@use 'dark';
+
+// Midnight Navy theme — deep navy with vibrant electric cyan borders and glowing accents.
+$semantic: tokens.$theme-midnight-semantic;
+$domain: dark.$domain;

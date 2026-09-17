@@ -1,35 +1,10 @@
+@use '../tokens/theme-tokens' as tokens;
 @use '../functions/palette' as *;
 
 // Light theme. Remaps only semantic and domain tokens; same keys as the dark theme (standards 3.4).
 // Domain colours use darker steps so text-sized indicators keep 4.5:1 on white.
 
-$semantic: (
-  'surface': (
-    'sunken': palette('neutral', 100),
-    'base': palette('neutral', 0),
-    'raised': palette('neutral', 50),
-    'overlay': palette('neutral', 0),
-  ),
-  'text': (
-    'primary': palette('neutral', 950),
-    'secondary': palette('neutral', 700),
-    'muted': palette('neutral', 600),
-    'disabled': palette('neutral', 400),
-    'inverse': palette('neutral', 0),
-  ),
-  'border': (
-    'subtle': palette('neutral', 100),
-    'default': palette('neutral', 200),
-    'strong': palette('neutral', 400),
-  ),
-  'interactive': (
-    'primary': palette('blue', 600),
-    'primary-hover': palette('blue', 700),
-    'primary-active': palette('blue', 800),
-    'on-primary': palette('neutral', 0),
-  ),
-  'focus-ring': palette('blue', 600),
-);
+$semantic: tokens.$theme-light-semantic;
 
 $domain: (
   'change': (

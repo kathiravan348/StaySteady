@@ -10,7 +10,7 @@ export function RecoveryLocations({
   readonly locations: readonly RecoveryLocationDto[];
 }): ReactElement {
   return (
-    <Card title="Recovery Material & Custody Points">
+    <Card title="Recovery Material & Custody Points" isCollapsible defaultExpanded>
       <p className={styles.note}>
         Describes where emergency instructions, physical backup tokens, and executor memos are kept,
         <strong> without containing any credentials or secret keys</strong>. Re-audit periodically

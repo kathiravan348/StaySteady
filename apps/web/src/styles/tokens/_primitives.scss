@@ -3,68 +3,71 @@
 
 $color: (
   'neutral': (
-    0: #fff,
-    50: #f5f7fa,
-    100: #e9edf2,
-    200: #d3dae3,
-    300: #b4bfcc,
-    400: #8f9cad,
-    500: #6b7889,
-    600: #515c6b,
-    700: #3b4450,
-    800: #272e37,
-    900: #181d24,
-    950: #11151a,
-    1000: #0a0d11,
+    0: #ffffff,
+    50: #f8fafc,
+    100: #f1f5f9,
+    200: #e2e8f0,
+    300: #cbd5e1,
+    400: #94a3b8,
+    500: #64748b,
+    600: #475569,
+    700: #2e3d52,
+    800: #1e293b,
+    850: #17202e,
+    900: #111827,
+    950: #0b0f19,
+    1000: #06090e,
   ),
   'blue': (
-    300: #8fb8ff,
-    400: #5c97f5,
-    500: #3b7be0,
-    600: #2c62b8,
-    700: #234d8f,
-    800: #1b3a6b,
+    300: #93c5fd,
+    400: #60a5fa,
+    500: #3b82f6,
+    600: #2563eb,
+    700: #1d4ed8,
+    800: #1e40af,
   ),
   'green': (
-    300: #7fd8a4,
-    400: #4cc182,
-    500: #2ea466,
-    600: #238451,
-    700: #1b663f,
+    300: #86efac,
+    400: #4ade80,
+    500: #22c55e,
+    600: #16a34a,
+    700: #15803d,
   ),
   'red': (
-    300: #f59a9a,
-    400: #ee6b6b,
-    500: #d94848,
-    600: #b33636,
-    700: #8c2a2a,
+    300: #fca5a5,
+    400: #f87171,
+    500: #ef4444,
+    600: #dc2626,
+    700: #b91c1c,
   ),
   'amber': (
-    300: #f7cf7a,
-    400: #f2b544,
-    500: #d9951f,
-    600: #b07617,
-    700: #875a12,
-    800: #6b4610,
+    300: #fcd34d,
+    400: #fbbf24,
+    500: #f59e0b,
+    600: #d97706,
+    700: #b45309,
+    800: #78350f,
   ),
   'magenta': (
-    300: #f08fd0,
-    400: #e05bb8,
-    500: #c23c9c,
-    600: #9c2f7e,
-    700: #772461,
+    300: #f472b6,
+    400: #e879f9,
+    500: #d946ef,
+    600: #c026d3,
+    700: #a21caf,
   ),
   'teal': (
-    300: #7ddcdc,
-    400: #3cc4c4,
-    500: #22a3a3,
-    600: #1a8080,
-    700: #146363,
+    300: #5eead4,
+    400: #2dd4bf,
+    500: #14b8a6,
+    600: #0d9488,
+    700: #0f766e,
   ),
   'purple': (
-    300: #c3aaf7,
-    400: #a07cf0,
-    500: #7f58d6,
+    300: #d8b4fe,
+    400: #c084fc,
+    500: #a855f7,
+    600: #9333ea,
+    700: #7e22ce,
   ),
 );
 
@@ -94,10 +97,13 @@ $size: (
 
 $radius: (
   'none': 0,
-  'sm': 0.125rem,
-  'md': 0.25rem,
-  'lg': 0.5rem,
+  'sm': 0.25rem,
+  'md': 0.375rem,
+  'lg': 0.625rem,
+  'xl': 0.875rem,
+  'card': 0.75rem,
   'full': 9999px,
+  'pill': 9999px,
 );
 
 $border-width: (
@@ -107,21 +113,27 @@ $border-width: (
 
 $font-family: (
   'sans': (
+    'Plus Jakarta Sans',
+    'Inter',
     system-ui,
     -apple-system,
     'Segoe UI',
     Roboto,
-    'Helvetica Neue',
-    Arial,
     sans-serif,
   ),
   'mono': (
+    'JetBrains Mono',
     ui-monospace,
     'Cascadia Mono',
     'SF Mono',
     Menlo,
     Consolas,
     monospace,
+  ),
+  'display': (
+    'Plus Jakarta Sans',
+    'Outfit',
+    sans-serif,
   ),
 );
 
@@ -144,9 +156,9 @@ $font-weight: (
 );
 
 $line-height: (
-  'tight': 1.2,
-  'normal': 1.45,
-  'relaxed': 1.6,
+  'tight': 1.25,
+  'normal': 1.55,
+  'relaxed': 1.7,
 );
 
 // UI spec 4 — tabular figures so number columns align and digits do not shift on update.
@@ -155,9 +167,11 @@ $font-variant: (
 );
 
 $shadow: (
-  'sm': 0 1px 2px rgb(0 0 0 / 30%),
-  'md': 0 4px 12px rgb(0 0 0 / 35%),
-  'lg': 0 12px 32px rgb(0 0 0 / 45%),
+  'sm': 0 2px 5px -1px rgb(0 0 0 / 25%),
+  'md': 0 8px 20px -3px rgb(0 0 0 / 35%),
+  'lg': 0 16px 36px -4px rgb(0 0 0 / 45%),
+  'card': 0 4px 16px -2px rgb(0 0 0 / 30%),
+  'card-hover': 0 12px 28px -4px rgb(0 0 0 / 40%),
 );
 
 $z: (

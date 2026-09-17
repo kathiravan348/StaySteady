@@ -25,6 +25,23 @@ function groupLabel<TData>(row: Row<TData>, table: Table<TData>): string {
   return format === undefined ? String(row.groupingValue) : format(row.groupingValue);
 }
 
+function ChevronIcon({ isExpanded }: { readonly isExpanded: boolean }): ReactElement {
+  return (
+    <svg
+      className={cx(styles.chevronIcon, isExpanded && styles.chevronExpanded)}
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="7 4 13 10 7 16" />
+    </svg>
+  );
+}
+
 // One data row, or a group row with a toggle, leaf count and each column's aggregated cell.
 export function DataTableRow<TData>({
   row,
@@ -60,7 +77,7 @@ export function DataTableRow<TData>({
                 aria-expanded={row.getIsExpanded()}
                 onClick={row.getToggleExpandedHandler()}
               >
-                <span aria-hidden="true">{row.getIsExpanded() ? '▼' : '►'}</span>
+                <ChevronIcon isExpanded={row.getIsExpanded()} />
                 {groupLabel(row, table)}
                 <span className={styles.groupCount}>({row.getLeafRows().length})</span>
               </button>
@@ -102,7 +119,7 @@ export function DataTableRow<TData>({
                 onToggleDetails(row.id);
               }}
             >
-              <span aria-hidden="true">{isDetailsOpen ? '▼' : '►'}</span>
+              <ChevronIcon isExpanded={isDetailsOpen} />
             </button>
           </td>
         )}

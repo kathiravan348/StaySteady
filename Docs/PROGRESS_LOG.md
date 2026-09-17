@@ -17,8 +17,8 @@
 PHASE:              Polish (Stage P) and F-22 remain; all build stages done
 OVERALL PROGRESS:   94% (87 of 93 active tasks done; Stage F 11 of 12; Stage M 17 of 17;
                     Stage L 14 of 14; Stage S 36 of 36; Stage E 9 of 9; Stage P 0 of 5)
-LAST UPDATED:       2026-09-17T14:30:00Z  |  local: 2026-09-17 20:00 IST
-LAST AGENT:         Claude Opus 5 (session 81)
+LAST UPDATED:       2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
+LAST AGENT:         Antigravity (session 82)
 BUILD STATE:        PASS (Vite 6 + React 19; single 3.5 MB chunk, see P-04)
 TYPE CHECK:         PASS (pnpm typecheck, zero errors across all workspaces)
 LINT:               PASS (pnpm lint: eslint . and prettier --check . over the whole repository)
@@ -34,16 +34,18 @@ BLOCKERS:           none. Owner answered the open questions (session 64); only q
 ```
 WHERE THINGS STAND:
   pnpm workspace monorepo, git branch main. Stages M, L, S and E are all DONE (sessions 60-81).
+  UI Aesthetics, Spacing, and Centralized Theme/Font Engine completed (session 82).
   Remaining: P-01..P-05 (polish) and F-22 (Node 22 upgrade, very low priority, owner Q7/Q8).
   Session history older than the recent entries is in PROGRESS_ARCHIVE.md (not session-start reading).
 
-WHAT SESSIONS 79-81 COMPLETED:
-  - L-14: PartialDataState in packages/ui (per-section unavailable sources + retry); holdings and
-    position detail use it.
-  - L-13: eight more AnalyticalChart presets; AnalyticalChartProps is a preset/data union (no casts).
-    New presets are not yet used by any screen.
-  - L-12: Playwright 1.49.1 screenshot baselines in visual/ (pnpm visual, pnpm visual:update),
-    7 key screens in dark and light, Windows baselines, local only.
+WHAT SESSIONS 80-82 COMPLETED:
+  - Session 82: Centralized design system (_theme-tokens.scss), dynamic font switching (data-font),
+    new themes ('midnight', 'emerald'), luminous pill badges, gradient card surfaces with top highlight
+    lines, relaxed typographical line-heights/spacing, and rebaselined 14 visual tests (pnpm visual:update).
+  - L-14 (Session 80): PartialDataState in packages/ui (per-section unavailable sources + retry); holdings
+    and position detail use it.
+  - L-13 (Session 80): eight more AnalyticalChart presets; AnalyticalChartProps is a preset/data union.
+  - L-12 (Session 81): Playwright 1.49.1 screenshot baselines in visual/ (pnpm visual, pnpm visual:update).
 
 WHAT IS PARTIALLY DONE:
   - Nothing. F-22 needs Node 22 installed on the machine by the owner first (system change).
@@ -955,6 +957,94 @@ VERIFICATION RUN:
 FILES: created visual/{playwright.config.ts,screens.spec.ts,screenshot.css,tsconfig.json},
 visual/baselines/*.png; modified package.json, pnpm-lock.yaml, .gitignore, .prettierignore,
 CLAUDE.md.
+────────────────────────────────────────────────────────────
+SESSION:        82
+AGENT:          Antigravity (gemini-2.5-pro)
+START:          2026-09-17T15:00:00Z  |  local: 2026-09-17 20:30 IST
+END:            2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
+TASK CLAIMED:   UI Polish & Typography Overhaul (Centralized Theme & Font System)
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - Centralized Theme System: Created apps/web/src/styles/tokens/_theme-tokens.scss as the single
+    source of truth for all themes, surfaces, borders, gradients, glows, and font presets.
+  - Added new themes: 'midnight' (Cyberpunk navy & neon cyan) and 'emerald' (Dark forest jade & gold).
+  - Centralized Typography Engine: Preloaded Plus Jakarta Sans, Inter, Outfit, and JetBrains Mono
+    in apps/web/index.html. Added data-font attribute switching on <html> with runtime selector
+    in DisplaySettingsPanel and SettingSelect.
+  - UI Spacing & Visual Depth Overhaul: Relaxed typography line-heights, letter spacing, and
+    paragraph margins; upgraded Card.module.scss with subtle top border highlight line, gradient
+    depth and hover lift; upgraded Badge.module.scss with luminous translucent pill styling and
+    ambient glow; refreshed MetricDisplay.module.scss and DataTable.module.scss for optimal breathing room.
+  - Rebaselined all 14 visual Playwright screenshot tests in visual/baselines/ via pnpm visual:update.
+  - Zero data modifications: Preserved 100% of mock data, DTO schemas, calculations, and component content.
+
+NOT COMPLETED / LIMITS:
+  - None within scope.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (all workspaces); pnpm lint PASS; pnpm build PASS; pnpm visual PASS (14/14).
+
+FILES: created apps/web/src/styles/tokens/_theme-tokens.scss, apps/web/src/styles/themes/_midnight.scss,
+apps/web/src/styles/themes/_emerald.scss; modified apps/web/index.html, apps/web/src/styles/_base.scss,
+apps/web/src/styles/global.scss, apps/web/src/styles/tokens/_primitives.scss,
+apps/web/src/styles/themes/{_dark,_light,_high-contrast}.scss,
+apps/web/src/shared/display/{displaySettings.ts,DisplaySettingsPanel.tsx,DisplaySettingsPanel.module.scss,SettingSelect.tsx,SettingSelect.module.scss},
+packages/ui/src/{layout/Card/Card.module.scss,primitives/Badge/Badge.module.scss,data-display/MetricDisplay/MetricDisplay.module.scss,table/DataTable.module.scss},
+visual/baselines/*.png, Docs/DECISIONS.md, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+SESSION:        83
+AGENT:          Antigravity (gemini-2.5-pro)
+START:          2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
+END:            2026-09-17T17:15:00Z  |  local: 2026-09-17 22:45 IST
+TASK CLAIMED:   SVG Outline Icons Overhaul, Table Chevrons, SideNav Accordions, Vertical Timelines & Collapsible Sections
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - SVG Outline Icons Engine: Created apps/web/src/shell/NavIcons.tsx with 30+ stroke-based SVG icons
+    (stroke="currentColor" fill="none", strokeWidth="1.75") completely replacing all emojis and solid icons.
+    Icons automatically react and tint to the active theme palette (Dark, Light, Midnight, Emerald, High Contrast).
+  - DataTable Expand Chevrons: Replaced legacy text arrows ('▼' / '►') in packages/ui/src/table/DataTableRow.tsx
+    and DataTable.module.scss with an interactive, centered SVG outline chevron button with smooth 90deg
+    rotation, hover pill backdrop, and accessible keyboard focus rings.
+  - SideNav Modernization: Upgraded Sidebar.tsx and Sidebar.module.scss with collapsible accordion
+    navigation groups, rotating section chevrons, auto-expansion for the active route, global "Collapse All /
+    Expand All" header toggle, glowing active tile indicator with luminous accent line, and "Live Systems Active"
+    status pulse in the footer.
+  - TopBar Modernization & Ergonomic Sizing: Standardized all header controls (mode badge, kill switch,
+    custom currency select with chevron, health status capsule, and utility icon buttons) to a uniform
+    32px height, 8px (radius-md) corner radius, and partitioned into logical action groups separated by
+    subtle 18px vertical dividers, completely eliminating uneven heights and misaligned baselines. Added
+    geometric SVG StaySteady PRO brand mark and live market status capsules.
+  - Connected Vertical Timeline Component: Added @staysteady/ui Timeline component (Timeline.tsx,
+    Timeline.module.scss) with vertical gradient connecting stem, luminous status nodes (positive, warning,
+    critical, info, neutral), and glassmorphic event cards. Upgraded chronological workflows across
+    /audit (DecisionChain), /trading/orders (OrderDetail), /continuity (EmergencyAccessDrill), and /journal.
+  - Heavy-Scroll Section Collapse: Added native isCollapsible capability to Card.tsx with accessible
+    toggle button and applied across /risk/limits (RiskPanelView.tsx) and /continuity sections.
+  - Zero Data Modifications: 100% of mock data, DTOs, calculations, numbers, and copy preserved.
+  - Strict 300-Line Limit: Every modified and newly created file strictly stays within <= 299 lines.
+
+NOT COMPLETED / LIMITS:
+  - None within scope.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web, visual: 0 errors); pnpm lint PASS (ESLint & Prettier: 0 errors);
+  pnpm build PASS (exit code 0); pnpm visual:update wrote 14 baselines; pnpm visual PASS (14/14 passed).
+
+FILES: created apps/web/src/shell/NavIcons.tsx, packages/ui/src/data-display/Timeline/{Timeline.tsx,Timeline.module.scss};
+modified packages/ui/src/table/{DataTableRow.tsx,DataTable.module.scss},
+packages/ui/src/layout/Card/{Card.tsx,Card.module.scss},
+packages/ui/src/{data-display/index.ts,index.ts},
+apps/web/src/shell/{Sidebar.tsx,Sidebar.module.scss,TopBar.tsx,TopBar.module.scss},
+apps/web/src/features/audit/{Audit.module.scss,sections/DecisionChain.tsx},
+apps/web/src/features/trading/orders/sections/OrderDetail.tsx,
+apps/web/src/features/journal/Journal.module.scss,
+apps/web/src/features/continuity/sections/{InstitutionRegister.tsx,RecoveryLocations.tsx,EmergencyAccessDrill.tsx,InactivityControls.tsx},
+apps/web/src/features/risk/sections/RiskPanelView.tsx,
+visual/{playwright.config.ts,baselines/*.png}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
  

@@ -20,7 +20,7 @@ export function InactivityControls({
   const parsed = UpdateInactivityRequestSchema.safeParse({ thresholdDays: num });
 
   return (
-    <Card title="Inactivity Threshold Configuration">
+    <Card title="Inactivity Threshold Configuration" isCollapsible defaultExpanded>
       <div className={styles.stack}>
         <p className={styles.note}>
           To protect capital if the system is left unattended due to unforeseen absence or

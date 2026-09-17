@@ -1,36 +1,11 @@
+@use '../tokens/theme-tokens' as tokens;
 @use '../functions/palette' as *;
 
 // High contrast theme — accessibility, not a stylistic variant (standards 3.2).
 // Pure black surfaces, bright text and strong borders. Shadows do not show on black, so
 // separation comes from borders. Same keys as the dark theme (standards 3.4).
 
-$semantic: (
-  'surface': (
-    'sunken': palette('neutral', 1000),
-    'base': palette('neutral', 1000),
-    'raised': palette('neutral', 1000),
-    'overlay': palette('neutral', 950),
-  ),
-  'text': (
-    'primary': palette('neutral', 0),
-    'secondary': palette('neutral', 100),
-    'muted': palette('neutral', 200),
-    'disabled': palette('neutral', 400),
-    'inverse': palette('neutral', 1000),
-  ),
-  'border': (
-    'subtle': palette('neutral', 500),
-    'default': palette('neutral', 300),
-    'strong': palette('neutral', 0),
-  ),
-  'interactive': (
-    'primary': palette('blue', 300),
-    'primary-hover': palette('blue', 400),
-    'primary-active': palette('blue', 500),
-    'on-primary': palette('neutral', 1000),
-  ),
-  'focus-ring': palette('amber', 300),
-);
+$semantic: tokens.$theme-high-contrast-semantic;
 
 $domain: (
   'change': (

@@ -1,7 +1,12 @@
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 
-import { DENSITIES, GAIN_LOSS_CONVENTIONS, THEME_PREFERENCES } from './displaySettings';
+import {
+  DENSITIES,
+  FONT_PREFERENCES,
+  GAIN_LOSS_CONVENTIONS,
+  THEME_PREFERENCES,
+} from './displaySettings';
 import styles from './DisplaySettingsPanel.module.scss';
 import { SettingSelect } from './SettingSelect';
 import type { DisplaySettingsState } from './useDisplaySettings';
@@ -10,8 +15,7 @@ interface DisplaySettingsPanelProps {
   readonly display: DisplaySettingsState;
 }
 
-// Temporary home for display controls until the top bar and configuration screens exist
-// (F-20, F-21, S-18). Gain and loss are always paired with an arrow and sign (UI spec 4).
+// Display settings panel: allows configuring themes, fonts, density, and gain/loss conventions.
 export function DisplaySettingsPanel({ display }: DisplaySettingsPanelProps): ReactElement {
   const { settings, resolvedTheme, update } = display;
   const titleId = useId();
@@ -19,15 +23,23 @@ export function DisplaySettingsPanel({ display }: DisplaySettingsPanelProps): Re
   return (
     <section className={styles.panel} aria-labelledby={titleId}>
       <h2 className={styles.title} id={titleId}>
-        Display
+        Display & Visual Preferences
       </h2>
       <div className={styles.fields}>
         <SettingSelect
-          label="Theme"
+          label="Theme (Colors, Borders & Gradients)"
           value={settings.theme}
           options={THEME_PREFERENCES}
           onChange={(theme) => {
             update({ theme });
+          }}
+        />
+        <SettingSelect
+          label="Font Family"
+          value={settings.font}
+          options={FONT_PREFERENCES}
+          onChange={(font) => {
+            update({ font });
           }}
         />
         <SettingSelect

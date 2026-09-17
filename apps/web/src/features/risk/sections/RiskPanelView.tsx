@@ -76,13 +76,17 @@ export function RiskPanelView({ panel }: { readonly panel: RiskPanelDto }): Reac
       <CounterpartyExposureSection />
 
       {groupLimits(panel.limits).map(({ group, limits }) => (
-        <section key={group} className={styles.stack} aria-labelledby={`group-${group}`}>
-          <div className={styles.groupHeader}>
-            <h2 id={`group-${group}`} className={styles.groupTitle}>
-              {GROUP_TITLES[group]}
-            </h2>
-            <p className={styles.meta}>{GROUP_DESCRIPTIONS[group]}</p>
-          </div>
+        <Card
+          key={group}
+          title={GROUP_TITLES[group]}
+          extra={
+            <span className={styles.meta}>
+              {limits.length} limits · {GROUP_DESCRIPTIONS[group]}
+            </span>
+          }
+          isCollapsible
+          defaultExpanded={true}
+        >
           {group === 'strategy'
             ? byScope(limits).map(({ scope, limits: scoped }) => (
                 <div key={scope} className={styles.stack}>
@@ -91,12 +95,14 @@ export function RiskPanelView({ panel }: { readonly panel: RiskPanelDto }): Reac
                 </div>
               ))
             : renderCards(limits)}
-        </section>
+        </Card>
       ))}
 
       <Card
         title="Change log"
         extra={<span className={styles.meta}>{panel.changes.length} recorded</span>}
+        isCollapsible
+        defaultExpanded={false}
       >
         {panel.changes.length === 0 ? (
           <EmptyState

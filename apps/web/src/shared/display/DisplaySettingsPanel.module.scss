@@ -2,24 +2,29 @@
 
 .panel {
   display: grid;
-  gap: var(--density-gap);
-  padding: var(--density-panel-padding);
-  border: var(--border-width-thin) solid var(--border-default);
-  border-radius: var(--radius-lg);
-
-  @include mx.elevation('raised');
+  gap: var(--space-5);
+  padding: var(--space-6);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-top: var(--border-width-thin) solid var(--border-highlight);
+  border-radius: var(--radius-card);
+  background-color: var(--surface-raised);
+  background-image: var(--gradient-card);
+  box-shadow: var(--shadow-card);
 }
 
 .title {
   margin: 0;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-display, var(--font-sans));
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--density-gap);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
 }
 
 .preview {

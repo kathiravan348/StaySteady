@@ -1,4 +1,4 @@
-import { Card, ErrorState, LoadingState, cx } from '@staysteady/ui';
+import { Card, ErrorState, LoadingState, Timeline } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 
 import { useOrderHistory } from '../../../data/api';
@@ -43,30 +43,22 @@ export function DecisionChain({
         </span>
       }
     >
-      <ol className={styles.chain} aria-label={`Decision chain for order ${orderId}`}>
-        {order.timeline.map((event, index) => (
-          <li key={`${event.kind}-${event.at}`} className={styles.step}>
-            <span
-              className={cx(
-                styles.stepNumber,
-                event.at === highlightAt ? styles.current : undefined,
-              )}
-              aria-hidden="true"
-            >
-              {index + 1}
+      <Timeline
+        items={order.timeline.map((event, index) => ({
+          id: `${event.kind}-${event.at}`,
+          stepNumber: index + 1,
+          isCurrent: event.at === highlightAt,
+          status: event.at === highlightAt ? 'info' : 'neutral',
+          title: (
+            <span>
+              {event.title}
+              {event.at === highlightAt && ' (this entry)'}
             </span>
-            <span className={styles.stack}>
-              <strong className={styles.note}>
-                {event.title}
-                {event.at === highlightAt ? ' (this entry)' : ''}
-              </strong>
-              <span className={styles.meta}>
-                {formatDateTime(event.at)} · {event.detail}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ol>
+          ),
+          timestamp: formatDateTime(event.at),
+          detail: event.detail,
+        }))}
+      />
       <p className={styles.meta}>
         Signal {order.signalId ?? 'none (manual)'} · approval {order.approvalId ?? 'none'} · order{' '}
         {order.orderId}

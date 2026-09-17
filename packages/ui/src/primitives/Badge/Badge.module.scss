@@ -2,22 +2,24 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1, 0.25rem);
-  font-family: var(--font-mono, monospace);
-  font-weight: 500;
-  line-height: 1;
+  font-family: var(--font-sans, inherit);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
   border: 1px solid transparent;
   user-select: none;
   white-space: nowrap;
+  transition: all 150ms ease;
 }
 
 .sm {
-  font-size: var(--font-size-xs, 0.75rem);
-  padding: 0.125rem 0.375rem;
+  font-size: var(--font-size-2xs, 0.6875rem);
+  padding: 0.2rem 0.5rem;
 }
 
 .md {
-  font-size: var(--font-size-sm, 0.875rem);
-  padding: 0.25rem 0.5rem;
+  font-size: var(--font-size-xs, 0.75rem);
+  padding: 0.28rem 0.65rem;
 }
 
 .pill {
@@ -29,37 +31,42 @@
 }
 
 .neutral {
-  background-color: var(--surface-raised, #1e293b);
+  background-color: color-mix(in srgb, var(--surface-raised, #111827) 80%, transparent);
   color: var(--text-secondary, #94a3b8);
-  border-color: var(--border-subtle, #334155);
+  border-color: var(--border-default, rgba(255, 255, 255, 0.12));
 }
 
 .positive {
-  background-color: color-mix(in srgb, var(--domain-gain, #22c55e) 15%, transparent);
+  background-color: color-mix(in srgb, var(--domain-gain, #22c55e) 14%, transparent);
   color: var(--domain-gain, #22c55e);
-  border-color: color-mix(in srgb, var(--domain-gain, #22c55e) 30%, transparent);
+  border-color: color-mix(in srgb, var(--domain-gain, #22c55e) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--domain-gain, #22c55e) 15%, transparent);
 }
 
 .negative {
-  background-color: color-mix(in srgb, var(--domain-loss, #ef4444) 15%, transparent);
+  background-color: color-mix(in srgb, var(--domain-loss, #ef4444) 14%, transparent);
   color: var(--domain-loss, #ef4444);
-  border-color: color-mix(in srgb, var(--domain-loss, #ef4444) 30%, transparent);
+  border-color: color-mix(in srgb, var(--domain-loss, #ef4444) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--domain-loss, #ef4444) 15%, transparent);
 }
 
 .warning {
-  background-color: color-mix(in srgb, var(--severity-medium, #f59e0b) 15%, transparent);
+  background-color: color-mix(in srgb, var(--severity-medium, #f59e0b) 14%, transparent);
   color: var(--severity-medium, #f59e0b);
-  border-color: color-mix(in srgb, var(--severity-medium, #f59e0b) 30%, transparent);
+  border-color: color-mix(in srgb, var(--severity-medium, #f59e0b) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--severity-medium, #f59e0b) 15%, transparent);
 }
 
 .critical {
-  background-color: color-mix(in srgb, var(--severity-critical, #ef4444) 15%, transparent);
+  background-color: color-mix(in srgb, var(--severity-critical, #ef4444) 14%, transparent);
   color: var(--severity-critical, #ef4444);
-  border-color: color-mix(in srgb, var(--severity-critical, #ef4444) 30%, transparent);
+  border-color: color-mix(in srgb, var(--severity-critical, #ef4444) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--severity-critical, #ef4444) 15%, transparent);
 }
 
 .info {
-  background-color: color-mix(in srgb, var(--interactive-primary, #3b82f6) 15%, transparent);
+  background-color: color-mix(in srgb, var(--interactive-primary, #3b82f6) 14%, transparent);
   color: var(--interactive-primary, #3b82f6);
-  border-color: color-mix(in srgb, var(--interactive-primary, #3b82f6) 30%, transparent);
+  border-color: color-mix(in srgb, var(--interactive-primary, #3b82f6) 35%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--interactive-primary, #3b82f6) 15%, transparent);
 }

@@ -3,8 +3,8 @@
 @use '../styles/mixins/text' as text;
 
 .sidebar {
-  width: 250px;
-  min-width: 250px;
+  width: 260px;
+  min-width: 260px;
   background-color: var(--surface-raised);
   border-right: var(--border-width-thin) solid var(--border-subtle);
   display: flex;
@@ -12,17 +12,61 @@
   height: calc(100vh - 60px);
   position: sticky;
   top: 60px;
-  overflow-y: auto;
-  padding: var(--space-2) var(--space-2) var(--space-6);
-  @include surface.scrollbar;
+  overflow: hidden;
 
   @include bp.down('tablet') {
     display: none;
   }
 }
 
+.navHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+  border-bottom: var(--border-width-thin) solid var(--border-subtle);
+}
+
+.navHeaderLabel {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.toggleAllBtn {
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--interactive-primary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    color var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    background-color: var(--surface-overlay);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--interactive-primary);
+    outline-offset: 1px;
+  }
+}
+
+.sectionsContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  @include surface.scrollbar;
+}
+
 .navSection {
-  padding: var(--space-2) 0;
+  padding: var(--space-1) 0;
   border-bottom: var(--border-width-thin) solid var(--border-subtle);
 
   &:last-child {
@@ -30,22 +74,67 @@
   }
 }
 
-.sectionHeader {
-  font-size: 10px;
+.sectionHeaderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    background-color: var(--surface-overlay);
+
+    .sectionTitle {
+      color: var(--text-primary);
+    }
+
+    .sectionChevron {
+      color: var(--text-primary);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--interactive-primary);
+    outline-offset: -1px;
+  }
+}
+
+.sectionTitle {
+  font-size: 11px;
   font-weight: var(--font-weight-bold);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: var(--space-1) var(--space-3) var(--space-2);
+  transition: color var(--duration-fast) var(--easing-standard);
+}
+
+.sectionChevron {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  transition:
+    transform 200ms ease,
+    color var(--duration-fast) var(--easing-standard);
+  flex-shrink: 0;
+
+  &.expanded {
+    transform: rotate(180deg);
+  }
 }
 
 .navList {
   list-style: none;
-  padding: 0;
+  padding: var(--space-1) 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .navLink {
@@ -53,7 +142,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-2) var(--space-3);
+  padding: 6px var(--space-3);
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   text-decoration: none;
@@ -72,12 +161,13 @@
     color: var(--text-primary);
 
     .iconWrapper {
-      border-color: var(--border-strong);
+      border-color: var(--border-default);
+      color: var(--text-primary);
       transform: scale(1.05);
     }
   }
 
-  // Selected state: modern card/box effect with left accent bar and elevated surface
+  // Active state: glowing accent bar, elevated tile, theme-reactive icon
   &.active {
     background-color: var(--surface-overlay);
     border-color: var(--border-strong);
@@ -88,10 +178,10 @@
       inset 3px 0 0 var(--interactive-primary);
 
     .iconWrapper {
-      background-color: var(--interactive-primary);
+      background-color: color-mix(in srgb, var(--interactive-primary) 18%, var(--surface-overlay));
       border-color: var(--interactive-primary);
-      box-shadow: 0 0 10px rgba(56, 139, 253, 0.4);
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+      color: var(--interactive-primary);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--interactive-primary) 35%, transparent);
     }
 
     .navLabel {
@@ -117,17 +207,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-sm);
-  background-color: var(--surface-base);
+  background-color: color-mix(in srgb, var(--surface-overlay) 60%, transparent);
   border: var(--border-width-thin) solid var(--border-subtle);
-  font-size: 13px;
+  color: var(--text-secondary);
   flex-shrink: 0;
   transition:
     transform var(--duration-fast) var(--easing-standard),
     background-color var(--duration-fast) var(--easing-standard),
-    border-color var(--duration-fast) var(--easing-standard);
+    border-color var(--duration-fast) var(--easing-standard),
+    color var(--duration-fast) var(--easing-standard);
+}
+
+.navIcon {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
 }
 
 .navLabel {
@@ -143,4 +240,43 @@
   color: var(--text-secondary);
   font-weight: var(--font-weight-bold);
   line-height: 1.2;
+}
+
+.sidebarFooter {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+  background-color: color-mix(in srgb, var(--surface-raised) 90%, transparent);
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--change-gain);
+  box-shadow: 0 0 8px var(--change-gain);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
+}
+
+.statusText {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
 }

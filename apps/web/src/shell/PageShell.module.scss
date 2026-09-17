@@ -5,8 +5,8 @@
 .pageShell {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-  padding: var(--space-6);
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-7);
   max-width: 1600px;
   margin: 0 auto;
   width: 100%;
@@ -17,13 +17,14 @@
   align-items: center;
   gap: var(--space-2);
   font-size: 11px;
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
   background-color: var(--surface-raised);
   border: var(--border-width-thin) solid var(--border-subtle);
   border-radius: var(--radius-pill);
-  padding: 3px 12px;
+  padding: 4px 14px;
   width: fit-content;
+  letter-spacing: 0.02em;
 
   a {
     color: var(--text-secondary);
@@ -53,29 +54,32 @@
   justify-content: space-between;
   gap: var(--space-4);
   flex-wrap: wrap;
-  padding-bottom: var(--space-4);
+  padding-bottom: var(--space-5);
   border-bottom: var(--border-width-thin) solid var(--border-subtle);
 }
 
 .titleGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
 .title {
   margin: 0;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
+  font-family: var(--font-display, var(--font-sans));
   color: var(--text-primary);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.025em;
+  line-height: var(--line-height-tight);
 }
 
 .description {
   margin: 0;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   color: var(--text-secondary);
   line-height: var(--line-height-relaxed);
+  max-width: 70ch;
 }
 
 .actions {
@@ -87,23 +91,27 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 // Simple Box / Card effect with subtle elevation and border
 .card {
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
+  position: relative;
+  padding: var(--space-6);
+  border-radius: var(--radius-card);
   border: var(--border-width-thin) solid var(--border-subtle);
+  border-top: var(--border-width-thin) solid var(--border-highlight);
   background-color: var(--surface-raised);
-  box-shadow: var(--shadow-sm);
+  background-image: var(--gradient-card);
+  box-shadow: var(--shadow-card);
   transition:
+    transform var(--duration-fast) var(--easing-standard),
     border-color var(--duration-fast) var(--easing-standard),
     box-shadow var(--duration-fast) var(--easing-standard);
 
   &:hover {
     border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-card-hover);
   }
 }
 

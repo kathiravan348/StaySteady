@@ -1,35 +1,10 @@
+@use '../tokens/theme-tokens' as tokens;
 @use '../functions/palette' as *;
 
 // Dark theme — the default (UI spec 2). Remaps only semantic (layer 2) and domain (layer 3) tokens.
 // Every theme must define the same keys (standards 3.4).
 
-$semantic: (
-  'surface': (
-    'sunken': palette('neutral', 1000),
-    'base': palette('neutral', 950),
-    'raised': palette('neutral', 900),
-    'overlay': palette('neutral', 800),
-  ),
-  'text': (
-    'primary': palette('neutral', 50),
-    'secondary': palette('neutral', 300),
-    'muted': palette('neutral', 400),
-    'disabled': palette('neutral', 600),
-    'inverse': palette('neutral', 950),
-  ),
-  'border': (
-    'subtle': palette('neutral', 800),
-    'default': palette('neutral', 700),
-    'strong': palette('neutral', 500),
-  ),
-  'interactive': (
-    'primary': palette('blue', 600),
-    'primary-hover': palette('blue', 500),
-    'primary-active': palette('blue', 700),
-    'on-primary': palette('neutral', 0),
-  ),
-  'focus-ring': palette('blue', 300),
-);
+$semantic: tokens.$theme-dark-semantic;
 
 $domain: (
   // Raw direction colours; the gain/loss convention axis maps them to --change-gain/--change-loss

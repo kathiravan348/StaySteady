@@ -6,6 +6,7 @@ export default defineConfig({
   testDir: '.',
   snapshotPathTemplate: '{testDir}/baselines/{arg}-{platform}{ext}',
   workers: 2,
+  timeout: 60_000,
   retries: 0,
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'report' }]],
   outputDir: 'results',

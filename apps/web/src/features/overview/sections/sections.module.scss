@@ -44,7 +44,7 @@
   gap: var(--space-4);
   align-items: center;
   justify-content: space-between;
-  padding-block: var(--space-3);
+  padding-block: var(--space-4);
   border-bottom: var(--border-width-thin) solid var(--border-subtle);
 
   &:last-child {
@@ -55,7 +55,7 @@
 .stackedRow {
   display: grid;
   gap: var(--space-2);
-  padding-block: var(--space-3);
+  padding-block: var(--space-4);
   border-bottom: var(--border-width-thin) solid var(--border-subtle);
 
   &:last-child {
@@ -73,6 +73,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+  line-height: var(--line-height-normal);
 
   @include mx.truncate;
 }
@@ -80,7 +81,7 @@
 .wrappingTitle {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-normal);
   color: var(--text-primary);
 }
 
@@ -90,6 +91,7 @@
 
   &:hover {
     text-decoration: underline;
+    color: var(--interactive-primary);
   }
 
   &:focus-visible {
@@ -99,7 +101,8 @@
 
 .meta {
   font-size: var(--font-size-xs);
-  color: var(--text-muted);
+  color: var(--text-secondary);
+  line-height: var(--line-height-normal);
 }
 
 .rowValue {
@@ -114,10 +117,12 @@
 
 .positive {
   color: var(--change-gain);
+  font-weight: 600;
 }
 
 .negative {
   color: var(--change-loss);
+  font-weight: 600;
 }
 
 .neutral {
@@ -127,11 +132,14 @@
 .badges {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-2);
+  margin-top: 2px;
 }
 
 .note {
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+  line-height: var(--line-height-relaxed);
 }

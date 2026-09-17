@@ -10,11 +10,14 @@
 }
 
 html {
-  font-family: var(--font-family-sans);
+  font-family: var(--font-sans, var(--font-family-sans));
   line-height: var(--line-height-normal);
   color: var(--text-primary);
   text-size-adjust: 100%;
   background-color: var(--surface-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 
   @include surface.scrollbar;
 }
@@ -22,6 +25,9 @@ html {
 body {
   margin: 0;
   font-size: var(--font-size-md);
+  font-family: inherit;
+  color: inherit;
+  background-color: transparent;
 }
 
 :focus-visible {

@@ -1,5 +1,5 @@
-import { Badge } from '@staysteady/ui';
-import type { BadgeVariant } from '@staysteady/ui';
+import { Badge, Timeline } from '@staysteady/ui';
+import type { BadgeVariant, TimelineItemStatus } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 
 import { moneyFromDto } from '../../../../data/api';
@@ -18,6 +18,15 @@ const EVENT_VARIANT: Readonly<Record<OrderEventKindDto, BadgeVariant>> = {
   filled: 'positive',
   cancelled: 'neutral',
   confirmation_lost: 'critical',
+};
+
+const STATUS_MAP: Readonly<Record<BadgeVariant, TimelineItemStatus>> = {
+  positive: 'positive',
+  warning: 'warning',
+  negative: 'negative',
+  critical: 'critical',
+  info: 'info',
+  neutral: 'neutral',
 };
 
 // UI spec 7.13 — one order's full lifecycle, from the signal that raised it to how it ended.
@@ -73,15 +82,15 @@ export function OrderDetail({ entry }: { readonly entry: OrderHistoryEntryDto })
         </span>
       </div>
 
-      <ol className={styles.timeline}>
-        {entry.timeline.map((event, index) => (
-          <li key={`${event.kind}-${String(index)}`} className={styles.event}>
-            <Badge variant={EVENT_VARIANT[event.kind]}>{event.title}</Badge>
-            <p className={styles.eventDetail}>{event.detail}</p>
-            <p className={styles.eventTime}>{formatDateTime(event.at)}</p>
-          </li>
-        ))}
-      </ol>
+      <Timeline
+        items={entry.timeline.map((event, index) => ({
+          id: `${event.kind}-${String(index)}`,
+          status: STATUS_MAP[EVENT_VARIANT[event.kind]],
+          title: <Badge variant={EVENT_VARIANT[event.kind]}>{event.title}</Badge>,
+          timestamp: formatDateTime(event.at),
+          detail: event.detail,
+        }))}
+      />
     </div>
   );
 }

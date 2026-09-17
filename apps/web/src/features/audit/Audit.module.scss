@@ -103,36 +103,3 @@
 .after {
   color: var(--change-gain);
 }
-
-.chain {
-  display: grid;
-  gap: var(--space-2);
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  counter-reset: step;
-}
-
-.step {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-3);
-  align-items: start;
-}
-
-.stepNumber {
-  display: grid;
-  place-items: center;
-  width: var(--space-6);
-  height: var(--space-6);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  background-color: var(--surface-sunken);
-  border: var(--border-width-thin) solid var(--border-default);
-  border-radius: var(--radius-full);
-}
-
-.current {
-  border-color: var(--interactive-primary);
-}

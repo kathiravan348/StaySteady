@@ -8,12 +8,62 @@
 @use 'tokens/density';
 @use 'tokens/gain-loss';
 @use 'themes/dark';
+@use 'themes/midnight';
+@use 'themes/emerald';
 @use 'themes/light';
 @use 'themes/high-contrast';
+@use 'tokens/theme-tokens' as theme-tokens;
 @use 'base';
 
 :root {
   @include custom-properties(primitives.$primitives);
+
+  // Component library compatibility aliases
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+  --font-display: var(--font-family-display);
+  --domain-gain: var(--change-gain);
+  --domain-loss: var(--change-loss);
+  --radius-card: var(--radius-card, 0.75rem);
+  --radius-pill: var(--radius-pill, 9999px);
+}
+
+// Font Preset Axis (one setting changes entire platform font family)
+:root,
+[data-font='jakarta'] {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-family-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+[data-font='inter'] {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  --font-family-display: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+[data-font='outfit'] {
+  --font-sans: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-family-sans: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  --font-family-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+[data-font='system'] {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-family-display: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-family-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
 }
 
 // Theme axis — dark applies when no attribute is set (UI spec 2).
@@ -23,6 +73,20 @@
 
   @include custom-properties(dark.$semantic);
   @include custom-properties(dark.$domain);
+}
+
+[data-theme='midnight'] {
+  color-scheme: dark;
+
+  @include custom-properties(midnight.$semantic);
+  @include custom-properties(midnight.$domain);
+}
+
+[data-theme='emerald'] {
+  color-scheme: dark;
+
+  @include custom-properties(emerald.$semantic);
+  @include custom-properties(emerald.$domain);
 }
 
 [data-theme='light'] {
@@ -37,6 +101,36 @@
 
   @include custom-properties(high-contrast.$semantic);
   @include custom-properties(high-contrast.$domain);
+}
+
+// Global typography and paragraph breathing room
+p {
+  margin-block-start: 0;
+  margin-block-end: var(--space-3);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-secondary);
+
+  &:last-child {
+    margin-block-end: 0;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-block-start: 0;
+  color: var(--text-primary);
+  font-family: var(--font-display, var(--font-sans));
+  letter-spacing: -0.02em;
+}
+
+hr {
+  border: none;
+  border-top: var(--border-width-thin) solid var(--border-subtle);
+  margin: var(--space-4) 0;
 }
 
 // Density axis — comfortable by default.

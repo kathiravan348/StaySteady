@@ -4,8 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StaySteady</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <script>
-      // No-flash display bootstrap: sets data-theme, data-density and data-gain-loss before first
+      // No-flash display bootstrap: sets data-theme, data-density, data-gain-loss and data-font before first
       // paint (standards 3.5). Keep values, defaults and the storage key in sync with
       // src/shared/display/displaySettings.ts.
       (function () {
@@ -17,8 +23,9 @@
           saved = {};
         }
         var preference = saved.theme;
+        var validThemes = ['dark', 'midnight', 'emerald', 'light', 'high-contrast'];
         var theme = 'dark';
-        if (preference === 'dark' || preference === 'light' || preference === 'high-contrast') {
+        if (validThemes.indexOf(preference) !== -1) {
           theme = preference;
         } else if (preference === 'system') {
           if (matchMedia('(prefers-contrast: more)').matches) {
@@ -30,6 +37,8 @@
         root.dataset.theme = theme;
         root.dataset.density = saved.density === 'compact' ? 'compact' : 'comfortable';
         root.dataset.gainLoss = saved.gainLoss === 'red-up' ? 'red-up' : 'green-up';
+        var validFonts = ['jakarta', 'inter', 'outfit', 'system'];
+        root.dataset.font = validFonts.indexOf(saved.font) !== -1 ? saved.font : 'jakarta';
       })();
     </script>
   </head>

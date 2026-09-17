@@ -1,5 +1,4 @@
 @use '../styles/mixins/breakpoints' as bp;
-@use '../styles/mixins/text' as text;
 @use '../styles/mixins/surface' as surface;
 
 .topBar {
@@ -7,31 +6,22 @@
   align-items: center;
   justify-content: space-between;
   height: 60px;
-  padding: 0 var(--space-4);
-  background-color: var(--surface-raised);
+  padding: 0 var(--space-5);
+  background-color: color-mix(in srgb, var(--surface-raised) 85%, transparent);
   border-bottom: var(--border-width-thin) solid var(--border-subtle);
   position: sticky;
   top: 0;
   z-index: var(--z-index-sticky);
   gap: var(--space-4);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-
-  @supports (backdrop-filter: blur(12px)) {
-    background-color: rgba(22, 27, 34, 0.88);
-    backdrop-filter: blur(12px);
-  }
-}
-
-:global([data-theme='light']) .topBar {
-  @supports (backdrop-filter: blur(12px)) {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-  }
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 :global([data-theme='high-contrast']) .topBar {
   background-color: var(--surface-raised);
   border-bottom: var(--border-width-thick) solid var(--border-strong);
+  backdrop-filter: none;
 }
 
 .leftSection {
@@ -61,17 +51,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, var(--interactive-primary), var(--interactive-accent));
   color: var(--text-on-primary);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-sm);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition:
-    transform var(--duration-fast) var(--easing-standard),
-    box-shadow var(--duration-fast) var(--easing-standard);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform var(--duration-fast) var(--easing-standard);
+}
+
+.brandSvg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-on-primary);
 }
 
 .brandText {
@@ -80,19 +72,41 @@
   color: var(--text-primary);
 }
 
+.versionTag {
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+  background: color-mix(in srgb, var(--interactive-primary) 18%, transparent);
+  color: var(--interactive-primary);
+  border: var(--border-width-thin) solid
+    color-mix(in srgb, var(--interactive-primary) 40%, transparent);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+
 .mockBadge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
+  gap: 6px;
+  height: 28px;
+  padding: 0 9px;
   background-color: rgba(224, 167, 38, 0.12);
   border: var(--border-width-thin) solid var(--severity-high);
   color: var(--severity-high);
   font-size: 10px;
   font-weight: var(--font-weight-bold);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  box-sizing: border-box;
+}
+
+.mockDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--severity-high);
+  box-shadow: 0 0 5px var(--severity-high);
 }
 
 .centerSection {
@@ -108,25 +122,29 @@
 }
 
 .marketStrip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 4px;
+  height: 32px;
   background-color: var(--surface-base);
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
+  padding: 0 6px;
+  border-radius: var(--radius-md);
   border: var(--border-width-thin) solid var(--border-subtle);
+  box-sizing: border-box;
 }
 
 .marketPill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   white-space: nowrap;
+  box-sizing: border-box;
   transition: background-color var(--duration-fast) var(--easing-standard);
 
   &:hover {
@@ -145,16 +163,13 @@
     background-color: var(--market-open);
     box-shadow: 0 0 6px var(--market-open);
   }
-
   &.pre-open {
     background-color: var(--market-pre-open);
     box-shadow: 0 0 5px var(--market-pre-open);
   }
-
   &.post-close {
     background-color: var(--market-post-close);
   }
-
   &.closed,
   &.holiday {
     background-color: var(--market-closed);
@@ -164,78 +179,108 @@
 .rightSection {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actionGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background-color: var(--border-subtle);
+  margin: 0 2px;
   flex-shrink: 0;
 }
 
 .modeBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
+  gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: var(--radius-md);
   font-size: 11px;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   text-transform: capitalize;
   border: var(--border-width-thin) solid transparent;
+  box-sizing: border-box;
   transition: all var(--duration-fast) var(--easing-standard);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
 
   &.simulation {
     background-color: rgba(77, 168, 218, 0.12);
     color: var(--mode-simulation);
     border-color: rgba(77, 168, 218, 0.3);
-
     &:hover {
-      background-color: rgba(77, 168, 218, 0.2);
+      background-color: rgba(77, 168, 218, 0.22);
     }
   }
-
   &.observation {
     background-color: rgba(43, 178, 170, 0.12);
     color: var(--mode-observation);
     border-color: rgba(43, 178, 170, 0.3);
-
     &:hover {
-      background-color: rgba(43, 178, 170, 0.2);
+      background-color: rgba(43, 178, 170, 0.22);
     }
   }
-
   &.manual-approval {
     background-color: rgba(224, 167, 38, 0.12);
     color: var(--mode-manual-approval);
     border-color: rgba(224, 167, 38, 0.3);
-
     &:hover {
-      background-color: rgba(224, 167, 38, 0.2);
+      background-color: rgba(224, 167, 38, 0.22);
     }
   }
-
   &.full-automation {
     background-color: rgba(181, 142, 240, 0.12);
     color: var(--mode-full-automation);
     border-color: rgba(181, 142, 240, 0.3);
-
     &:hover {
-      background-color: rgba(181, 142, 240, 0.2);
+      background-color: rgba(181, 142, 240, 0.22);
     }
   }
+}
+
+.modeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background-color: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.modeLabel {
+  display: inline-block;
 }
 
 .killSwitch {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
+  gap: 5px;
+  height: 32px;
+  padding: 0 12px;
   background-color: var(--change-loss);
   color: var(--text-on-primary);
   border: var(--border-width-thin) solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   font-size: 11px;
   font-weight: var(--font-weight-bold);
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  box-sizing: border-box;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   transition: all var(--duration-fast) var(--easing-standard);
 
@@ -252,50 +297,102 @@
   }
 }
 
+.killIcon {
+  width: 14px;
+  height: 14px;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.selectWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+}
+
 .currencySelect {
-  padding: 4px 8px;
+  height: 32px;
+  padding: 0 26px 0 10px;
   background-color: var(--surface-base);
   border: var(--border-width-thin) solid var(--border-subtle);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 11px;
   font-weight: var(--font-weight-bold);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--easing-standard);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box;
+  transition: all var(--duration-fast) var(--easing-standard);
 
-  &:hover,
+  &:hover {
+    background-color: var(--surface-overlay);
+    border-color: var(--border-strong);
+  }
+
   &:focus-visible {
+    outline: none;
+    border-color: var(--interactive-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--interactive-primary) 30%, transparent);
+  }
+}
+
+.selectChevron {
+  position: absolute;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.healthBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 9px;
+  background-color: var(--surface-base);
+  border: var(--border-width-thin) solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  transition: all var(--duration-fast) var(--easing-standard);
+  cursor: default;
+
+  &:hover {
+    background-color: var(--surface-overlay);
     border-color: var(--border-strong);
   }
 }
 
-.healthIndicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-}
-
 .healthDot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: var(--radius-pill);
+  flex-shrink: 0;
 
   &.healthy {
     background-color: var(--market-open);
     box-shadow: 0 0 6px var(--market-open);
   }
-
   &.degraded {
     background-color: var(--severity-high);
     box-shadow: 0 0 6px var(--severity-high);
   }
-
   &.critical {
     background-color: var(--severity-critical);
     box-shadow: 0 0 8px var(--severity-critical);
   }
+}
+
+.healthLabel {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
 }
 
 .iconButton {
@@ -310,7 +407,7 @@
   color: var(--text-secondary);
   cursor: pointer;
   position: relative;
-  font-size: 13px;
+  box-sizing: border-box;
   transition: all var(--duration-fast) var(--easing-standard);
 
   &:hover {
@@ -334,4 +431,11 @@
   padding: 1px 5px;
   line-height: 1.1;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.headerIcon {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+  transition: transform var(--duration-fast) var(--easing-standard);
 }

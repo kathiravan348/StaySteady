@@ -14,7 +14,7 @@ export function InstitutionRegister({
   const confirmNominee = useConfirmNominee();
 
   return (
-    <Card title="Institution & Nominee Register">
+    <Card title="Institution & Nominee Register" isCollapsible defaultExpanded>
       <p className={styles.note}>
         Every bank, broker, and custodian holding assets must maintain a verified nominee or
         beneficiary registration on file. Re-confirm status periodically to avoid legal estate

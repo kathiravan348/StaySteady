@@ -1,35 +1,38 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 0.25rem);
+  gap: var(--space-2, 0.5rem);
 }
 
 .labelRow {
   display: flex;
   align-items: center;
-  gap: var(--space-1, 0.25rem);
+  gap: var(--space-2, 0.5rem);
 }
 
 .label {
+  font-family: var(--font-sans, inherit);
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary, #94a3b8);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .valueRow {
   display: flex;
   align-items: baseline;
   gap: var(--space-2, 0.5rem);
+  flex-wrap: wrap;
 }
 
 .value {
-  font-family: var(--font-mono, monospace);
-  font-weight: 600;
+  font-family: var(--font-sans, inherit);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary, #f8fafc);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
 .sm {
@@ -42,37 +45,43 @@
   font-size: var(--font-size-2xl, 1.5rem);
 }
 .xl {
-  font-size: var(--font-size-3xl, 1.875rem);
+  font-size: var(--font-size-3xl, 2rem);
 }
 
 .diffBadge {
   display: inline-flex;
   align-items: center;
-  gap: 0.125rem;
-  font-family: var(--font-mono, monospace);
+  gap: 0.2rem;
+  font-family: var(--font-sans, inherit);
   font-size: var(--font-size-xs, 0.75rem);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  padding: 0.125rem 0.375rem;
+  padding: 0.15rem 0.45rem;
   border-radius: var(--radius-sm, 0.25rem);
+  border: 1px solid transparent;
 }
 
 .positive {
   color: var(--domain-gain, #22c55e);
   background-color: color-mix(in srgb, var(--domain-gain, #22c55e) 15%, transparent);
+  border-color: color-mix(in srgb, var(--domain-gain, #22c55e) 30%, transparent);
 }
 
 .negative {
   color: var(--domain-loss, #ef4444);
   background-color: color-mix(in srgb, var(--domain-loss, #ef4444) 15%, transparent);
+  border-color: color-mix(in srgb, var(--domain-loss, #ef4444) 30%, transparent);
 }
 
 .neutral {
   color: var(--text-secondary, #94a3b8);
-  background-color: var(--surface-raised, #1e293b);
+  background-color: var(--surface-raised, #111827);
+  border-color: var(--border-subtle, rgba(255, 255, 255, 0.08));
 }
 
 .subLabel {
+  margin-top: 0.125rem;
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--text-muted, #64748b);
+  line-height: var(--line-height-normal, 1.5);
 }

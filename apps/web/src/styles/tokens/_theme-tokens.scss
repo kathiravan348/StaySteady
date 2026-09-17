@@ -1,0 +1,303 @@
+// Master Centralized Theme Tokens Configuration
+// ==============================================================================
+// This file serves as the single source of truth for all colors, borders,
+// surfaces, gradients, highlights, and font presets across the entire application.
+// ==============================================================================
+
+// Font Presets
+// ------------------------------------------------------------------------------
+$font-presets: (
+  'jakarta': (
+    'sans': (
+      "'Plus Jakarta Sans'",
+      "'Inter'",
+      system-ui,
+      -apple-system,
+      sans-serif,
+    ),
+    'display': (
+      "'Plus Jakarta Sans'",
+      "'Outfit'",
+      sans-serif,
+    ),
+    'mono': (
+      "'JetBrains Mono'",
+      ui-monospace,
+      'Cascadia Mono',
+      Consolas,
+      monospace,
+    ),
+  ),
+  'inter': (
+    'sans': (
+      "'Inter'",
+      system-ui,
+      -apple-system,
+      sans-serif,
+    ),
+    'display': (
+      "'Inter'",
+      "'Outfit'",
+      sans-serif,
+    ),
+    'mono': (
+      "'JetBrains Mono'",
+      ui-monospace,
+      'Cascadia Mono',
+      Consolas,
+      monospace,
+    ),
+  ),
+  'outfit': (
+    'sans': (
+      "'Outfit'",
+      "'Plus Jakarta Sans'",
+      sans-serif,
+    ),
+    'display': (
+      "'Outfit'",
+      sans-serif,
+    ),
+    'mono': (
+      "'JetBrains Mono'",
+      ui-monospace,
+      'Cascadia Mono',
+      Consolas,
+      monospace,
+    ),
+  ),
+  'system': (
+    'sans': (
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      Helvetica,
+      Arial,
+      sans-serif,
+    ),
+    'display': (
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      sans-serif,
+    ),
+    'mono': (
+      ui-monospace,
+      'Cascadia Mono',
+      'SF Mono',
+      Menlo,
+      Consolas,
+      monospace,
+    ),
+  ),
+);
+
+// Theme Definitions: All colors, borders, backgrounds, gradients & highlights in one place
+// ------------------------------------------------------------------------------
+
+// 1. OBSIDIAN DARK (Default)
+$theme-dark-semantic: (
+  'surface': (
+    'sunken': #06090e,
+    'base': #0b0f19,
+    'raised': #111827,
+    'overlay': #1e293b,
+  ),
+  'text': (
+    'primary': #f8fafc,
+    'secondary': #94a3b8,
+    'muted': #64748b,
+    'disabled': #475569,
+    'inverse': #0b0f19,
+  ),
+  'border': (
+    'subtle': rgba(255, 255, 255, 0.07),
+    'default': rgba(255, 255, 255, 0.12),
+    'strong': rgba(255, 255, 255, 0.22),
+    'highlight': rgba(255, 255, 255, 0.18),
+  ),
+  'interactive': (
+    'primary': #3b82f6,
+    'primary-hover': #60a5fa,
+    'primary-active': #1d4ed8,
+    'accent': #8b5cf6,
+    'on-primary': #ffffff,
+  ),
+  'focus-ring': #60a5fa,
+  'gradient': (
+    'card': linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 100%),
+    'accent': linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%),
+    'glow': radial-gradient(ellipse at top, rgba(59, 130, 246, 0.15) 0%, transparent 70%),
+    'surface': linear-gradient(180deg, #111827 0%, #0b0f19 100%),
+  ),
+  'glow': (
+    'card': 0 0 20px rgba(59, 130, 246, 0.08),
+    'badge': 0 0 10px rgba(59, 130, 246, 0.2),
+  ),
+);
+
+// 2. MIDNIGHT NAVY (Cyberpunk Blue & Neon Cyan)
+$theme-midnight-semantic: (
+  'surface': (
+    'sunken': #040812,
+    'base': #070e1e,
+    'raised': #0c1830,
+    'overlay': #132448,
+  ),
+  'text': (
+    'primary': #f0f6fc,
+    'secondary': #8ba3c7,
+    'muted': #59739c,
+    'disabled': #3e5374,
+    'inverse': #070e1e,
+  ),
+  'border': (
+    'subtle': rgba(56, 189, 248, 0.1),
+    'default': rgba(56, 189, 248, 0.18),
+    'strong': rgba(56, 189, 248, 0.35),
+    'highlight': rgba(56, 189, 248, 0.28),
+  ),
+  'interactive': (
+    'primary': #0ea5e9,
+    'primary-hover': #38bdf8,
+    'primary-active': #0284c7,
+    'accent': #06b6d4,
+    'on-primary': #ffffff,
+  ),
+  'focus-ring': #38bdf8,
+  'gradient': (
+    'card': linear-gradient(180deg, rgba(56, 189, 248, 0.045) 0%, rgba(56, 189, 248, 0) 100%),
+    'accent': linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #14b8a6 100%),
+    'glow': radial-gradient(ellipse at top, rgba(14, 165, 233, 0.2) 0%, transparent 70%),
+    'surface': linear-gradient(180deg, #0c1830 0%, #070e1e 100%),
+  ),
+  'glow': (
+    'card': 0 0 24px rgba(14, 165, 233, 0.12),
+    'badge': 0 0 12px rgba(56, 189, 248, 0.25),
+  ),
+);
+
+// 3. EMERALD JADE (Dark Forest & Financial Gold)
+$theme-emerald-semantic: (
+  'surface': (
+    'sunken': #030a07,
+    'base': #06120d,
+    'raised': #0b1e17,
+    'overlay': #122f24,
+  ),
+  'text': (
+    'primary': #f0fdf4,
+    'secondary': #86bfa3,
+    'muted': #528970,
+    'disabled': #37634f,
+    'inverse': #06120d,
+  ),
+  'border': (
+    'subtle': rgba(52, 211, 153, 0.1),
+    'default': rgba(52, 211, 153, 0.18),
+    'strong': rgba(52, 211, 153, 0.35),
+    'highlight': rgba(52, 211, 153, 0.28),
+  ),
+  'interactive': (
+    'primary': #10b981,
+    'primary-hover': #34d399,
+    'primary-active': #059669,
+    'accent': #eab308,
+    'on-primary': #ffffff,
+  ),
+  'focus-ring': #34d399,
+  'gradient': (
+    'card': linear-gradient(180deg, rgba(52, 211, 153, 0.045) 0%, rgba(52, 211, 153, 0) 100%),
+    'accent': linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #eab308 100%),
+    'glow': radial-gradient(ellipse at top, rgba(16, 185, 129, 0.18) 0%, transparent 70%),
+    'surface': linear-gradient(180deg, #0b1e17 0%, #06120d 100%),
+  ),
+  'glow': (
+    'card': 0 0 24px rgba(16, 185, 129, 0.12),
+    'badge': 0 0 12px rgba(52, 211, 153, 0.25),
+  ),
+);
+
+// 4. CRISP LIGHT (Editorial Luxury Slate)
+$theme-light-semantic: (
+  'surface': (
+    'sunken': #f1f5f9,
+    'base': #f8fafc,
+    'raised': #ffffff,
+    'overlay': #ffffff,
+  ),
+  'text': (
+    'primary': #0f172a,
+    'secondary': #475569,
+    'muted': #64748b,
+    'disabled': #94a3b8,
+    'inverse': #ffffff,
+  ),
+  'border': (
+    'subtle': rgba(15, 23, 42, 0.06),
+    'default': rgba(15, 23, 42, 0.12),
+    'strong': rgba(15, 23, 42, 0.25),
+    'highlight': rgba(15, 23, 42, 0.18),
+  ),
+  'interactive': (
+    'primary': #2563eb,
+    'primary-hover': #1d4ed8,
+    'primary-active': #1e40af,
+    'accent': #7c3aed,
+    'on-primary': #ffffff,
+  ),
+  'focus-ring': #2563eb,
+  'gradient': (
+    'card': linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.8) 100%),
+    'accent': linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%),
+    'glow': radial-gradient(ellipse at top, rgba(37, 99, 235, 0.08) 0%, transparent 70%),
+    'surface': linear-gradient(180deg, #ffffff 0%, #f8fafc 100%),
+  ),
+  'glow': (
+    'card': 0 4px 20px -2px rgba(15, 23, 42, 0.06),
+    'badge': 0 0 0 rgba(0, 0, 0, 0),
+  ),
+);
+
+// 5. HIGH CONTRAST (Accessible AAA)
+$theme-high-contrast-semantic: (
+  'surface': (
+    'sunken': #000000,
+    'base': #000000,
+    'raised': #0a0a0a,
+    'overlay': #141414,
+  ),
+  'text': (
+    'primary': #ffffff,
+    'secondary': #e5e5e5,
+    'muted': #cccccc,
+    'disabled': #888888,
+    'inverse': #000000,
+  ),
+  'border': (
+    'subtle': #555555,
+    'default': #888888,
+    'strong': #ffffff,
+    'highlight': #ffffff,
+  ),
+  'interactive': (
+    'primary': #3b82f6,
+    'primary-hover': #60a5fa,
+    'primary-active': #93c5fd,
+    'accent': #a855f7,
+    'on-primary': #000000,
+  ),
+  'focus-ring': #ffffff,
+  'gradient': (
+    'card': none,
+    'accent': none,
+    'glow': none,
+    'surface': none,
+  ),
+  'glow': (
+    'card': none,
+    'badge': none,
+  ),
+);

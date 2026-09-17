@@ -1,11 +1,21 @@
 // Display settings: three independent axes applied as attributes on <html> (standards 3.3, 3.5).
 // Keep option values, defaults and the storage key in sync with the no-flash script in index.html.
 
-export const THEMES = ['dark', 'light', 'high-contrast'] as const;
+export const THEMES = ['dark', 'midnight', 'emerald', 'light', 'high-contrast'] as const;
 export type Theme = (typeof THEMES)[number];
 
-export const THEME_PREFERENCES = ['dark', 'light', 'high-contrast', 'system'] as const;
+export const THEME_PREFERENCES = [
+  'dark',
+  'midnight',
+  'emerald',
+  'light',
+  'high-contrast',
+  'system',
+] as const;
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
+
+export const FONT_PREFERENCES = ['jakarta', 'inter', 'outfit', 'system'] as const;
+export type FontPreference = (typeof FONT_PREFERENCES)[number];
 
 export const DENSITIES = ['comfortable', 'compact'] as const;
 export type Density = (typeof DENSITIES)[number];
@@ -15,6 +25,7 @@ export type GainLossConvention = (typeof GAIN_LOSS_CONVENTIONS)[number];
 
 export interface DisplaySettings {
   readonly theme: ThemePreference;
+  readonly font: FontPreference;
   readonly density: Density;
   readonly gainLoss: GainLossConvention;
 }
@@ -27,6 +38,7 @@ export interface SystemPreferences {
 // Dark is the default theme (UI spec 2); "system" is an explicit opt-in.
 export const DEFAULT_DISPLAY_SETTINGS: DisplaySettings = {
   theme: 'dark',
+  font: 'jakarta',
   density: 'comfortable',
   gainLoss: 'green-up',
 };
@@ -51,6 +63,9 @@ export function parseDisplaySettings(raw: unknown): DisplaySettings {
     theme:
       matchOption(THEME_PREFERENCES, 'theme' in raw ? raw.theme : undefined) ??
       DEFAULT_DISPLAY_SETTINGS.theme,
+    font:
+      matchOption(FONT_PREFERENCES, 'font' in raw ? raw.font : undefined) ??
+      DEFAULT_DISPLAY_SETTINGS.font,
     density:
       matchOption(DENSITIES, 'density' in raw ? raw.density : undefined) ??
       DEFAULT_DISPLAY_SETTINGS.density,
@@ -78,6 +93,7 @@ export function applyDisplaySettings(
   system: SystemPreferences,
 ): void {
   root.dataset.theme = resolveTheme(settings.theme, system);
+  root.dataset.font = settings.font;
   root.dataset.density = settings.density;
   root.dataset.gainLoss = settings.gainLoss;
 }

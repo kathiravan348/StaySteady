@@ -1,0 +1,6 @@
+@use '../tokens/theme-tokens' as tokens;
+@use 'dark';
+
+// Emerald Jade theme — rich dark forest with emerald borders and gold financial highlights.
+$semantic: tokens.$theme-emerald-semantic;
+$domain: dark.$domain;

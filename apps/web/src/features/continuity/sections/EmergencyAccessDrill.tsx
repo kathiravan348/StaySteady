@@ -1,4 +1,5 @@
-import { Badge, Button, Card } from '@staysteady/ui';
+import { Badge, Button, Card, Timeline } from '@staysteady/ui';
+import type { TimelineItemStatus } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 
@@ -30,7 +31,7 @@ export function EmergencyAccessDrill({
   });
 
   return (
-    <Card title="Emergency Access Playbook & Drill History">
+    <Card title="Emergency Access Playbook & Drill History" isCollapsible defaultExpanded>
       <div className={styles.stack}>
         <div className={styles.inline}>
           <span className={styles.title}>Nominated Person:</span>
@@ -161,23 +162,23 @@ export function EmergencyAccessDrill({
 
         <div>
           <span className={styles.fieldLabel}>Past Drill Log:</span>
-          <ul className={styles.list} aria-label="Drill History">
-            {playbook.drillHistory.map((drill) => {
+          <Timeline
+            items={playbook.drillHistory.map((drill) => {
               const outcomeConfig = DRILL_OUTCOME_CONFIG[drill.outcome];
-              return (
-                <li key={drill.id} className={styles.item}>
-                  <div className={styles.inline}>
-                    <span className={styles.title}>{drill.routeTested}</span>
-                    <Badge variant={outcomeConfig.variant}>{outcomeConfig.label}</Badge>
-                    <span className={styles.meta}>
-                      {drill.drillDate.slice(0, 10)} · Conducted by {drill.testedBy}
-                    </span>
-                  </div>
-                  <p className={styles.note}>{drill.notes}</p>
-                </li>
-              );
+              return {
+                id: drill.id,
+                status: (drill.outcome === 'passed'
+                  ? 'positive'
+                  : drill.outcome === 'partial'
+                    ? 'warning'
+                    : 'critical') as TimelineItemStatus,
+                title: drill.routeTested,
+                badge: <Badge variant={outcomeConfig.variant}>{outcomeConfig.label}</Badge>,
+                timestamp: `${drill.drillDate.slice(0, 10)} · Conducted by ${drill.testedBy}`,
+                detail: drill.notes,
+              };
             })}
-          </ul>
+          />
         </div>
       </div>
     </Card>

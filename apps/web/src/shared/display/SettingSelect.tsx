@@ -11,8 +11,27 @@ interface SettingSelectProps<T extends string> {
   readonly onChange: (value: T) => void;
 }
 
-// 'high-contrast' becomes 'High contrast'.
+const OPTION_LABELS: Record<string, string> = {
+  dark: 'Obsidian Dark (Default)',
+  midnight: 'Midnight Navy (Neon Cyan)',
+  emerald: 'Emerald Jade (Dark Forest)',
+  light: 'Luxury Light (Clean Slate)',
+  'high-contrast': 'High Contrast (Accessible)',
+  system: 'System Preference',
+  jakarta: 'Plus Jakarta Sans (Fintech)',
+  inter: 'Inter (Swiss Precision)',
+  outfit: 'Outfit (Geometric)',
+  comfortable: 'Comfortable',
+  compact: 'Compact',
+  'green-up': 'Green Up / Red Down (Standard)',
+  'red-up': 'Red Up / Green Down (Asian Markets)',
+};
+
+// Formats option value with human-friendly descriptions
 function formatOption(option: string): string {
+  if (option in OPTION_LABELS) {
+    return OPTION_LABELS[option] ?? option;
+  }
   const words = option.replaceAll('-', ' ');
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
