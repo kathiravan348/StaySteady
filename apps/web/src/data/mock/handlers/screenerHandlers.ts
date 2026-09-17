@@ -3,7 +3,19 @@
 import { http, HttpResponse, type HttpHandler } from 'msw';
 
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
-import { executeScreenerSearch, SCREENER_PRESETS } from '../generators/screenerGenerator';
+import {
+  executeScreenerSearch,
+  SCREENER_PRESETS,
+  SCREENER_UNIVERSE,
+} from '../generators/screenerGenerator';
+import { withScreenerStatus } from '../generators/screenerStatus';
+import {
+  currentConfigs,
+  getBrokerVersions,
+  getInstrumentTypeVersions,
+  getMarketVersions,
+} from '../stores/configStore';
+import { evaluateEligibility } from '../stores/complianceStore';
 import { ScreenerFilterCriteriaSchema, ScreenerSearchResultSchema } from '../../schemas/screener';
 import { failure } from './versionedConfigHandlers';
 
@@ -24,7 +36,15 @@ export const screenerHandlers: readonly HttpHandler[] = [
     const parsed = ScreenerFilterCriteriaSchema.safeParse(body);
     const criteria = parsed.success ? parsed.data : ScreenerFilterCriteriaSchema.parse({});
 
-    const result = executeScreenerSearch(criteria);
+    const universe = withScreenerStatus(SCREENER_UNIVERSE, {
+      checkEligibility: evaluateEligibility,
+      permissions: {
+        markets: currentConfigs(getMarketVersions()),
+        brokers: currentConfigs(getBrokerVersions()),
+        types: currentConfigs(getInstrumentTypeVersions()),
+      },
+    });
+    const result = executeScreenerSearch(criteria, universe);
     const parsedResult = ScreenerSearchResultSchema.parse(result);
 
     return HttpResponse.json(parsedResult, { status: 200 });

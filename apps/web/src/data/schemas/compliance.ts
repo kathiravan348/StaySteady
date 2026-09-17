@@ -138,10 +138,15 @@ export type AddRestrictedInstrumentInput = z.infer<typeof AddRestrictedInstrumen
 export const EligibilityCheckStatusSchema = z.enum(['ALLOWED', 'REFUSED']);
 export type EligibilityCheckStatus = z.infer<typeof EligibilityCheckStatusSchema>;
 
+// Which rule refused the trade; null when it is allowed.
+export const EligibilityRuleSchema = z.enum(['restricted_list', 'blackout', 'holding_lock']);
+export type EligibilityRule = z.infer<typeof EligibilityRuleSchema>;
+
 export const EligibilityCheckResultSchema = z.object({
   symbol: z.string(),
   action: z.enum(['BUY', 'SELL']),
   status: EligibilityCheckStatusSchema,
+  rule: EligibilityRuleSchema.nullable(),
   primaryReason: z.string(),
   policyClause: z.string(),
   details: z.string(),

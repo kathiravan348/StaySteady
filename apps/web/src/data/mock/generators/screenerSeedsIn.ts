@@ -1,8 +1,8 @@
 // India (NSE) screening universe seeds for S-26 Markets Screener (UI spec 8.3; Open Question 11).
 
-import type { ScreenerRow } from '../../schemas/screener';
+import type { ScreenerSeed } from './screenerSeeds';
 
-export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
+export const SCREENER_SEEDS_IN: readonly ScreenerSeed[] = [
   {
     id: 'scr-reliance',
     symbol: 'RELIANCE',
@@ -23,9 +23,6 @@ export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
     rsi14: 42.5,
     sma200DistancePct: 1.8,
     averageDailyVolume: '₹14.2B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-tcs',
@@ -47,9 +44,6 @@ export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
     rsi14: 57.8,
     sma200DistancePct: 8.5,
     averageDailyVolume: '₹9.5B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-hdfcbank',
@@ -71,9 +65,6 @@ export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
     rsi14: 51.2,
     sma200DistancePct: 3.2,
     averageDailyVolume: '₹18.1B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-infy',
@@ -95,9 +86,6 @@ export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
     rsi14: 63.5,
     sma200DistancePct: 11.2,
     averageDailyVolume: '₹11.8B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-niftybees',
@@ -119,8 +107,5 @@ export const SCREENER_SEEDS_IN: readonly ScreenerRow[] = [
     rsi14: 58.2,
     sma200DistancePct: 6.5,
     averageDailyVolume: '₹2.1B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
 ];

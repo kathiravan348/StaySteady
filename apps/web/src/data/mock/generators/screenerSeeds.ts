@@ -7,7 +7,14 @@ import { SCREENER_SEEDS_US } from './screenerSeedsUs';
 export { SCREENER_SEEDS_US } from './screenerSeedsUs';
 export { SCREENER_SEEDS_IN } from './screenerSeedsIn';
 
-export const SCREENER_UNIVERSE: readonly ScreenerRow[] = [
+// Compliance status and automation permission are not seeded: the screener search works them out
+// from the compliance store and the saved configurations on every request (screenerStatus.ts).
+export type ScreenerSeed = Omit<
+  ScreenerRow,
+  'complianceStatus' | 'complianceReason' | 'automationPermission'
+>;
+
+export const SCREENER_UNIVERSE: readonly ScreenerSeed[] = [
   ...SCREENER_SEEDS_US,
   ...SCREENER_SEEDS_IN,
 ];

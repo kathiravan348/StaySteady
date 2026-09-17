@@ -15,8 +15,8 @@ import {
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
 import styles from './automation/Automation.module.scss';
-import type { PermissionInputs } from './automation/model/permissionLayers';
-import { evaluateCell, strategyPermissions } from './automation/model/permissionLayers';
+import type { PermissionInputs } from '../../shared/automation/permissionLayers';
+import { evaluateCell, strategyPermissions } from '../../shared/automation/permissionLayers';
 import { PermissionMatrix } from './automation/sections/PermissionMatrix';
 import { StrategyPermissions } from './automation/sections/StrategyPermissions';
 import { SettingsNav } from './sections/SettingsNav';

@@ -5523,3 +5523,69 @@ FILES CREATED/TOUCHED:
   - Docs/PROGRESS_LOG.md (MODIFY)
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Session 57 (Append Only)
+
+Moved verbatim from `PROGRESS_LOG.md` section 4, per rule 11. Nothing was reworded or deleted.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        57 — START ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+START:          2026-09-17T04:52:00Z  |  local: 2026-09-17 10:22 IST (UTC+05:30)
+TASK CLAIMED:   Stage E — Requirements Part II Extensions To Existing Screens (E-01 through E-09)
+OWNER INPUT:    "complete Stage E"; decision 26
+
+PRE-WORK VERIFICATION:
+  git:         S-26 committed as 768474a; working tree clean
+  type check:  PASS, ESLint: PASS, build: PASS
+
+SCOPE (requirements 25–34; UI spec 19.2):
+  - E-01: Holdings — liquidity class (T+1, short-term, illiquid); non-market manual assets toggle
+  - E-02: Position Detail — tax lot classification (STCG/LTCG), LTCG boundary countdown, cost of disposing today
+  - E-03: Orders & Approval Queue — pre-trade compliance checks, 5m cooling-off countdown, stated rationale
+  - E-04: Risk & Safety — counterparty exposure with SIPC/DICGC limits; compliance limits panel
+  - E-05: System Health — independent depository/registrar reconciliation status (DTCC, CDSL, NSDL)
+  - E-06: Reports — nominal vs real (CPI-adjusted) returns, drag waterfall, US 8949 and India ITR-2 tax packs
+  - E-07: Planning — segregated emergency reserve fund gauge, 4-tier liquidity ladder, SWR decumulation simulator
+  - E-08: Strategy Library — retirement rules, demotion history audit log, pairwise cross-strategy correlation matrix
+  - E-09: Configuration — statutory tax rules, annual CPI inflation benchmarks, algorithmic operating cost budget
+────────────────────────────────────────────────────────────
+
+────────────────────────────────────────────────────────────
+SESSION:        57 — END ENTRY
+AGENT:          Antigravity (Gemini 3.8 Flash)
+END:            2026-09-17T05:15:00Z  |  local: 2026-09-17 10:45 IST (UTC+05:30)
+TASK:           Stage E — Requirements Part II Extensions To Existing Screens (E-01 to E-09) — ALL 9 DONE (100%)
+
+WHAT WAS BUILT:
+  - E-01: HoldingsLiquiditySummary.tsx (199 lines) mounted into HoldingsView.
+    3 liquidity buckets (T+1, Short-Term, Illiquid), wealth share %, manual non-market asset toggle with badges.
+  - E-02: PositionDisposalEstimator.tsx (243 lines) mounted into PositionView.
+    STCG vs LTCG lot breakdown, days countdown to LTCG boundary, Cost of Disposing Today net cash calculator.
+  - E-03: ApprovalCard.tsx (219 lines) and DecisionDialog.tsx (151 lines).
+    Pre-trade compliance status, active 5m cooling-off countdown timer for orders >50 shares / >$10k, required rationale prompt.
+  - E-04: CounterpartyExposureSection.tsx (157 lines) and ComplianceLimitsPanel.tsx (172 lines) mounted in RiskPanelView.
+    Custodian breakdown (IBKR, Zerodha, CDSL, HDFC, Chase) with SIPC/DICGC protection limits and concentration alerts; S-33 compliance overlay.
+  - E-05: DepositoryReconciliationSection.tsx (200 lines) mounted in HealthStatusPage.
+    DTCC/CDSL/NSDL central registry reconciliation, 0 discrepancy counter, and on-demand simulated reconciliation trigger.
+  - E-06: RealReturnsComparisonSection.tsx (284 lines) and JurisdictionTaxPackSection.tsx (279 lines) mounted in ReportBody.
+    Nominal vs CPI Real return comparison (+14.2% vs +9.4%), 7-step drag waterfall, dual-jurisdiction CSV tax packs (US 8949 / India ITR-2).
+  - E-07: EmergencyReserveCard.tsx (191 lines) and LiquidityLadderSection.tsx (225 lines) mounted in PlanningGoalsPage & PlanningScenariosPage.
+    Survival runway gauge (8.2m funded vs 6.0m target) segregated from trading margin, 4-tier liquidity ladder, SWR decumulation simulator.
+  - E-08: StrategyRetirementSection.tsx (271 lines) and strategyRetirementData.ts (40 lines) mounted in LibraryView.
+    Drawdown/decay retirement rules, demotion history audit log, pairwise correlation matrix with >0.70 clustering warnings.
+  - E-09: TaxRulesAndInflationSection.tsx (230 lines), InflationAssumptionsSubcard.tsx (133 lines), and OperatingCostBudgetSection.tsx (253 lines) mounted in SettingsCurrenciesPage.
+    Configurable US & India tax rules, CPI benchmark inflation inputs, algorithmic platform operating cost budget tracker ($125 / $150 accrued; 0.04% AUM drag).
+
+DECISION 18 ADHERENCE:
+  - Every single file strictly under 300 lines (longest: RealReturnsComparisonSection at 284 lines).
+
+VERIFICATION RUN:
+  type check:  PASS — 0 errors across workspace (pnpm -r typecheck)
+  lint:        ESLint PASS (0 errors across apps/web/src); Prettier --check PASS on all touched files
+  build:       PASS — Vite production bundle generated cleanly (built in 48.24s)
+────────────────────────────────────────────────────────────
+```

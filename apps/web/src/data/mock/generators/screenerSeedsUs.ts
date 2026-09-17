@@ -1,8 +1,8 @@
 // US screening universe seeds for S-26 Markets Screener (UI spec 8.3; Open Question 11).
 
-import type { ScreenerRow } from '../../schemas/screener';
+import type { ScreenerSeed } from './screenerSeeds';
 
-export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
+export const SCREENER_SEEDS_US: readonly ScreenerSeed[] = [
   {
     id: 'scr-aapl',
     symbol: 'AAPL',
@@ -23,9 +23,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 58.4,
     sma200DistancePct: 12.4,
     averageDailyVolume: '$9.2B',
-    complianceStatus: 'LOCKED',
-    complianceReason: 'Holding lock on 50 shares (18 days remaining)',
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-msft',
@@ -47,9 +44,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 52.1,
     sma200DistancePct: 6.8,
     averageDailyVolume: '$6.8B',
-    complianceStatus: 'LOCKED',
-    complianceReason: 'Holding lock on 30 shares (8 days remaining)',
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-googl',
@@ -71,9 +65,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 46.8,
     sma200DistancePct: -2.1,
     averageDailyVolume: '$4.1B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-nvda',
@@ -95,9 +86,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 64.2,
     sma200DistancePct: 18.9,
     averageDailyVolume: '$18.4B',
-    complianceStatus: 'RESTRICTED',
-    complianceReason: 'Restricted List (MNPI / Insider List §4.2)',
-    automationPermission: 'BLOCKED',
   },
   {
     id: 'scr-brkb',
@@ -119,9 +107,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 48.5,
     sma200DistancePct: 4.2,
     averageDailyVolume: '$1.8B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-jnj',
@@ -143,9 +128,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 44.1,
     sma200DistancePct: 2.1,
     averageDailyVolume: '$1.2B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-jpm',
@@ -167,9 +149,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 62.4,
     sma200DistancePct: 9.5,
     averageDailyVolume: '$2.3B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-v',
@@ -191,9 +170,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 54.0,
     sma200DistancePct: 5.8,
     averageDailyVolume: '$1.6B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-spy',
@@ -215,9 +191,6 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 56.5,
     sma200DistancePct: 7.2,
     averageDailyVolume: '$24.5B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
   {
     id: 'scr-qqq',
@@ -239,8 +212,5 @@ export const SCREENER_SEEDS_US: readonly ScreenerRow[] = [
     rsi14: 59.2,
     sma200DistancePct: 9.8,
     averageDailyVolume: '$16.2B',
-    complianceStatus: 'ALLOWED',
-    complianceReason: null,
-    automationPermission: 'LIVE',
   },
 ];

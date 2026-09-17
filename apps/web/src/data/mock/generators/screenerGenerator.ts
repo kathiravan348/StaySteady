@@ -1,13 +1,21 @@
 // Mock generator and filter engine for S-26 Markets Screener (UI spec 8.3; Open Question 11).
 
-import type { ScreenerFilterCriteria, ScreenerSearchResult } from '../../schemas/screener';
-import { SCREENER_UNIVERSE } from './screenerSeeds';
+import { Decimal } from 'decimal.js';
+
+import type {
+  ScreenerFilterCriteria,
+  ScreenerRow,
+  ScreenerSearchResult,
+} from '../../schemas/screener';
 
 export { SCREENER_PRESETS } from './screenerPresets';
 export { SCREENER_UNIVERSE } from './screenerSeeds';
 
-export function executeScreenerSearch(criteria: ScreenerFilterCriteria): ScreenerSearchResult {
-  let filtered = [...SCREENER_UNIVERSE];
+export function executeScreenerSearch(
+  criteria: ScreenerFilterCriteria,
+  universe: readonly ScreenerRow[],
+): ScreenerSearchResult {
+  let filtered = [...universe];
 
   // Text search
   if (criteria.query.trim().length > 0) {
@@ -87,19 +95,14 @@ export function executeScreenerSearch(criteria: ScreenerFilterCriteria): Screene
   }
 
   // Sorting
+  const direction = criteria.sortOrder === 'asc' ? 1 : -1;
   filtered.sort((a, b) => {
-    let aVal: number | string | null = null;
-    let bVal: number | string | null = null;
+    if (criteria.sortBy === 'symbol') return direction * a.symbol.localeCompare(b.symbol);
+    if (criteria.sortBy === 'price') return direction * new Decimal(a.price).comparedTo(b.price);
 
+    let aVal: number;
+    let bVal: number;
     switch (criteria.sortBy) {
-      case 'symbol':
-        aVal = a.symbol;
-        bVal = b.symbol;
-        break;
-      case 'price':
-        aVal = parseFloat(a.price);
-        bVal = parseFloat(b.price);
-        break;
       case 'peRatio':
         aVal = a.peRatio ?? 999999;
         bVal = b.peRatio ?? 999999;
@@ -127,13 +130,7 @@ export function executeScreenerSearch(criteria: ScreenerFilterCriteria): Screene
         break;
     }
 
-    if (typeof aVal === 'string' && typeof bVal === 'string') {
-      return criteria.sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-    }
-
-    const numA = (aVal as number) ?? 0;
-    const numB = (bVal as number) ?? 0;
-    return criteria.sortOrder === 'asc' ? numA - numB : numB - numA;
+    return direction * (aVal - bVal);
   });
 
   // Calculate summary metrics on filtered set
@@ -168,7 +165,7 @@ export function executeScreenerSearch(criteria: ScreenerFilterCriteria): Screene
   return {
     rows,
     summary: {
-      universeCount: SCREENER_UNIVERSE.length,
+      universeCount: universe.length,
       matchedCount: total,
       medianPe,
       medianRoePct,

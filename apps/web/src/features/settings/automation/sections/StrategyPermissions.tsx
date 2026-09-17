@@ -7,8 +7,11 @@ import type { StrategyDto } from '../../../../data/schemas';
 import { humanizeToken } from '../../../../shared/format';
 import { strategyEditorPath } from '../../../../routes/routes';
 import styles from '../Automation.module.scss';
-import type { StageEffect, StrategyInstrumentPermission } from '../model/permissionLayers';
-import { stageEffect } from '../model/permissionLayers';
+import type {
+  StageEffect,
+  StrategyInstrumentPermission,
+} from '../../../../shared/automation/permissionLayers';
+import { stageEffect } from '../../../../shared/automation/permissionLayers';
 
 const EFFECT: Readonly<Record<StageEffect, { variant: BadgeVariant; label: string }>> = {
   'without-approval': { variant: 'positive', label: 'Orders without asking' },

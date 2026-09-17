@@ -7,7 +7,11 @@ import { Link } from 'react-router-dom';
 import { instrumentTypeLabel } from '../../../../shared/format';
 import { ROUTES } from '../../../../routes/routes';
 import styles from '../Automation.module.scss';
-import type { CellPermission, LayerStatus, Outcome } from '../model/permissionLayers';
+import type {
+  CellPermission,
+  LayerStatus,
+  Outcome,
+} from '../../../../shared/automation/permissionLayers';
 
 const OUTCOME: Readonly<Record<Outcome, { variant: BadgeVariant; label: string }>> = {
   live: { variant: 'positive', label: 'Live' },

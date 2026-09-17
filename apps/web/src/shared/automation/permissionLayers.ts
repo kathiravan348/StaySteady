@@ -8,8 +8,8 @@ import type {
   InstrumentTypeConfigInput,
   MarketConfigInput,
   StrategyDto,
-} from '../../../../data/schemas';
-import { humanizeToken, instrumentTypeLabel } from '../../../../shared/format';
+} from '../../data/schemas';
+import { humanizeToken, instrumentTypeLabel } from '../format';
 
 type InstrumentType = InstrumentTypeConfigInput['type'];
 
