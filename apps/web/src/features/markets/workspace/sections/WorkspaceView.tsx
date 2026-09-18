@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import {
   useCalendarEvents,
   useCorporateActions,
+  useInstrumentFeed,
   useNewsItems,
   usePriceHistories,
   useQuotes,
@@ -72,6 +73,7 @@ export function WorkspaceView({
   const actions = useCorporateActions(instrument.id);
   const news = useNewsItems();
   const calendar = useCalendarEvents();
+  const feed = useInstrumentFeed(instrument.id);
 
   const points = chart.status === 'ready' ? chart.data.points : null;
   const compareBars =
@@ -94,8 +96,15 @@ export function WorkspaceView({
   }, [points, layout.indicators, compareInstrument, compareBars]);
 
   const events = useMemo(
-    () => collectChartEvents(instrument, actions.data ?? [], news.data ?? [], calendar.data ?? []),
-    [instrument, actions.data, news.data, calendar.data],
+    () =>
+      collectChartEvents(
+        instrument,
+        actions.data ?? [],
+        news.data ?? [],
+        calendar.data ?? [],
+        feed.data?.filings ?? [],
+      ),
+    [instrument, actions.data, news.data, calendar.data, feed.data],
   );
   const markers = useMemo(
     () =>

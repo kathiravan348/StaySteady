@@ -1,4 +1,5 @@
-// Event markers on the time axis: dividends, splits, earnings and high-impact news (UI spec 7.4).
+// Event markers on the time axis: dividends, splits, earnings, filings and high-impact news
+// (UI spec 7.4; filings and published results added by UI spec 20.2).
 // Pure.
 
 import type { PriceChartMarker } from '@staysteady/ui';
@@ -6,11 +7,13 @@ import type { PriceChartMarker } from '@staysteady/ui';
 import type {
   CalendarEventDto,
   CorporateActionDto,
+  FilingDto,
   InstrumentDto,
   NewsItemDto,
 } from '../../../../data/schemas';
 
-export type ChartEventKind = 'dividend' | 'split' | 'bonus' | 'earnings' | 'news' | 'other';
+export type ChartEventKind =
+  'dividend' | 'split' | 'bonus' | 'earnings' | 'filing' | 'news' | 'other';
 
 export interface ChartEvent {
   readonly id: string;
@@ -25,6 +28,7 @@ const MARKER_TEXT: Readonly<Record<ChartEventKind, string>> = {
   split: 'S',
   bonus: 'B',
   earnings: 'E',
+  filing: 'F',
   news: 'N',
   other: '•',
 };
@@ -53,6 +57,7 @@ export function collectChartEvents(
   actions: readonly CorporateActionDto[],
   news: readonly NewsItemDto[],
   calendar: readonly CalendarEventDto[],
+  filings: readonly FilingDto[] = [],
 ): ChartEvent[] {
   const seenStories = new Set<string>();
   const newsEvents = news
@@ -78,8 +83,10 @@ export function collectChartEvents(
     .filter(
       (event) =>
         event.eventType === 'earnings' &&
-        event.marketId === instrument.marketId &&
-        (event.title.includes(instrument.symbol) || event.title.includes(nameWord)),
+        (event.instrumentId === undefined
+          ? event.marketId === instrument.marketId &&
+            (event.title.includes(instrument.symbol) || event.title.includes(nameWord))
+          : event.instrumentId === instrument.id),
     )
     .map((event) => ({
       id: event.id,
@@ -88,7 +95,15 @@ export function collectChartEvents(
       label: 'Earnings',
       detail: event.title,
     }));
-  return [...actions.map(actionEvent), ...newsEvents, ...earnings].sort((a, b) =>
+  // A published results filing is a past earnings date; other filings get their own marker.
+  const filed = filings.map((filing) => ({
+    id: filing.id,
+    date: filing.filedAt.slice(0, 10),
+    kind: filing.kind === 'results' ? ('earnings' as const) : ('filing' as const),
+    label: filing.kind === 'results' ? 'Results published' : 'Filing',
+    detail: filing.title,
+  }));
+  return [...actions.map(actionEvent), ...newsEvents, ...earnings, ...filed].sort((a, b) =>
     a.date.localeCompare(b.date),
   );
 }

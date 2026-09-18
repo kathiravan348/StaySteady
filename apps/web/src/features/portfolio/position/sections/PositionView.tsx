@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { createMoney } from '../../../../shared/money';
 import type { BaseCurrencyCode } from '../../../../shared/types/currency';
 import type { IsoUtcTimestamp } from '../../../../shared/types/dateTime';
+import { CompanySummaryCard } from '../../../../shared/ui/CompanySummaryCard';
 import { PriceFreshnessBar } from '../../../../shared/ui/PriceFreshnessBar';
 import { describeExit } from '../../holdings/model/holdingRows';
 import type { HoldingRow } from '../../holdings/model/holdingTypes';
@@ -121,6 +122,7 @@ export function PositionView({
       />
       <PositionHeader row={row} exit={exit} isExitEdited={edits.exitLevel !== null} />
       <PositionChartCard row={row} exit={exit} ledger={entries} />
+      <CompanySummaryCard instrumentId={String(instrument.id)} />
       <Card title="Position details">
         <Tabs items={tabs} aria-label={`${instrument.symbol} position details`} />
       </Card>

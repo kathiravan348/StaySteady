@@ -22,9 +22,9 @@ interface InstrumentSectionProps {
   readonly instrumentId: string;
 }
 
-const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 });
-
-// UI spec 7.4 — key fundamentals where relevant to the instrument type.
+// UI spec 7.4 — market figures where relevant to the instrument type. Sector, market value and
+// price to earnings moved to the company summary (UI spec 20.2), which reads them from the research
+// record, so the panel no longer shows a second copy computed another way (R-12, R-14).
 export function FundamentalsSection({ instrumentId }: InstrumentSectionProps): ReactElement {
   const fundamentals = useInstrumentFundamentals(instrumentId);
   let body: ReactElement;
@@ -45,17 +45,6 @@ export function FundamentalsSection({ instrumentId }: InstrumentSectionProps): R
     const percent = (value: number): string => `${value.toFixed(2)}%`;
     body = (
       <div className={styles.keyValues}>
-        {data.sector !== null && <KeyValuePair label="Sector" value={data.sector} />}
-        {data.marketCap !== null && (
-          <KeyValuePair
-            label="Market value"
-            value={`${compact.format(Number(data.marketCap.amount))} ${data.marketCap.currency}`}
-            isMono
-          />
-        )}
-        {data.priceToEarnings !== null && (
-          <KeyValuePair label="Price to earnings" value={data.priceToEarnings.toFixed(1)} isMono />
-        )}
         {data.dividendYieldPercent !== null && (
           <KeyValuePair label="Dividend yield" value={percent(data.dividendYieldPercent)} isMono />
         )}
@@ -73,7 +62,7 @@ export function FundamentalsSection({ instrumentId }: InstrumentSectionProps): R
       </div>
     );
   }
-  return <Card title="Fundamentals">{body}</Card>;
+  return <Card title="Market figures">{body}</Card>;
 }
 
 // UI spec 7.4 — position held, if any.

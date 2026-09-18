@@ -6,6 +6,8 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import {
+  useClassificationIndex,
+  useClassificationTaxonomy,
   useInstruments,
   useMarkets,
   useNewsItems,
@@ -26,6 +28,16 @@ function NewsFeedBody(): ReactElement {
   const holdings = usePortfolioHoldings();
   // Optional: without it the feed still works, using the seeded expectation.
   const providers = useProviderConfigs();
+  // Optional too: without classification the feed simply offers no sector or group filters.
+  const index = useClassificationIndex();
+  const taxonomy = useClassificationTaxonomy();
+  const classification = useMemo(
+    () =>
+      index.data === undefined || taxonomy.data === undefined
+        ? null
+        : { index: index.data, taxonomy: taxonomy.data },
+    [index.data, taxonomy.data],
+  );
 
   const heldIds = useMemo(
     () => new Set((holdings.data ?? []).map((holding) => String(holding.instrumentId))),
@@ -67,6 +79,7 @@ function NewsFeedBody(): ReactElement {
       instruments={instruments.data}
       markets={markets.data}
       heldIds={heldIds}
+      classification={classification}
       freshnessSeconds={freshness}
       onRefresh={() => {
         void news.refetch();
@@ -79,7 +92,7 @@ export function NewsFeedPage(): ReactElement {
   return (
     <PageShell
       title="News"
-      description="Stories newest first. Sentiment is a model estimate and always shows its confidence; stories about your holdings are marked."
+      description="Stories newest first. Sentiment is a model estimate and always shows its confidence; stories about your holdings, or reaching them through their group, are marked."
       breadcrumbs={[
         { label: 'Overview', to: ROUTES.OVERVIEW },
         { label: 'News & events' },

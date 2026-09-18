@@ -20,12 +20,19 @@ export interface NewsStoryCardProps {
   readonly story: NewsStory;
   readonly instruments: ReadonlyMap<string, InstrumentDto>;
   readonly heldIds: ReadonlySet<string>;
+  // A story naming no holding that still reaches one through its business group (UI spec 20.2).
+  readonly heldThroughGroup: string | null;
 }
 
 // UI spec 7.6 — one story: facts (headline, source, time, instruments, category, importance) and the
 // sentiment estimate kept visibly apart. Expanding shows the summary, every report of a duplicated
 // story, and the price reaction.
-export function NewsStoryCard({ story, instruments, heldIds }: NewsStoryCardProps): ReactElement {
+export function NewsStoryCard({
+  story,
+  instruments,
+  heldIds,
+  heldThroughGroup,
+}: NewsStoryCardProps): ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const { lead, reports } = story;
   const detailsId = `news-details-${story.key}`;
@@ -34,9 +41,17 @@ export function NewsStoryCard({ story, instruments, heldIds }: NewsStoryCardProp
     .find((instrument) => instrument !== undefined);
 
   return (
-    <li className={cx(styles.story, story.isHeld ? styles.held : undefined)}>
+    <li
+      className={cx(
+        styles.story,
+        story.isHeld || heldThroughGroup !== null ? styles.held : undefined,
+      )}
+    >
       <span className={styles.inline}>
         {story.isHeld && <Badge variant="info">Held</Badge>}
+        {heldThroughGroup !== null && (
+          <Badge variant="warning">Reaches a holding through {heldThroughGroup}</Badge>
+        )}
         <Badge variant={lead.category === 'unconfirmed_report' ? 'warning' : 'neutral'}>
           {CATEGORY_LABELS[lead.category]}
         </Badge>

@@ -2,8 +2,15 @@ import { Button, NoResultsState, StaleState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 
-import type { InstrumentDto, MarketDto, NewsItemDto } from '../../../data/schemas';
+import type {
+  ClassificationIndexDto,
+  ClassificationTaxonomyDto,
+  InstrumentDto,
+  MarketDto,
+  NewsItemDto,
+} from '../../../data/schemas';
 import type { NewsFilters } from '../model/newsFeed';
+import { placeStories } from '../model/newsPlacement';
 import {
   DEFAULT_NEWS_FILTERS,
   applyNewsFilters,
@@ -22,6 +29,11 @@ export interface NewsFeedViewProps {
   readonly instruments: readonly InstrumentDto[];
   readonly markets: readonly MarketDto[];
   readonly heldIds: ReadonlySet<string>;
+  // Optional: without the shared classification the sector, industry and group filters are hidden.
+  readonly classification: {
+    readonly index: ClassificationIndexDto;
+    readonly taxonomy: ClassificationTaxonomyDto;
+  } | null;
   // How old the newest story may be before the feed counts as behind (the news provider's setting).
   readonly freshnessSeconds: number;
   readonly onRefresh: () => void;
@@ -33,12 +45,20 @@ export function NewsFeedView({
   instruments,
   markets,
   heldIds,
+  classification,
   freshnessSeconds,
   onRefresh,
 }: NewsFeedViewProps): ReactElement {
   const [filters, setFilters] = useState<NewsFilters>(DEFAULT_NEWS_FILTERS);
   const stories = useMemo(() => groupStories(items, heldIds), [items, heldIds]);
-  const visible = applyNewsFilters(stories, filters, markets);
+  const placements = useMemo(
+    () =>
+      classification === null
+        ? null
+        : placeStories(stories, classification.index, classification.taxonomy, heldIds),
+    [stories, classification, heldIds],
+  );
+  const visible = applyNewsFilters(stories, filters, markets, placements?.byStory);
   const byId = useMemo(
     () => new Map(instruments.map((instrument) => [String(instrument.id), instrument])),
     [instruments],
@@ -66,6 +86,9 @@ export function NewsFeedView({
         value: String(instrument.id),
         label: `${instrument.symbol}${heldIds.has(String(instrument.id)) ? ' (held)' : ''}`,
       })),
+    sectors: placements?.sectors ?? [],
+    industries: placements?.industries ?? [],
+    groups: placements?.groups ?? [],
   };
   const heldCount = stories.filter((story) => story.isHeld).length;
 
@@ -110,7 +133,13 @@ export function NewsFeedView({
       ) : (
         <ul className={styles.feed} aria-label="News stories">
           {visible.map((story) => (
-            <NewsStoryCard key={story.key} story={story} instruments={byId} heldIds={heldIds} />
+            <NewsStoryCard
+              key={story.key}
+              story={story}
+              instruments={byId}
+              heldIds={heldIds}
+              heldThroughGroup={placements?.byStory.get(story.key)?.heldThroughGroup ?? null}
+            />
           ))}
         </ul>
       )}

@@ -87,7 +87,7 @@ function fundamentalsFor(ctx: MockGeneratorContext, instrument: InstrumentDto): 
       note:
         latest === undefined
           ? 'No statements are collected for this company, so only market figures are shown. Mock data.'
-          : `Market value and price to earnings derive from ${latest.fiscalPeriod} statements and the latest close. Mock data.`,
+          : `Dividend yield from ${latest.fiscalPeriod} dividends paid and the latest close; valuation measures are on the company summary. Mock data.`,
     };
   }
   if (FUND_TYPES.has(instrument.type)) {

@@ -278,9 +278,9 @@ already built but cannot work without classification.
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1. Standalone ratios equal consolidated: R-05 generator finding (session 92) |
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1; requirements 36 |
 | R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | DONE | 100 | Claude Opus 5 (session 92) | Requirements 38; UI spec 20.1 |
-| R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | TODO | 0 | | UI spec 20.2 |
+| R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.2 |
 | R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
-| R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | TODO | 0 | | Finding session 83; breaks decision 4 (money is never a plain number) |
+| R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | DONE | 100 | Claude Opus 5 (session 92) | Fixed with R-12: row moved to the company summary card. Finding session 83; breaks decision 4 (money is never a plain number) |
 | R-15 | Fix: standalone statements scale shares outstanding with the basis, so standalone ratios equal consolidated (financialStatementBuild.ts) | TODO | 0 | | Finding session 92; UI spec 20.4 |
  
 ---
@@ -1773,6 +1773,68 @@ shared/ui/PriceReaction.tsx; modified data/schemas/{news.ts,index.ts},
 data/mock/generators/{newsEvents.ts,calendarEvents.ts,index.ts}, data/mock/handlers/newsHandlers.ts,
 data/api/{newsQueries.ts,index.ts}, features/news/{model/newsFeed.ts,sections/NewsStoryCard.tsx},
 features/markets/company/{CompanyResearchPage.tsx,CompanyResearch.module.scss}.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-12 START
+START:          2026-09-18T04:55:00Z  |  local: 2026-09-18 10:25 IST
+TASK CLAIMED:   R-12 Surfacing across existing screens, with R-14 folded in as the handoff note
+                directs (it is a one-line fix in ResearchSections.tsx, which R-12 touches)
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-12 AND R-14 END
+END:            2026-09-18T05:40:00Z  |  local: 2026-09-18 11:10 IST
+TASK CLAIMED:   R-12 Surfacing across existing screens; R-14 market cap Number() fix
+END STATUS:     DONE (both)
+
+COMPLETED:
+  - shared/ui/CompanySummaryCard (decision 25): classification (or asset class), parent with share,
+    business group, the next scheduled event with its restriction-window mark, up to three open
+    warning flags with evidence, optional headline measures against the industry median and market
+    value, and a link to the research screen. Titled Company, Fund or Asset by kind. Each source
+    fails on its own inside the card.
+  - Instrument Workspace: the card with measures sits in the right panel. The fundamentals block is
+    now "Market figures" (yield, beta, expense ratio, coupon, maturity); sector, market value and
+    price to earnings moved to the card, which reads them from the research record. This removes
+    the Number()-formatted market cap: R-14 fixed. The fundamentals note text was updated to match.
+  - Workspace event markers: filings from the instrument feed ("F"), published results as earnings
+    ("E"), and calendar earnings matched by instrumentId where the event carries one.
+  - Position Detail: the card (without measures) under the chart.
+  - News & Events feed: sector, industry and business-group filters from the shared classification
+    (features/news/model/newsPlacement.ts), matching a story through the instruments it names or
+    the group or industry it is tagged with. A story naming no holding that reaches one through its
+    group gets "Reaches a holding through <group>" and the held emphasis. Classification is
+    optional: without it the three filters are hidden and the feed works as before.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS.
+  In the browser: workspace TATAMOTORS shows the card (Tata Sons 42.6%, Tata group, 5.03LCr, P/E
+  18.7x vs industry 30.9x, results 29 Sept in a restriction window, rising pledge flag) and five
+  filing/results markers in the event strip. Position Detail TATAMOTORS shows the card; gold shows
+  "Asset class Commodity" and no scheduled event. News feed: group filter Tata group leaves three
+  stories, industry Automobiles four; the Tata Sons story carries "Reaches a holding through Tata
+  group".
+
+MISTAKE RECORDED:
+  - A multi-step python edit script left Vite serving a half-applied newsFeed.ts during
+    verification, so the group filter looked broken. Touching the files fixed it; the code was right.
+
+FINDINGS (out of scope, not fixed):
+  - researchData.ts (fundamentals endpoint) still computes P/E and market value itself rather than
+    through shared/fundamentals (decision 53). No screen shows them now except the screener (S-34);
+    worth folding into R-13.
+
+FILES: created shared/ui/{CompanySummaryCard.tsx,CompanySummaryCard.module.scss},
+features/news/model/newsPlacement.ts; modified features/markets/workspace/{sections/InfoPanel.tsx,
+sections/ResearchSections.tsx,sections/WorkspaceView.tsx,model/chartEvents.ts},
+features/portfolio/position/sections/PositionView.tsx, features/news/{NewsFeedPage.tsx,
+model/newsFeed.ts,sections/NewsFeedView.tsx,sections/NewsFilterBar.tsx,sections/NewsStoryCard.tsx},
+data/mock/generators/researchData.ts, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 

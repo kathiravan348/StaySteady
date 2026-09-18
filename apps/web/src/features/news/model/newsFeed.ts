@@ -17,6 +17,10 @@ export {
   sentimentReading,
 } from '../../../shared/format/newsLabels';
 
+import type { StoryPlacement } from './newsPlacement';
+
+type PlacementSets = Pick<StoryPlacement, 'sectorIds' | 'industryIds' | 'groupIds'>;
+
 export const ALL = 'all';
 
 // One story as reported by one or more outlets. The lead is the most recent report.
@@ -73,6 +77,10 @@ export interface NewsFilters {
   readonly sentiment: NewsSentimentDto | typeof ALL;
   readonly importance: ImportanceFilter;
   readonly heldOnly: boolean;
+  // Shared classification (UI spec 20.2): a story matches through what it names or is tagged with.
+  readonly sector: string;
+  readonly industry: string;
+  readonly group: string;
 }
 
 export const DEFAULT_NEWS_FILTERS: NewsFilters = {
@@ -83,6 +91,9 @@ export const DEFAULT_NEWS_FILTERS: NewsFilters = {
   sentiment: ALL,
   importance: ALL,
   heldOnly: false,
+  sector: ALL,
+  industry: ALL,
+  group: ALL,
 };
 
 const IMPORTANCE_RANK: Readonly<Record<NewsImportanceDto, number>> = { low: 0, medium: 1, high: 2 };
@@ -91,7 +102,10 @@ export function applyNewsFilters(
   stories: readonly NewsStory[],
   filters: NewsFilters,
   markets: readonly MarketDto[],
+  placements: ReadonlyMap<string, StoryPlacement> = new Map(),
 ): readonly NewsStory[] {
+  const placed = (story: NewsStory, filter: string, pick: keyof PlacementSets): boolean =>
+    filter === ALL || (placements.get(story.key)?.[pick].has(filter) ?? false);
   const countryOf = (marketId: string): string | undefined =>
     markets.find((market) => String(market.marketId) === marketId)?.country;
   return stories.filter(
@@ -104,7 +118,10 @@ export function applyNewsFilters(
       (filters.sentiment === ALL || story.lead.sentiment === filters.sentiment) &&
       (filters.importance === ALL ||
         IMPORTANCE_RANK[story.lead.importance] >= IMPORTANCE_RANK[filters.importance]) &&
-      (!filters.heldOnly || story.isHeld),
+      (!filters.heldOnly || story.isHeld) &&
+      placed(story, filters.sector, 'sectorIds') &&
+      placed(story, filters.industry, 'industryIds') &&
+      placed(story, filters.group, 'groupIds'),
   );
 }
 

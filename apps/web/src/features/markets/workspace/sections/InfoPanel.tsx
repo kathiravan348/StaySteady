@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 
 import type { InstrumentDto, MarketQuoteDto, PriceBarDto } from '../../../../data/schemas';
+import { CompanySummaryCard } from '../../../../shared/ui/CompanySummaryCard';
 import styles from '../WorkspacePage.module.scss';
 import { InstrumentNewsSection, SignalsSection } from './ActivitySections';
 import { QuoteSection } from './QuoteSection';
@@ -20,6 +21,7 @@ export function InfoPanel({ id, instrument, quote, daily }: InfoPanelProps): Rea
       <QuoteSection instrument={instrument} quote={quote} daily={daily} />
       <PositionSection instrumentId={instrument.id} />
       <SignalsSection instrumentId={instrument.id} />
+      <CompanySummaryCard instrumentId={String(instrument.id)} showMeasures />
       <FundamentalsSection instrumentId={instrument.id} />
       <WatchlistSection instrumentId={instrument.id} />
       <InstrumentNewsSection instrumentId={instrument.id} />

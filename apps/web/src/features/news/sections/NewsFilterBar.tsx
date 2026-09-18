@@ -10,6 +10,9 @@ export interface NewsFilterOptions {
   readonly markets: readonly { value: string; label: string }[];
   readonly countries: readonly string[];
   readonly instruments: readonly { value: string; label: string }[];
+  readonly sectors: readonly { value: string; label: string }[];
+  readonly industries: readonly { value: string; label: string }[];
+  readonly groups: readonly { value: string; label: string }[];
 }
 
 interface SelectProps<T extends string> {
@@ -92,6 +95,36 @@ export function NewsFilterBar({
           set('instrument', value);
         }}
       />
+      {options.sectors.length > 0 && (
+        <FilterSelect
+          label="Sector"
+          value={filters.sector}
+          options={[any('All sectors'), ...options.sectors]}
+          onChange={(value) => {
+            set('sector', value);
+          }}
+        />
+      )}
+      {options.industries.length > 0 && (
+        <FilterSelect
+          label="Industry"
+          value={filters.industry}
+          options={[any('All industries'), ...options.industries]}
+          onChange={(value) => {
+            set('industry', value);
+          }}
+        />
+      )}
+      {options.groups.length > 0 && (
+        <FilterSelect
+          label="Business group"
+          value={filters.group}
+          options={[any('All groups'), ...options.groups]}
+          onChange={(value) => {
+            set('group', value);
+          }}
+        />
+      )}
       <FilterSelect<NewsCategoryDto | typeof ALL>
         label="Category"
         value={filters.category}
