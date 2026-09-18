@@ -168,3 +168,11 @@
     font-size: var(--font-size-xs);
   }
 }
+
+.indent1 {
+  padding-inline-start: var(--space-6);
+}
+
+.indent2 {
+  padding-inline-start: calc(var(--space-6) * 2);
+}

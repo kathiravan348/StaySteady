@@ -13,6 +13,7 @@ import { PageShell } from '../../../shell/PageShell';
 import styles from './CompanyResearch.module.scss';
 import { FinancialsTab } from './sections/FinancialsTab';
 import { FlagsSection } from './sections/FlagsSection';
+import { OwnershipTab } from './sections/OwnershipTab';
 import { ProfileSection } from './sections/ProfileSection';
 import { RatiosTab } from './sections/RatiosTab';
 import { StandingSection } from './sections/StandingSection';
@@ -62,6 +63,11 @@ export function CompanyResearchPage(): ReactElement {
         content: <FinancialsTab instrumentId={instrumentId} />,
       },
       { id: 'ratios', label: 'Ratios', content: <RatiosTab instrumentId={instrumentId} /> },
+      {
+        id: 'ownership',
+        label: 'Ownership',
+        content: <OwnershipTab instrumentId={instrumentId} />,
+      },
     ];
     body = (
       <div className={styles.page}>

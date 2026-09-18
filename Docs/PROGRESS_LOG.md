@@ -276,7 +276,7 @@ already built but cannot work without classification.
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | DONE | 100 | Claude Opus 5 (session 90) | UI spec 20.1 |
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | DONE | 100 | Claude Opus 5 (session 91) | UI spec 20.1 |
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1. Standalone ratios equal consolidated: R-05 generator finding (session 92) |
-| R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | TODO | 0 | | UI spec 20.1; requirements 36 |
+| R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1; requirements 36 |
 | R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | TODO | 0 | | Requirements 38; UI spec 20.1 |
 | R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | TODO | 0 | | UI spec 20.2 |
 | R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
@@ -1662,6 +1662,55 @@ FINDINGS (out of scope, not fixed):
 FILES: created features/markets/company/{model/ratioRows.ts,sections/RatiosTab.tsx,
 sections/PeerComparison.tsx}; modified data/api/{classificationQueries.ts,index.ts},
 features/markets/company/{CompanyResearchPage.tsx,CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-10 START
+START:          2026-09-18T03:38:00Z  |  local: 2026-09-18 09:08 IST
+TASK CLAIMED:   R-10 Ownership tab
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-10 END
+END:            2026-09-18T04:05:00Z  |  local: 2026-09-18 09:35 IST
+TASK CLAIMED:   R-10 Ownership tab
+END STATUS:     DONE
+
+COMPLETED:
+  - Ownership over time as a stacked area (promoter where reported, foreign and domestic
+    institutions, public) from the existing preset, with the endpoint's note and source.
+  - Promoter pledge: latest share pledged, a "Rising" badge and explanation when it rose over the
+    eight quarters, and a trend line; markets without a promoter block say so rather than show zero.
+  - Insider and promoter dealings: new data. InsiderTransactionSchema added to the ownership record
+    (reportsInsiderTransactions + insiderTransactions, newest first); generator
+    data/mock/generators/insiderTransactions.ts seeds TATAMOTORS (promoter pledges matching the
+    rising pledge, a director sale, a pledge release), RELIANCE, AAPL and NVDA. Value is shares
+    times the close on the dealing day (decision 19). Collected for IN and US only; elsewhere the
+    tab says the absence means nothing.
+  - Group structure as an indented list: parent, this company with the parent's share, its
+    subsidiaries beneath, group companies beside it; "You hold this" from portfolio holdings and a
+    count of group companies held. Hidden for instruments that are not companies.
+  - Fund look-through for a fund: top holdings with weights, "Also held directly" marks, sector
+    weights donut. Hidden for instruments that are not funds.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS. In the browser: Tata Motors
+  shows the stacked area, pledge 9.4% Rising from 2.1% with its chart, four dealings (Tata Sons
+  pledged 42,000,000 shares worth 5.39KCr), and Tata Sons > Tata Motors (42.6%, you hold this) >
+  Tata Motors Finance, with TCS as a held group company ("you hold 2 of the 4"). AAPL: no promoter
+  block, no pledge reported, two officer sales. SPY: nine holdings with Apple "Also held
+  directly" and the sector donut, no group structure card. Under loading-error each section shows
+  its own error with retry.
+
+FILES: created data/mock/generators/insiderTransactions.ts, features/markets/company/sections/
+{OwnershipTab,OwnershipPatternSection,InsiderSection,GroupStructureSection,
+FundLookThroughSection}.tsx; modified data/schemas/classification.ts,
+data/mock/generators/ownershipPattern.ts, features/markets/company/{CompanyResearchPage.tsx,
+CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 

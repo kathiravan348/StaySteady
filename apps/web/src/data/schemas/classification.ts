@@ -6,7 +6,13 @@
 
 import { z } from 'zod';
 
-import { InstrumentIdSchema, IsoDateSchema, MarketIdSchema, PercentageSchema } from './common';
+import {
+  InstrumentIdSchema,
+  IsoDateSchema,
+  MarketIdSchema,
+  MoneySchema,
+  PercentageSchema,
+} from './common';
 
 // Bump only on a deliberate taxonomy change; consumers record which scheme classified a row.
 export const CLASSIFICATION_SCHEME = 'staysteady-v1';
@@ -139,11 +145,32 @@ export const OwnershipPointSchema = z
   });
 export type OwnershipPointDto = z.infer<typeof OwnershipPointSchema>;
 
+// A dealing by a promoter, director or officer as disclosed to the exchange. Value is shares times
+// the close on the dealing date, so it ties to the price history (decision 19).
+export const InsiderRoleSchema = z.enum(['promoter', 'promoter_group', 'director', 'officer']);
+export const InsiderActionSchema = z.enum(['buy', 'sell', 'pledge', 'pledge_release']);
+export const InsiderTransactionSchema = z.object({
+  id: z.string().min(1),
+  dealtOn: IsoDateSchema,
+  disclosedOn: IsoDateSchema,
+  personName: z.string().min(1),
+  role: InsiderRoleSchema,
+  action: InsiderActionSchema,
+  shares: z.number().int().positive(),
+  value: MoneySchema,
+});
+export type InsiderTransactionDto = z.infer<typeof InsiderTransactionSchema>;
+
 export const InstrumentOwnershipSchema = z.object({
   instrumentId: InstrumentIdSchema,
   // Oldest first, so a trend reads left to right without the consumer re-sorting.
   points: z.array(OwnershipPointSchema).min(1),
   reportsPromoterHolding: z.boolean(),
+  // False where the market has no insider disclosure this platform collects; an empty list with
+  // true means nobody dealt in the period, which is different.
+  reportsInsiderTransactions: z.boolean(),
+  // Newest first.
+  insiderTransactions: z.array(InsiderTransactionSchema),
   asOf: IsoDateSchema,
   source: z.string().min(1),
   note: z.string().min(1),

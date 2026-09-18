@@ -13,6 +13,7 @@ import {
 } from '../../schemas/classification';
 import { getInstrumentById } from './canonicalInstruments';
 import { INDUSTRY_BY_SYMBOL } from './classificationAssignments';
+import { insiderTransactionsFor, reportsInsiderTransactions } from './insiderTransactions';
 import type { MockGeneratorContext } from './mockContext';
 import { parseGenerated } from './validated';
 
@@ -115,6 +116,8 @@ export function ownershipForInstrument(
       instrumentId: String(instrument.id),
       points,
       reportsPromoterHolding: reportsPromoter,
+      reportsInsiderTransactions: reportsInsiderTransactions(instrument),
+      insiderTransactions: insiderTransactionsFor(ctx, instrument),
       asOf: ends[ends.length - 1] ?? String(ctx.referenceTime).slice(0, 10),
       source: SOURCE,
       note,
