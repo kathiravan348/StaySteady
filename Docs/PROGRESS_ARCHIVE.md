@@ -6273,3 +6273,1192 @@ SCOPE:
     `as OrderFilters['status']` assertion.
 ────────────────────────────────────────────────────────────
 ```
+
+---
+
+## Session History - Sessions 66 to 89 (Append Only)
+
+Moved verbatim out of `PROGRESS_LOG.md` section 4 in session 92 under rule 11.
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        66 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:34:00Z  |  local: 2026-09-17 15:04 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part b: tax rule sets per residence country and asset class (decision 45)
+OWNER INPUT:    session 64 answers to questions 16 and 20
+
+PRE-WORK VERIFICATION:
+  git: 74df89f; working tree clean; type check, lint, build PASS at session 65 end.
+
+SCOPE:
+  - Versioned config area /api/v1/config/tax-rules: per residence country (India seeded): tax year
+    start, cost-basis method, loss carry-forward years, per asset class holding period, short and
+    long rates and long-term exemption, historical cost-basis protections, foreign asset obligations.
+  - shared/tax: classify an instrument into a tax asset class for the residence country; rule lookup.
+  - Remove the gains rates and holding periods from market config (keep dividend withholding),
+    instrument type config (taxThresholdDays) and MarketDto (holdingPeriodTaxThresholdDays).
+  - Holdings tax status, the tax report and the loss carry-forward window read the rule set.
+  - /settings/tax-rules page with form, health and version history.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        66 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:34:00Z  |  local: 2026-09-17 15:04 IST (UTC+05:30)
+END:            2026-09-17T09:46:00Z  |  local: 2026-09-17 15:16 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part b (tax rule sets)
+END STATUS:     PARTIAL (E-09 parts a and b done; part c, employer rules, low priority per decision 43)
+
+COMPLETED:
+  - Tax rule sets (decision 45): schema config-tax-rules.ts; versioned area /api/v1/config/tax-rules
+    keyed by country, no create; server check keeps exactly one residence; health compares held
+    asset classes with the rules. Seed: India residence, FY from 1 April, FIFO, 8-year loss
+    carry-forward; domestic equity and equity funds 20%/12.5% after 365 days with 1.25 lakh
+    exemption; foreign shares 30%/12.5% after 730 days; debt 30%; gold 30%/12.5% after 730 days;
+    other 30%; 2018 grandfathering protection; foreign asset disclosure, 250,000 USD remittance cap,
+    foreign tax credit. Version 1 holds the pre-July-2024 rules.
+  - shared/tax/taxRules.ts: tax asset class from instrument type and listing vs residence; rule lookup.
+  - Removed gains rates and holding periods from market config (now "Tax at source": dividend
+    withholding only; market IN history now a withholding change), from instrument types
+    (taxThresholdDays) and from MarketDto (holdingPeriodTaxThresholdDays).
+  - Holdings lot tax status, the tax report (per-class rates, yearly long-term exemption relief,
+    asset class shown per lot, notes) and the loss carry-forward window read the residence rules.
+  - /settings/tax-rules page: residence, tax year, cost basis, carry-forward, per-class rules with
+    add/remove, cost basis protections, foreign assets, version history; loading/error/empty states;
+    SettingsNav "Tax rules".
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  Browser: tax rules page renders "IN (residence) · 6 asset classes · v2 · Healthy"; PUT with
+  isResidence false → 400 "One rule set must be the country of residence"; tax report (INR) lots show
+  "AAPL (Foreign shares and funds)" 731 days Long term 12.5%, 252 days Short term 30%, note cites the
+  IN residence rules; loss windows FY 2026-27 / 2029-30 / 2032-33; markets settings shows "Tax at
+  source" with dividend withholding only; holdings shows "Mixed: 1 of 3 lots long term".
+  Themes not re-checked (existing config components only).
+
+NOT COMPLETED:
+  - E-09 part c (employer policy rules as configuration), low priority (decision 43).
+  - Remittance cap tracking against actual outward transfers and the foreign asset disclosure
+    schedule belong to E-06 (tax pack).
+
+FILES: created schemas/config-tax-rules.ts, shared/tax/taxRules.ts, generators/taxRulesConfig.ts,
+  stores/taxRulesStore.ts, handlers/taxRulesConfigHandlers.ts, api/taxRulesConfigQueries.ts,
+  features/settings/SettingsTaxRulesPage.tsx, features/settings/taxRules/{model/taxRulesDraft.ts,
+  sections/TaxRulesView.tsx, TaxRuleSetForm.tsx, AssetClassRulesCard.tsx, ForeignAssetsCard.tsx};
+  modified config-markets.ts, config-instruments.ts, markets.ts (schema and generator),
+  marketConfig.ts, instrumentTypeConfig.ts, reportValuation.ts, reportTaxBuilder.ts,
+  taxLossCarryForward.ts, portfolioValuation.ts, partTwoReferenceHandlers.ts, holdingRows.ts,
+  useHoldingsData.ts, marketDraft.ts, MarketCalendarRules.tsx, instrumentDraft.ts,
+  InstrumentTypeForm.tsx, routes, SettingsNav, index files.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        67 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:46:00Z  |  local: 2026-09-17 15:16 IST (UTC+05:30)
+TASK CLAIMED:   E-02 Position Detail — tax category, holding-period boundary, cost of disposing today
+OWNER INPUT:    "fix and complete the pending items one by one"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 307e707; working tree clean; type check, lint, build PASS at session 66 end.
+
+SCOPE:
+  - Pure disposal estimate: lots taken by the residence cost-basis method, holding period and rates
+    per asset class from the tax rule set, gains in the residence currency at purchase-date and
+    today's FX, market fees and transaction tax from market config, carried-forward losses offset
+    by category, yearly long-term exemption, net cash.
+  - Rebuild PositionDisposalEstimator on it with data hooks, loading/error states and an SCSS module;
+    remove hardcoded 30%/15%/365, fee constants, inline styles and undefined colour tokens.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        67 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:46:00Z  |  local: 2026-09-17 15:16 IST (UTC+05:30)
+END:            2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST (UTC+05:30)
+TASK CLAIMED:   E-02 Position Detail tax and disposal
+END STATUS:     DONE
+
+COMPLETED:
+  - model/disposalEstimate.ts (pure): lot tax view (short, long or no distinction; days to long term)
+    from the residence rule for the instrument's asset class; disposal estimate taking lots by the
+    residence cost-basis method (FIFO or average), gains in the residence currency at each lot's
+    purchase-date FX and today's FX, fees from market config (commission with minimum, exchange fee,
+    transaction tax), this sale's short-term loss netted against its long-term gain, carried-forward
+    losses by category, yearly long-term exemption, tax and cash after costs.
+  - PositionDisposalEstimator rebuilt on it: data hooks (tax rules, market configs, FX rates and
+    history, losses carried forward) with loading and error states; SCSS module; no inline styles,
+    no hardcoded rates, holding period or fees, no undefined colour tokens.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  Browser, AAPL Tax & Disposal tab: "Foreign shares and funds · IN rules"; lot bought 2024-09-16
+  (731 days) Long term, 252 days "478 days to long term" (730-day rule); selling 107 units: short-term
+  loss -35,300 INR netted against long-term gain 89,727 INR, carried-forward losses used 54,427 INR,
+  tax 0; selling 29 units (oldest lot) long-term gain 89,365 INR fully offset by losses.
+  Model checked by hand in the page (domestic listed shares, no losses): gross 2000 INR, fees 3
+  (5 bps + 10 bps), short gain 250 → 50 tax at 20%, long gain 500 exempt → total 50; with the
+  exemption set to 0, 112.50. Themes not re-checked (tokens only, no new colours).
+
+NOTES:
+  - The long-term exemption is applied in full to one sale ("assumes no other long-term gains this tax
+    year"); a year-to-date view belongs to E-06.
+
+FILES: created position/model/disposalEstimate.ts, position/sections/DisposalEstimator.module.scss;
+  rewritten position/sections/PositionDisposalEstimator.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        68 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST (UTC+05:30)
+TASK CLAIMED:   E-06 Reports — real returns, tax pack, cost and tax as share of gross return
+OWNER INPUT:    session 64 answer to question 16 (India resident, foreign stocks)
+
+PRE-WORK VERIFICATION:
+  git: f466fa8; working tree clean; type check, lint, build PASS at session 67 end.
+
+SCOPE:
+  - Performance report (server): real time-weighted return from recorded inflation or the saved
+    assumption for the report currency's country, real benchmark return when comparing, and costs
+    plus estimated tax as a share of gross gain.
+  - Tax report (server): gains by asset class, dividends by country with withholding and foreign tax
+    credit, losses carried forward with expiry, foreign holdings for annual disclosure, remittance
+    used against the yearly cap; gains measured at purchase-date FX.
+  - Remove the hardcoded RealReturnsComparisonSection and JurisdictionTaxPackSection; the existing
+    report tables and CSV export carry the pack.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        68 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T09:53:00Z  |  local: 2026-09-17 15:23 IST (UTC+05:30)
+END:            2026-09-17T10:00:00Z  |  local: 2026-09-17 15:30 IST (UTC+05:30)
+TASK CLAIMED:   E-06 Reports
+END STATUS:     DONE
+
+COMPLETED:
+  - Reports receive reference data (ReportReferences: inflation history, inflation assumptions,
+    losses carried forward) from the handler.
+  - Performance report: "Real return (after inflation)" deflating the time-weighted return by the
+    recorded monthly index for the report currency's country (US/IN/GB) or the saved assumption, with
+    the benchmark deflated the same way when comparing ("benchmark alternative comparison"); "Costs
+    and tax as share of gross gain".
+  - Tax report: gains now use purchase-date FX for cost; new "Unrealised gains by asset class" table;
+    tax pack (reportTaxPack.ts) adds dividends by source country with withholding and foreign tax
+    credit, losses carried forward with expiry, foreign holdings for the annual disclosure, and money
+    sent abroad this tax year against the remittance cap; notes on tax year and disclosure.
+  - Deleted the hardcoded RealReturnsComparisonSection and JurisdictionTaxPackSection; the report's
+    own tables and CSV export carry the figures.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS (repo-wide); build PASS.
+  API (INR, 2025-09-17 to today, benchmark): TWR -2.80% vs benchmark -3.56%; real -6.18% vs -6.91%
+  "less 3.60% inflation … recorded IN inflation"; drag "No gross gain in the period" (gain negative).
+  EUR report: real return "No inflation figures". Tax report (FY from 2026-04-01): classes table
+  foreign +443,903.66 LT, gold -1,240,247.83 LT, domestic -18,728.56 LT, summing to the long-term
+  metric -815,072.73; losses table 3 rows (FY 2018-19 expiring soon); foreign holdings 6 rows;
+  remitted 8,432.64 USD, 3.4% of 250,000 USD. /reports/tax page renders every new table.
+
+FINDINGS:
+  - Seeded gold (XAUUSD) shows a -1.24M INR long-term loss; mock price history, left as is.
+  - Realised gains remain zero: the mock transaction record has no sales.
+
+FILES: created generators/reportRealReturns.ts, generators/reportTaxPack.ts; modified reportParts.ts,
+  reports.ts, reportTaxBuilder.ts, reportCashBuilders.ts (exports), portfolioPerformance.ts,
+  handlers/reportHandlers.ts, features/reports/sections/ReportBody.tsx; deleted
+  features/reports/sections/{RealReturnsComparisonSection,JurisdictionTaxPackSection}.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        69 — START ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T12:57:00Z  |  local: 2026-09-17 18:27 IST (UTC+05:30)
+TASK CLAIMED:   M-16 Manual-only instrument type in mock data
+OWNER INPUT:    "other than polish complete the remaining items"; decision 26
+
+PRE-WORK VERIFICATION:
+  git: 2d76422; working tree clean; type check, lint, build PASS at session 68 end.
+
+SCOPE:
+  - Add instrument type `unlisted` (private placements and other holdings with no exchange),
+    seeded manual-only with automation off; the private secured note moves to it; permitted in the
+    US market configuration so its holding is covered.
+  - Update every per-type lookup the type checker names; tax class for unlisted is debt.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        69 — END ENTRY
+AGENT:          Claude Opus 5
+START:          2026-09-17T12:57:00Z  |  local: 2026-09-17 18:27 IST (UTC+05:30)
+END:            2026-09-17T13:03:00Z  |  local: 2026-09-17 18:33 IST (UTC+05:30)
+TASK CLAIMED:   M-16 Manual-only instrument type
+END STATUS:     DONE
+
+COMPLETED:
+  - Instrument type `unlisted` added to InstrumentTypeSchema; seeded manual-only with automation
+    never permitted, 10-day settlement and a 10,000 minimum order value.
+  - The private secured note (PRIV-NOTE) is now `unlisted`; the private placement broker carries
+    `unlisted`; the US market permits it. Price history, net worth asset class (fixed income), tax
+    class (debt) and the workspace default layout treat it like a bond.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: instrument types list shows unlisted enabled,
+  manualOnly true, automationPermitted false, markets [US], health "1 market; 1 held"; PRIV-NOTE type
+  unlisted with a holding worth 4,442.68 USD.
+
+FILES: schemas/instruments.ts; generators/{instrumentTypeConfig,canonicalInstruments,markets,
+  brokerConfig,netWorthView,priceHistory}.ts; workspace/model/workspaceLayout.ts; shared/tax/taxRules.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        70
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:04:00Z  |  local: 2026-09-17 18:34 IST (UTC+05:30)
+END:            2026-09-17T13:11:00Z  |  local: 2026-09-17 18:41 IST (UTC+05:30)
+TASK CLAIMED:   E-01 Holdings — liquidity class per position (owner Q14: traded portfolio only)
+END STATUS:     DONE
+
+COMPLETED:
+  - shared/liquidity/liquidityClass.ts: days (settles within 5 business days), weeks (longer
+    settlement), months or longer (manual-only types, no exchange); shared so Planning (E-07) uses it.
+  - Holding rows carry liquidity from the instrument type's settlement override or the market's
+    settlement cycle, and the type's manual-only flag (useInstrumentTypeConfigs added to holdings).
+  - Liquidity column (visible by default, in export) and a rewritten summary: value, share and count
+    per class from the rows. Removed the non-market assets toggle, useNetWorth, the type assertion,
+    parseFloat on money and inline styles (decision 44). Defined the missing .liquiditySub style and
+    removed the unused .nonMarketCard.
+  - holdingColumns.tsx (was 295 lines) split: helpers moved to columns/columnHelpers.tsx.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser: summary "Days $94,006.76 · 95.5% · 6 positions;
+  Weeks $0.00; Months or longer $4,442.68 · 4.5% · 1 position" (the unlisted note); table rows show
+  "Days · Settles T+1" for AAPL and SPY, "Settles T+0" for BTCUSD. Themes not re-checked (existing
+  classes only).
+
+FILES: created shared/liquidity/liquidityClass.ts, holdings/columns/columnHelpers.tsx; modified
+  holdings/{columns/holdingColumns.tsx, model/holdingTypes.ts, model/holdingRows.ts,
+  model/holdingsExport.ts, useHoldingsData.ts, sections/HoldingsLiquiditySummary.tsx,
+  HoldingsPage.module.scss}.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        71
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:12:00Z  |  local: 2026-09-17 18:42 IST (UTC+05:30)
+END:            2026-09-17T13:16:00Z  |  local: 2026-09-17 18:46 IST (UTC+05:30)
+TASK CLAIMED:   E-04 Risk & Safety — counterparty exposure; compliance limits beside risk limits
+END STATUS:     DONE
+
+COMPLETED:
+  - GET /api/v1/risk/counterparty-exposure (generators/counterpartyExposure.ts): holdings summed by
+    broker into counterparty profiles, converted to the portfolio currency, share of the traded
+    portfolio (decision 44), over-weight flag against the saved threshold, protection cover and the
+    value above it. useCounterpartyExposure; saving the operating policy refreshes it.
+  - CounterpartyExposureSection and ComplianceLimitsPanel rewritten on data hooks with loading,
+    error and empty states and an SCSS module (Risk.module.scss is at 299 lines); removed fixed
+    arrays (including counterparties not in the data: Chase, E*TRADE), inline styles, the undefined
+    --color-warning token and the link to the wrong settings page.
+  - Wording of the threshold changed from "net worth" to "portfolio" in schema comments, the
+    operating policy form and its version description (decision 44).
+  - Fixed a zero check in the E-02 estimator: decimal.js isPositive() is true for zero.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser /risk/limits: compliance "2 active" blackouts with
+  days left, 5 restricted, 3 locks (AAPL, MSFT, RELIANCE), 4 refusals; counterparty exposure
+  "Interactive Brokers LLC holds more than 25% of the $98,449.44 portfolio", IBKR 90.3% flagged,
+  Hargreaves Lansdown 4.6% with FSCS cover $94,018.50, Private Placement Agent 4.5% no scheme,
+  Zerodha 0.6%. After the fix no "$0.00 is above it" text.
+
+FILES: created generators/counterpartyExposure.ts, risk/sections/RiskPanels.module.scss; modified
+  schemas/counterparties.ts, schemas/config-assumptions.ts, generators/{index,counterpartyProfiles}.ts,
+  handlers/partTwoReferenceHandlers.ts, api/{partTwoReferenceQueries,assumptionsConfigQueries,index}.ts,
+  risk/sections/{CounterpartyExposureSection,ComplianceLimitsPanel}.tsx,
+  settings/assumptions/{sections/OperatingPolicyForm.tsx, model/assumptionsDraft.ts},
+  position/sections/PositionDisposalEstimator.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        72
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:17:00Z  |  local: 2026-09-17 18:47 IST (UTC+05:30)
+END:            2026-09-17T13:25:00Z  |  local: 2026-09-17 18:55 IST (UTC+05:30)
+TASK CLAIMED:   E-05 System Health — independent reconciliation (owner Q15)
+END STATUS:     DONE
+
+COMPLETED:
+  - schemas/reconciliation.ts; stores/reconciliationStore.ts: one account per broker holding
+    positions, masked references, statement method, last run, discrepancies against the statement
+    (seeded: CDSL shows 2 fewer RELIANCE shares than Zerodha), automationPaused while a mismatch is
+    unresolved, resolution with reason.
+  - handlers: GET /api/v1/health/reconciliation, POST …/:brokerId/run, POST …/:brokerId/resolve
+    (reason required; 409 when nothing to resolve); useReconciliation, useRunReconciliation,
+    useResolveReconciliation.
+  - Decision 45 enforced: approvals routed to a paused broker carry a failed "Broker reconciliation"
+    check and approving them is refused (409); the Alerts Centre raises one critical alert per paused
+    account (acknowledging it does not resume automation).
+  - DepositoryReconciliationSection rewritten on the hooks with loading/error/empty states, SCSS
+    module, run again, and resolve-with-reason; removed fixed accounts, unmasked account numbers and
+    the always-zero simulated audit.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: IBKR matched (4 positions), Zerodha mismatch paused
+  (RELIANCE broker 47, statement 45), HL and private placement matched; TATAMOTORS approval shows the
+  failed reconciliation check; approve → 409; alert "Positions do not match the statement: Zerodha";
+  resolve with blank reason → 400; with reason → 200 and the check disappears from the approval.
+  UI /health/status: "Automation is paused for Zerodha", masked "•••• 0412", discrepancy line, resolve
+  field and buttons render.
+
+FILES: created schemas/reconciliation.ts, stores/reconciliationStore.ts,
+  handlers/reconciliationHandlers.ts, api/reconciliationQueries.ts,
+  health/sections/Reconciliation.module.scss; modified schemas/index.ts, handlers/{index,
+  tradingHandlers,alertCentreHandlers}.ts, api/index.ts, generators/orderHistory.ts (brokerFor
+  exported), health/sections/DepositoryReconciliationSection.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        73
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:26:00Z  |  local: 2026-09-17 18:56 IST (UTC+05:30)
+END:            2026-09-17T13:34:00Z  |  local: 2026-09-17 19:04 IST (UTC+05:30)
+TASK CLAIMED:   E-07 Planning — reserve, ladder, commitments, withdrawal phase, ranged projections
+END STATUS:     DONE
+
+COMPLETED:
+  - Liquidity plan (schemas/planning-liquidity.ts; GET/PUT /api/v1/planning/liquidity; hooks):
+    emergency reserve (monthly expenses, target months default 6, held amount and where, kept outside
+    trading accounts), known commitments, withdrawal phase (enabled, start date, yearly amount) and
+    automation ceiling (default 30%, owner Q18). Validation shared by form and server.
+  - View built from data: ladder of trading cash and holdings by the shared liquidity classes with
+    running totals; each commitment's reachable amount by its due date less earlier commitments;
+    withdrawal rate and years covered; value managed by semi/fully automatic strategies against the
+    ceiling.
+  - EmergencyReserveCard (Goals) and LiquidityLadderSection with LiquidityPlanForm (Scenarios)
+    rewritten on the hooks with loading/error states; fixed component state, inline styles and
+    hardcoded ladder removed. Projections (already cautious/expected/hopeful with real terms) now
+    offer the saved inflation assumption for the projection currency.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser Scenarios: ladder cash $12,450.00, days
+  $94,006.76, weeks $0.00, months $4,442.68; commitments renovation/tuition/car covered; withdrawal
+  "21.64% of today's portfolio, about 4.6 years"; automation "$47,146.47, 42.5% … ceiling of 30%.
+  Reduce automation"; "Saved inflation assumption for US" hint; Edit plan opens the form with Save
+  plan. API: PUT with withdrawal enabled and no start → 400 "Choose when withdrawals start"; raising
+  the reserve to 21,000 → funded 6 months; a 50,000 commitment due tomorrow → reachable 12,450 (cash
+  only), not covered. Goals: "4.6 months · $5,000.00 below target".
+
+FILES: created schemas/planning-liquidity.ts, generators/planningLiquidity.ts,
+  handlers/planningLiquidityHandlers.ts, api/planningLiquidityQueries.ts,
+  planning/sections/LiquidityPlanForm.tsx; rewritten planning/sections/{EmergencyReserveCard,
+  LiquidityLadderSection}.tsx; modified planning/sections/ProjectionPanel.tsx, schemas/index.ts,
+  handlers/index.ts, api/index.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        74
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:35:00Z  |  local: 2026-09-17 19:05 IST (UTC+05:30)
+END:            2026-09-17T13:39:00Z  |  local: 2026-09-17 19:09 IST (UTC+05:30)
+TASK CLAIMED:   E-08 Strategy Library — retirement criteria, standing, demotion history, correlation
+END STATUS:     DONE
+
+COMPLETED:
+  - GET /api/v1/strategies/standing (generators/strategyStanding.ts; useStrategyStanding): each
+    strategy's value series is the sum of its own positions on business days of its criteria
+    window, valued as reports value them; drawdown and annualised rolling Sharpe from the series,
+    underperformance from the library's live-versus-backtest divergence; strategies without positions
+    keep the measurement recorded at demotion; breaches in words; next review from the last review
+    and review interval, overdue flag. Correlation of daily returns over a common 90-day window with
+    a 0.70 warning.
+  - StrategyRetirementSection rewritten on the standing and lifecycle hooks with loading and error
+    states and an SCSS module; strategyRetirementData.ts (fixed demotion log and matrix) deleted.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser /research/strategies: Dual Moving Average
+  Momentum (fully automatic) drawdown 4.8%, Sharpe 0.01, trails 18.1 points → two breaches; RSI
+  Oversold Mean Reversion recorded at demotion, three breaches, review 2026-08-31 overdue; Donchian
+  within criteria; draft and backtested "None until promoted"; demotion history lists the RSI
+  demotion with its reason; correlation matrix momentum vs breakout -0.24. Found and fixed during
+  verification: correlation compared series of different windows (90 and 120 days) from their
+  starts; both now use the same 90-day dates.
+
+FINDINGS:
+  - Dual Moving Average Momentum breaks its criteria while still fully automatic; the platform shows
+    it but nothing demotes automatically (not specified).
+
+FILES: created schemas/strategy-standing.ts, generators/strategyStanding.ts,
+  strategyLibrary/sections/StrategyRetirement.module.scss; modified schemas/index.ts,
+  handlers/partTwoReferenceHandlers.ts, api/{partTwoReferenceQueries,index}.ts,
+  strategyLibrary/sections/StrategyRetirementSection.tsx; deleted sections/strategyRetirementData.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        75
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:40:00Z  |  local: 2026-09-17 19:10 IST (UTC+05:30)
+END:            2026-09-17T13:44:00Z  |  local: 2026-09-17 19:14 IST (UTC+05:30)
+TASK CLAIMED:   E-09 part c — employer policy rules as configuration (decision 43)
+END STATUS:     DONE (E-09 complete)
+
+COMPLETED:
+  - EmployerPolicySchema (enabled, employer name, pre-clearance, minimum holding days) in the
+    compliance overview; PUT /api/v1/compliance/employer-policy (employer name required when on);
+    useSaveEmployerPolicy refreshes compliance, approvals and screener.
+  - Blackout windows carry `symbols` and `appliesToAll`; the eligibility check uses them instead of
+    matching hardcoded symbol lists against scope text.
+  - When the policy is off: blackout windows, holding locks and employer-equity restrictions are not
+    enforced; conflict, audit-client, insider (MNPI), short-swing and sanction restrictions still are.
+    Pre-clearance on a blackout refusal follows the policy. Mock seed keeps the policy on so spec
+    19.3/19.4 states stay visible (decision 43).
+  - EmployerPolicyCard on /compliance with a switch, fields, discard and save.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: with the policy on MSFT BUY refused (blackout),
+  NORTHWIND BUY refused (employer equity), AAPL SELL refused (holding lock), NVDA BUY refused (MNPI);
+  saving on with a blank employer → 400; saving off → MSFT, NORTHWIND and AAPL allowed, NVDA still
+  refused. UI: the policy switch renders on /compliance.
+
+FILES: modified schemas/compliance.ts, generators/{complianceSeeds,complianceBuilder}.ts,
+  stores/complianceStore.ts, handlers/complianceHandlers.ts, api/{complianceQueries,index}.ts,
+  compliance/CompliancePage.tsx; created compliance/sections/EmployerPolicyCard.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        76
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:45:00Z  |  local: 2026-09-17 19:15 IST (UTC+05:30)
+END:            2026-09-17T13:47:00Z  |  local: 2026-09-17 19:17 IST (UTC+05:30)
+TASK CLAIMED:   S-35 Portfolio Performance links to the full performance report (owner Q9)
+END STATUS:     DONE
+
+COMPLETED:
+  - Each period on /portfolio/performance links to the performance report with its dates.
+  - The report screen opens a linked period from ?from=&to= (custom preset) when both are dates.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Browser: the 1-month period link goes to
+  /reports/performance?from=2026-08-17&to=2026-09-16 and the report's date fields show those dates.
+
+FILES: features/portfolio/performance/sections/PerformanceView.tsx,
+  features/reports/sections/ReportScreen.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        77
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:48:00Z  |  local: 2026-09-17 19:18 IST (UTC+05:30)
+END:            2026-09-17T13:52:00Z  |  local: 2026-09-17 19:22 IST (UTC+05:30)
+TASK CLAIMED:   S-36 Continuity — backup nominee and drill schedule (owner Q17)
+END STATUS:     DONE
+
+COMPLETED:
+  - Emergency access playbook carries backupNominee (seed: Karthik (Brother)) and nextDrillDueDate
+    (last test plus interval, computed by the builder).
+  - PUT /api/v1/continuity/access-plan: primary and backup nominee (must differ) and drill interval
+    between 180 and 365 days; useUpdateAccessPlan.
+  - AccessPlanForm in the playbook card: change nominees and choose every 6, 9 or 12 months; the
+    card shows the backup nominee (warning when none) and the next drill due date.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API: same person as backup → 400; 90-day interval → 400;
+  365 days with Karthik → 200, next due 2027-04-30. UI /continuity: "Backup nominee: Karthik
+  (Brother)", "next due 2026-10-27", change button renders.
+
+FILES: modified schemas/continuity.ts, generators/{continuitySeeds,continuityBuilder}.ts,
+  stores/continuityStore.ts, handlers/continuityHandlers.ts, api/{continuityQueries,index}.ts,
+  continuity/sections/EmergencyAccessDrill.tsx; created continuity/sections/AccessPlanForm.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        78
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:53:00Z  |  local: 2026-09-17 19:23 IST (UTC+05:30)
+END:            2026-09-17T13:56:00Z  |  local: 2026-09-17 19:26 IST (UTC+05:30)
+TASK CLAIMED:   S-34 Screener factors from price history and fundamentals (owner Q19)
+END STATUS:     DONE
+
+COMPLETED:
+  - generators/screenerFactors.ts: price (last close), daily change, RSI-14 and distance from the
+    200-day SMA computed from the mock price history (shared indicators, decision 30); canonical
+    instruments use their own series, other screener symbols a deterministic series keyed by symbol.
+    P/E and dividend yield from the fundamentals generator for canonical instruments.
+  - The screener search applies the factors before compliance and automation status.
+
+NOT COMPLETED / LIMITS:
+  - P/B, ROE and market capitalisation have no mock data source and stay seeded reference figures;
+    non-canonical symbols keep seeded P/E and yield. Recorded as a finding.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. API search (15 rows, ~300 ms): SPY 400.59 equals the
+  holdings row price; AAPL 156.09 last close against the live ticking quote 156.23 (decision 19);
+  RSI and SMA distance vary by symbol; medians recomputed (P/E 26.2).
+
+FILES: created generators/screenerFactors.ts; modified handlers/screenerHandlers.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        79
+AGENT:          Claude Opus 5
+START:          2026-09-17T13:57:00Z  |  local: 2026-09-17 19:27 IST (UTC+05:30)
+END:            2026-09-17T14:03:00Z  |  local: 2026-09-17 19:33 IST (UTC+05:30)
+TASK CLAIMED:   L-14 Partial-data state component
+END STATUS:     DONE
+
+COMPLETED:
+  - packages/ui PartialDataState (UI spec 10): per-section notice naming each unavailable source
+    and what the reader loses, optional "Try again", then the part of the section that loaded.
+    Decoupled from domain types. Workbench story "partial-data-state".
+  - Holdings and position detail replace loose warning badges with structured sources
+    (Strategies, News) and a retry that refetches both. Unused .warnings style removed.
+
+NOT COMPLETED / LIMITS:
+  - No developer scenario fails a single source, so the holdings notice was not shown live;
+    the detection logic is unchanged from before, only its shape.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; workbench story renders (dark); holdings page loads with no
+  console errors and no notice when all sources are available.
+
+FILES: created packages/ui/src/state/PartialDataState/{PartialDataState.tsx,.module.scss};
+modified state/index.ts, stateStories.tsx, holdings useHoldingsData.ts, HoldingsView.tsx,
+HoldingsPage.module.scss, PortfolioHoldingsPage.tsx, position usePositionData.ts, PositionView.tsx,
+PositionDetailPage.tsx.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        80
+AGENT:          Claude Opus 5
+START:          2026-09-17T14:04:00Z  |  local: 2026-09-17 19:34 IST (UTC+05:30)
+END:            2026-09-17T14:16:00Z  |  local: 2026-09-17 19:46 IST (UTC+05:30)
+TASK CLAIMED:   L-13 Analytical chart presets — remaining spec 8.1 types
+END STATUS:     DONE
+
+COMPLETED:
+  - Eight new AnalyticalChart presets (UI spec 8.1): returns-distribution (equal-width bins with a
+    normal curve scaled to expected counts), allocation-treemap (sized by value, coloured from loss
+    through neutral to gain), stacked-area (allocation drift, optional percent scale),
+    correlation-matrix (-1..1 diverging heatmap), rolling-metric (gaps where the window is not full,
+    optional threshold), bar (multi-series, signed colouring, horizontal), waterfall (contribution
+    steps and a closing total, sign-independent stacking) and scatter (risk against return, bubble
+    size by weight).
+  - AnalyticalChartProps is now a discriminated union of preset and data, so the component and
+    buildAnalyticalOption need no type assertions (the old component cast data per preset).
+    returns-distribution and correlation-matrix were declared before but never implemented.
+  - Chart instance created once; options replaced on data or theme change. Shared axis, tooltip,
+    legend and diverging-colour helpers in presetParts.ts. New theme role strongTextColor for labels
+    on coloured cells. AnalyticalChartOptions type exported for the custom preset.
+  - Two workbench stories: distribution and contribution; composition and relationships.
+
+NOT COMPLETED / LIMITS:
+  - Presets are available but no screen uses the new ones yet; wiring them into performance,
+    risk and research screens belongs to the owning screens. Gauge meters and sparklines already
+    exist as UsageMeter and Sparkline; volume profile is optional/later in the spec.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS; build PASS. Workbench: all eight presets render in dark, treemap and
+  stacked area checked in light after switching theme. Performance page equity and heatmap charts
+  unchanged, no console errors.
+
+FILES: created charts/analytical/{buildAnalyticalOption,presetParts,distributionPresets,
+compositionPresets}.ts, workbench/stories/analyticalPresetStories.tsx; modified
+charts/analytical/{types.ts,AnalyticalChart.tsx}, charts/index.ts, theme/chartThemeTokens.ts,
+workbench/storyRegistry.ts, apps/web overview/model/valueChartOptions.ts.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION:        81
+AGENT:          Claude Opus 5
+START:          2026-09-17T14:17:00Z  |  local: 2026-09-17 19:47 IST (UTC+05:30)
+END:            2026-09-17T14:30:00Z  |  local: 2026-09-17 20:00 IST (UTC+05:30)
+TASK CLAIMED:   L-12 Visual regression test setup (owner Q12: Playwright baselines, local, dark and light)
+END STATUS:     DONE
+
+COMPLETED:
+  - DEPENDENCY ADDED: @playwright/test 1.49.1 (root devDependency). Reason: owner question 12 chose
+    Playwright screenshot baselines. Pinned to 1.49.1 because its Chromium build (1148) is already
+    installed on this machine, so no browser download was needed. Upgrading it needs
+    "npx playwright install chromium".
+  - visual/playwright.config.ts: reuses or starts the Vite dev server (MSW mock API), 1440x900,
+    Asia/Kolkata, 1% pixel tolerance, animations disabled; screenshot.css hides the floating
+    developer scenario switcher. Baselines at visual/baselines/{screen}-{theme}-win32.png.
+  - visual/screens.spec.ts: overview, holdings, performance, orders, approvals, risk limits and
+    market settings, each in dark and light (14 baselines, about 3.7 MB). Date pinned to
+    2026-09-17T09:30Z because mock data is generated from the current day; timers still run.
+  - Scripts: pnpm visual (compare), pnpm visual:update (rebaseline); pnpm typecheck also checks
+    visual/. Run output (visual/results, visual/report) ignored. Command listed in CLAUDE.md.
+
+NOT COMPLETED / LIMITS:
+  - The app shell scrolls inside its main area, so full-page captures show the main column in
+    full but the sidebar only to the viewport height.
+  - Baselines are Windows renders; another platform writes its own -{platform} files.
+  - No CI (decision 11); run locally before and after UI changes.
+
+VERIFICATION RUN:
+  type check PASS; lint PASS. pnpm visual:update wrote 14 baselines; pnpm visual then passed
+  14 of 14 twice against them (stable). Baselines inspected: themes correct, switcher hidden.
+
+FILES: created visual/{playwright.config.ts,screens.spec.ts,screenshot.css,tsconfig.json},
+visual/baselines/*.png; modified package.json, pnpm-lock.yaml, .gitignore, .prettierignore,
+CLAUDE.md.
+────────────────────────────────────────────────────────────
+SESSION:        82
+AGENT:          Antigravity (gemini-2.5-pro)
+START:          2026-09-17T15:00:00Z  |  local: 2026-09-17 20:30 IST
+END:            2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
+TASK CLAIMED:   UI Polish & Typography Overhaul (Centralized Theme & Font System)
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - Centralized Theme System: Created apps/web/src/styles/tokens/_theme-tokens.scss as the single
+    source of truth for all themes, surfaces, borders, gradients, glows, and font presets.
+  - Added new themes: 'midnight' (Cyberpunk navy & neon cyan) and 'emerald' (Dark forest jade & gold).
+  - Centralized Typography Engine: Preloaded Plus Jakarta Sans, Inter, Outfit, and JetBrains Mono
+    in apps/web/index.html. Added data-font attribute switching on <html> with runtime selector
+    in DisplaySettingsPanel and SettingSelect.
+  - UI Spacing & Visual Depth Overhaul: Relaxed typography line-heights, letter spacing, and
+    paragraph margins; upgraded Card.module.scss with subtle top border highlight line, gradient
+    depth and hover lift; upgraded Badge.module.scss with luminous translucent pill styling and
+    ambient glow; refreshed MetricDisplay.module.scss and DataTable.module.scss for optimal breathing room.
+  - Rebaselined all 14 visual Playwright screenshot tests in visual/baselines/ via pnpm visual:update.
+  - Zero data modifications: Preserved 100% of mock data, DTO schemas, calculations, and component content.
+
+NOT COMPLETED / LIMITS:
+  - None within scope.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (all workspaces); pnpm lint PASS; pnpm build PASS; pnpm visual PASS (14/14).
+
+FILES: created apps/web/src/styles/tokens/_theme-tokens.scss, apps/web/src/styles/themes/_midnight.scss,
+apps/web/src/styles/themes/_emerald.scss; modified apps/web/index.html, apps/web/src/styles/_base.scss,
+apps/web/src/styles/global.scss, apps/web/src/styles/tokens/_primitives.scss,
+apps/web/src/styles/themes/{_dark,_light,_high-contrast}.scss,
+apps/web/src/shared/display/{displaySettings.ts,DisplaySettingsPanel.tsx,DisplaySettingsPanel.module.scss,SettingSelect.tsx,SettingSelect.module.scss},
+packages/ui/src/{layout/Card/Card.module.scss,primitives/Badge/Badge.module.scss,data-display/MetricDisplay/MetricDisplay.module.scss,table/DataTable.module.scss},
+visual/baselines/*.png, Docs/DECISIONS.md, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+SESSION:        83
+AGENT:          Antigravity (gemini-2.5-pro)
+START:          2026-09-17T16:00:00Z  |  local: 2026-09-17 21:30 IST
+END:            2026-09-17T17:15:00Z  |  local: 2026-09-17 22:45 IST
+TASK CLAIMED:   SVG Outline Icons Overhaul, Table Chevrons, SideNav Accordions, Vertical Timelines & Collapsible Sections
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+COMPLETED:
+  - SVG Outline Icons Engine: Created apps/web/src/shell/NavIcons.tsx with 30+ stroke-based SVG icons
+    (stroke="currentColor" fill="none", strokeWidth="1.75") completely replacing all emojis and solid icons.
+    Icons automatically react and tint to the active theme palette (Dark, Light, Midnight, Emerald, High Contrast).
+  - DataTable Expand Chevrons: Replaced legacy text arrows ('▼' / '►') in packages/ui/src/table/DataTableRow.tsx
+    and DataTable.module.scss with an interactive, centered SVG outline chevron button with smooth 90deg
+    rotation, hover pill backdrop, and accessible keyboard focus rings.
+  - SideNav Modernization: Upgraded Sidebar.tsx and Sidebar.module.scss with collapsible accordion
+    navigation groups, rotating section chevrons, auto-expansion for the active route, global "Collapse All /
+    Expand All" header toggle, glowing active tile indicator with luminous accent line, and "Live Systems Active"
+    status pulse in the footer.
+  - TopBar Modernization & Ergonomic Sizing: Standardized all header controls (mode badge, kill switch,
+    custom currency select with chevron, health status capsule, and utility icon buttons) to a uniform
+    32px height, 8px (radius-md) corner radius, and partitioned into logical action groups separated by
+    subtle 18px vertical dividers, completely eliminating uneven heights and misaligned baselines. Added
+    geometric SVG StaySteady PRO brand mark and live market status capsules.
+  - Connected Vertical Timeline Component: Added @staysteady/ui Timeline component (Timeline.tsx,
+    Timeline.module.scss) with vertical gradient connecting stem, luminous status nodes (positive, warning,
+    critical, info, neutral), and glassmorphic event cards. Upgraded chronological workflows across
+    /audit (DecisionChain), /trading/orders (OrderDetail), /continuity (EmergencyAccessDrill), and /journal.
+  - Heavy-Scroll Section Collapse: Added native isCollapsible capability to Card.tsx with accessible
+    toggle button and applied across /risk/limits (RiskPanelView.tsx) and /continuity sections.
+  - Zero Data Modifications: 100% of mock data, DTOs, calculations, numbers, and copy preserved.
+  - Strict 300-Line Limit: Every modified and newly created file strictly stays within <= 299 lines.
+
+NOT COMPLETED / LIMITS:
+  - None within scope.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web, visual: 0 errors); pnpm lint PASS (ESLint & Prettier: 0 errors);
+  pnpm build PASS (exit code 0); pnpm visual:update wrote 14 baselines; pnpm visual PASS (14/14 passed).
+
+FILES: created apps/web/src/shell/NavIcons.tsx, packages/ui/src/data-display/Timeline/{Timeline.tsx,Timeline.module.scss};
+modified packages/ui/src/table/{DataTableRow.tsx,DataTable.module.scss},
+packages/ui/src/layout/Card/{Card.tsx,Card.module.scss},
+packages/ui/src/{data-display/index.ts,index.ts},
+apps/web/src/shell/{Sidebar.tsx,Sidebar.module.scss,TopBar.tsx,TopBar.module.scss},
+apps/web/src/features/audit/{Audit.module.scss,sections/DecisionChain.tsx},
+apps/web/src/features/trading/orders/sections/OrderDetail.tsx,
+apps/web/src/features/journal/Journal.module.scss,
+apps/web/src/features/continuity/sections/{InstitutionRegister.tsx,RecoveryLocations.tsx,EmergencyAccessDrill.tsx,InactivityControls.tsx},
+apps/web/src/features/risk/sections/RiskPanelView.tsx,
+visual/{playwright.config.ts,baselines/*.png}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+ 
+```
+────────────────────────────────────────────────────────────
+SESSION 83 | Claude Opus 5
+START:          2026-09-17T17:45:00Z  |  local: 2026-09-17 23:15 IST
+END:            2026-09-17T18:30:00Z  |  local: 2026-09-18 00:00 IST
+TASK CLAIMED:   Scope task (no registry task): specify end-to-end company research at owner request
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+WHY THIS SESSION EXISTS:
+  The owner asked what stock and company information the platform shows before an investment
+  decision (balance sheet was the example), and asked for the analysis and plan. The audit found
+  one fundamentals endpoint with eight snapshot fields shown only in the Instrument Workspace right
+  panel, no statements of any kind, and sector classification held in two sources that disagree.
+  The owner then put the whole area in scope, naming the company, its parent and the related news
+  and events. Specification documents were changed on that instruction (AGENT_RULES rule 12).
+
+AUDIT FINDINGS THAT DROVE THE SCOPE:
+  - data/schemas/research-data.ts holds 8 snapshot fields (sector, market cap, P/E, dividend yield,
+    beta, expense ratio, coupon, maturity). No statements, no history, no peer comparison.
+  - Two sector sources disagree: SECTORS in data/mock/generators/researchData.ts covers 7 symbols
+    ("Information technology"); the screener seeds use free text ("Technology", "Broad Market Blend").
+  - riskLimits.ts global-sector limit is unmeasurable for want of classification, and says so.
+  - features/overview/sections/AllocationSection.tsx: sector allocation "not in the data yet".
+  - planningAllocation.ts falls back to "Not classified" for everything except seven stocks.
+  - ResearchSections.tsx converts a money amount with Number() — breaks decision 4 (raised as R-14).
+
+COMPLETED:
+  - Requirements Part III appended: 35 company and instrument research record; 36 classification,
+    corporate structure and ownership (parent, business group, listed siblings, promoter pledge,
+    fund look-through); 37 financial statements and derived measures (five years annual, eight
+    quarters, consolidated vs standalone, publication dates, ratios, peer medians, warning flags,
+    analyst opinion explicitly out of scope); 38 news, events and filings for one instrument.
+  - UI spec section 20 appended: 20.1 the Company Research screen (Overview, Financials, Ratios,
+    Ownership, News & events tabs); 20.2 eight existing screens to extend; 20.3 six states beyond
+    the usual set; 20.4 the mock data needed.
+  - DECISIONS.md: 48 (scope accepted, owner) and 49-53 (provisional agent choices under decision 26).
+  - Stage R added to the task registry: R-01..R-14, ordered so the three broken features are fixed first.
+  - Open Questions 22-27 raised, each with the provisional answer taken, for the owner to confirm.
+
+NOT COMPLETED / LIMITS:
+  - No application code was written; Stage R is entirely TODO.
+  - Decisions 49-53 are agent choices, not owner answers. Question 22 (taxonomy) is the one worth
+    the owner's attention: an own two-level scheme was chosen because GICS is licensed and the NSE
+    scheme covers India only.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web: 0 errors); pnpm lint PASS (eslint . and prettier
+  --check .: 0 errors). Build and visual not re-run: no code, style or markup changed this session.
+
+FILES: modified Docs/Personal_Investment_Platform_Requirements.md (Part III, sections 35-38),
+Docs/UI_Specification_Mock_Phase.md (section 20), Docs/DECISIONS.md (48-53),
+Docs/PROGRESS_LOG.md (status, handoff, Stage R registry, this entry, questions 22-27).
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 84 | Claude Opus 5
+START:          2026-09-17T18:45:00Z  |  local: 2026-09-18 00:15 IST
+END:            2026-09-18T01:00:00Z  |  local: 2026-09-18 06:30 IST
+TASK CLAIMED:   R-01 classification and corporate structure (data layer)
+END STATUS:     DONE
+REASON IF NOT DONE: —
+
+OWNER INSTRUCTION THIS SESSION:
+  Provisional decisions 49-53 adopted as suggested; question 26 (fundamentals inside strategy rules)
+  stays research-only. Recorded as decision 54.
+
+COMPLETED:
+  - Schemas (data/schemas/classification.ts, 165 lines): InstrumentClassification with kind
+    company/fund/asset_class and refines that force a sector and industry on a company and an asset
+    class on anything else; ProviderClassification kept as a mapping (decision 49); RelatedCompany
+    and CorporateStructure (parent, groupId/groupName, related listed companies); OwnershipPoint
+    with a refine that percentages add up to 100 and no pledge without a promoter holding;
+    InstrumentOwnershipResponse carrying either the pattern or the reason there is none, so "no
+    shareholders" is a state and not an error.
+  - Taxonomy (classificationTaxonomy.ts): 11 sectors, 30 industries, 9 asset classes, slug ids so a
+    saved filter survives a rename; an unknown industry name throws rather than passing silently.
+  - Assignments (classificationAssignments.ts): 18 company symbols across US, UK, JP, SG and IN
+    (canonical instruments plus the screener-only names), 10 asset-class symbols, a per-type
+    fallback, deliberately partial provider mappings (NSE for the Indian names, a global provider
+    for AAPL and NVDA), and six business groups.
+  - Generators: classification.ts (taxonomy, per-instrument classification, sectorNameForSymbol,
+    industryLabelForSymbol, peerSymbolsForSymbol for R-06/R-09); corporateStructure.ts (Tata Sons
+    above Tata Motors and TCS, HDFC Bank with two listed subsidiaries, Toyota's listed associates,
+    Temasek above DBS with a note that it is a controlling shareholder not a holding company, plus
+    groupSymbolsForSymbol for R-03); ownershipPattern.ts (eight calendar quarters, promoter null
+    where the market does not report one, HDFCBANK reporting zero, TATAMOTORS pledge rising 2.1% to
+    9.4% as UI spec 20.4 requires).
+  - Endpoints (classificationHandlers.ts): /api/v1/classification/taxonomy and per instrument
+    /classification, /structure, /ownership; 404 on an unknown instrument; loading-error scenario
+    honoured. Hooks (classificationQueries.ts): four read hooks on the decision 22 pattern.
+  - One sector source (decision 49): SECTORS in researchData.ts is now derived from the taxonomy,
+    fundamentals take their sector from it, and screenerFactors.ts replaces each row's seeded
+    sector with the taxonomy name. "Energy & Conglomerate", "Broad Market Blend", "Technology &
+    Growth" and "Healthcare" are gone from the screener.
+
+NOT COMPLETED / LIMITS:
+  - No screen consumes the new data yet: that is R-02, deliberately out of scope here.
+  - Screener-only symbols have no instrument id, so they classify by symbol, not through the
+    per-instrument endpoint.
+
+FINDINGS (not fixed, outside R-01 scope):
+  - executeScreenerSearch ignores criteria.sectors: the filter exists in the schema and the UI state
+    but nothing applies it. Belongs to R-02.
+  - Planning's sector view shows 77.81% "Not classified" because funds, commodities, crypto and
+    bonds dominate the portfolio. R-03 fund look-through is what makes that number meaningful.
+  - Only one Tata company (TATAMOTORS) is held; TCS exists in the screener universe only. R-03 needs
+    a second held group company for group exposure to show anything.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS (packages/ui, apps/web, visual: 0 errors); pnpm lint PASS (eslint . and
+  prettier --check . repo-wide); pnpm build PASS. Runtime checks in the browser pane against the dev
+  server: taxonomy returns 11 sectors; AAPL classifies as Information technology / Technology
+  hardware with its provider mapping; XAUUSD, SPY and PRIV-NOTE return asset classes with a reason
+  instead of a sector; Tata Motors returns Tata Sons as parent, the Tata group and TCS as a group
+  company; Tata Motors ownership returns eight quarters ending 2026-06-30, each adding to exactly
+  100, pledge 2.1 to 9.4; AAPL ownership reports no promoter block; SPY ownership returns the
+  unavailable reason; an unknown instrument returns 404. Screener rows now read Energy, Information
+  technology, Financials, Health care, Communication services, Broad market fund, Sector fund.
+  Planning's sector dimension still resolves (Information technology 16.96%, Health care 4.59%,
+  Energy 0.63%). No console errors beyond the deliberate 404. pnpm visual not re-run: no UI changed.
+
+FILES: created apps/web/src/data/schemas/classification.ts,
+apps/web/src/data/mock/generators/{classificationTaxonomy.ts,classificationAssignments.ts,
+classification.ts,corporateStructure.ts,ownershipPattern.ts},
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/classificationQueries.ts;
+modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/generators/{researchData.ts,screenerFactors.ts},
+apps/web/src/data/mock/handlers/index.ts, apps/web/src/data/api/index.ts,
+Docs/{PROGRESS_LOG.md,DECISIONS.md}.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 85 | Claude Opus 5
+START:          2026-09-18T01:15:00Z  |  local: 2026-09-18 06:45 IST
+END:            2026-09-18T02:30:00Z  |  local: 2026-09-18 08:00 IST
+TASK CLAIMED:   R-02 classification wired into Overview, Holdings, Planning and the Screener
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Bulk classification index: schema (ClassificationIndexRow, ClassificationIndex), generator
+    generateClassificationIndex over the canonical universe, endpoint
+    GET /api/v1/classification/instruments, hook useClassificationIndex. A list screen cannot make
+    one request per row, so the per-instrument endpoints from R-01 needed a list companion.
+  - shared/classification/classificationIndex.ts: createClassificationLookup(rows) with row,
+    sectorLabel, industryLabel, groupLabel and isEmpty. Provisional labelling choice: a company
+    shows its sector, a fund or commodity shows its asset class rather than "Not classified", and
+    anything with no business group shows "No group".
+  - Overview (UI spec 7.1, 20.2): AllocationDimension gains 'sector' and 'group'; the index is part
+    of the core query set, so an index failure shows the existing error state rather than a silently
+    unclassified chart. The comment claiming sector "is not in the data yet" is gone.
+  - Holdings (UI spec 7.2, 20.2): HoldingRow carries sectorLabel, industryLabel and groupLabel;
+    three new pickable columns, hidden by default like Country, Currency and Type; grouping by
+    sector, industry or group; the same three fields in the CSV export. Classification is an
+    optional source like strategies and news, so the table still renders with a partial-data banner
+    if it fails.
+  - Screener (UI spec 8.3, 20.2): executeScreenerSearch now applies criteria.sectors (the finding
+    from session 84). ScreenerSummaryMetrics gains availableSectors, the distinct sector values in
+    the universe before filtering, and the panel's new Sector control is built from that, so the
+    filter list and the rows cannot drift apart.
+  - Planning (UI spec 7.17): the sector view now uses the same labels as the rest of the app
+    (classificationLabelForSymbol), its note explains what a fund shows and why, and the seeded plan
+    carries a full set of sector targets. Targets must add up to 100 per dimension, which the schema
+    enforces: a first attempt with two targets totalling 35% failed validation and was corrected.
+
+NOT COMPLETED / LIMITS:
+  - Group exposure is not measured anywhere yet, and funds are not looked through: both are R-03.
+  - The screener's industry filter is not built; only sector. UI spec 20.2 asks for industry too,
+    and it belongs with R-13 where the statement-derived factors are added.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS with no
+  rebaseline needed. In the browser against the dev server: the index returns 17 rows with three
+  grouped symbols; Overview sector allocation reads Commodity 41.3%, Broad market fund 31.0%,
+  Information technology 17.0%, Health care 4.6%, Private credit 4.5%, Digital asset 1.0%, Energy
+  0.6%, and group allocation reads No group 99.4% / Reliance group 0.6%; Holdings offers grouping by
+  sector, industry and group, and grouping by sector produces correctly labelled group rows with
+  totals even while the column itself is hidden; the screener's sector list offers exactly the seven
+  values its universe carries and selecting Financials returns HDFCBANK, BRK.B, JPM and V, while
+  Broad market fund returns SPY and NIFTYBEES; Planning's sector view shows targets and drift
+  (Commodity 41.41% against a 25% target, over).
+
+FILES: created apps/web/src/shared/classification/classificationIndex.ts;
+modified apps/web/src/data/schemas/{classification.ts,screener.ts},
+apps/web/src/data/mock/generators/{classification.ts,index.ts,screenerGenerator.ts,
+planningAllocation.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/mock/stores/planningStore.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts},
+apps/web/src/features/overview/{useOverviewCore.ts,sections/AllocationSection.tsx,
+model/overviewTypes.ts,model/overviewLists.ts,model/portfolioOverview.ts},
+apps/web/src/features/portfolio/holdings/{useHoldingsData.ts,useHoldingsLayout.ts,
+columns/holdingColumns.tsx,model/holdingTypes.ts,model/holdingRows.ts,model/holdingsExport.ts,
+sections/HoldingsTable.tsx},
+apps/web/src/features/markets/{MarketsScreenerPage.tsx,screener/sections/ScreenerFiltersPanel.tsx},
+Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 86 | Claude Opus 5
+START:          2026-09-18T02:45:00Z  |  local: 2026-09-18 08:15 IST
+END:            2026-09-18T04:00:00Z  |  local: 2026-09-18 09:30 IST
+TASK CLAIMED:   R-03 group exposure and fund look-through
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Fund look-through (requirements 36): schema data/schemas/fund-lookthrough.ts (holdings with
+    weight, sector and group; sector weights that cannot exceed 100%; index tracked; assets under
+    management; a response that carries the reason when an instrument is not a fund), generator
+    fundLookThrough.ts with seeded definitions for SPY, VTSAX, QQQ and NIFTYBEES, endpoint
+    GET /api/v1/instruments/:id/look-through and hook useFundLookThrough.
+  - Exposure engine exposureBreakdown.ts: sectorExposure and groupExposure return every slice with
+    its direct and via-fund share, the instruments behind it, the largest slice, and the uncovered
+    share with a note explaining it. A fund's value is split across its disclosed weights; the
+    residue a fund does not disclose stays uncovered rather than being rounded away.
+  - Risk limits (UI spec 7.14, 20.2): global-sector now measures real exposure instead of saying it
+    cannot, and a new global-group limit sits beside it at a 20% threshold. Both name the
+    instruments behind the number and how much of it came through funds.
+  - Mock data: TCS added as canonical instrument inst-in-tcs (Indian long-term equity), and
+    HOLDING_PROFILES now holds both TATAMOTORS and TCS through Zerodha, so group exposure is a real
+    measurement rather than a feature with no data. The portfolio is 9 holdings.
+
+DELIBERATE CHOICES (provisional, taken under decision 26):
+  - Overview and Planning still show a fund as its asset class rather than looking through, while
+    risk limits look through. Allocation answers "where is my money", a limit answers "how
+    concentrated am I". Both are honest; they are not the same question.
+  - Sector exposure excludes instruments with no company behind them and reports the excluded share
+    (46.20% of this portfolio: gold, bitcoin, the private note). Folding them into a sector would
+    invent a sector; hiding them would overstate every share.
+
+NOT COMPLETED / LIMITS:
+  - Nothing in the interface shows a fund's holdings or sector weights yet: that is R-10, and the
+    data is ready for it.
+  - Group exposure through a fund is only measurable from a fund's disclosed largest holdings, so it
+    understates by design. The note on the measure says so.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 6 expected failures
+  (holdings, performance and risk-limits in both themes, from the two new holdings and the new
+  limit), rebaselined with pnpm visual:update, then 14/14 PASS. In the browser against the dev
+  server: SPY look-through returns the S&P 500, 11 sector weights led by Information technology
+  33.4%, and nine largest holdings covering 31.5% of the fund; gold answers "not a fund, so there is
+  nothing to look through to"; /api/v1/risk/panel reports the sector limit at 27.82% of a 35%
+  threshold ("Information technology, including 10.18% held through funds, across AAPL, SPY, TCS;
+  46.20% of the portfolio carries no sector at all") and the group limit at 1.47% of 20% ("Tata
+  group, across TATAMOTORS, TCS"); the Risk screen renders both with headroom; holdings returns 9
+  positions and the performance endpoint still answers 200.
+
+FILES: created apps/web/src/data/schemas/fund-lookthrough.ts,
+apps/web/src/data/mock/generators/{fundLookThrough.ts,exposureBreakdown.ts};
+modified apps/web/src/data/schemas/index.ts,
+apps/web/src/data/mock/generators/{canonicalInstruments.ts,holdingProfiles.ts,riskLimits.ts,
+index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, visual/baselines (6 rebaselined),
+Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 87 | Claude Opus 5
+START:          2026-09-18T04:05:00Z  |  local: 2026-09-18 09:35 IST
+END:            2026-09-18T04:45:00Z  |  local: 2026-09-18 10:15 IST
+TASK CLAIMED:   R-04 company research record
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Schema data/schemas/company-research.ts: CompanyProfile with the requirements-35 fields, and
+    CompanyProfileResponse carrying either the profile or the reason there is none. Fiscal year end
+    is held as MM-DD because every statement date has to be read against it (India to 31 March,
+    Apple to late September). A key person records whether they were appointed within the last year,
+    and the auditor records whether the opinion was qualified.
+  - generators/companyProfiles.ts: six profiles with plain business descriptions, revenue by segment
+    and by geography, executives, auditors and what each business depends on. Coverage stops there
+    on purpose: SWIGGY and the screener-only names answer "no provider has supplied a company record
+    for this business yet", which is the state UI spec 20.3 asks the interface to show.
+  - generators/companyResearch.ts, endpoint GET /api/v1/instruments/:id/company, hook
+    useCompanyProfile.
+
+NOT COMPLETED / LIMITS:
+  - No screen shows this yet; the Overview tab of the Company Research screen (R-07) does that.
+  - Profiles are seeded rather than derived, which is right for a provider-supplied record but means
+    the figures are plausible, not current.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide). Not re-run: pnpm build and pnpm visual, because
+  no component, style or markup changed this session (data-layer files and the API barrel only).
+  In the browser against the dev server: Tata Motors returns its four segments led by Jaguar Land
+  Rover at 66.8%, a 31 March year end, a chief executive appointed within the last year with the
+  note saying so, and its two dependencies; Apple returns a 30 September year end, USD reporting,
+  Americas 42.8% and an unqualified Ernst & Young opinion; SWIGGY returns "no provider has supplied
+  a company record for this business yet"; gold returns "no company sits behind this instrument".
+
+FILES: created apps/web/src/data/schemas/company-research.ts,
+apps/web/src/data/mock/generators/{companyProfiles.ts,companyResearch.ts};
+modified apps/web/src/data/schemas/index.ts, apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 88 | Claude Opus 5
+START:          2026-09-18T04:50:00Z  |  local: 2026-09-18 10:20 IST
+END:            2026-09-18T06:00:00Z  |  local: 2026-09-18 11:30 IST
+TASK CLAIMED:   R-05 financial statements
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - Schema (data/schemas/financial-statements.ts) with five refines that enforce coherence rather
+    than trusting the generator: the balance sheet must balance, free cash flow must follow from
+    operating cash flow and capital spending, earnings per share must follow from net profit and
+    shares, publication cannot precede the period end (decision 50), and a restatement must carry
+    its note. Consolidated and standalone are distinct values, not a flag.
+  - Seeds for 14 companies as a dozen parameters each, and a builder that derives every reported
+    line from them, so a period is internally consistent by construction.
+  - Five annual and eight quarterly periods per basis, with fiscal calendars that differ properly:
+    Apple to 30 September with its December quarter the largest, the Indian companies to 31 March,
+    Toyota to 31 March, AstraZeneca and DBS to 31 December. Annual statements publish 75 days after
+    the period end, quarterly 45 days.
+  - Endpoint GET /api/v1/instruments/:id/statements and hook useFinancialStatements. An instrument
+    with no company answers with the reason, as the other research endpoints do.
+
+DEFECT FOUND AND FIXED THIS SESSION:
+  - The first quarterly implementation attributed every quarter to the wrong fiscal year and
+    repeated "Q1" four times. Rewritten around fiscalYearEndFor (the first year end on or after the
+    quarter end) and verified against two different fiscal calendars.
+
+NOT COMPLETED / LIMITS:
+  - No ratio is computed yet and nothing is displayed: R-06 and R-07 to R-09 do that.
+  - The old InstrumentFundamentals generator still invents a market capitalisation instead of
+    deriving it from shares outstanding and the price history. R-06 should reconcile the two;
+    recorded as a finding below.
+
+FINDINGS (not fixed, outside R-05 scope):
+  - data/mock/generators/researchData.ts sets marketCap from a random draw while statements now
+    carry real shares outstanding. Two numbers for one fact; R-06 should derive market cap from
+    price times shares (decision 19).
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS. pnpm visual not re-run: no
+  component, style or markup changed. In the browser against the dev server: statements generate and
+  validate for all 14 covered companies across five currencies; Tata Motors returns five annual and
+  eight quarterly periods on both bases with standalone revenue at 1,451.6bn against consolidated
+  4,398.8bn; the quarterly series reads Q2 FY2025 through Q1 FY2027 with publication dates 45 days
+  after each period end; Apple's December quarter is 139.4bn against 91.6bn in June, its year ending
+  30 September; Reliance FY2023 comes back restated with its note; Swiggy reports earnings per share
+  of -8.57 and free cash flow of -18.0bn; gold, SPY and the private note answer with the reason.
+
+FILES: created apps/web/src/data/schemas/financial-statements.ts,
+apps/web/src/data/mock/generators/{financialStatementSeeds.ts,financialStatementBuild.ts,
+financialStatements.ts}; modified apps/web/src/data/schemas/index.ts,
+apps/web/src/data/mock/generators/index.ts,
+apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 89 | Claude Opus 5
+START:          2026-09-18T06:05:00Z  |  local: 2026-09-18 11:35 IST
+END:            2026-09-18T07:30:00Z  |  local: 2026-09-18 13:00 IST
+TASK CLAIMED:   R-06 derived measures, industry medians and warning flags
+END STATUS:     DONE
+REASON IF NOT DONE: --
+
+COMPLETED:
+  - shared/fundamentals (decision 53), split across five files to stay inside the 300-line limit:
+    valuation (price to earnings, price to book, enterprise value to EBITDA, price to sales,
+    dividend payout), profitability (return on equity, return on capital employed, operating and net
+    margin), health (debt to equity, net debt to EBITDA, current ratio, interest cover), growth
+    (revenue over three and five years, earnings per share over three, latest quarter against the
+    same quarter a year earlier) and cash quality (free cash flow against net profit).
+  - Every measure carries the inputs it was computed from, so a reader can check it. A ratio on a
+    loss, or with a missing input, comes back null with a note rather than a misleading number.
+  - fundamentalFlags: debt rising while profit falls, several years of negative free cash flow, a
+    payout above earnings, thin interest cover, a loss-making year, a restated year, an unaudited
+    annual statement, and a rising promoter pledge. Each carries its evidence, never advice
+    (decision 52).
+  - Endpoint GET /api/v1/instruments/:id/measures with a basis parameter, returning measures with
+    industry medians and three years of the company's own history, the flags, the peer symbols and
+    market capitalisation derived from price times shares.
+  - Interest expense added to the income statement, since interest cover needs it; tax now follows
+    operating profit less interest.
+
+DEFECTS FOUND AND FIXED THIS SESSION:
+  - Ratio history was a flat line because every seeded year shared one margin. Margins, capital
+    spending and leverage now vary deterministically by period, so history means something.
+  - Quarter-on-quarter growth read 0% because the year in progress repeated the last reported year.
+    It now grows on from it.
+  - The thin-interest-cover flag fired on a loss, reporting "-50.6 times cover". It now requires a
+    positive operating profit; the loss-making flag covers that case.
+
+NOT COMPLETED / LIMITS:
+  - Valuation measures have no history: computing them at today's price against older statements
+    would be misleading, so they are null in the history series by design.
+  - Peer groups are small (Tata Motors has two peers, AstraZeneca one) because the peer set is the
+    covered universe, not a market. The response carries peerCount so a median cannot be read as
+    more than it is.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS.
+  In the browser against the dev server: Tata Motors returns price to earnings 18.85 against an
+  industry median of 30.37 over two peers (Toyota and Tesla), return on equity 17.55% against 10.81%
+  with a three-year history of 19.46, 18.88 and 17.05, debt to equity 1.18 against 0.61, interest
+  cover 3.78 times, quarter growth 9.2%, and the rising-pledge flag; Swiggy returns four flags with
+  evidence including free cash flow negative in five of five years and a loss of 21.3bn on revenue
+  of 187.1bn, and no price to earnings because the year was a loss; AstraZeneca prices in GBP
+  against GBP statements and compares with Johnson & Johnson.
+
+FILES: created apps/web/src/shared/fundamentals/{measureTypes.ts,measureContext.ts,
+valuationMeasures.ts,healthMeasures.ts,measures.ts,flags.ts},
+apps/web/src/data/schemas/fundamental-measures.ts,
+apps/web/src/data/mock/generators/fundamentalMeasures.ts;
+modified apps/web/src/data/schemas/{index.ts,financial-statements.ts},
+apps/web/src/data/mock/generators/{financialStatementBuild.ts,financialStatements.ts,
+researchData.ts,index.ts}, apps/web/src/data/mock/handlers/classificationHandlers.ts,
+apps/web/src/data/api/{classificationQueries.ts,index.ts}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```

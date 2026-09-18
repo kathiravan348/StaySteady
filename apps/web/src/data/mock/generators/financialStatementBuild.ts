@@ -76,7 +76,9 @@ export function buildStatement(params: PeriodParams): StatementInput {
     totalLiabilities,
   );
   const cash = currentAssets.times(CASH_SHARE_OF_CURRENT);
-  const shares = new Decimal(seed.sharesMillions).times(scale).times(MILLION);
+  // Shares belong to the listed company, whichever basis its accounts are drawn up on: standalone
+  // earnings are spread over the same shares, which is why standalone per-share figures differ.
+  const shares = new Decimal(seed.sharesMillions).times(MILLION);
 
   const marginFactor = variation(params.periodIndex, 0.08, 0);
   const grossProfit = revenue.times(seed.grossMargin * variation(params.periodIndex, 0.04, 0.4));
