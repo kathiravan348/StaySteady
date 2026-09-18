@@ -147,6 +147,16 @@ function bodyFor(source: CreateStrategyRequestDto['source']): Body | string {
   return original;
 }
 
+function describeOrigin(source: CreateStrategyRequestDto['source']): string {
+  if (source.kind === 'blank') return 'Started blank.';
+  if (source.kind === 'template') {
+    const template = generateStrategyTemplates().find((item) => item.id === source.templateId);
+    return `Started from the ${template?.name ?? source.templateId} template.`;
+  }
+  const original = listStrategies().find((item) => item.id === source.strategyId);
+  return `Copied from ${original?.name ?? String(source.strategyId)} v${original?.version ?? '?'}.`;
+}
+
 // A new strategy always starts as a draft at 0.1.0, whatever it was copied from.
 export function createStrategy(request: CreateStrategyRequestDto): StrategyDraftDto | string {
   if (nameTaken(request.name, null)) return `A strategy called "${request.name}" already exists.`;
@@ -164,12 +174,7 @@ export function createStrategy(request: CreateStrategyRequestDto): StrategyDraft
     stage: 'draft',
     updatedAt: now,
   };
-  const origin =
-    request.source.kind === 'duplicate'
-      ? `Copied from ${String(request.source.strategyId)}.`
-      : request.source.kind === 'template'
-        ? `Started from the ${request.source.templateId} template.`
-        : 'Started blank.';
+  const origin = describeOrigin(request.source);
   const current = state();
   current.created.push({
     id,

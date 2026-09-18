@@ -1,17 +1,17 @@
 // Strategy Library screen (UI spec 7.7): every strategy, what it is allowed to do, what it holds,
 // how it was proven and how it is actually behaving.
 
-import { EmptyState, ErrorState, LoadingState } from '@staysteady/ui';
+import { Button, EmptyState, ErrorState, LoadingState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 import { useStrategyLibrary } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { CreateStrategyDialog } from './strategyCreate/CreateStrategyDialog';
 import { LibraryView } from './strategyLibrary/sections/LibraryView';
-import styles from './strategyLibrary/StrategyLibrary.module.scss';
 
-function LibraryBody(): ReactElement {
+function LibraryBody({ onCreate }: { readonly onCreate: () => void }): ReactElement {
   const library = useStrategyLibrary();
 
   if (library.isError) {
@@ -33,11 +33,7 @@ function LibraryBody(): ReactElement {
       <EmptyState
         title="No strategies yet"
         description="A strategy defines what to buy and sell, and when. Create one to start."
-        action={
-          <Link to={ROUTES.RESEARCH_EDITOR} className={styles.link}>
-            Open the strategy editor
-          </Link>
-        }
+        action={<Button onPress={onCreate}>New strategy</Button>}
       />
     );
   }
@@ -45,13 +41,26 @@ function LibraryBody(): ReactElement {
 }
 
 export function ResearchStrategiesPage(): ReactElement {
+  const [isCreating, setIsCreating] = useState(false);
+  const openCreate = (): void => {
+    setIsCreating(true);
+  };
+
   return (
     <PageShell
       title="Strategy Library"
       description="Every strategy with its lifecycle stage, capital, backtest, live result and last run."
       breadcrumbs={[{ label: 'Overview', to: ROUTES.OVERVIEW }, { label: 'Strategies' }]}
+      actions={<Button onPress={openCreate}>New strategy</Button>}
     >
-      <LibraryBody />
+      <LibraryBody onCreate={openCreate} />
+      {isCreating && (
+        <CreateStrategyDialog
+          onClose={() => {
+            setIsCreating(false);
+          }}
+        />
+      )}
     </PageShell>
   );
 }

@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import type { StrategyLibraryEntryDto } from '../../../../data/schemas';
+import { CreateStrategyDialog } from '../../strategyCreate/CreateStrategyDialog';
 import type { LibraryFilters } from '../model/libraryFilters';
 import { DEFAULT_FILTERS, applyFilters, filterOptions, isFiltered } from '../model/libraryFilters';
 import { useStrategyPromotions } from '../useStrategyPromotions';
@@ -19,6 +20,7 @@ export interface LibraryViewProps {
 export function LibraryView({ entries }: LibraryViewProps): ReactElement {
   const [filters, setFilters] = useState<LibraryFilters>(DEFAULT_FILTERS);
   const [promoting, setPromoting] = useState<string | null>(null);
+  const [duplicating, setDuplicating] = useState<StrategyLibraryEntryDto | null>(null);
   const promotions = useStrategyPromotions();
 
   const visible = applyFilters(entries, filters);
@@ -67,6 +69,9 @@ export function LibraryView({ entries }: LibraryViewProps): ReactElement {
                 onWithdraw={() => {
                   promotions.withdraw(id);
                 }}
+                onDuplicate={() => {
+                  setDuplicating(entry);
+                }}
               />
             );
           })}
@@ -74,6 +79,15 @@ export function LibraryView({ entries }: LibraryViewProps): ReactElement {
       )}
 
       <StrategyRetirementSection />
+
+      {duplicating !== null && (
+        <CreateStrategyDialog
+          duplicateOf={{ id: String(duplicating.strategyId), name: duplicating.name }}
+          onClose={() => {
+            setDuplicating(null);
+          }}
+        />
+      )}
 
       {promotingEntry !== undefined && (
         <PromotionDialog

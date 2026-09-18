@@ -1,8 +1,10 @@
 import { Badge, Button } from '@staysteady/ui';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 
 import type { InstrumentDto, StrategyDraftDto, StrategyVersionDto } from '../../../../data/schemas';
 import type { DraftEditor } from '../useDraftEditor';
+import { BasicsSection } from './BasicsSection';
 import { PreviewPanel } from './PreviewPanel';
 import { RuleBuilder } from './RuleBuilder';
 import {
@@ -28,6 +30,8 @@ export function EditorView({
   instruments,
   versions,
 }: EditorViewProps): ReactElement {
+  const [summary, setSummary] = useState('');
+
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
@@ -38,6 +42,16 @@ export function EditorView({
           <span className={styles.meta}>v{draft.version}</span>
         </span>
         <span className={styles.inline}>
+          <input
+            className={styles.input}
+            aria-label="What changed in this version"
+            placeholder="What changed? (optional)"
+            value={summary}
+            disabled={!editor.isDirty}
+            onChange={(event) => {
+              setSummary(event.target.value);
+            }}
+          />
           <Button
             variant="secondary"
             isDisabled={!editor.isDirty}
@@ -50,7 +64,8 @@ export function EditorView({
           <Button
             isDisabled={!editor.isDirty || editor.isSaving}
             onPress={() => {
-              editor.save('Saved from the editor.');
+              editor.save(summary);
+              setSummary('');
             }}
           >
             {editor.isSaving ? 'Saving' : 'Save version'}
@@ -65,6 +80,7 @@ export function EditorView({
 
       <div className={styles.layout}>
         <div className={styles.column}>
+          <BasicsSection draft={draft} onChange={editor.update} />
           <ScopeSection draft={draft} onChange={editor.update} instruments={instruments} />
           <RuleBuilder
             title="Entry conditions"

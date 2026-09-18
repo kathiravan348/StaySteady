@@ -2,12 +2,15 @@
 
 import { EmptyState, ErrorState, LoadingState } from '@staysteady/ui';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useInstruments, useStrategyDraft, useStrategyVersions } from '../../data/api';
 import { ROUTES } from '../../routes/routes';
 import { PageShell } from '../../shell/PageShell';
+import { CreateStrategyDialog } from './strategyCreate/CreateStrategyDialog';
 import { EditorView } from './strategyEditor/sections/EditorView';
+import { StrategyPicker } from './strategyEditor/sections/StrategyPicker';
 import { useDraftEditor } from './strategyEditor/useDraftEditor';
 import styles from './strategyEditor/StrategyEditor.module.scss';
 
@@ -54,6 +57,7 @@ function EditorBody({ strategyId }: { readonly strategyId: string }): ReactEleme
 
 export function ResearchEditorPage(): ReactElement {
   const { id } = useParams<{ id?: string }>();
+  const [isCreating, setIsCreating] = useState(false);
 
   return (
     <PageShell
@@ -66,17 +70,20 @@ export function ResearchEditorPage(): ReactElement {
       ]}
     >
       {id === undefined ? (
-        <EmptyState
-          title="Pick a strategy to edit"
-          description="Open a strategy from the library to see and change its definition."
-          action={
-            <Link to={ROUTES.RESEARCH_STRATEGIES} className={styles.link}>
-              Go to the strategy library
-            </Link>
-          }
+        <StrategyPicker
+          onCreate={() => {
+            setIsCreating(true);
+          }}
         />
       ) : (
         <EditorBody strategyId={id} />
+      )}
+      {isCreating && (
+        <CreateStrategyDialog
+          onClose={() => {
+            setIsCreating(false);
+          }}
+        />
       )}
     </PageShell>
   );

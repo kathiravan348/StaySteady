@@ -1,6 +1,7 @@
 import { Badge, Button, Card } from '@staysteady/ui';
 import type { BadgeVariant } from '@staysteady/ui';
 import type { ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 
 import { moneyFromDto } from '../../../../data/api';
 import type {
@@ -17,6 +18,7 @@ import {
   humanizeToken,
   pluralize,
 } from '../../../../shared/format';
+import { strategyEditorPath } from '../../../../routes/routes';
 import { toIsoUtcTimestamp } from '../../../../shared/types/dateTime';
 import { STAGE_LABELS } from '../model/libraryFilters';
 import { describePromotion } from '../model/promotion';
@@ -28,6 +30,7 @@ export interface StrategyCardProps {
   readonly request: PromotionRequest | undefined;
   readonly onPromote: () => void;
   readonly onWithdraw: () => void;
+  readonly onDuplicate: () => void;
 }
 
 // Stage colour rises with how much the strategy may do unattended, so fully automatic stands out.
@@ -74,6 +77,7 @@ export function StrategyCard({
   request,
   onPromote,
   onWithdraw,
+  onDuplicate,
 }: StrategyCardProps): ReactElement {
   const promotion = describePromotion(entry);
   const live = entry.live;
@@ -160,6 +164,15 @@ export function StrategyCard({
           </span>
         </div>
       )}
+
+      <div className={styles.inline}>
+        <Link to={strategyEditorPath(String(entry.strategyId))} className={styles.link}>
+          {entry.stage === 'draft' ? 'Edit rules' : 'View and edit rules'}
+        </Link>
+        <button type="button" className={styles.link} onClick={onDuplicate}>
+          Duplicate
+        </button>
+      </div>
 
       <div className={styles.inline}>
         {promotion === null ? (

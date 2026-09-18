@@ -276,7 +276,7 @@ no edit link, the editor only saved to sessionStorage, and backtests returned a 
 | ID | Task | Status | % | Agent | Notes |
 |----|------|--------|---|-------|-------|
 | T-01 | Strategy write API and mock store — create (blank, template, duplicate), save a version with a bumped number; library, strategy list and Backtest Setup read the stored definitions | DONE | 100 | Claude Opus 5 (session 93) | Owner item 2 |
-| T-02 | Entry points — New strategy and Duplicate on the library, Edit on every card, create dialog; name, description and timeframe editable in the editor | TODO | 0 | | Owner item 1 |
+| T-02 | Entry points — New strategy and Duplicate on the library, Edit on every card, create dialog; name, description and timeframe editable in the editor | DONE | 100 | Claude Opus 5 (session 93) | Owner item 1 |
 | T-03 | Seed and validation fixes — seeded scope markets and types, the RSI volume rule, a validation issue for volume compared against a price-scale operand | TODO | 0 | | Owner item 3 |
 | T-04 | Simpler editor — starter templates, plain-English summary per condition, indicator range hints, instruments filtered by chosen markets, non-conflicting default exit | TODO | 0 | | Owner item 4 |
 | T-05 | Fundamentals as optional rule operands (P/E, P/B, ROE, debt to equity, ...) through shared/fundamentals, point in time by publication date | TODO | 0 | | Open question 26 answered session 93 |
@@ -789,6 +789,44 @@ VERIFICATION RUN:
 
 NOTES FOR NEXT AGENT:
   - There is still no UI to create a strategy; that is T-02.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-02 START
+START:          2026-09-18T05:23:00Z  |  local: 2026-09-18 10:53 IST
+TASK CLAIMED:   T-02 Entry points: New strategy, Duplicate, Edit; editable name and timeframe
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-02 END
+END:            2026-09-18T05:45:00Z  |  local: 2026-09-18 11:15 IST
+TASK CLAIMED:   T-02 Entry points
+END STATUS:     DONE
+
+COMPLETED:
+  - features/research/strategyCreate: CreateStrategyDialog (name, optional purpose, starting point;
+    validated with CreateStrategyRequestSchema, the server's own schema) and StartingPointList
+    (four templates with their idea and what they suit, Blank, Copy an existing strategy). On
+    success it opens the new strategy in the editor.
+  - Strategy Library: "New strategy" in the page header and the empty state; every card has
+    "Edit rules" / "View and edit rules" and "Duplicate" (opens the dialog on a copy).
+  - Editor with no id: StrategyPicker (every strategy with stage, version and bar size, plus New
+    strategy) replaces the "Pick a strategy" dead end; loading, error and empty states.
+  - Editor: BasicsSection (name with inline schema error, bar size, purpose; note that intraday
+    rules are previewed and backtested on daily bars); "What changed?" summary beside Save.
+  - First version note names the template or copied strategy instead of its id.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS; pnpm build PASS. Visual suite does not cover these screens.
+  Browser: empty name shows "Give the strategy a name of at least 3 characters."; created "Nifty
+  oversold bounce" from the template, landed on /research/editor/strat-user-3 at v0.1.0; ticked
+  RELIANCE, summary "Trade Reliance", saved to v0.2.0 with both versions listed; library shows
+  Edit and Duplicate on all 8 cards with correct hrefs; Duplicate pre-fills "<name> copy" with the
+  strategy selected; /research/editor lists every strategy. Dark and light themes checked.
 ────────────────────────────────────────────────────────────
 ```
 
