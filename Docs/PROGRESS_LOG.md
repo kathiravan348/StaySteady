@@ -275,12 +275,13 @@ already built but cannot work without classification.
 | R-06 | shared/fundamentals — derived measures, industry medians and warning flags as pure decimal.js functions over the stored statements | DONE | 100 | Claude Opus 5 (session 89) | Requirements 37; decision 53. Mirrors shared/indicators (decision 30) |
 | R-07 | Company Research screen shell and Overview tab — profile, classification and group, size, headline measures against the industry median, open warning flags, next scheduled event | DONE | 100 | Claude Opus 5 (session 90) | UI spec 20.1 |
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | DONE | 100 | Claude Opus 5 (session 91) | UI spec 20.1 |
-| R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | TODO | 0 | | UI spec 20.1 |
+| R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1. Standalone ratios equal consolidated: R-05 generator finding (session 92) |
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | TODO | 0 | | UI spec 20.1; requirements 36 |
 | R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | TODO | 0 | | Requirements 38; UI spec 20.1 |
 | R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | TODO | 0 | | UI spec 20.2 |
 | R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
 | R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | TODO | 0 | | Finding session 83; breaks decision 4 (money is never a plain number) |
+| R-15 | Fix: standalone statements scale shares outstanding with the basis, so standalone ratios equal consolidated (financialStatementBuild.ts) | TODO | 0 | | Finding session 92; UI spec 20.4 |
  
 ---
  
@@ -1608,6 +1609,59 @@ FILES: created apps/web/src/features/markets/company/model/statementTables.ts,
 apps/web/src/features/markets/company/sections/FinancialsTab.tsx;
 modified apps/web/src/features/markets/company/{CompanyResearchPage.tsx,
 CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | SESSION START
+START:          2026-09-18T03:20:00Z (system clock)  |  local: 2026-09-18 08:50 IST
+TASK CLAIMED:   R-09 Ratios tab
+NOTE:           Owner asked for the whole pending Stage R (R-09 to R-14). Each task is claimed and
+                closed in turn, one at a time, each with its own entry. The system clock reads earlier
+                than session 91's recorded end time; the times below are the system clock's.
+START CHECKS:   pnpm typecheck PASS; pnpm lint PASS.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-09 END
+END:            2026-09-18T03:36:00Z  |  local: 2026-09-18 09:06 IST
+TASK CLAIMED:   R-09 Ratios tab
+END STATUS:     DONE
+
+COMPLETED:
+  - Ratios tab: measures grouped as valuation, profitability, financial health, growth and cash
+    quality, one table each. Every row has the latest value, a trend sparkline over the reported
+    years, the industry median with its peer count, a neutral standing (above/below/near median,
+    never better or worse; decision 52) and the inputs and periods behind it in a disclosure.
+  - Consolidated/standalone toggle where both are published; "as reported to" badge; the valuation
+    note from the endpoint.
+  - Peer comparison: the company and each industry peer with measures on the same basis, grouped the
+    same way, each peer linking to its own research screen. Loads and fails on its own.
+  - usePeerFundamentalMeasures in data/api (useQueries, same cache key as useFundamentalMeasures).
+  - No ratio is computed in the UI; model/ratioRows.ts only groups and orders endpoint values.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS. In the browser: Tata Motors
+  shows P/E 18.7x against an industry median of 30.9x over two peers, inputs "Price 1366.78 over
+  earnings per share 72.91 (FY2026)", sparklines on non-valuation measures, and a peer table with
+  7203 and TSLA. Standalone shows no medians and the peer empty message (no peer publishes
+  standalone). TCS shows the no-peer empty message; gold shows "no company sits behind this
+  instrument"; loading-error shows the tab's error with retry. Light theme checked.
+
+FINDINGS (out of scope, not fixed):
+  - R-05 generator: financialStatementBuild.ts scales every line AND sharesOutstanding by
+    standaloneShareOfRevenue for the standalone basis, so every ratio on standalone equals the
+    consolidated one (Tata Motors ROE 17.55 on both). Shares outstanding belong to the listed entity
+    and do not change with basis; UI spec 20.4 wants the two to "genuinely differ". Raised as R-15.
+  - Valuation measures have no history by design (fundamentalMeasures.ts leaves price out of past
+    years), so their trend cell reads "Latest only".
+
+FILES: created features/markets/company/{model/ratioRows.ts,sections/RatiosTab.tsx,
+sections/PeerComparison.tsx}; modified data/api/{classificationQueries.ts,index.ts},
+features/markets/company/{CompanyResearchPage.tsx,CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 

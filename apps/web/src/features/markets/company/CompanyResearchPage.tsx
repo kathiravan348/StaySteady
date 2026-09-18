@@ -14,6 +14,7 @@ import styles from './CompanyResearch.module.scss';
 import { FinancialsTab } from './sections/FinancialsTab';
 import { FlagsSection } from './sections/FlagsSection';
 import { ProfileSection } from './sections/ProfileSection';
+import { RatiosTab } from './sections/RatiosTab';
 import { StandingSection } from './sections/StandingSection';
 
 function OverviewTab({ instrumentId }: { readonly instrumentId: string }): ReactElement {
@@ -60,6 +61,7 @@ export function CompanyResearchPage(): ReactElement {
         label: 'Financials',
         content: <FinancialsTab instrumentId={instrumentId} />,
       },
+      { id: 'ratios', label: 'Ratios', content: <RatiosTab instrumentId={instrumentId} /> },
     ];
     body = (
       <div className={styles.page}>

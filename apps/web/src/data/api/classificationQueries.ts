@@ -1,6 +1,6 @@
 // Classification, corporate structure and ownership server state (R-01; decision 22).
 
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 
 import type {
@@ -21,7 +21,10 @@ import type { CompanyProfileResponseDto } from '../schemas/company-research';
 import { CompanyProfileResponseSchema } from '../schemas/company-research';
 import type { FinancialStatementsResponseDto } from '../schemas/financial-statements';
 import { FinancialStatementsResponseSchema } from '../schemas/financial-statements';
-import type { FundamentalMeasuresResponseDto } from '../schemas/fundamental-measures';
+import type {
+  FundamentalMeasuresDto,
+  FundamentalMeasuresResponseDto,
+} from '../schemas/fundamental-measures';
 import { FundamentalMeasuresResponseSchema } from '../schemas/fundamental-measures';
 import type { FundLookThroughResponseDto } from '../schemas/fund-lookthrough';
 import { FundLookThroughResponseSchema } from '../schemas/fund-lookthrough';
@@ -104,6 +107,47 @@ export function useFundamentalMeasures(
     enabled: instrumentId !== '',
     staleTime: SLOW_STALE_MS,
   });
+}
+
+export interface PeerMeasuresResult {
+  // Peers that have measures, in the order asked for. A peer without statements is left out.
+  readonly peers: readonly FundamentalMeasuresDto[];
+  readonly isPending: boolean;
+  readonly error: Error | null;
+  readonly refetch: () => void;
+}
+
+// The same measures for several peers at once, sharing the cache with useFundamentalMeasures.
+export function usePeerFundamentalMeasures(
+  instrumentIds: readonly string[],
+  basis: 'consolidated' | 'standalone' = 'consolidated',
+): PeerMeasuresResult {
+  const results = useQueries({
+    queries: instrumentIds.map((id) => ({
+      queryKey: ['classification', 'measures', id, basis],
+      queryFn: ({ signal }: { signal: AbortSignal }) =>
+        apiGet(
+          `${instrumentPath(id, 'measures')}?basis=${basis}`,
+          FundamentalMeasuresResponseSchema,
+          signal,
+        ),
+      staleTime: SLOW_STALE_MS,
+    })),
+  });
+  return {
+    peers: results.flatMap((result) =>
+      result.data?.measures === null || result.data?.measures === undefined
+        ? []
+        : [result.data.measures],
+    ),
+    isPending: results.some((result) => result.isPending),
+    error: results.find((result) => result.error !== null)?.error ?? null,
+    refetch: () => {
+      results.forEach((result) => {
+        void result.refetch();
+      });
+    },
+  };
 }
 
 export function useCorporateStructure(instrumentId: string): UseQueryResult<CorporateStructureDto> {

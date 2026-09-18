@@ -44,7 +44,9 @@ export {
   useFundLookThrough,
   useInstrumentClassification,
   useInstrumentOwnership,
+  usePeerFundamentalMeasures,
 } from './classificationQueries';
+export type { PeerMeasuresResult } from './classificationQueries';
 export type { IntradayTimeframe, PriceHistoriesResult } from './marketQueries';
 export {
   useCorporateActions,

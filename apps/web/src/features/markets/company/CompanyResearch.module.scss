@@ -155,3 +155,16 @@
     color: var(--text-primary);
   }
 }
+
+.inputs {
+  display: grid;
+  gap: var(--space-1);
+  max-width: 28rem;
+  white-space: normal;
+
+  summary {
+    cursor: pointer;
+    color: var(--interactive-primary);
+    font-size: var(--font-size-xs);
+  }
+}
