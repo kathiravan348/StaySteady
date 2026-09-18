@@ -43,6 +43,10 @@ export const NewsItemSchema = z.object({
   relatedMarkets: z.array(MarketIdSchema),
   // UI spec 7.6 — the same story republished by several outlets shares one group id
   duplicateGroupId: z.string().min(1).optional(),
+  // Requirements 38 — a story about a business group or a whole industry reaches every company in
+  // it indirectly, so the research feed can carry it marked as such.
+  relatedGroupIds: z.array(z.string().min(1)).optional(),
+  relatedIndustryIds: z.array(z.string().min(1)).optional(),
 });
 export type NewsItemDto = z.infer<typeof NewsItemSchema>;
 

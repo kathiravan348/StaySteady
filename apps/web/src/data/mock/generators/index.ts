@@ -119,6 +119,7 @@ export {
   structureForInstrument,
 } from './corporateStructure';
 export { generateInstrumentOwnership, ownershipForInstrument } from './ownershipPattern';
+export { generateInstrumentFeed } from './instrumentFeed';
 export { generateInstrumentFundamentals, generateWatchlists } from './researchData';
 
 // M-15 Live Ticking

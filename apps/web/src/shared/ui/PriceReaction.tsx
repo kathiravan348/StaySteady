@@ -4,14 +4,15 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { Decimal } from 'decimal.js';
 
-import { usePriceHistories } from '../../../data/api';
-import styles from '../News.module.scss';
+import { usePriceHistories } from '../../data/api';
+import styles from './PriceReaction.module.scss';
 
 const BARS_BEFORE = 10;
 const BARS_AFTER = 5;
 
-// UI spec 7.6 — how the price moved around the time a story was published: daily bars before and
+// UI spec 7.6 and 20.1 — how the price moved around the time a story was published: daily bars before and
 // after, with the publication day marked. The chart is a visual; the text below states the move.
+// Shared (decision 25): the news feed and the company research feed both open items against it.
 export function PriceReaction({
   instrumentId,
   symbol,

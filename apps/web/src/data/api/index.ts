@@ -81,7 +81,7 @@ export {
   useSourceReliability,
   useTestAlertChannel,
 } from './healthQueries';
-export { useCalendarEvents, useNewsItems } from './newsQueries';
+export { useCalendarEvents, useInstrumentFeed, useNewsItems } from './newsQueries';
 export type { ChangeRiskLimitVariables } from './riskQueries';
 export {
   useChangeRiskLimit,

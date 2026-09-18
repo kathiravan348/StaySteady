@@ -277,7 +277,7 @@ already built but cannot work without classification.
 | R-08 | Financials tab — three statements, annual/quarterly and consolidated/standalone toggles, five periods with change per line, trend charts from existing presets | DONE | 100 | Claude Opus 5 (session 91) | UI spec 20.1 |
 | R-09 | Ratios tab — valuation, profitability, health, growth, cash quality, each with own trend, industry median and visible inputs; peer comparison | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1. Standalone ratios equal consolidated: R-05 generator finding (session 92) |
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1; requirements 36 |
-| R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | TODO | 0 | | Requirements 38; UI spec 20.1 |
+| R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | DONE | 100 | Claude Opus 5 (session 92) | Requirements 38; UI spec 20.1 |
 | R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | TODO | 0 | | UI spec 20.2 |
 | R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
 | R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | TODO | 0 | | Finding session 83; breaks decision 4 (money is never a plain number) |
@@ -1711,6 +1711,68 @@ FILES: created data/mock/generators/insiderTransactions.ts, features/markets/com
 FundLookThroughSection}.tsx; modified data/schemas/classification.ts,
 data/mock/generators/ownershipPattern.ts, features/markets/company/{CompanyResearchPage.tsx,
 CompanyResearch.module.scss}, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-11 START
+START:          2026-09-18T04:10:00Z  |  local: 2026-09-18 09:40 IST
+TASK CLAIMED:   R-11 News, events and filings tab
+NOTE:           Written after reading the news, calendar, corporate action and compliance sources and
+                moving PriceReaction to shared/ui; the rule is entry first, recorded honestly here.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-11 END
+END:            2026-09-18T04:50:00Z  |  local: 2026-09-18 10:20 IST
+TASK CLAIMED:   R-11 News, events and filings tab
+END STATUS:     DONE
+
+COMPLETED:
+  - New endpoint GET /api/v1/instruments/:id/feed (schema data/schemas/instrument-feed.ts,
+    generator instrumentFeed.ts, hook useInstrumentFeed). News is marked direct, group (a story on
+    the parent, a group company or tagged with the group id) or peer (tagged with the industry id or
+    naming an industry peer), with what carried it.
+  - NewsItemSchema gains optional relatedGroupIds and relatedIndustryIds. newsGroupItems.ts adds the
+    UI spec 20.4 stories: Tata Sons borrowing (reaches Tata Motors and TCS only through the group),
+    EU tariffs on imported EVs (automobiles-wide), a JLR volumes story and an unattributed rumour.
+  - Filings and announced corporate actions seeded in instrumentFeedSeeds.ts. Announced actions are
+    kept out of the corporate action register on purpose, so they never feed income or holdings
+    until effective; effective ones come from the register, newest first.
+  - Calendar: Tata Motors results on 29 Sept inside an automation restriction window, and an
+    ex-date on 21 Oct. The next employer blackout is read from the compliance store and respects
+    employerPolicy.enabled (decision 43), with the same appliesToAll rule as the eligibility check.
+  - Tab: scheduled-ahead strip, news with a direct/indirect filter, reach badges, sentiment as an
+    estimate with confidence, rumours labelled as not facts, filings, and actions split into
+    announced and effective. Every news item, filing and effective action opens the instrument's
+    price around its time.
+  - Moved PriceReaction to shared/ui and the news label helpers to shared/format/newsLabels.ts
+    (decision 25); features/news re-exports the labels, so its code reads as before.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS.
+  In the browser: Tata Motors shows the results date in 11 days marked inside a restriction
+  window, the next blackout from 1 Nov, five stories (two direct incl. the rumour, one through the
+  Tata group, two industry-wide), five filings and the unconfirmed interim dividend under announced.
+  Opening a story draws the price chart with the move since publication. Reliance shows two
+  effective actions; gold shows its one story and the empty filings message; loading-error shows
+  the tab's error with retry. The News feed screen still renders with the new stories.
+
+FINDINGS (out of scope, not fixed):
+  - The seeded all-equities blackout (appliesToAll) also applies to gold and crypto in the
+    eligibility check; the feed follows the same rule so the two agree.
+
+FILES: created data/schemas/instrument-feed.ts, data/mock/generators/{instrumentFeed.ts,
+instrumentFeedSeeds.ts,newsGroupItems.ts}, shared/format/newsLabels.ts,
+shared/ui/PriceReaction.module.scss, features/markets/company/sections/{NewsEventsTab,
+FeedNewsList,FeedRecords,FeedSchedule}.tsx; moved features/news/sections/PriceReaction.tsx to
+shared/ui/PriceReaction.tsx; modified data/schemas/{news.ts,index.ts},
+data/mock/generators/{newsEvents.ts,calendarEvents.ts,index.ts}, data/mock/handlers/newsHandlers.ts,
+data/api/{newsQueries.ts,index.ts}, features/news/{model/newsFeed.ts,sections/NewsStoryCard.tsx},
+features/markets/company/{CompanyResearchPage.tsx,CompanyResearch.module.scss}.
 ────────────────────────────────────────────────────────────
 ```
 

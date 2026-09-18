@@ -19,6 +19,7 @@ export * from './company-research';
 export * from './financial-statements';
 export * from './fundamental-measures';
 export * from './fund-lookthrough';
+export * from './instrument-feed';
 export * from './research-data';
 export * from './system-health';
 export * from './backtest-setup';

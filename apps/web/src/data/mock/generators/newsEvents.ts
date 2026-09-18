@@ -6,6 +6,7 @@
 import type { z } from 'zod';
 import type { NewsItemDto } from '../../schemas';
 import { NewsItemSchema } from '../../schemas';
+import { groupNewsItems } from './newsGroupItems';
 import { parseGeneratedList } from './validated';
 import { toInstrumentId, toMarketId } from '../../../shared/types/identifiers';
 
@@ -240,6 +241,7 @@ export function generateNewsItems(now: Date): readonly NewsItemDto[] {
       relatedInstruments: [],
       relatedMarkets: [toMarketId('IN')],
     },
+    ...groupNewsItems(now),
   ];
 
   return parseGeneratedList(NewsItemSchema, news, 'newsItems');

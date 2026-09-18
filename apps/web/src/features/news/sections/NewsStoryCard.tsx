@@ -8,7 +8,7 @@ import { formatDateTime, formatRelativeTime } from '../../../shared/format';
 import type { NewsStory } from '../model/newsFeed';
 import { CATEGORY_LABELS, IMPORTANCE_LABELS, sentimentReading } from '../model/newsFeed';
 import styles from '../News.module.scss';
-import { PriceReaction } from './PriceReaction';
+import { PriceReaction } from '../../../shared/ui/PriceReaction';
 
 const IMPORTANCE_VARIANT: Readonly<Record<NewsImportanceDto, BadgeVariant>> = {
   high: 'warning',
