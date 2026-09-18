@@ -48,15 +48,20 @@ export function EditorView({
             Discard changes
           </Button>
           <Button
-            isDisabled={!editor.isDirty}
+            isDisabled={!editor.isDirty || editor.isSaving}
             onPress={() => {
               editor.save('Saved from the editor.');
             }}
           >
-            Save version
+            {editor.isSaving ? 'Saving' : 'Save version'}
           </Button>
         </span>
       </div>
+      {editor.saveError === null ? null : (
+        <p role="alert" className={styles.saveError}>
+          Not saved: {editor.saveError}
+        </p>
+      )}
 
       <div className={styles.layout}>
         <div className={styles.column}>

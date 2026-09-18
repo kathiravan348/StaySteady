@@ -5,42 +5,13 @@
 import type { z } from 'zod';
 
 import type { StrategyDraftDto, StrategyVersionDto } from '../../schemas';
-import {
-  StrategyDraftSchema,
-  StrategyVersionSchema,
-  type ComparatorDto,
-  type IndicatorKindDto,
-  type PriceFieldDto,
-  type RuleConditionDto,
-  type RuleGroupDto,
-  type RuleOperandDto,
-} from '../../schemas';
+import { StrategyDraftSchema, StrategyVersionSchema, type RuleGroupDto } from '../../schemas';
 import type { MockGeneratorContext } from './mockContext';
+import { cond, group, ind, num, price } from './ruleBuilders';
 import { generateStrategies } from './trading';
 import { parseGenerated } from './validated';
 
 type DraftInput = z.input<typeof StrategyDraftSchema>;
-
-const price = (field: PriceFieldDto): RuleOperandDto => ({ kind: 'price', field });
-const ind = (indicator: IndicatorKindDto, period: number): RuleOperandDto => ({
-  kind: 'indicator',
-  indicator,
-  period,
-});
-const num = (value: number): RuleOperandDto => ({ kind: 'number', value });
-
-const cond = (
-  id: string,
-  left: RuleOperandDto,
-  comparator: ComparatorDto,
-  right: RuleOperandDto,
-): RuleConditionDto => ({ id, node: 'condition', left, comparator, right });
-
-const group = (
-  id: string,
-  combinator: 'all' | 'any',
-  children: (RuleConditionDto | RuleGroupDto)[],
-): RuleGroupDto => ({ id, node: 'group', combinator, children });
 
 const NO_FORCED_EXIT = { maxLossPercent: null, maxHoldingDays: null, trailingStopPercent: null };
 const NO_NEWS = {

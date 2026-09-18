@@ -9,6 +9,12 @@ export {
   usePortfolioSummary,
   useTransactions,
 } from './portfolioQueries';
+export type { SaveStrategyVariables } from './strategyAuthoringQueries';
+export {
+  useCreateStrategy,
+  useSaveStrategy,
+  useStrategyTemplates,
+} from './strategyAuthoringQueries';
 export type { DecideApprovalVariables } from './tradingQueries';
 export {
   useApprovalQueue,

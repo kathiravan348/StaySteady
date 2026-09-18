@@ -9,16 +9,14 @@ import {
   generateOrderHistory,
   generateSignalFeed,
   generateSignals,
-  generateStrategies,
-  generateStrategyDraft,
   generateStrategyLibrary,
-  generateStrategyVersions,
 } from '../generators';
 import { complianceFrom, refuseDecision, withSafeguards } from '../generators/approvalSafeguards';
 import { getActiveDeveloperScenario } from '../scenarios/scenarioContext';
 import { currentOperatingPolicy } from '../stores/assumptionsStore';
 import { evaluateEligibility } from '../stores/complianceStore';
 import { isAutomationPausedFor } from '../stores/reconciliationStore';
+import { findDraft, listStrategies, listVersions } from '../stores/strategyStore';
 import {
   decisions,
   getApprovals,
@@ -33,6 +31,7 @@ import type { ApprovalQueueItemDto, ApprovalRequestDto, OrderHistoryEntryDto } f
 import { ApprovalDecisionSchema } from '../../schemas';
 import { nowUtc } from '../../../shared/types/dateTime';
 import { toQuantity } from '../../../shared/types/quantities';
+import { strategyAuthoringHandlers } from './strategyAuthoringHandlers';
 
 // A broker whose positions do not match the depository statement has automation paused (decision 45),
 // shown as a failed check on every approval routed to it.
@@ -120,7 +119,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load strategies' }, { status: 500 });
     }
-    return HttpResponse.json(generateStrategies(ctx), { status: 200 });
+    return HttpResponse.json(listStrategies(), { status: 200 });
   }),
 
   // Registered before /api/v1/strategies/:id would be, so the specific path wins.
@@ -129,17 +128,20 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load the strategy library' }, { status: 500 });
     }
-    return HttpResponse.json(generateStrategyLibrary(ctx, scenario === 'empty-portfolio'), {
-      status: 200,
-    });
+    return HttpResponse.json(
+      generateStrategyLibrary(ctx, scenario === 'empty-portfolio', listStrategies()),
+      { status: 200 },
+    );
   }),
+
+  ...strategyAuthoringHandlers,
 
   http.get('/api/v1/strategies/:id/draft', ({ params }) => {
     const scenario = getActiveDeveloperScenario();
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load the strategy' }, { status: 500 });
     }
-    const draft = generateStrategyDraft(ctx, params['id'] as string);
+    const draft = findDraft(String(params['id']));
     return draft === undefined
       ? HttpResponse.json({ error: 'Strategy not found' }, { status: 404 })
       : HttpResponse.json(draft, { status: 200 });
@@ -150,9 +152,7 @@ export const tradingHandlers: readonly HttpHandler[] = [
     if (scenario === 'loading-error') {
       return HttpResponse.json({ error: 'Failed to load version history' }, { status: 500 });
     }
-    return HttpResponse.json(generateStrategyVersions(ctx, params['id'] as string), {
-      status: 200,
-    });
+    return HttpResponse.json(listVersions(String(params['id'])), { status: 200 });
   }),
 
   // Registered before /api/v1/signals, so the specific path wins.

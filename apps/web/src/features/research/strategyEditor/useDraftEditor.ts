@@ -1,28 +1,17 @@
-// Editor state for one strategy (UI spec 7.8). The mock phase has no write API for definitions, so
-// edits and saved versions live in this browser session on top of the server's version history.
+// Editor state for one strategy (UI spec 7.8). Edits stay local until saved; a save goes to the
+// strategy write endpoint (T-01), which numbers the version and returns the whole history.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
+import { useSaveStrategy } from '../../../data/api';
 import type { StrategyDraftDto, StrategyVersionDto } from '../../../data/schemas';
-import { StrategyVersionListSchema } from '../../../data/schemas';
-
-const storageKey = (strategyId: string): string => `staysteady.strategy-versions.${strategyId}`;
-
-function loadLocal(strategyId: string): readonly StrategyVersionDto[] {
-  try {
-    const raw = window.sessionStorage.getItem(storageKey(strategyId));
-    if (raw === null) return [];
-    const parsed = StrategyVersionListSchema.safeParse(JSON.parse(raw));
-    return parsed.success ? parsed.data : [];
-  } catch {
-    return [];
-  }
-}
 
 export interface DraftEditor {
   readonly draft: StrategyDraftDto | null;
   readonly isDirty: boolean;
   readonly versions: readonly StrategyVersionDto[];
+  readonly isSaving: boolean;
+  readonly saveError: string | null;
   readonly update: (change: (draft: StrategyDraftDto) => StrategyDraftDto) => void;
   readonly discard: () => void;
   readonly save: (summary: string) => void;
@@ -32,7 +21,7 @@ export interface DraftEditor {
 interface EditorState {
   readonly strategyId: string | null;
   readonly draft: StrategyDraftDto | null;
-  // What "no changes" means right now: the server definition until something is saved.
+  // What "no changes" means right now: the last definition the server holds.
   readonly baseline: StrategyDraftDto | null;
 }
 
@@ -46,23 +35,12 @@ export function useDraftEditor(
     draft: serverDraft ?? null,
     baseline: serverDraft ?? null,
   });
-  const [localVersions, setLocalVersions] = useState<readonly StrategyVersionDto[]>(() =>
-    strategyId === null ? [] : loadLocal(strategyId),
-  );
+  const mutation = useSaveStrategy();
 
   // Adopt the fetched definition when it arrives, or when the route moves to another strategy.
   if (state.strategyId !== strategyId || (state.draft === null && serverDraft !== undefined)) {
     setState({ strategyId, draft: serverDraft ?? null, baseline: serverDraft ?? null });
   }
-
-  useEffect(() => {
-    if (strategyId === null) return;
-    try {
-      window.sessionStorage.setItem(storageKey(strategyId), JSON.stringify(localVersions));
-    } catch {
-      // Storage unavailable: saved versions last until the page is reloaded.
-    }
-  }, [strategyId, localVersions]);
 
   const update = useCallback((change: (draft: StrategyDraftDto) => StrategyDraftDto): void => {
     setState((current) =>
@@ -74,37 +52,53 @@ export function useDraftEditor(
     setState((current) => ({ ...current, draft: current.baseline }));
   }, []);
 
-  // Reads the draft from the closure rather than from inside an updater: a state updater must be
-  // pure, and React invokes it twice in development.
+  const { mutate } = mutation;
   const save = useCallback(
     (summary: string): void => {
       const draft = state.draft;
-      if (draft === null) return;
-      const saved: StrategyVersionDto = {
-        version: draft.version,
-        savedAt: draft.updatedAt,
-        summary: summary === '' ? 'Saved from the editor.' : summary,
-        draft,
-      };
-      setLocalVersions((versions) => [saved, ...versions]);
-      setState((current) => ({ ...current, baseline: draft }));
+      if (draft === null || strategyId === null) return;
+      mutate(
+        {
+          strategyId,
+          draft,
+          summary: summary.trim() === '' ? 'Saved from the editor.' : summary,
+        },
+        {
+          onSuccess: (saved) => {
+            setState((current) => ({ ...current, draft: saved.draft, baseline: saved.draft }));
+          },
+        },
+      );
     },
-    [state.draft],
+    [state.draft, strategyId, mutate],
   );
 
+  // Reverting loads the old definition as unsaved changes; saving it makes a new version.
   const revertTo = useCallback((version: StrategyVersionDto): void => {
-    setState((current) => ({ ...current, draft: version.draft }));
+    setState((current) =>
+      current.baseline === null
+        ? current
+        : {
+            ...current,
+            draft: { ...version.draft, version: current.baseline.version },
+          },
+    );
   }, []);
-
-  const versions = useMemo(
-    () => [...localVersions, ...serverVersions],
-    [localVersions, serverVersions],
-  );
 
   const isDirty =
     state.draft !== null &&
     state.baseline !== null &&
     JSON.stringify(state.draft) !== JSON.stringify(state.baseline);
 
-  return { draft: state.draft, isDirty, versions, update, discard, save, revertTo };
+  return {
+    draft: state.draft,
+    isDirty,
+    versions: serverVersions,
+    isSaving: mutation.isPending,
+    saveError: mutation.error?.message ?? null,
+    update,
+    discard,
+    save,
+    revertTo,
+  };
 }

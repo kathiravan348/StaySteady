@@ -267,6 +267,20 @@ already built but cannot work without classification.
 | R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.2; extends S-34 |
 | R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | DONE | 100 | Claude Opus 5 (session 92) | Fixed with R-12: row moved to the company summary card. Finding session 83; breaks decision 4 (money is never a plain number) |
 | R-15 | Fix: standalone statements scale shares outstanding with the basis, so standalone ratios equal consolidated (financialStatementBuild.ts) | DONE | 100 | Claude Opus 5 (session 92) | Finding session 92; UI spec 20.4 |
+
+### Stage T — Strategy Authoring (added session 93)
+
+Owner validation session 93: a strategy could not be created. The library had no create action and
+no edit link, the editor only saved to sessionStorage, and backtests returned a canned result.
+
+| ID | Task | Status | % | Agent | Notes |
+|----|------|--------|---|-------|-------|
+| T-01 | Strategy write API and mock store — create (blank, template, duplicate), save a version with a bumped number; library, strategy list and Backtest Setup read the stored definitions | DONE | 100 | Claude Opus 5 (session 93) | Owner item 2 |
+| T-02 | Entry points — New strategy and Duplicate on the library, Edit on every card, create dialog; name, description and timeframe editable in the editor | TODO | 0 | | Owner item 1 |
+| T-03 | Seed and validation fixes — seeded scope markets and types, the RSI volume rule, a validation issue for volume compared against a price-scale operand | TODO | 0 | | Owner item 3 |
+| T-04 | Simpler editor — starter templates, plain-English summary per condition, indicator range hints, instruments filtered by chosen markets, non-conflicting default exit | TODO | 0 | | Owner item 4 |
+| T-05 | Fundamentals as optional rule operands (P/E, P/B, ROE, debt to equity, ...) through shared/fundamentals, point in time by publication date | TODO | 0 | | Open question 26 answered session 93 |
+| T-06 | Rule-driven backtest results — a run evaluates the strategy's own rules over price history instead of mapping to a saved result | TODO | 0 | | Owner item 5 |
  
 ---
  
@@ -731,6 +745,53 @@ SESSION SUMMARY:
 ────────────────────────────────────────────────────────────
 ```
 
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-01 START
+START:          2026-09-18T05:05:54Z  |  local: 2026-09-18 10:35 IST
+TASK CLAIMED:   T-01 Strategy write API and mock store
+
+SESSION START CHECKS:
+  pnpm typecheck PASS; pnpm lint PASS. System clock reads 05:05Z, earlier than session 92's
+  logged end (06:35Z); session 92's times appear to have been estimated. Times here are read
+  from the system clock.
+  Owner validated Research & Backtest this session and could not create a strategy. Stage T
+  (T-01..T-06) registered from the findings; owner answered question 26 (fundamentals as an
+  optional rule operand, T-05) and asked for all of Stage T to be done, one task at a time.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-01 END
+END:            2026-09-18T05:21:00Z  |  local: 2026-09-18 10:51 IST
+TASK CLAIMED:   T-01 Strategy write API and mock store
+END STATUS:     DONE
+
+COMPLETED:
+  - Schemas (strategy-authoring.ts): timeframe enum, starter template, create request (blank,
+    template or duplicate source; name 3-80 characters), save request, saved-strategy response.
+  - Mock: four starter templates (strategyTemplates.ts); rule shorthand moved to ruleBuilders.ts
+    and shared with strategyDrafts.ts; strategyStore.ts (decision 56); strategyAuthoringHandlers.ts
+    for templates, create and save. /strategies, /strategies/library, /:id/draft and /:id/versions
+    now read the store; generateStrategyLibrary takes the strategy list as an optional argument.
+  - Client: useStrategyTemplates, useCreateStrategy, useSaveStrategy (strategyAuthoringQueries.ts).
+    useDraftEditor saves through the endpoint; Save shows "Saving" and a save error inline;
+    reverting loads the old definition as unsaved changes, so saving it is a new version.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS; pnpm build PASS.
+  Browser: templates 200 (4); create from template 201 strat-user-1 0.1.0 draft; duplicate name
+  409; two-character name 400; duplicate of RSI copies its rules as a draft; save 0.1.0 -> 0.2.0
+  with two versions; library lists 7 with markets derived from the new universe. Editor: changed
+  RSI max concurrent positions to 5 and saved, v2.1.0 -> v2.2.0, badge back to "No changes"; after
+  a full reload the library shows 2.2.0 and Backtest Setup lists the two new strategies.
+
+NOTES FOR NEXT AGENT:
+  - There is still no UI to create a strategy; that is T-02.
+────────────────────────────────────────────────────────────
+```
+
 ---
  
 ## 5. Open Questions For The Owner (Append Only)
@@ -764,7 +825,7 @@ SESSION SUMMARY:
 | 23 | Session 83 | 2026-09-17 | How much statement history should the platform hold, and should consolidated and standalone both be kept? | **Provisional (decision 50): five years annual, eight quarters interim, both consolidated and standalone where published**, each with its publication date so backtests stay point-in-time |
 | 24 | Session 83 | 2026-09-17 | Should exposure held through an ETF or mutual fund count towards sector and group limits, and should business-group exposure be limited at all? | **Provisional (decision 51): yes to both.** Fund holdings look through into sector and group exposure; a group limit sits beside the sector limit on Risk & Safety |
 | 25 | Session 83 | 2026-09-17 | Should analyst estimates, price targets and consensus ratings be collected and shown? | **Provisional (decision 52): no.** Reported facts only; warning flags are observations with evidence, never advice. Revisit only for earnings-surprise tracking, clearly labelled as third-party estimates |
-| 26 | Session 83 | 2026-09-17 | Should strategy rules be able to test fundamentals (for example "price to earnings below 20"), or is this research-only for now? Rule operands today are price, indicator and number only | **Open — not answered.** Stage R stores publication dates so it becomes possible; no Stage R task builds it. Raise a new task if the answer is yes |
+| 26 | Session 83 | 2026-09-17 | Should strategy rules be able to test fundamentals (for example "price to earnings below 20"), or is this research-only for now? Rule operands today are price, indicator and number only | **Yes, as an optional rule operand** — Owner, 2026-09-18 (session 93). Raised as T-05 |
 | 27 | Session 83 | 2026-09-17 | Is ownership data — promoter holding, pledge trend, insider transactions — wanted now, given it matters mainly for Indian stocks and needs a provider that publishes it? | **Provisional: yes, in scope** as R-10 (requirements 36). Say if it should be deferred until after the statements work |
 | 28 | Session 92 | 2026-09-18 | Standalone statements are consolidated scaled by one factor per company, so ROE, margins and debt to equity are the same on both bases (only per-share figures differ since R-15). Should standalone carry its own margin and leverage per company (e.g. Tata Motors standalone without JLR is less profitable and more indebted)? | **Open — not answered.** Needs a seed value per company; nothing invented. Say yes and a small data task can add it |
  

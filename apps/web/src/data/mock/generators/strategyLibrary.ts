@@ -191,11 +191,13 @@ function buildEntry(
   };
 }
 
+// Strategies default to the seeded set; the mock handler passes the store's list, which adds the
+// strategies created and saved this session (T-01).
 export function generateStrategyLibrary(
   ctx: MockGeneratorContext,
   isEmptyScenario = false,
+  strategies: readonly StrategyDto[] = generateStrategies(ctx),
 ): readonly StrategyLibraryEntryDto[] {
-  const strategies = generateStrategies(ctx);
   const backtests = generateBacktestResults(ctx);
   const portfolio = generatePortfolioData(ctx, isEmptyScenario);
   const stream = ctx.random.fork('strategy-library');
