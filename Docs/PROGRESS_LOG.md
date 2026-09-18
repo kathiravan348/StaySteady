@@ -277,7 +277,7 @@ no edit link, the editor only saved to sessionStorage, and backtests returned a 
 |----|------|--------|---|-------|-------|
 | T-01 | Strategy write API and mock store — create (blank, template, duplicate), save a version with a bumped number; library, strategy list and Backtest Setup read the stored definitions | DONE | 100 | Claude Opus 5 (session 93) | Owner item 2 |
 | T-02 | Entry points — New strategy and Duplicate on the library, Edit on every card, create dialog; name, description and timeframe editable in the editor | DONE | 100 | Claude Opus 5 (session 93) | Owner item 1 |
-| T-03 | Seed and validation fixes — seeded scope markets and types, the RSI volume rule, a validation issue for volume compared against a price-scale operand | TODO | 0 | | Owner item 3 |
+| T-03 | Seed and validation fixes — seeded scope markets and types, the RSI volume rule, a validation issue for volume compared against a price-scale operand | DONE | 100 | Claude Opus 5 (session 93) | Owner item 3 |
 | T-04 | Simpler editor — starter templates, plain-English summary per condition, indicator range hints, instruments filtered by chosen markets, non-conflicting default exit | TODO | 0 | | Owner item 4 |
 | T-05 | Fundamentals as optional rule operands (P/E, P/B, ROE, debt to equity, ...) through shared/fundamentals, point in time by publication date | TODO | 0 | | Open question 26 answered session 93 |
 | T-06 | Rule-driven backtest results — a run evaluates the strategy's own rules over price history instead of mapping to a saved result | TODO | 0 | | Owner item 5 |
@@ -827,6 +827,47 @@ VERIFICATION RUN:
   RELIANCE, summary "Trade Reliance", saved to v0.2.0 with both versions listed; library shows
   Edit and Duplicate on all 8 cards with correct hrefs; Duplicate pre-fills "<name> copy" with the
   strategy selected; /research/editor lists every strategy. Dark and light themes checked.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-03 START
+START:          2026-09-18T05:47:00Z  |  local: 2026-09-18 11:17 IST
+TASK CLAIMED:   T-03 Seed and validation fixes
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 93 | Claude Opus 5 | T-03 END
+END:            2026-09-18T05:35:18Z  |  local: 2026-09-18 11:05 IST
+TASK CLAIMED:   T-03 Seed and validation fixes
+END STATUS:     DONE
+
+CORRECTION: the T-02 END (05:45Z) and T-03 START (05:47Z) times above were estimated, not read
+  from the clock, and are later than this entry. Read from the system clock they were about
+  05:31Z and 05:32Z. Every time from this entry on is read from the clock.
+
+COMPLETED:
+  - New indicator volume_sma ("Average volume") in IndicatorKindSchema, the editor labels and the
+    preview evaluator. The RSI strategy's entry now reads volume > average volume (20); before it
+    compared a share count with a 20-day average of the close.
+  - ruleTree.ts operandScale (price, volume, 0-100 reading, price distance, number); validation
+    raises a conflict when a condition compares two different units.
+  - Seeded drafts take scope markets and instrument types from their instruments, so the editor
+    agrees with the library (RSI strategy: IN, US, Swing).
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS; pnpm build PASS.
+  Browser: an RSI version saved before the fix shows "A condition compares different units ...
+  a number of shares traded with a price"; the reseeded RSI strategy ticks IN, US and Swing and
+  validates clean. All five seeded strategies validate clean.
+
+FINDINGS:
+  - "Never fires" was a window effect, not bad data. Over the full ~1,214-bar history: momentum
+    6 (SPY) / 8 (AAPL) entries, RSI 5 / 5, breakout 24 / 18, earnings 31. The preview shows only
+    the last 180 bars of the first instrument, where RSI has 0. Addressed in T-04.
 ────────────────────────────────────────────────────────────
 ```
 

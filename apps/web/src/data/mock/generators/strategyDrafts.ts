@@ -7,6 +7,7 @@ import type { z } from 'zod';
 import type { StrategyDraftDto, StrategyVersionDto } from '../../schemas';
 import { StrategyDraftSchema, StrategyVersionSchema, type RuleGroupDto } from '../../schemas';
 import type { MockGeneratorContext } from './mockContext';
+import { getInstrumentById } from './instruments';
 import { cond, group, ind, num, price } from './ruleBuilders';
 import { generateStrategies } from './trading';
 import { parseGenerated } from './validated';
@@ -41,7 +42,7 @@ function rulesFor(strategyId: string): { entry: RuleGroupDto; exit: RuleGroupDto
         entry: group('e-root', 'all', [
           cond('e1', ind('rsi', 14), 'less_than', num(28)),
           group('e-vol', 'any', [
-            cond('e2', price('volume'), 'greater_than', ind('sma', 20)),
+            cond('e2', price('volume'), 'greater_than', ind('volume_sma', 20)),
             cond('e3', price('close'), 'less_than', ind('bollinger_lower', 20)),
           ]),
         ]),
@@ -139,6 +140,11 @@ export function generateStrategyDraft(
   const strategy = generateStrategies(ctx).find((item) => String(item.id) === strategyId);
   if (strategy === undefined) return undefined;
   const rules = rulesFor(strategyId);
+  // Markets and types are those of the instruments the strategy trades, as the library shows them.
+  const instruments = strategy.universe.flatMap((id) => {
+    const instrument = getInstrumentById(String(id));
+    return instrument === undefined ? [] : [instrument];
+  });
 
   const draft: DraftInput = {
     strategyId: strategy.id,
@@ -148,8 +154,8 @@ export function generateStrategyDraft(
     stage: strategy.stage,
     timeframe: strategy.timeframe,
     scope: {
-      marketIds: [],
-      instrumentTypes: [],
+      marketIds: [...new Set(instruments.map((instrument) => String(instrument.marketId)))],
+      instrumentTypes: [...new Set(instruments.map((instrument) => instrument.type))],
       instrumentIds: [...strategy.universe],
     },
     entry: rules.entry,

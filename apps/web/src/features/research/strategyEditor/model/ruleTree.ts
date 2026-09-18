@@ -26,6 +26,7 @@ export const INDICATOR_LABELS: Readonly<Record<IndicatorKindDto, string>> = {
   stochastic_k: 'Stochastic %K',
   bollinger_upper: 'Bollinger upper band',
   bollinger_lower: 'Bollinger lower band',
+  volume_sma: 'Average volume',
 };
 
 // Indicators bounded to a known range, so a threshold outside it can be called impossible.
@@ -33,6 +34,36 @@ export const INDICATOR_RANGE: Partial<Readonly<Record<IndicatorKindDto, [number,
   rsi: [0, 100],
   stochastic_k: [0, 100],
 };
+
+// What an operand is measured in. Comparing two different units (a share count with a price, an
+// RSI reading with a price) is never meaningful, whatever the numbers happen to be.
+export type OperandScale = 'price' | 'volume' | 'oscillator' | 'distance' | 'number';
+
+const INDICATOR_SCALE: Readonly<Record<IndicatorKindDto, OperandScale>> = {
+  sma: 'price',
+  ema: 'price',
+  bollinger_upper: 'price',
+  bollinger_lower: 'price',
+  rsi: 'oscillator',
+  stochastic_k: 'oscillator',
+  macd: 'distance',
+  atr: 'distance',
+  volume_sma: 'volume',
+};
+
+export const SCALE_LABELS: Readonly<Record<OperandScale, string>> = {
+  price: 'a price',
+  volume: 'a number of shares traded',
+  oscillator: 'a 0 to 100 reading',
+  distance: 'a price distance',
+  number: 'a fixed number',
+};
+
+export function operandScale(operand: RuleOperandDto): OperandScale {
+  if (operand.kind === 'number') return 'number';
+  if (operand.kind === 'price') return operand.field === 'volume' ? 'volume' : 'price';
+  return INDICATOR_SCALE[operand.indicator];
+}
 
 let counter = 0;
 function nextId(prefix: string): string {

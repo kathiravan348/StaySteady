@@ -18,6 +18,8 @@ export const IndicatorKindSchema = z.enum([
   'stochastic_k',
   'bollinger_upper',
   'bollinger_lower',
+  // Average of volume, so volume can be compared with its own norm rather than with a price.
+  'volume_sma',
 ]);
 export type IndicatorKindDto = z.infer<typeof IndicatorKindSchema>;
 

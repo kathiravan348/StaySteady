@@ -45,6 +45,7 @@ function buildSeries(operand: RuleOperandDto, bars: readonly PreviewBar[]): Indi
   if (operand.kind === 'price') return bars.map((bar) => bar[operand.field]);
 
   const closes = bars.map((bar) => bar.close);
+  const volumes = bars.map((bar) => bar.volume);
   const ohlc: readonly OhlcPoint[] = bars.map((bar) => ({
     high: bar.high,
     low: bar.low,
@@ -69,6 +70,8 @@ function buildSeries(operand: RuleOperandDto, bars: readonly PreviewBar[]): Indi
       return bollingerBands(closes, period).upper;
     case 'bollinger_lower':
       return bollingerBands(closes, period).lower;
+    case 'volume_sma':
+      return simpleMovingAverage(volumes, period);
   }
 }
 

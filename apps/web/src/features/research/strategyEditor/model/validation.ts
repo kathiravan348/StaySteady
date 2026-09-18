@@ -2,7 +2,14 @@
 // says what is wrong and what it would mean if the strategy ran as written.
 
 import type { RuleConditionDto, RuleOperandDto, StrategyDraftDto } from '../../../../data/schemas';
-import { INDICATOR_RANGE, allConditions, countConditions, describeCondition } from './ruleTree';
+import {
+  INDICATOR_RANGE,
+  SCALE_LABELS,
+  allConditions,
+  countConditions,
+  describeCondition,
+  operandScale,
+} from './ruleTree';
 
 export type IssueSeverity = 'conflict' | 'impossible' | 'missing';
 
@@ -84,6 +91,17 @@ function ruleIssues(draft: StrategyDraftDto): ValidationIssue[] {
         section: 'Conditions',
         title: 'A condition compares two fixed numbers',
         detail: `${describeCondition(condition)} does not depend on the market, so it is always true or always false.`,
+      });
+    }
+    const leftScale = operandScale(condition.left);
+    const rightScale = operandScale(condition.right);
+    if (leftScale !== 'number' && rightScale !== 'number' && leftScale !== rightScale) {
+      issues.push({
+        id: `units-${condition.id}`,
+        severity: 'conflict',
+        section: 'Conditions',
+        title: 'A condition compares different units',
+        detail: `${describeCondition(condition)} compares ${SCALE_LABELS[leftScale]} with ${SCALE_LABELS[rightScale]}, so the result says nothing about the market.`,
       });
     }
     const threshold = impossibleThreshold(condition);
