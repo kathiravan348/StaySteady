@@ -5,6 +5,7 @@ import { Button, Card } from '@staysteady/ui';
 
 import type { ScreenerFilterCriteria } from '../../../../data/schemas/screener';
 import styles from '../Screener.module.scss';
+import { ScreenerStatementFilters } from './ScreenerStatementFilters';
 
 export interface ScreenerFiltersPanelProps {
   readonly filters: ScreenerFilterCriteria;
@@ -195,6 +196,8 @@ export const ScreenerFiltersPanel: FC<ScreenerFiltersPanelProps> = ({
             />
           </div>
         </div>
+
+        <ScreenerStatementFilters filters={filters} onChange={updateField} />
 
         <div className={styles.inlineBetween}>
           <div className={styles.inline}>

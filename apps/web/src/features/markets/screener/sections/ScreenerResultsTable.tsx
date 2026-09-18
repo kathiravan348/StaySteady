@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Badge, Button, Card } from '@staysteady/ui';
 
 import type { ScreenerRow } from '../../../../data/schemas/screener';
+import { downloadScreenerCsv } from '../model/screenerCsv';
 import styles from '../Screener.module.scss';
 
 export interface ScreenerResultsTableProps {
@@ -30,57 +31,6 @@ export const ScreenerResultsTable: FC<ScreenerResultsTableProps> = ({
   onSortChange,
   onPageChange,
 }) => {
-  const handleExportCsv = () => {
-    const headers = [
-      'Symbol',
-      'Name',
-      'Market',
-      'Asset Class',
-      'Sector',
-      'Price',
-      '24h Change (%)',
-      'Market Cap',
-      'P/E Ratio',
-      'P/B Ratio',
-      'ROE (%)',
-      'Div Yield (%)',
-      'RSI-14',
-      '200 SMA Dist (%)',
-      'Compliance Status',
-      'Automation Permission',
-    ];
-
-    const lines = rows.map((r) =>
-      [
-        r.symbol,
-        `"${r.name.replace(/"/g, '""')}"`,
-        r.marketName,
-        r.assetClass,
-        `"${r.sector.replace(/"/g, '""')}"`,
-        r.price,
-        r.change24hPct.toFixed(2),
-        r.marketCapFormatted,
-        r.peRatio !== null ? r.peRatio.toFixed(1) : '',
-        r.pbRatio !== null ? r.pbRatio.toFixed(1) : '',
-        r.roePct !== null ? r.roePct.toFixed(1) : '',
-        r.dividendYieldPct !== null ? r.dividendYieldPct.toFixed(2) : '',
-        r.rsi14.toFixed(1),
-        r.sma200DistancePct.toFixed(1),
-        r.complianceStatus,
-        r.automationPermission,
-      ].join(','),
-    );
-
-    const csvContent = [headers.join(','), ...lines].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `screener_export_${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
   const getSortIndicator = (field: string) => {
     if (sortBy !== field) return null;
     return sortOrder === 'asc' ? ' ▲' : ' ▼';
@@ -97,7 +47,9 @@ export const ScreenerResultsTable: FC<ScreenerResultsTableProps> = ({
           <Button
             variant="secondary"
             size="sm"
-            onPress={handleExportCsv}
+            onPress={() => {
+              downloadScreenerCsv(rows);
+            }}
             isDisabled={rows.length === 0}
           >
             📥 Export CSV
@@ -121,6 +73,15 @@ export const ScreenerResultsTable: FC<ScreenerResultsTableProps> = ({
                 <th className={styles.sortHeader} onClick={() => onSortChange('roePct')}>
                   ROE / Div{getSortIndicator('roePct')}
                 </th>
+                <th className={styles.sortHeader} onClick={() => onSortChange('debtToEquity')}>
+                  Debt / ROCE{getSortIndicator('debtToEquity')}
+                </th>
+                <th
+                  className={styles.sortHeader}
+                  onClick={() => onSortChange('revenueGrowth3yPct')}
+                >
+                  Growth / Cash{getSortIndicator('revenueGrowth3yPct')}
+                </th>
                 <th className={styles.sortHeader} onClick={() => onSortChange('rsi14')}>
                   RSI / SMA Dist{getSortIndicator('rsi14')}
                 </th>
@@ -132,7 +93,7 @@ export const ScreenerResultsTable: FC<ScreenerResultsTableProps> = ({
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} style={{ textAlign: 'center', padding: 'var(--space-4)' }}>
+                  <td colSpan={11} style={{ textAlign: 'center', padding: 'var(--space-4)' }}>
                     No instruments match the selected criteria. Try relaxing factor thresholds.
                   </td>
                 </tr>
@@ -192,6 +153,32 @@ export const ScreenerResultsTable: FC<ScreenerResultsTableProps> = ({
                             {row.dividendYieldPct !== null
                               ? `${row.dividendYieldPct.toFixed(2)}%`
                               : '—'}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.stackTight}>
+                          <span>
+                            D/E: {row.debtToEquity === null ? '—' : row.debtToEquity.toFixed(2)}
+                          </span>
+                          <span className={styles.presetDesc}>
+                            ROCE: {row.rocePct === null ? '—' : `${row.rocePct.toFixed(1)}%`}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className={styles.stackTight}>
+                          <span>
+                            3y:{' '}
+                            {row.revenueGrowth3yPct === null
+                              ? '—'
+                              : `${row.revenueGrowth3yPct.toFixed(1)}%`}
+                          </span>
+                          <span className={styles.presetDesc}>
+                            Cash:{' '}
+                            {row.cashConversionPct === null
+                              ? '—'
+                              : `${row.cashConversionPct.toFixed(0)}%`}
                           </span>
                         </div>
                       </td>

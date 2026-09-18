@@ -21,6 +21,11 @@ export const ScreenerFilterCriteriaSchema = z.object({
   minRsi14: z.number().nullable().default(null),
   maxRsi14: z.number().nullable().default(null),
   minSma200Dist: z.number().nullable().default(null),
+  // Statement factors (R-13; UI spec 20.2), read from shared/fundamentals through the measures.
+  maxDebtToEquity: z.number().nullable().default(null),
+  minRoce: z.number().nullable().default(null),
+  minRevenueGrowth: z.number().nullable().default(null),
+  minCashConversion: z.number().nullable().default(null),
   complianceOnly: z.boolean().default(false),
   automationOnly: z.boolean().default(false),
   sortBy: z.string().default('marketCap'),
@@ -66,6 +71,11 @@ export const ScreenerRowSchema = z.object({
   dividendYieldPct: z.number().nullable(),
   rsi14: z.number(),
   sma200DistancePct: z.number(),
+  // Null where no statements are collected for the company, or for a fund.
+  debtToEquity: z.number().nullable(),
+  rocePct: z.number().nullable(),
+  revenueGrowth3yPct: z.number().nullable(),
+  cashConversionPct: z.number().nullable(),
   averageDailyVolume: z.string(),
   complianceStatus: ScreenerRowComplianceStatusSchema,
   complianceReason: z.string().nullable(),

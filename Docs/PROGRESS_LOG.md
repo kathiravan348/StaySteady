@@ -279,7 +279,7 @@ already built but cannot work without classification.
 | R-10 | Ownership tab — ownership over time, promoter pledge trend, insider transactions, group structure list with holdings marked | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.1; requirements 36 |
 | R-11 | News, events and filings tab — instrument feed with indirect (parent/group/peer) items marked, filings, corporate actions effective vs announced, forward event strip with restriction windows | DONE | 100 | Claude Opus 5 (session 92) | Requirements 38; UI spec 20.1 |
 | R-12 | Surfacing across existing screens — Workspace right-panel summary and link, Position Detail company card, News & Events group and sector filters | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.2 |
-| R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | TODO | 0 | | UI spec 20.2; extends S-34 |
+| R-13 | Screener factors from statements — debt to equity, return on capital employed, growth, cash quality | DONE | 100 | Claude Opus 5 (session 92) | UI spec 20.2; extends S-34 |
 | R-14 | Fix: market cap formatted with Number() in features/markets/workspace/sections/ResearchSections.tsx | DONE | 100 | Claude Opus 5 (session 92) | Fixed with R-12: row moved to the company summary card. Finding session 83; breaks decision 4 (money is never a plain number) |
 | R-15 | Fix: standalone statements scale shares outstanding with the basis, so standalone ratios equal consolidated (financialStatementBuild.ts) | TODO | 0 | | Finding session 92; UI spec 20.4 |
  
@@ -1835,6 +1835,58 @@ sections/ResearchSections.tsx,sections/WorkspaceView.tsx,model/chartEvents.ts},
 features/portfolio/position/sections/PositionView.tsx, features/news/{NewsFeedPage.tsx,
 model/newsFeed.ts,sections/NewsFeedView.tsx,sections/NewsFilterBar.tsx,sections/NewsStoryCard.tsx},
 data/mock/generators/researchData.ts, Docs/PROGRESS_LOG.md.
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-13 START
+START:          2026-09-18T05:45:00Z  |  local: 2026-09-18 11:15 IST
+TASK CLAIMED:   R-13 Screener factors from statements
+────────────────────────────────────────────────────────────
+```
+
+```
+────────────────────────────────────────────────────────────
+SESSION 92 | Claude Opus 5 | R-13 END
+END:            2026-09-18T06:15:00Z  |  local: 2026-09-18 11:45 IST
+TASK CLAIMED:   R-13 Screener factors from statements
+END STATUS:     DONE
+
+COMPLETED:
+  - ScreenerRow gains debtToEquity, rocePct, revenueGrowth3yPct and cashConversionPct (nullable);
+    criteria gain maxDebtToEquity, minRoce, minRevenueGrowth, minCashConversion. ScreenerSeed now
+    omits the four, so they can only be derived, never seeded.
+  - screenerFactors.ts reads them, and P/E, P/B and ROE, from measuresFor (shared/fundamentals,
+    decision 53) wherever statements are collected. Seeded P/E, P/B and ROE stand in only for
+    companies without statements. This retires the seeded P/B and ROE noted in S-34 for covered
+    companies and resolves the R-12 finding that the screener's P/E bypassed shared/fundamentals.
+  - A company with statements is priced off the instrument its statements were generated against
+    (statementsForSymbol), so price, P/E and the research screen agree. Before, MSFT priced off a
+    separate screener series and showed P/E 5.9x against statements tied to another series.
+  - Filters: a new "From reported statements" group (ScreenerStatementFilters.tsx); a company
+    without statements cannot pass a set statement filter. Two new sortable columns, Debt / ROCE and
+    Growth / Cash, and the four factors in the CSV export. The export moved to model/screenerCsv.ts
+    to keep the table under 300 lines.
+
+VERIFICATION RUN:
+  pnpm typecheck PASS; pnpm lint PASS (repo-wide); pnpm build PASS; pnpm visual 14/14 PASS.
+  In the browser: Reliance D/E 0.44, ROCE 9.9%, 3y growth 8.1%, cash 82%; GOOGL, BRK.B and JPM
+  show dashes (no statements collected). Max D/E 0.5 with min ROCE 20% leaves TCS, INFY, MSFT and
+  NVDA.
+
+FINDINGS (out of scope, not fixed):
+  - Screener prices changed for MSFT, HDFCBANK and INFY (now the statement-tied series). The
+    screener is not in the visual baselines, so nothing needed rebaselining.
+  - screenerGenerator.ts uses non-null assertions (criteria.minPe!) in the older filters; the new
+    filters avoid them. Not fixed (outside the task).
+
+FILES: created features/markets/screener/{model/screenerCsv.ts,
+sections/ScreenerStatementFilters.tsx}; modified data/schemas/screener.ts,
+data/mock/generators/{screenerFactors,screenerGenerator,screenerSeeds,screenerStatus,
+screenerPresets}.ts, features/markets/{MarketsScreenerPage.tsx,screener/Screener.module.scss,
+screener/sections/ScreenerFiltersPanel.tsx,screener/sections/ScreenerResultsTable.tsx},
+Docs/PROGRESS_LOG.md.
 ────────────────────────────────────────────────────────────
 ```
 

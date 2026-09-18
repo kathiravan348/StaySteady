@@ -219,3 +219,15 @@
   font-size: var(--font-size-xs);
   color: var(--text-secondary);
 }
+
+.statementFilters {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+
+  legend {
+    margin-bottom: var(--space-2);
+    padding: 0;
+  }
+}

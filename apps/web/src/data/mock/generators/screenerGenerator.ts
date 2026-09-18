@@ -93,6 +93,17 @@ export function executeScreenerSearch(
   }
 
   // Safety: Compliance Status
+  // Statement factors (R-13): a row without statements cannot pass a statement filter.
+  const within = (value: number | null, bound: number | null, isMax: boolean): boolean =>
+    bound === null || (value !== null && (isMax ? value <= bound : value >= bound));
+  filtered = filtered.filter(
+    (r) =>
+      within(r.debtToEquity, criteria.maxDebtToEquity, true) &&
+      within(r.rocePct, criteria.minRoce, false) &&
+      within(r.revenueGrowth3yPct, criteria.minRevenueGrowth, false) &&
+      within(r.cashConversionPct, criteria.minCashConversion, false),
+  );
+
   if (criteria.complianceOnly) {
     filtered = filtered.filter((r) => r.complianceStatus === 'ALLOWED');
   }
@@ -122,6 +133,18 @@ export function executeScreenerSearch(
       case 'dividendYieldPct':
         aVal = a.dividendYieldPct ?? -999999;
         bVal = b.dividendYieldPct ?? -999999;
+        break;
+      case 'debtToEquity':
+        aVal = a.debtToEquity ?? 999999;
+        bVal = b.debtToEquity ?? 999999;
+        break;
+      case 'rocePct':
+        aVal = a.rocePct ?? -999999;
+        bVal = b.rocePct ?? -999999;
+        break;
+      case 'revenueGrowth3yPct':
+        aVal = a.revenueGrowth3yPct ?? -999999;
+        bVal = b.revenueGrowth3yPct ?? -999999;
         break;
       case 'rsi14':
         aVal = a.rsi14;

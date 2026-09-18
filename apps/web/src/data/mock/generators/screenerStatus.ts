@@ -6,7 +6,7 @@ import type { EligibilityCheckResult } from '../../schemas/compliance';
 import type { ScreenerRow } from '../../schemas/screener';
 import type { PermissionInputs } from '../../../shared/automation/permissionLayers';
 import { evaluateCell } from '../../../shared/automation/permissionLayers';
-import type { ScreenerSeed } from './screenerSeeds';
+import type { FactoredSeed, ScreenerSeed } from './screenerSeeds';
 
 export interface ScreenerStatusSources {
   readonly checkEligibility: (symbol: string, action: 'BUY' | 'SELL') => EligibilityCheckResult;
@@ -62,7 +62,7 @@ function automationFor(
 }
 
 export function withScreenerStatus(
-  seeds: readonly ScreenerSeed[],
+  seeds: readonly FactoredSeed[],
   sources: ScreenerStatusSources,
 ): ScreenerRow[] {
   return seeds.map((seed) => ({
